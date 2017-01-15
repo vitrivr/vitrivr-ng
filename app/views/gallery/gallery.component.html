@@ -1,0 +1,21 @@
+<div>
+    <md-grid-list cols="4" rowHeight="300px">
+        <md-grid-tile *ngFor="let mediaobject of mediaobjects">
+            <md-card>
+                <md-card-header>
+                    <md-card-title>
+                        <md-card-title>{{mediaobject.mediaObject.name + " (" + mediaobject.getScorePercentage() + "%)"}}</md-card-title>
+                        <md-card-subtitle>{{mediaobject.mediaObject.type + " (" + mediaobject.getSegments() + "segments)" }}</md-card-subtitle>
+                    </md-card-title>
+                </md-card-header>
+                <md-card-content>
+                    <img src="{{_config.host_preview}}/{{mediaobject.mediaObject.objectId}}/{{mediaobject.getRepresentativeSegmentId()}}.jpg"/>
+                </md-card-content>
+                <md-card-actions>
+                    <button md-button>LIKE</button>
+                    <button md-button>SHARE</button>
+                </md-card-actions>
+            </md-card>
+        </md-grid-tile>
+    </md-grid-list>
+</div>
