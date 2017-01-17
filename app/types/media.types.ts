@@ -21,9 +21,9 @@ export interface MediaObject {
 export interface MediaSegment {
     objectId : string, /* FK: Used to associate with MediaType. */
     segmentId : string,
-    start : number,
-    end : number,
-    number : number
+    segmentstart : number,
+    segmentend : number,
+    segmentnumber : number
 }
 
 /**

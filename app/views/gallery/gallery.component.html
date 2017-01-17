@@ -5,11 +5,11 @@
                 <md-card-header>
                     <md-card-title>
                         <md-card-title>{{mediaobject.mediaObject.name + " (" + mediaobject.getScorePercentage() + "%)"}}</md-card-title>
-                        <md-card-subtitle>{{mediaobject.mediaObject.type + " (" + mediaobject.getSegments() + "segments)" }}</md-card-subtitle>
+                        <md-card-subtitle>{{mediaobject.mediaObject.mediatype + " (" + mediaobject.getSegments() + "segments)" }}</md-card-subtitle>
                     </md-card-title>
                 </md-card-header>
                 <md-card-content>
-                    <img src="{{_config.host_preview}}/{{mediaobject.mediaObject.objectId}}/{{mediaobject.getRepresentativeSegmentId()}}.jpg"/>
+                    <img src="{{_config.host_preview}}/{{mediaobject.mediaObject.mediatype.toLowerCase()}}/{{mediaobject.mediaObject.name}}" height="200px" width="200px"/>
                 </md-card-content>
                 <md-card-actions>
                     <button md-button>LIKE</button>
