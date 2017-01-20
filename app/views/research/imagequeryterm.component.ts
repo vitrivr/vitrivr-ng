@@ -7,7 +7,7 @@ import {ImageQueryTerm} from "../../types/query.types";
     selector: 'qt-image',
     template:`
         <img #previewimg style="width:220px; height:220px; border:solid 1px;" (click)="edit()"/>
-        <md-slider min="1" max="3" step="1" [(ngModel)]="sliderSetting" (change)="sliderChanged($event)"></md-slider>
+        <md-slider min="1" max="4" step="1" [(ngModel)]="sliderSetting" (change)="sliderChanged($event)"></md-slider>
     `
 })
 

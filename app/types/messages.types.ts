@@ -8,19 +8,40 @@
 /**
  *
  */
-import {MediaObject, MediaSegment, Similarity} from "./media.types";
+import {MediaObject, MediaSegment, Similarity, MediaType} from "./media.types";
+import {QueryContainerInterface} from "./query.types";
 
 /**
- * Different message types.
+ * Defines the different types of messages used in exchange with Cineast
  */
-export type MessageType = "QR_START" | "QR_END" |"QR_SIMILARITY" | "QR_OBJECT" | "QR_SEGMENT";
+export type MessageType = "INIT" | "PING" | "Q_QUERY" | "QR_START" | "QR_END" |"QR_SIMILARITY" | "QR_OBJECT" | "QR_SEGMENT";
+
+
 
 /**
- * Basic interface of every Message, which can be identified by its MessageType field.
+ * Basic interface of every Message, which can be identified by its messagetype field.
  */
 export interface Message {
-    type : MessageType
+    messagetype : MessageType
 }
+
+/*
+ * Interface that defines a PING message used to query the status
+ * of the API. The same message is used in both directions.
+ */
+export type StatusType = "OK" | "ERROR" | "DISCONNECTED"
+export interface Ping extends Message {
+    status : StatusType
+}
+
+/**
+ * Basic interface of a QueryMessage.
+ */
+export interface QueryMessage extends Message {
+    containers : QueryContainerInterface[];
+    types: MediaType[]
+}
+
 
 /**
  * QueryStart Message: Sent by Cineast when a Query was received and processing starts. Every

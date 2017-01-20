@@ -13,20 +13,21 @@ var core_1 = require('@angular/core');
 var forms_1 = require("@angular/forms");
 var platform_browser_1 = require('@angular/platform-browser');
 var app_component_1 = require('./app.component');
-var status_component_1 = require('./services/status/status.component');
 var app_config_1 = require("./configuration/app.config");
 var gallery_module_1 = require("./views/gallery/gallery.module");
 require('hammerjs');
 var research_module_1 = require("./views/research/research.module");
 var queries_service_1 = require("./services/queries/queries.service");
+var cineast_api_service_1 = require("./services/api/cineast-api.service");
+var ping_component_1 = require("./views/ping/ping.component");
 var AppModule = (function () {
     function AppModule() {
     }
     AppModule = __decorate([
         core_1.NgModule({
             imports: [platform_browser_1.BrowserModule, forms_1.FormsModule, material_1.MaterialModule.forRoot(), gallery_module_1.GalleryModule, research_module_1.ResearchModule],
-            declarations: [app_component_1.AppComponent, status_component_1.StatusComponent],
-            providers: [app_config_1.Configuration, queries_service_1.QueryService],
+            declarations: [app_component_1.AppComponent, ping_component_1.PingComponent],
+            providers: [app_config_1.Configuration, queries_service_1.QueryService, cineast_api_service_1.CineastAPI],
             bootstrap: [app_component_1.AppComponent]
         }), 
         __metadata('design:paramtypes', [])

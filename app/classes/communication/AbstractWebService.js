@@ -9,18 +9,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var http_1 = require("@angular/http");
-var app_config_1 = require("../configuration/app.config");
+var app_config_1 = require("../../configuration/app.config");
 var Rx_1 = require('rxjs/Rx');
 var core_1 = require("@angular/core");
-var AbstractService = (function () {
-    function AbstractService(_http, _configuration) {
+var AbstractWebService = (function () {
+    function AbstractWebService(_http, _configuration) {
         this._http = _http;
         this._configuration = _configuration;
     }
-    AbstractService.prototype.url = function (path) {
+    AbstractWebService.prototype.url = function (path) {
         return this._configuration.endpoint_http + path;
     };
-    AbstractService.prototype.handleError = function (error) {
+    AbstractWebService.prototype.handleError = function (error) {
         // In a real world app, we might use a remote logging infrastructure
         var errMsg;
         if (error instanceof http_1.Response) {
@@ -34,11 +34,11 @@ var AbstractService = (function () {
         console.error(errMsg);
         return Rx_1.Observable.throw(errMsg);
     };
-    AbstractService = __decorate([
+    AbstractWebService = __decorate([
         core_1.Injectable(), 
         __metadata('design:paramtypes', [http_1.Http, app_config_1.Configuration])
-    ], AbstractService);
-    return AbstractService;
+    ], AbstractWebService);
+    return AbstractWebService;
 }());
-exports.AbstractService = AbstractService;
-//# sourceMappingURL=service.interface.js.map
+exports.AbstractWebService = AbstractWebService;
+//# sourceMappingURL=AbstractWebService.js.map

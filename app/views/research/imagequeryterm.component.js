@@ -45,7 +45,7 @@ var ImageQueryTermComponent = (function () {
     ImageQueryTermComponent = __decorate([
         core_1.Component({
             selector: 'qt-image',
-            template: "\n        <img #previewimg style=\"width:220px; height:220px; border:solid 1px;\" (click)=\"edit()\"/>\n        <md-slider min=\"1\" max=\"3\" step=\"1\" [(ngModel)]=\"sliderSetting\" (change)=\"sliderChanged($event)\"></md-slider>\n    "
+            template: "\n        <img #previewimg style=\"width:220px; height:220px; border:solid 1px;\" (click)=\"edit()\"/>\n        <md-slider min=\"1\" max=\"4\" step=\"1\" [(ngModel)]=\"sliderSetting\" (change)=\"sliderChanged($event)\"></md-slider>\n    "
         }), 
         __metadata('design:paramtypes', [material_1.MdDialog])
     ], ImageQueryTermComponent);

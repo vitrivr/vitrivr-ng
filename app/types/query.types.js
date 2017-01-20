@@ -1,6 +1,7 @@
 "use strict";
 var Query = (function () {
     function Query() {
+        this.messagetype = "Q_QUERY";
         this.containers = [];
         this.types = [];
     }
@@ -22,8 +23,11 @@ var ImageQueryTerm = (function () {
             case 3:
                 this.categories = ['globalcolor', 'localcolor', 'edge'];
                 break;
+            case 4:
+                this.categories = ['globalcolor', 'localcolor', 'edge', 'poi'];
+                break;
             default:
-                this.categories = ['globalcolor', 'localcolor', 'edge'];
+                this.categories = ['globalcolor'];
                 break;
         }
     };

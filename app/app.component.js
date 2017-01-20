@@ -9,23 +9,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var queries_service_1 = require("./services/queries/queries.service");
 var AppComponent = (function () {
-    function AppComponent() {
-        this.isDarkTheme = false;
-        this.foods = [
-            { name: 'Pizza', rating: 'Excellent' },
-            { name: 'Burritos', rating: 'Great' },
-            { name: 'French fries', rating: 'Pretty good' },
-        ];
-        this.progress = 0;
+    /**
+     * Default constructor. Subscribe for PING messages at the CineastAPI.
+     *
+     * @param _queryService
+     */
+    function AppComponent(_queryService) {
+        var _this = this;
+        this._queryService = _queryService;
+        /* Indicator whether the progress bar should be visible. */
+        this.loading = false;
+        _queryService.observable()
+            .filter(function (msg) { return ["STARTED", "ENDED"].indexOf(msg) > -1; })
+            .subscribe(function (msg) { return _this.onQueryStateChange(msg); });
     }
+    /**
+     *
+     * @param msg
+     */
+    AppComponent.prototype.onQueryStateChange = function (msg) {
+        if (msg == "STARTED") {
+            this.loading = true;
+        }
+        else if (msg == "ENDED") {
+            this.loading = false;
+        }
+    };
     AppComponent = __decorate([
         core_1.Component({
             styles: ["\n    md-sidenav {\n        width: 300px;\n    }\n  "],
             selector: 'vitrivr',
             templateUrl: './app/app.component.html'
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [queries_service_1.QueryService])
     ], AppComponent);
     return AppComponent;
 }());

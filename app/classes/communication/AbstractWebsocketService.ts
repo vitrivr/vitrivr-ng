@@ -1,57 +1,27 @@
-import {Configuration} from "../configuration/app.config";
 import {Injectable} from "@angular/core";
 import {Subject, Observer, Observable} from 'rxjs/Rx';
-
-
-/**
- * General interface for WebsocketServices.
- */
-export interface WebsocketServiceInterface {
-    _configuration: Configuration;
-    _url : string;
-    url(path : string) : string;
-}
+import Timer = NodeJS.Timer;
 
 /**
  * Custom type used to indicate the status of the WebSocket connection.
  */
 export type WebSocketStatus = "DISCONNECTED" | "WAITING" | "ERROR" ;
 
-
 @Injectable()
-export abstract class AbstractWebsocketService<T> implements WebsocketServiceInterface {
+export abstract class AbstractWebsocketService {
     /* WebSocket used by the AbstractWebsocketService implementation. */
     protected _socket : Subject<any> = null;
 
     /* Indication of the connection status. */
-    public connection : WebSocketStatus = "DISCONNECTED";
-
-    /* The URL of the WebSocket endpoint that is being invoked by the AbstractWebsocketService implementation. */
-    _url : string;
+    protected connection : WebSocketStatus = "DISCONNECTED";
 
     /**
-     * The Observable for the service that everyone can subscribe to. The service uses this observable
-     * to notify the subscribers about changes.
-     */
-    public observable : Observable<T> = Observable.create(
-        (observer: Observer<T>) => {
-            this.onServiceClose = observer.complete.bind(observer);
-            this.onServiceError = observer.error.bind(observer);
-            this.onServiceNext = observer.next.bind(observer);
-        }
-    );
-
-    protected onServiceError : any;
-    protected onServiceNext : any;
-    protected onServiceClose : any;
-
-    /**
+     * Default constructor.
      *
-     * @param _configuration
-     * @param path
+     * @param _url The endpoint to which a WebSocket connection should be established.
+     * @param reestablish If true, the socket will try to re-establish connection after an error or a close.
      */
-    constructor (public _configuration: Configuration, path : string) {
-        this._url = this.url(path);
+    constructor (private _url: string, private reestablish : boolean = true) {
         this.createSocket();
     }
 
@@ -99,21 +69,23 @@ export abstract class AbstractWebsocketService<T> implements WebsocketServiceInt
     }
 
     /**
+     * Sends an object to the underlying WebSocket stream. That object
+     * gets serialized to JSON before it's being sent.
      *
-     * @param path
-     * @returns {string}
+     * @param object Object to send.
      */
-    public url(path: String) : string {
-        return this._configuration.endpoint_ws + path;
+    public send(object: any) : boolean {
+        return this.sendstr(JSON.stringify(object));
     }
 
     /**
+     * Sends a raw string to the underlying WebSocket stream.
      *
-     * @param object
+     * @param str String to write to the stream.
      */
-    protected send(object: any) : boolean {
+    protected sendstr(str: string) : boolean {
         if (this.connection == "WAITING") {
-            this._socket.next(JSON.stringify(object));
+            this._socket.next(str);
             return true;
         } else {
             return false;
@@ -121,40 +93,48 @@ export abstract class AbstractWebsocketService<T> implements WebsocketServiceInt
     }
 
     /**
-     *
-     * @param str
+     * Dispatches a new timer that will wait for 30seconds and try
+     * to re-establish the connection.
      */
-    protected sendstr(str: string) : void {
-        this._socket.next(str);
+    protected dispatchTimer() : void {
+        console.log("Dispatching timer to re-establish connection in 30s...");
+        let timer = Observable.timer(30000);
+        timer.first().subscribe(function() {
+            console.log("Re-establishing connection.");
+            this.createSocket();
+        }.bind(this));
     }
 
-    /**
-     *
-     * @param message
-     */
-    public abstract onSocketMessage(message : String) : void;
 
     /**
+     * This method is invoked whenever the WebSocket receives a message from
+     * the remote host.
      *
      * @param message
      */
-    public onSocketError(error : any) {
+    protected abstract onSocketMessage(message : String) : void;
+
+    /**
+     * This method is invoked whenever the WebSocket reports a connection error.
+     *
+     * @param error
+     */
+    protected onSocketError(error : any) {
         console.log("Error occurred with socket to '" + this._url + "':" + error);
         this.connection = "ERROR";
         this._socket.unsubscribe();
         this._socket = null;
-        if (this.onServiceError != undefined) this.onServiceError(error);
+        if (this.reestablish) this.dispatchTimer();
     };
 
     /**
-     *
-     * @param message
+     * This method is invoked whenever the WebSocket reports that it was closed.
      */
-    public onSocketClose() : void {
+    protected onSocketClose() : void {
         console.log("Socket to '" + this._url + "' was closed.");
         this.connection = "DISCONNECTED";
         this._socket.unsubscribe();
         this._socket = null;
-        if (this.onServiceClose != undefined) this.onServiceClose();
+        if (this.reestablish) this.dispatchTimer();
     }
 }

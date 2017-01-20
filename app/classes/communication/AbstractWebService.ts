@@ -1,5 +1,5 @@
 import {Http, Response} from "@angular/http";
-import {Configuration} from "../configuration/app.config";
+import {Configuration} from "../../configuration/app.config";
 import {Observable} from 'rxjs/Rx';
 import {Injectable} from "@angular/core";
 
@@ -10,7 +10,7 @@ export interface ServiceInterface {
 }
 
 @Injectable()
-export abstract class AbstractService implements ServiceInterface {
+export abstract class AbstractWebService implements ServiceInterface {
     _http : Http;
     _configuration: Configuration;
 

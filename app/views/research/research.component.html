@@ -7,7 +7,7 @@
 
     <hr/>
 
-    <button md-raised-button style="width:100%;background-color:purple;" (click)="search()"><md-icon>search</md-icon>Search</button>
+    <button md-raised-button style="width:100%" (click)="search()" [color]="'accent'"><md-icon>search</md-icon>Search</button>
 
     <query-container *ngFor="let container of containers" [container]=container [inList]="containers"></query-container>
 

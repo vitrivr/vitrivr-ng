@@ -1,18 +1,23 @@
 import {Injectable} from "@angular/core";
-import {AbstractWebsocketService} from "../websocket.interface";
-import {Configuration} from "../../configuration/app.config";
 import {QueryContainer, Query} from "../../types/query.types";
 import {
-    QueryResult, SimilarityQueryResult, ObjectQueryResult, SegmentQueryResult,
+    SimilarityQueryResult, ObjectQueryResult, SegmentQueryResult,
     Message, QueryStart
 } from "../../types/messages.types";
 import {MediaType} from "../../types/media.types";
 import {
     MediaObjectScoreContainer
 } from "../../types/containers";
+import {CineastAPI} from "../api/cineast-api.service";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {Observable} from "rxjs/Observable";
+
+
+
+export type QueryChange = "NONE" | "STARTED" | "ENDED" | "UPDATED";
 
 @Injectable()
-export class QueryService extends AbstractWebsocketService<QueryResult> {
+export class QueryService {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
     public similarities : Map<string,MediaObjectScoreContainer> = new Map();
 
@@ -22,13 +27,21 @@ export class QueryService extends AbstractWebsocketService<QueryResult> {
     /** ID that identifies an ongoing query. If it's null, then no query is ongoing. */
     private queryId : string = null;
 
+    /** */
+    private weights: Map<string,number>;
+
+    /** */
+    private stateSubject : BehaviorSubject<QueryChange> = new BehaviorSubject("NONE" as QueryChange);
+
     /**
      * Default constructor.
      *
-     * @param _configuration Gets injected by DI.
+     * @param _api Reference to the CineastAPI. Gets injected by DI.
      */
-    constructor(_configuration : Configuration) {
-        super(_configuration, 'find/object/similar');
+    constructor(private _api : CineastAPI) {
+        _api.observable()
+            .filter(msg => ["QR_START","QR_END","QR_SIMILARITY","QR_OBJECT", "QR_SEGMENT"].indexOf(msg[0]) > -1)
+            .subscribe((msg) => this.onApiMessage(msg[1]));
         console.log("QueryService is up and running!");
     }
 
@@ -49,21 +62,33 @@ export class QueryService extends AbstractWebsocketService<QueryResult> {
         return query;
     }
 
+
+
     /**
      * Starts a new query - success is indicated by the return value.
      *
-     * Note: Queries can only be started if no query is ongoing.
+     * Note: Queries can only be started if no query is currently ongoing.
      *
      * @param query
      * @returns {boolean} true if query was issued, false otherwise.
      */
     public query(query : Query) : boolean {
         if (this.queryId == null) {
-            this.send(query);
+            this._api.send(query);
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Returns an Observable that allows an Observer to be notified about
+     * state changes in the QueryService (Started, Ended, Resultset updated).
+     *
+     * @returns {Observable<T>}
+     */
+    public observable() : Observable<QueryChange>{
+        return this.stateSubject.asObservable();
     }
 
     /**
@@ -93,12 +118,13 @@ export class QueryService extends AbstractWebsocketService<QueryResult> {
      *
      * @param message
      */
-    onSocketMessage(message: string): void {
+    private onApiMessage(message: string): void {
         let parsed = <Message>JSON.parse(message);
-        switch (parsed.type) {
+        switch (parsed.messagetype) {
             case "QR_START":
                 let qs = <QueryStart>parsed;
                 this.startNewQuery(qs.queryId);
+                this.stateSubject.next("STARTED" as QueryChange);
                 break;
             case "QR_SEGMENT":
                 let seg = <SegmentQueryResult>parsed;
@@ -109,6 +135,7 @@ export class QueryService extends AbstractWebsocketService<QueryResult> {
                         this.segment_to_object_map.set(segment.segmentId, segment.objectId);
                     }
                 }
+                this.stateSubject.next("UPDATED" as QueryChange);
                 break;
             case "QR_SIMILARITY":
                 let sim = <SimilarityQueryResult>parsed;
@@ -121,6 +148,7 @@ export class QueryService extends AbstractWebsocketService<QueryResult> {
                         }
                     }
                 }
+                this.stateSubject.next("UPDATED" as QueryChange);
                 break;
             case "QR_OBJECT":
                 let obj = <ObjectQueryResult>parsed;
@@ -130,12 +158,13 @@ export class QueryService extends AbstractWebsocketService<QueryResult> {
                             this.similarities.get(object.objectId).mediaObject = object;
                     }
                 }
+                this.stateSubject.next("UPDATED" as QueryChange);
                 break;
             case "QR_END":
                 this.finalizeQuery();
+                this.stateSubject.next("ENDED" as QueryChange);
                 break;
         }
-        if (this.onServiceNext != undefined) this.onServiceNext(message);
     }
 }
 

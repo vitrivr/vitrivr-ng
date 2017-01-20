@@ -17,11 +17,13 @@ var Configuration = (function () {
         this.version = "v1";
         this.protocol_http = "http://";
         this.protocol_ws = "ws://";
-        /** Publicly exposed configuration values. */
-        this.host_preview = "http://gasser-hauser.internet-box.ch/vitrivr/Video/thumbnails";
+        /** BEGIN:  Publicly exposed configuration values. */
+        this.host_preview = "http://gasser-hauser.internet-box.ch/vitrivr";
         this.host_object = "http://gasser-hauser.internet-box.ch/vitrivr/Video/";
         this.endpoint_http = this.protocol_http + this.host + "/" + this.path + "/" + this.version + "/";
         this.endpoint_ws = this.protocol_ws + this.host + "/" + this.path + "/" + this.version + "/";
+        /* Ping interval in milliseconds. */
+        this.ping_interval = 10000;
     }
     Configuration = __decorate([
         core_1.Injectable(), 

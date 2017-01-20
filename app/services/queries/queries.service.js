@@ -1,9 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -14,25 +9,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var websocket_interface_1 = require("../websocket.interface");
-var app_config_1 = require("../../configuration/app.config");
 var query_types_1 = require("../../types/query.types");
 var containers_1 = require("../../types/containers");
-var QueryService = (function (_super) {
-    __extends(QueryService, _super);
+var cineast_api_service_1 = require("../api/cineast-api.service");
+var BehaviorSubject_1 = require("rxjs/BehaviorSubject");
+var QueryService = (function () {
     /**
      * Default constructor.
      *
-     * @param _configuration Gets injected by DI.
+     * @param _api Reference to the CineastAPI. Gets injected by DI.
      */
-    function QueryService(_configuration) {
-        _super.call(this, _configuration, 'find/object/similar');
+    function QueryService(_api) {
+        var _this = this;
+        this._api = _api;
         /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
         this.similarities = new Map();
         /** A Map that maps segmentId's to objectId's. This is a cache-structure. */
         this.segment_to_object_map = new Map();
         /** ID that identifies an ongoing query. If it's null, then no query is ongoing. */
         this.queryId = null;
+        /** */
+        this.stateSubject = new BehaviorSubject_1.BehaviorSubject("NONE");
+        _api.observable()
+            .filter(function (msg) { return ["QR_START", "QR_END", "QR_SIMILARITY", "QR_OBJECT", "QR_SEGMENT"].indexOf(msg[0]) > -1; })
+            .subscribe(function (msg) { return _this.onApiMessage(msg[1]); });
         console.log("QueryService is up and running!");
     }
     /**
@@ -56,19 +56,28 @@ var QueryService = (function (_super) {
     /**
      * Starts a new query - success is indicated by the return value.
      *
-     * Note: Queries can only be started if no query is ongoing.
+     * Note: Queries can only be started if no query is currently ongoing.
      *
      * @param query
      * @returns {boolean} true if query was issued, false otherwise.
      */
     QueryService.prototype.query = function (query) {
         if (this.queryId == null) {
-            this.send(query);
+            this._api.send(query);
             return true;
         }
         else {
             return false;
         }
+    };
+    /**
+     * Returns an Observable that allows an Observer to be notified about
+     * state changes in the QueryService (Started, Ended, Resultset updated).
+     *
+     * @returns {Observable<T>}
+     */
+    QueryService.prototype.observable = function () {
+        return this.stateSubject.asObservable();
     };
     /**
      *  Starts a new Query in response to a QR_START message. Stores the
@@ -95,12 +104,13 @@ var QueryService = (function (_super) {
      *
      * @param message
      */
-    QueryService.prototype.onSocketMessage = function (message) {
+    QueryService.prototype.onApiMessage = function (message) {
         var parsed = JSON.parse(message);
-        switch (parsed.type) {
+        switch (parsed.messagetype) {
             case "QR_START":
                 var qs = parsed;
                 this.startNewQuery(qs.queryId);
+                this.stateSubject.next("STARTED");
                 break;
             case "QR_SEGMENT":
                 var seg = parsed;
@@ -113,6 +123,7 @@ var QueryService = (function (_super) {
                         this.segment_to_object_map.set(segment.segmentId, segment.objectId);
                     }
                 }
+                this.stateSubject.next("UPDATED");
                 break;
             case "QR_SIMILARITY":
                 var sim = parsed;
@@ -127,6 +138,7 @@ var QueryService = (function (_super) {
                         }
                     }
                 }
+                this.stateSubject.next("UPDATED");
                 break;
             case "QR_OBJECT":
                 var obj = parsed;
@@ -138,19 +150,19 @@ var QueryService = (function (_super) {
                         this.similarities.get(object.objectId).mediaObject = object;
                     }
                 }
+                this.stateSubject.next("UPDATED");
                 break;
             case "QR_END":
                 this.finalizeQuery();
+                this.stateSubject.next("ENDED");
                 break;
         }
-        if (this.onServiceNext != undefined)
-            this.onServiceNext(message);
     };
     QueryService = __decorate([
         core_1.Injectable(), 
-        __metadata('design:paramtypes', [app_config_1.Configuration])
+        __metadata('design:paramtypes', [cineast_api_service_1.CineastAPI])
     ], QueryService);
     return QueryService;
-}(websocket_interface_1.AbstractWebsocketService));
+}());
 exports.QueryService = QueryService;
 //# sourceMappingURL=queries.service.js.map

@@ -13,21 +13,26 @@ var queries_service_1 = require("../../services/queries/queries.service");
 var containers_1 = require("../../types/containers");
 var app_config_1 = require("../../configuration/app.config");
 var GalleryComponent = (function () {
+    /**
+     * Default constructor.
+     *
+     * @param _api Reference to the CineastAPI. Gets injected by DI.
+     * @param _config
+     * @param _queryService
+     */
     function GalleryComponent(_config, _queryService) {
+        var _this = this;
         this._config = _config;
         this._queryService = _queryService;
+        _queryService.observable()
+            .filter(function (msg) { return (msg == "UPDATED"); })
+            .subscribe(function (msg) { return _this.onQueryStateChange(); });
     }
     /**
-     *
+     * Invoked whenever the QueryService reports that the results were updated. Causes
+     * the gallery to be re-rendered.
      */
-    GalleryComponent.prototype.ngOnInit = function () {
-        this.subscription = this._queryService.observable.subscribe(this);
-        console.log("Subscribed.");
-    };
-    /**
-     *
-     */
-    GalleryComponent.prototype.update = function () {
+    GalleryComponent.prototype.onQueryStateChange = function () {
         var cache = [];
         this._queryService.similarities.forEach(function (value, key) {
             if (value.show())
@@ -38,17 +43,11 @@ var GalleryComponent = (function () {
         }
         this.mediaobjects = cache;
     };
-    /**
-     *
-     * @param value
-     */
-    GalleryComponent.prototype.next = function (value) {
-        this.update();
-    };
     GalleryComponent = __decorate([
         core_1.Component({
             selector: 'gallery',
-            templateUrl: './app/views/gallery/gallery.component.html'
+            templateUrl: './app/views/gallery/gallery.component.html',
+            styleUrls: ['app/views/gallery/gallery.component.css']
         }), 
         __metadata('design:paramtypes', [app_config_1.Configuration, queries_service_1.QueryService])
     ], GalleryComponent);
