@@ -100,6 +100,14 @@ var SketchCanvas = (function () {
         }
     };
     /**
+     * Fills the Canvas with the configured fill color.
+     */
+    SketchCanvas.prototype.fillCanvas = function () {
+        this.context.beginPath();
+        this.context.rect(0, 0, this.context.canvas.width, this.context.canvas.height);
+        this.context.fill();
+    };
+    /**
      *
      * @param ctx
      * @param p

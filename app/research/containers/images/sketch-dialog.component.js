@@ -11,11 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var material_1 = require('@angular/material');
 var sketch_canvas_component_1 = require("../../../shared/components/sketch/sketch-canvas.component");
-var angular2_color_picker_1 = require('angular2-color-picker');
 var SketchDialogComponent = (function () {
-    function SketchDialogComponent(dialogRef, cpService) {
+    function SketchDialogComponent(dialogRef) {
         this.dialogRef = dialogRef;
-        this.cpService = cpService;
         this.color = "#000000";
     }
     /**
@@ -61,6 +59,14 @@ var SketchDialogComponent = (function () {
         this.sketchpad.clearCanvas();
     };
     /**
+     * Triggered when the 'Fill canvas' menu-item is pressed.
+     *
+     * Fills the canvas with the default color.
+     */
+    SketchDialogComponent.prototype.onFillCanvas = function () {
+        this.sketchpad.fillCanvas();
+    };
+    /**
      * Triggered when the 'load-image' menu-item is pressed.
      *
      * Opens a file-chooser.
@@ -88,7 +94,7 @@ var SketchDialogComponent = (function () {
             selector: 'sketchpad',
             templateUrl: './sketch-dialog.component.html'
         }), 
-        __metadata('design:paramtypes', [material_1.MdDialogRef, angular2_color_picker_1.ColorPickerService])
+        __metadata('design:paramtypes', [material_1.MdDialogRef])
     ], SketchDialogComponent);
     return SketchDialogComponent;
 }());

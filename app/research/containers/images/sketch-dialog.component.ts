@@ -1,13 +1,13 @@
 import {Component, ViewChild, HostListener} from '@angular/core';
 import {MdDialogRef, MdSliderChange} from '@angular/material';
 import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.component";
-import {ColorPickerService} from 'angular2-color-picker';
 
 @Component({
     moduleId: module.id,
     selector: 'sketchpad',
     templateUrl: './sketch-dialog.component.html'
 })
+
 export class SketchDialogComponent {
     /** Sketch-canvas component. */
     @ViewChild('sketch')
@@ -18,7 +18,7 @@ export class SketchDialogComponent {
     private imageloader: any;
 
     private color : string = "#000000";
-    constructor(public dialogRef: MdDialogRef<SketchDialogComponent>, private cpService: ColorPickerService) {
+    constructor(public dialogRef: MdDialogRef<SketchDialogComponent>) {
 
     }
 
@@ -67,6 +67,15 @@ export class SketchDialogComponent {
      */
     private onClearCanvas() {
         this.sketchpad.clearCanvas();
+    }
+
+    /**
+     * Triggered when the 'Fill canvas' menu-item is pressed.
+     *
+     * Fills the canvas with the default color.
+     */
+    private onFillCanvas() {
+        this.sketchpad.fillCanvas();
     }
 
     /**
