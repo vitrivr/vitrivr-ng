@@ -1,21 +1,20 @@
+import 'hammerjs';
+
 import {MaterialModule} from '@angular/material';
 import {NgModule}      from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from '@angular/platform-browser';
-import {AppComponent}  from './app.component';
-import {Configuration} from "./configuration/app.config";
-import {GalleryModule} from "./views/gallery/gallery.module";
 
-import 'hammerjs';
-import {ResearchModule} from "./views/research/research.module";
-import {QueryService} from "./services/queries/queries.service";
-import {CineastAPI} from "./services/api/cineast-api.service";
-import {PingComponent} from "./views/ping/ping.component";
+import {AppComponent}  from './app.component';
+import {GalleryModule} from "./gallery/gallery.module";
+import {ResearchModule} from "./research/research.module";
+import {PingComponent} from "./toolbar/ping.component";
+import {CoreModule} from "./core/core.module";
 
 @NgModule({
-  imports:      [ BrowserModule, FormsModule,  MaterialModule.forRoot(), GalleryModule, ResearchModule ],
+  imports:      [ BrowserModule, FormsModule,  MaterialModule.forRoot(), GalleryModule, ResearchModule, CoreModule ],
   declarations: [ AppComponent, PingComponent ],
-  providers:    [ Configuration, QueryService, CineastAPI ],
+  providers:    [ ],
   bootstrap:    [ AppComponent ]
 })
 

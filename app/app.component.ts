@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {QueryService, QueryChange} from "./services/queries/queries.service";
+import {QueryService, QueryChange} from "./core/queries/queries.service";
 
 @Component({
   styles : [`

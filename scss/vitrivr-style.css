@@ -1,0 +1,78 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 100%; }
+
+h1 {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 250%; }
+
+h2 {
+  color: rgba(255, 255, 255, 0.87);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 150%; }
+
+h3 {
+  color: rgba(255, 255, 255, 0.87);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 100%;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+
+h4 {
+  color: rgba(255, 255, 255, 0.87);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 75%;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+
+.toolbar-spacer {
+  padding: 0 10px; }
+
+.toolbar-spacer-small {
+  padding: 0 4px; }
+
+.toolbar-flex {
+  flex: 1 1 auto; }
+
+.app-content {
+  padding: 20px; }
+
+.app-content md-card {
+  margin: 20px; }
+
+.app-sidenav {
+  padding: 10px;
+  min-width: 100px; }
+
+.app-content md-checkbox {
+  margin: 10px; }
+
+.app-toolbar-filler {
+  flex: 1 1 auto; }
+
+.app-toolbar-menu {
+  padding: 0 14px 0 14px;
+  color: white; }
+
+.app-icon-button {
+  box-shadow: none;
+  user-select: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: none;
+  font-weight: normal;
+  height: auto;
+  line-height: inherit;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  text-decoration: none; }
+
+/*# sourceMappingURL=vitrivr-style.css.map */

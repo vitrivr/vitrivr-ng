@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
-var queries_service_1 = require("./services/queries/queries.service");
+var queries_service_1 = require("./core/queries/queries.service");
 var AppComponent = (function () {
     /**
      * Default constructor. Subscribe for PING messages at the CineastAPI.
