@@ -1,41 +1,91 @@
-$font-stack:  Arial, Helvetica, sans-serif;
+$font-stack: "Roboto", Arial, sans-serif;
 
 body {
   font-family: $font-stack;
-  font-size: 100%;
+  font-size: 12px;
 }
 
 h1 {
-  color: #369;
   font-family: $font-stack;
-  font-size: 250%;
+  font-size: 34px;
+}
+
+h2.inverse {
+  color: rgba(255, 255, 255, 0.87);
 }
 
 h2 {
-  color: rgba(255, 255, 255, 0.87);
   font-family: $font-stack;
-  font-size: 150%;
+  font-size: 28px;
+}
+
+h2.inverse {
+  color: rgba(255, 255, 255, 0.87);
 }
 
 
 h3 {
-  color: rgba(255, 255, 255, 0.87);
   font-family: $font-stack;
-  font-size: 100%;
+  font-size: 22px;
   font-weight:bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-h4 {
+h3.inverse {
   color: rgba(255, 255, 255, 0.87);
+}
+
+h4 {
   font-family: $font-stack;
-  font-size: 75%;
+  font-size: 16px;
   font-style: italic;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+h4.inverse {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+
+.flex-container {
+  display: flex;
+}
+
+.flex-container.row {
+  flex-direction: row;
+}
+
+.flex-container.column {
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.text-muted {
+  font-style: italic;
+  color: #BABABA;
+}
+
+
+span.label {
+  font-family: $font-stack;
+  font-size:12px;
+  font-weight: bold;
+}
+
+
+.flexbar {
+  display:flex;
+  justify-content: space-between;
+  margin: 2px 8px;
+}
+
+div.weight-distribution {
+  display:flex;
+  min-width: 200px;
 }
 
 .toolbar-spacer {
@@ -58,9 +108,17 @@ h4 {
   margin: 20px;
 }
 
-.app-sidenav {
+.vitrivr-sidenav {
   padding: 10px;
   min-width: 100px;
+}
+
+.vitrivr-sidenav.left {
+  margin-right:10px;
+}
+
+.vitrivr-sidenav.right {
+  margin-left:10px;
 }
 
 .app-content md-checkbox {

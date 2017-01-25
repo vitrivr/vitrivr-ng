@@ -1,34 +1,60 @@
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 100%; }
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px; }
 
 h1 {
-  color: #369;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 250%; }
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 34px; }
+
+h2.inverse {
+  color: rgba(255, 255, 255, 0.87); }
 
 h2 {
-  color: rgba(255, 255, 255, 0.87);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 150%; }
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 28px; }
+
+h2.inverse {
+  color: rgba(255, 255, 255, 0.87); }
 
 h3 {
-  color: rgba(255, 255, 255, 0.87);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 100%;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 22px;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; }
 
+h3.inverse {
+  color: rgba(255, 255, 255, 0.87); }
+
 h4 {
-  color: rgba(255, 255, 255, 0.87);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 75%;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 16px;
   font-style: italic;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; }
+
+h4.inverse {
+  color: rgba(255, 255, 255, 0.87); }
+
+.text-muted {
+  font-style: italic;
+  color: #BABABA; }
+
+span.label {
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold; }
+
+.flexbar {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px 8px; }
+
+div.weight-distribution {
+  display: flex;
+  min-width: 200px; }
 
 .toolbar-spacer {
   padding: 0 10px; }
@@ -45,9 +71,15 @@ h4 {
 .app-content md-card {
   margin: 20px; }
 
-.app-sidenav {
+.vitrivr-sidenav {
   padding: 10px;
   min-width: 100px; }
+
+.vitrivr-sidenav.left {
+  margin-right: 10px; }
+
+.vitrivr-sidenav.right {
+  margin-left: 10px; }
 
 .app-content md-checkbox {
   margin: 10px; }
