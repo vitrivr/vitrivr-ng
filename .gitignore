@@ -8,3 +8,6 @@ tmp
 .idea
 .sass-cache/
 npm-debug.log
+
+app/**/*.js
+app/**/*.map
