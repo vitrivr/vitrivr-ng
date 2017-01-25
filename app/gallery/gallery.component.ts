@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {MediaObjectScoreContainer} from "../core/queries/media-object-score-container.model";
 import {QueryService} from "../core/queries/queries.service";
+import {ConfigService} from "../core/config.service";
 
 @Component({
     moduleId: module.id,
@@ -21,7 +22,7 @@ export class GalleryComponent {
      * @param _config
      * @param _queryService
      */
-    constructor(private _queryService : QueryService) {
+    constructor(private _queryService : QueryService, private _config: ConfigService) {
         _queryService.observable()
             .filter(msg => (msg == "UPDATED"))
             .subscribe((msg) => this.onQueryStateChange());
@@ -33,7 +34,7 @@ export class GalleryComponent {
      */
     public onQueryStateChange() {
         let cache : MediaObjectScoreContainer[] = [];
-        this._queryService.similarities.forEach(function(value : MediaObjectScoreContainer, key : string) {
+        this._queryService.results.forEach(function(value : MediaObjectScoreContainer, key : string) {
             if (value.show()) cache.push(value)
         });
         if (cache.length > 1) {

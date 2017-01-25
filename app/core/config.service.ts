@@ -10,7 +10,7 @@ export class ConfigService {
 
     /** BEGIN:  Publicly exposed configuration values. */
 
-    public readonly host_preview = "http://gasser-hauser.internet-box.ch/vitrivr";
+    public readonly host_preview = "http://gasser-hauser.internet-box.ch/vitrivr/thumbnails";
     public readonly host_object = "http://gasser-hauser.internet-box.ch/vitrivr/Video/";
     public readonly endpoint_http = this.protocol_http + this.host + "/" + this.path + "/" + this.version + "/";
     public readonly endpoint_ws = this.protocol_ws + this.host + "/" + this.path + "/" + this.version + "/";

@@ -1,9 +1,5 @@
 <div>
     <md-toolbar color="primary">
-        <button class="app-icon-button" (click)="sidenav.toggle()">
-            <i class="material-icons app-toolbar-menu">menu</i>
-        </button>
-
         Vitrivr NEXT
 
         <span class="app-toolbar-filler"></span>
@@ -15,9 +11,20 @@
     </div>
 
     <md-sidenav-container #sidenavcontainer fullscreen style="margin-top:75px;">
-        <md-sidenav #sidenav mode="side" opened="true" class="app-sidenav" style="border-right: 2px solid #cccccc;">
+        <md-sidenav #querysidenav mode="side" opened="true" align="start" class="vitrivr-sidenav left">
             <research></research>
         </md-sidenav>
-        <gallery></gallery>
+        <div class="flexbar">
+            <button md-raised-button (click)="querysidenav.toggle()" color="warn"><md-icon>search</md-icon></button>
+            <button md-raised-button (click)="featuressidenav.toggle()" color="warn"><md-icon>storage</md-icon></button>
+        </div>
+
+        <gallery>
+
+        </gallery>
+
+        <md-sidenav #featuressidenav mode="side" opened="false" align="end" class="vitrivr-sidenav right">
+            <features></features>
+        </md-sidenav>
     </md-sidenav-container>
 </div>

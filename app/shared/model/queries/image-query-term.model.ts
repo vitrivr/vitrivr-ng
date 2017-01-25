@@ -12,13 +12,13 @@ export class ImageQueryTerm implements QueryTermInterface {
                 this.categories = ['globalcolor'];
                 break;
             case 1:
-                this.categories = ['globalcolor', 'localcolor'];
+                this.categories = ['globalcolor', 'edge'];
                 break;
             case 3:
                 this.categories = ['globalcolor', 'localcolor', 'edge'];
                 break;
             case 4:
-                this.categories = ['poi'];
+                this.categories = ['globalcolor', 'localcolor', 'localfeatures', 'edge'];
                 break;
             default:
                 this.categories = ['globalcolor'];

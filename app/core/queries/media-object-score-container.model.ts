@@ -3,6 +3,7 @@ import {Similarity} from "../../shared/model/media/similarity.model";
 import {MediaObject} from "../../shared/model/media/media-object.model";
 import {CompoundScoreContainer} from "./compound-score-container.model";
 import {SegmentScoreContainer} from "./segment-score-container.model";
+import {Feature} from "../../shared/model/features/feature.model";
 /**
  * The MediaObjectScoreContainer is a CompoundScoreContainer for MediaObjects. It is associated with
  * a single MediaObject (e.g. a video, audio or 3d-model file) and holds the score for that object. That
@@ -35,7 +36,6 @@ export class MediaObjectScoreContainer extends CompoundScoreContainer {
         return this.segmentScores.size;
     }
 
-
     /**
      * Getter for representativeSegmentId.
      *
@@ -53,7 +53,7 @@ export class MediaObjectScoreContainer extends CompoundScoreContainer {
      * @param segment MediaSegment to add.
      */
     public addMediaSegment(segment : MediaSegment) {
-        if (!this.segmentScores.has(segment.segmentId)) this.segmentScores.set(segment.segmentId, new SegmentScoreContainer());
+        if (!this.segmentScores.has(segment.segmentId))  this.segmentScores.set(segment.segmentId, new SegmentScoreContainer());
         this.segmentScores.get(segment.segmentId).mediaSegment = segment;
     }
 
@@ -62,29 +62,29 @@ export class MediaObjectScoreContainer extends CompoundScoreContainer {
      * @param category
      * @param similarity
      */
-    public addSimilarity(category : string, similarity : Similarity) {
+    public addSimilarity(category : Feature, similarity : Similarity) {
         if (!this.segmentScores.has(similarity.key)) this.segmentScores.set(similarity.key, new SegmentScoreContainer());
         this.segmentScores.get(similarity.key).addSimilarity(category, similarity);
-        this.update();
     }
 
     /**
-     * Updates the weights of this MediaObjectScoreContainer. Currently, the highest weight
+     * Updates the features of this MediaObjectScoreContainer. Currently, the highest weight
      * of the hosted segments is used as weight!
      *
      * TODO: Check if maybe mean value would be better suited.
      *
-     * @param weights
+     * @param features
      */
-    public update(weights? :  Map<string, number>) {
+    public update() {
         this.score = 0;
-        this.segmentScores.forEach(function(value : SegmentScoreContainer, key: string) {
+        this.segmentScores.forEach((value : SegmentScoreContainer, key: string) => {
+            value.update();
             let score = value.getScore();
             if (this.score < score) {
                 this.score = score;
                 this.representativeSegmentId = key;
             }
-        }.bind(this))
+        });
     }
 
     /**
@@ -94,6 +94,6 @@ export class MediaObjectScoreContainer extends CompoundScoreContainer {
      * @returns {boolean} true if it can be displayed, false otherwise.
      */
     public show() : boolean {
-        return this.mediaObject != undefined && this.segmentScores.size > 0;
+        return this.mediaObject != undefined && this.representativeSegmentId != undefined;
     }
 }

@@ -10,9 +10,10 @@ import {GalleryModule} from "./gallery/gallery.module";
 import {ResearchModule} from "./research/research.module";
 import {PingComponent} from "./toolbar/ping.component";
 import {CoreModule} from "./core/core.module";
+import {FeaturesModule} from "./features/features.module";
 
 @NgModule({
-  imports:      [ BrowserModule, FormsModule,  MaterialModule.forRoot(), GalleryModule, ResearchModule, CoreModule ],
+  imports:      [ BrowserModule, FormsModule,  MaterialModule.forRoot(), GalleryModule, ResearchModule, FeaturesModule, CoreModule ],
   declarations: [ AppComponent, PingComponent ],
   providers:    [ ],
   bootstrap:    [ AppComponent ]

@@ -1,4 +1,5 @@
 import {Similarity} from "../../shared/model/media/similarity.model";
+import {Feature} from "../../shared/model/features/feature.model";
 /**
  * This class defines an abstract container for compound scores, i.e. scores that are obtained as a result of multiple
  * sub-scores. It defines some basic methods that can be invoked for such a CompoundScoreContainer.
@@ -21,14 +22,14 @@ export abstract class CompoundScoreContainer {
      * @param category Category for which to add the similarity value.
      * @param similarity Similarity value
      */
-    public abstract addSimilarity(category : string, similarity : Similarity) : void;
+    public abstract addSimilarity(category : Feature, similarity : Similarity) : void;
 
 
     /**
      * Can be used to update the score given a list of of weights. The weight are used to
      * weigh the scores based on the
      */
-    public abstract update(weights? :  Map<string, number>) : void;
+    public abstract update() : void;
 
     /**
      * Getter for the container's score.
