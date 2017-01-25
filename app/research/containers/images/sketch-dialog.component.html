@@ -1,11 +1,11 @@
 <md-toolbar color="primary">
     <md-icon [(colorPicker)]="color" [cpPosition]="'bottom'" [style.color]="color" [cpPositionOffset]="'50%'" [cpPositionRelativeToArrow]="true" (colorPickerChange)="onColorChange($event)">palette</md-icon>
-    <span class="toolbar-spacer"></span>
+    <span class="spacer-small"></span>
 
     <md-icon>line_weight</md-icon>
-    <span class="toolbar-spacer-small"></span>
+    <span class="spacer-tiny"></span>
     <md-slider min="1" max="100" step="1" value="1" [style.min-width]="'100px'" (change)="onLineSizeChange($event)" tickInterval="auto"></md-slider>
-    <span class="toolbar-flex"></span>
+    <span class="spacer-flex"></span>
 
     <button md-icon-button (click)="dialogRef.close(sketchpad.getImageBase64())">
         <md-icon>save</md-icon>

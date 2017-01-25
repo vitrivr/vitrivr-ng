@@ -10,9 +10,10 @@ import {Feature} from "../shared/model/features/feature.model";
     template: ` 
         <h3>Features and weights</h3>
         <div *ngIf="features.length > 0">
-            <div *ngFor="let feature of features" [style.color]="feature.color">
+            <div *ngFor="let feature of features" class="slider-group" [style.color]="feature.color">
                 <span class="label">{{feature.name}}</span>
-                <span><md-slider min="0" max="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></md-slider><span class="label"> {{feature.weight}}%</span></span>
+                <md-slider min="0" max="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></md-slider>
+                <span class="label"> {{feature.weight}}%</span>
             </div>
             <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
         </div>

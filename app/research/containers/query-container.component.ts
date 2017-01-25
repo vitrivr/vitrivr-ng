@@ -6,9 +6,8 @@ import {QueryContainerInterface} from "../../shared/model/queries/interfaces/que
     template:`
         <md-card style="margin:10px;padding:10px;">
             <md-card-header>
-                 <button class="app-icon-button" (click)="remove()"><md-icon>close</md-icon></button>
-                 <div style="width:90%;"></div>
-                 <button class="app-icon-button" (click)="remove()"><md-icon>close</md-icon></button>
+                 <div class="spacer-flex"></div>
+                 <button class="icon-button" (click)="remove()"><md-icon>close</md-icon></button>
             </md-card-header>
             <md-card-content>
                 <qt-image *ngIf="hasImage()" [imageTerm]="hasImage() ? container.imageQueryTerm : null"></qt-image>

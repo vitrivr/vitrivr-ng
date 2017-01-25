@@ -7,7 +7,13 @@ import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.mod
     selector: 'qt-image',
     template:`
         <img #previewimg style="width:220px; height:220px; border:solid 1px;" (click)="edit()"/>
-        <md-slider min="1" max="4" step="1" [(ngModel)]="sliderSetting" (change)="sliderChanged($event)"></md-slider>
+        <div style="display:flex; align-items: center; justify-content: center;">
+            <md-icon>brush</md-icon>
+            <div class="toolbar-spacer-small"></div>
+            <md-slider min="0" max="4" step="1" value="2" [(ngModel)]="sliderSetting" (change)="sliderChanged($event)"></md-slider>
+            <div class="toolbar-spacer-small"></div>
+            <md-icon>insert_photo</md-icon>
+        </div>
     `
 })
 
@@ -16,7 +22,7 @@ export class ImageQueryTermComponent {
 
     @Input() imageTerm: ImageQueryTerm;
 
-    private sliderSetting : number;
+    private sliderSetting : number = 2;
 
     constructor(public dialog: MdDialog) {}
 

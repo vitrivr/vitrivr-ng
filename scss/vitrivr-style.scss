@@ -88,25 +88,11 @@ div.weight-distribution {
   min-width: 200px;
 }
 
-.toolbar-spacer {
-  padding: 0 10px;
+.slider-group {
+  display:flex; align-items: center; justify-content: space-between;
 }
 
-.toolbar-spacer-small {
-  padding: 0 4px;
-}
-
-.toolbar-flex  {
-  flex: 1 1 auto;
-}
-
-.app-content {
-  padding: 20px;
-}
-
-.app-content md-card {
-  margin: 20px;
-}
+ /* Defines general appearance of app: toolbar and sidenavs. */
 
 .vitrivr-sidenav {
   padding: 10px;
@@ -121,20 +107,31 @@ div.weight-distribution {
   margin-left:10px;
 }
 
-.app-content md-checkbox {
-  margin: 10px;
-}
-
-.app-toolbar-filler {
-  flex: 1 1 auto;
-}
-
-.app-toolbar-menu {
+.vitrivr-toolbar-menu {
   padding: 0 14px 0 14px;
   color: white;
 }
 
-.app-icon-button {
+/* Defines some spacer classes that can be used in flexboxes etc. */
+
+.spacer-medium {
+  padding: 0 15px;
+}
+
+.spacer-small {
+  padding: 0 10px;
+}
+
+.spacer-tiny {
+  padding: 0 5px;
+}
+
+.spacer-flex  {
+  flex: 1 1 auto;
+}
+
+/* Simple button only consisting of an icon. */
+.icon-button {
   box-shadow: none;
   user-select: none;
   background: none;
