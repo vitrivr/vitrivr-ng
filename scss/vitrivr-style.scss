@@ -1,4 +1,53 @@
-$font-stack: "Roboto", Arial, sans-serif;
+@import './vitrivr-theme';
+@import './roboto-font';
+@import './material-icons';
+
+$font-stack: 'Roboto', Arial, sans-serif;
+
+
+/* General color definitions. */
+$color-muted: #BABABA;
+.md-primary-50 {
+  color: nth(nth($vitrivr-app-primary, 1), 2);
+}
+
+.md-primary-100 {
+  color: nth(nth($vitrivr-app-primary, 2), 2);
+}
+
+.md-primary-150 {
+   color: nth(nth($vitrivr-app-primary, 3), 2);
+}
+
+.md-primary-200 {
+  color: nth(nth($vitrivr-app-primary, 4), 2);
+}
+
+.md-primary-250 {
+  color: nth(nth($vitrivr-app-primary, 5), 2);
+}
+
+.md-accent-50 {
+  color: nth(nth($vitrivr-app-accent, 1), 2);
+}
+
+.md-accent-100 {
+  color: nth(nth($vitrivr-app-accent, 2), 2);
+}
+
+.md-accent-150 {
+  color: nth(nth($vitrivr-app-accent, 3), 2);
+}
+
+.md-accent-200 {
+  color: nth(nth($vitrivr-app-accent, 4), 2);
+}
+
+.md-accent-250 {
+  color: nth(nth($vitrivr-app-accent, 5), 2);
+}
+
+/* */
 
 body {
   font-family: $font-stack;
@@ -66,7 +115,11 @@ h4.inverse {
 
 .text-muted {
   font-style: italic;
-  color: #BABABA;
+  color: $color-muted;
+}
+
+.muted {
+  color: $color-muted
 }
 
 
