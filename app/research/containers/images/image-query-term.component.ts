@@ -8,11 +8,11 @@ import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.mod
     template:`
         <img #previewimg style="width:220px; height:220px; border:solid 1px;" (click)="edit()"/>
         <div style="display:flex; align-items: center; justify-content: center;">
-            <md-icon>brush</md-icon>
+            <md-icon class="muted">brush</md-icon>
             <div class="toolbar-spacer-small"></div>
             <md-slider min="0" max="4" step="1" value="2" [(ngModel)]="sliderSetting" (change)="sliderChanged($event)"></md-slider>
             <div class="toolbar-spacer-small"></div>
-            <md-icon>insert_photo</md-icon>
+            <md-icon class="muted">insert_photo</md-icon>
         </div>
     `
 })

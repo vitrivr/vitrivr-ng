@@ -9,7 +9,7 @@
 
     <button md-raised-button style="width:100%" (click)="search()" [color]="'accent'"><md-icon>search</md-icon>Search</button>
 
-    <query-container *ngFor="let container of containers" [container]=container [inList]="containers"></query-container>
+    <query-container *ngFor="let container of containers" [containerModel]=container [inList]="containers"></query-container>
 
     <md-menu #addTermMenu>
         <button md-menu-item (click)="addImageQueryTermComponent()"> Image </button>

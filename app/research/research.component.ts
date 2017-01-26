@@ -25,12 +25,10 @@ export class ResearchComponent  {
     constructor(private _queryTermService: QueryService, private _dialog: MdDialog) { }
 
     /**
-     *
+     * Adds a new QueryContainer to the list.
      */
-    addQueryTermContainer() {
-        let term = new QueryContainer();
-        term.imageQueryTerm = new ImageQueryTerm();
-        this.containers.push(term)
+    private addQueryTermContainer() {
+        this.containers.push(new QueryContainer())
     }
 
     /**
