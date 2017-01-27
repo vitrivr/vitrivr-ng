@@ -72,10 +72,19 @@ export abstract class AbstractWebsocketService {
      * Sends an object to the underlying WebSocket stream. That object
      * gets serialized to JSON before it's being sent.
      *
+     * Important: All properties that start with an _ are filtered out
+     * when stringified.
+     *
      * @param object Object to send.
      */
     public send(object: any) : boolean {
-        return this.sendstr(JSON.stringify(object));
+        return this.sendstr(JSON.stringify(object, (key, value) => {
+            if (key.startsWith("_")) {
+                return undefined;
+            } else {
+                return value
+            }
+        }));
     }
 
     /**

@@ -5,7 +5,6 @@ import {QueryService} from "../core/queries/queries.service";
 import {MediaType} from "../shared/model/media/media-object.model";
 import {QueryContainerInterface} from "../shared/model/queries/interfaces/query-container.interface";
 import {QueryContainer} from "../shared/model/queries/query-container.model";
-import {ImageQueryTerm} from "../shared/model/queries/image-query-term.model";
 
 @Component({
     moduleId: module.id,

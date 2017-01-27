@@ -1,10 +1,11 @@
-import {ImageQueryTerm} from "../image-query-term.model";
-import {AudioQueryTerm} from "../audio-query-term.model";
+import {QueryTermInterface, QueryTermType} from "./query-term.interface";
 
 /**
  *
  */
 export interface QueryContainerInterface {
-    imageQueryTerm :  ImageQueryTerm;
-    audioQueryTerm : AudioQueryTerm;
+    addTerm(type: QueryTermType): boolean;
+    removeTerm(type: QueryTermType): boolean;
+    hasTerm(type: QueryTermType): boolean;
+    getTerm(type: QueryTermType): QueryTermInterface;
 }

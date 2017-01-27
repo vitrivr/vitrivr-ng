@@ -40,7 +40,7 @@ export class ImageQueryTermComponent {
         dialogRef.afterClosed().subscribe(result => {
             if (result != undefined) {
                 this.previewimg.nativeElement.src = result;
-                this.imageTerm.image = result;
+                this.imageTerm.data = result;
             }
         });
     }

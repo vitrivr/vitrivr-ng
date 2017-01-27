@@ -1,10 +1,15 @@
-import {QueryTermInterface} from "./interfaces/query-term.interface";
+import {QueryTermInterface, QueryTermType} from "./interfaces/query-term.interface";
 
 
 export class ImageQueryTerm implements QueryTermInterface {
-    public image : String;
-    public weight : number;
+
+    /** Base64 encoded image data. */
+    public data : string;
+
+    /** The active categories for the query-term. */
     public categories : string[] = ['globalcolor', 'localcolor'];
+
+    public readonly type: QueryTermType = "IMAGE";
 
     /**
      *

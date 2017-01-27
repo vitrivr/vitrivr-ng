@@ -12,6 +12,7 @@ import {ObjectQueryResult} from "../../shared/model/messages/interfaces/query-re
 import {QueryContainer} from "../../shared/model/queries/query-container.model";
 import {Query} from "../../shared/model/messages/query.model";
 import {Feature} from "../../shared/model/features/feature.model";
+import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
 
 
 /** Types of changes that can be emitted from the QueryService.
@@ -63,7 +64,7 @@ export class QueryService {
      * @param containers
      * @returns {Query}
      */
-    public buildQuery(types: MediaType[], containers: QueryContainer[]) {
+    public buildQuery(types: MediaType[], containers: QueryContainerInterface[]) {
         let query = new Query();
         for (let container of containers) {
             query.containers.push(container);

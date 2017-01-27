@@ -1,12 +1,21 @@
-import {QueryTermInterface} from "./interfaces/query-term.interface";
+import {QueryTermInterface, QueryTermType} from "./interfaces/query-term.interface";
 
 
 export class AudioQueryTerm implements QueryTermInterface {
+    /** Base64 encoded audio data. */
+    public data: string;
 
-    /** */
-    public audio : String;
-    public weight : number;
+    /**
+     *
+     * @type {Array}
+     */
     public categories : string[] = [];
+
+    /**
+     *
+     * @type {string}
+     */
+    public readonly type: QueryTermType = "AUDIO";
 
     /**
      *
