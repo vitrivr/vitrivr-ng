@@ -54,7 +54,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      *
      * For 44100Hz sample rate its usually {44100 * channels} entries, i.e. 44100 entries for mono audio.
      */
-    private recordingBuffer : Float32Array[] = [];
+    private recordingBuffer : AudioBuffer;
 
     /** Flag indicating whether any recording is currently taking place. */
     private recording: boolean = false;
@@ -78,47 +78,37 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      * the media-stream.
      */
     ngOnDestroy() {
-        if (this.isRecording()) this.stop();
+        this.stop();
         this.stream.getTracks().forEach((track) => {
             track.stop()
         });
-        this.recordingBuffer = [];
     }
 
     /**
-     * Starts recording of audio by connecting the MediaStreamAudioSourceNode to the
-     * ScriptProcessorNode (SRC -> PP). The actual recording is done in the process()
-     * method.
+     * Starts recording of audio. The actual audio recording is done in the process() method.
      */
     public record(): void {
         if (this.audiocontext == undefined) return;
         if (!this.recording && !this.playing) {
-            this.recordingBuffer = [];
-            this.analyser.connect(this.processor);
-            this.processor.connect(this.audiocontext.destination);
+            this.recordingBuffer = null;
+            this.wireRecording();
             this.recording = true;
         }
     }
 
     /**
-     * Starts playback of previously recorded audio (if defined).
+     * Starts playback of previously recorded audio (if set).
      */
     public play(): void {
         if (this.audiocontext == undefined) return;
-        if (!this.recording && !this.playing) {
-            this.playing = true
-            let audioBuffer = this.audiocontext.createBuffer(1, this.recordingBuffer.length * 44100, 44100);
-            this.recordingBuffer.forEach((array, f) => {
-                array.forEach((sample, s) => {
-                    audioBuffer.getChannelData(0)[f*array.length + s] = sample;
-                });
-            });
-
-            this.bufferSource.buffer = audioBuffer;
-            this.bufferSource.connect(this.audiocontext.destination);
+        if (!this.recording && !this.playing && this.recordingBuffer) {
+            this.playing = true;
+            this.bufferSource = this.audiocontext.createBufferSource();
+            this.bufferSource.buffer = this.recordingBuffer;
+            this.wirePlayback();
             this.bufferSource.start();
             this.bufferSource.onended = () => {
-                this.bufferSource.disconnect(this.audiocontext.destination);
+                this.wireIdle();
                 this.playing = false;
             };
         }
@@ -130,14 +120,16 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
     public stop(): void {
         if (this.audiocontext == undefined) return;
         if (this.recording) {
-            this.processor.disconnect(this.audiocontext.destination);
-            this.analyser.disconnect(this.processor);
             this.recording = false;
         }
 
         if (this.playing) {
             this.bufferSource.stop();
+            this.bufferSource = null;
         }
+
+        /* Wire to Idle mode. */
+        this.wireIdle();
     }
 
     /**
@@ -160,11 +152,88 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Returns the duration of the currently recorded audio-material.
+     * If no material has been recorded, the value will be zero.
+     *
+     * @return Duration of the recorded material.
+     */
+    public duration(): number {
+        if (this.recordingBuffer) {
+            return this.recordingBuffer.duration;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Returns the length of the currently recorded audio-material. If no material has been recorded,
+     * the value will be zero.
+     *
+     * @return Duration of the recorded material.
+     */
+    public length(): number {
+        if (this.recordingBuffer) {
+            return this.recordingBuffer.length;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Returns the sampleRate of the currently recorded audio-material. If no material
+     * has been recorded, the value will be zero.
+     *
+     * @return Duration of the recorded material.
+     */
+    public sampleRate(): number {
+        if (this.recordingBuffer) {
+            return this.recordingBuffer.sampleRate;
+        } else {
+            return 0;
+        }
+    }
+    /**
+     * Returns the number of channels for of the currently recorded audio-material.
+     * If no material has been recorded, the value will be zero.
+     *
+     * @return Duration of the recorded material.
+     */
+    public channels(): number {
+        if (this.recordingBuffer) {
+            return this.recordingBuffer.numberOfChannels;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     *
+     * @returns {AudioBuffer}
+     */
+    public data(): AudioBuffer {
+        return this.recordingBuffer;
+    }
+
+    /**
      * Indicates whether the AudioRecordingComponent supports recording. This
      * mainly depends on the browser's capabilities.
      */
     public supportsRecording() {
         return this.audiocontext != undefined && this.stream != undefined;
+    }
+
+    /**
+     * Tries to decode binary data from an array buffer and load it as
+     * AudioStream. The loaded audio will be treated like recorded audio.
+     *
+     * @param data
+     */
+    public loadAudio(data: ArrayBuffer) {
+        if (this.audiocontext !== undefined && !this.recording) {
+            this.audiocontext.decodeAudioData(data, (buffer) => {
+                this.recordingBuffer = buffer;
+            });
+        }
     }
 
     /**
@@ -185,6 +254,48 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
         console.log(error);
     }
 
+    /**
+     * Wires the AudioNodes for audio recording.
+     *
+     * (SRC -> AN -> SP -> DST)
+     */
+    private wireRecording() {
+        this.unwire();
+        this.source.connect(this.analyser);
+        this.analyser.connect(this.processor);
+        this.processor.connect(this.audiocontext.destination);
+    }
+
+    /**
+     * Wires the AudioNodes for audio playback.
+     *
+     * (BSRC -> AN -> DST)
+     */
+    private wirePlayback() {
+        this.unwire();
+        this.bufferSource.connect(this.analyser);
+        this.analyser.connect(this.audiocontext.destination);
+    }
+
+    /**
+     * Wires the AudioNodes for Idle mode (no recording, no playback)
+     *
+     * (SRC -> AN)
+     */
+    private wireIdle() {
+        this.unwire();
+        this.source.connect(this.analyser);
+    }
+
+    /**
+     * Un-wires all AudioNodes.
+     */
+    private unwire() {
+        if (this.source) this.source.disconnect();
+        if (this.analyser) this.analyser.disconnect();
+        if (this.processor) this.processor.disconnect();
+        if (this.bufferSource) this.bufferSource.disconnect();
+    }
 
     /**
      * Does the setup of all the necessary audio-nodes. A MediaStreamAudioSourceNode is used to
@@ -199,14 +310,16 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
             this.source = this.audiocontext.createMediaStreamSource(this.stream);
             this.analyser = this.audiocontext.createAnalyser();
             this.processor = this.audiocontext.createScriptProcessor();
-            this.processor.onaudioprocess = (event) => this.process(event);
+            this.processor.onaudioprocess = (event) => this.process(event.inputBuffer);
             this.bufferSource = this.audiocontext.createBufferSource();
-            this.source.connect(this.analyser);
 
             /* Configure analyser and prepare data-structures needed for visualization. */
             this.analyser.fftSize = 2048;
             this.frequencyBinCount = this.analyser.frequencyBinCount;
             this.visualizationDataArray = new Uint8Array(this.frequencyBinCount);
+
+            /* Wire for idle mode. */
+            this.wireIdle();
         }
     }
 
@@ -218,26 +331,26 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      * During recording, this method reads the data from the events inputBuffer, averages the channels
      * and saves the (1-channel) output to the recordingBuffer.
      *
-     * @param event
+     * @param input
      */
-    private process(event: AudioProcessingEvent) {
-        if (this.recording) {
-            let inputBuffer = event.inputBuffer;
-            let outputBuffer = new Float32Array(event.inputBuffer.length);
-            for (let channel = 0; channel < inputBuffer.numberOfChannels; channel++ ) {
-                inputBuffer.getChannelData(channel).forEach((value, index) => {
-                    if (channel == 0) {
-                        outputBuffer[index] = value/inputBuffer.numberOfChannels;
-                    } else {
-                        outputBuffer[index] += value/inputBuffer.numberOfChannels;
-                    }
-                })
-            }
-
-            this.recordingBuffer.push(outputBuffer);
+    private process(input: AudioBuffer) {
+        let buffer: AudioBuffer;
+        if (this.recordingBuffer == null) {
+            buffer = this.audiocontext.createBuffer(input.numberOfChannels, input.length, input.sampleRate);
+        } else {
+            buffer = this.audiocontext.createBuffer(input.numberOfChannels, this.recordingBuffer.length + input.length, input.sampleRate);
         }
 
-        console.log("Audio is being processed...");
+        for (let c = 0;c<input.numberOfChannels;c++) {
+            if (this.recordingBuffer != null) {
+                buffer.copyToChannel(this.recordingBuffer.getChannelData(c), c, 0);
+                buffer.copyToChannel(input.getChannelData(c), c, this.recordingBuffer.length);
+            } else {
+                buffer.copyToChannel(input.getChannelData(c), c, 0);
+            }
+        }
+
+        this.recordingBuffer = buffer;
     }
 
     /**
@@ -253,6 +366,10 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
         let barWidth = (context.canvas.width / this.frequencyBinCount) * 2.5;
         let barHeight : number;
         let x = 0;
+        let color = '';
+        if (this.playing) {
+
+        }
 
         this.analyser.getByteFrequencyData(this.visualizationDataArray);
 
@@ -261,7 +378,9 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
 
         for(let i = 0; i < this.frequencyBinCount; i++) {
             barHeight = this.visualizationDataArray[i];
-            context.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
+            if (this.playing) context.fillStyle = 'rgb(50,' + (barHeight+100) + ',50)';
+            if (this.recording) context.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
+            if (!this.playing && !this.recording) context.fillStyle = 'rgb(50,50,' + (barHeight+100) + ')';
             context.fillRect(x,context.canvas.height-barHeight/2,barWidth,barHeight/2);
             x += barWidth + 1;
         }
