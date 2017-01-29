@@ -4,7 +4,7 @@ import {AudioRecorderComponent} from "../../../shared/components/audio/audio-rec
 import {Observable} from "rxjs/Observable";
 import {Subscription} from "rxjs/Subscription";
 import {TimeFormatterUtil} from "../../../shared/util/TimeFormatterUtil";
-import {WaveAudioUtil} from "../../../shared/util/AudioUtil";
+import {WaveAudioUtil} from "../../../shared/util/WaveAudioUtil";
 
 
 @Component({
