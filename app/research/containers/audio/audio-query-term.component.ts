@@ -2,13 +2,12 @@ import {Component, ViewChild, Input} from "@angular/core";
 
 import {MdDialog} from '@angular/material';
 import {AudioRecorderDialogComponent} from "./audio-recorder-dialog.component";
+import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.model";
 
 @Component({
     selector: 'qt-audio',
     template:`
-        <audio controls (click)="edit()" style="width:90%;">
-            <source src="{{previewimg}}" type="audio/ogg">
-            Your browser does not support the audio element.
+        <audio #player controls (click)="edit()" style="width:90%;">
         </audio>
         
         <button (click)="edit()" class="icon-button">
@@ -27,7 +26,9 @@ import {AudioRecorderDialogComponent} from "./audio-recorder-dialog.component";
 })
 
 export class AudioQueryTermComponent {
-    @ViewChild('previewimg') private previewimg: any;
+    @ViewChild('player') private player: any;
+
+    @Input() audioTerm: AudioQueryTerm;
 
     private sliderSetting : number = 2;
 
@@ -36,7 +37,12 @@ export class AudioQueryTermComponent {
     edit() {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent);
         dialogRef.afterClosed().subscribe(result => {
-
+            this.player.nativeElement.src = URL.createObjectURL(result);
+            let reader = new FileReader();
+            reader.readAsDataURL(result);
+            reader.onloadend = () => {
+                this.audioTerm.data = reader.result;
+            }
         });
     }
 }
