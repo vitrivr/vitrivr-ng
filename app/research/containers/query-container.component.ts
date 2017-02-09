@@ -22,7 +22,7 @@ import {QueryTermType, QueryTermInterface} from "../../shared/model/queries/inte
             </md-card-header>
             <md-card-content>
                 <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
-                <qt-audio *ngIf="containerModel.hasTerm('AUDIO')"></qt-audio>
+                <qt-audio *ngIf="containerModel.hasTerm('AUDIO')" [audioTerm]="containerModel.getTerm('AUDIO')"></qt-audio>
             </md-card-content>
         </md-card>
     `

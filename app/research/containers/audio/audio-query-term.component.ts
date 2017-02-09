@@ -39,10 +39,10 @@ export class AudioQueryTermComponent {
         dialogRef.afterClosed().subscribe(result => {
             this.player.nativeElement.src = URL.createObjectURL(result);
             let reader = new FileReader();
-            reader.readAsDataURL(result);
             reader.onloadend = () => {
                 this.audioTerm.data = reader.result;
-            }
+            };
+            reader.readAsDataURL(result);
         });
     }
 }
