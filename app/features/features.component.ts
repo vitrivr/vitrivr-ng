@@ -54,10 +54,7 @@ export class FeaturesComponent {
      * features array to be updated and the view to be changed.
      */
     private onQueryStateChange() {
-        this.features.splice(0, this.features.length);
-        this._queryService.getFeatures().forEach((value : Feature, key : string) => {
-                this.features.push(value);
-        });
+        this.features = this._queryService.getFeatures();
     }
 
     /**

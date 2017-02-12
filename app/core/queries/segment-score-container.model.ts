@@ -28,18 +28,17 @@ export class SegmentScoreContainer extends CompoundScoreContainer {
     }
 
     /**
-     * Updates the score value by weighing the scores in the array scores by the weight
-     * associated in the features objects. If no such object was defined, all values are
-     * weighted equally.
+     * Updates the score value by multiplying the scores in the scores array by the weights
+     * of the associated feature-object. Only features in the provided list are considered.
      *
-     * @param features
+     * @param features List of features that should be used to calculate the score.
      */
-    public update() {
+    public update(features: Feature[]) {
         this.score = 0;
         let total = 0;
-        this.scores.forEach((value : number, key : Feature) => {
-            total += key.weight
-            this.score += (value * key.weight);
+        features.forEach((value: Feature) => {
+            if (this.scores.has(value)) this.score += (this.scores.get(value) * value.weight);
+            total += value.weight;
         });
         this.score /= total;
     }

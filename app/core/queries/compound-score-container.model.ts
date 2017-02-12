@@ -28,8 +28,10 @@ export abstract class CompoundScoreContainer {
     /**
      * Can be used to update the score given a list of of weights. The weight are used to
      * weigh the scores based on the
+     *
+     * @param features List of features that should be used to calculate the score.
      */
-    public abstract update() : void;
+    public abstract update(features: Feature[]) : void;
 
     /**
      * Getter for the container's score.

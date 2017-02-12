@@ -9,7 +9,6 @@ import {QueryStart} from "../../shared/model/messages/interfaces/query-start.int
 import {SegmentQueryResult} from "../../shared/model/messages/interfaces/query-result-segment.interface";
 import {SimilarityQueryResult} from "../../shared/model/messages/interfaces/query-result-similarty.interface";
 import {ObjectQueryResult} from "../../shared/model/messages/interfaces/query-result-object.interface";
-import {QueryContainer} from "../../shared/model/queries/query-container.model";
 import {Query} from "../../shared/model/messages/query.model";
 import {Feature} from "../../shared/model/features/feature.model";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
@@ -32,7 +31,7 @@ export type QueryChange = "NONE" | "STARTED" | "ENDED" | "UPDATED" | "FEATURE";
 @Injectable()
 export class QueryService {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a research are assembled. */
-    public results : Map<string,MediaObjectScoreContainer> = new Map();
+    private results : Map<string,MediaObjectScoreContainer> = new Map();
 
     /** A Map that maps segmentId's to objectId's. This is a cache-structure. */
     private segment_to_object_map : Map<string,string> = new Map();
@@ -41,7 +40,7 @@ export class QueryService {
     private queryId : string = null;
 
     /** List of all the features that are used the current query and hence known to the service. */
-    private features: Map<string,Feature> = new Map();
+    private features: Feature[] =[];
 
     /** BehaviorSubject that allows Observers to subscribe to changes emmited from the QueryService. */
     private stateSubject : BehaviorSubject<QueryChange> = new BehaviorSubject("NONE" as QueryChange);
@@ -93,6 +92,42 @@ export class QueryService {
     }
 
     /**
+     * Returns the number of available results. If this methods returns 0, no
+     * results are available.
+     *
+     * @returns {number}
+     */
+    public size() : number {
+        return this.results.size;
+    }
+
+    /**
+     * Returns the number of available results. If this methods returns 0, no
+     * results are available.
+     *
+     * @returns {number}
+     */
+    public has(objectId: string) : boolean {
+        return this.results.has(objectId);
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
+    public get(objectId: string) : MediaObjectScoreContainer {
+        return this.results.get(objectId);
+    }
+
+    /**
+     *
+     * @param callback
+     */
+    public forEach(callback: (value: MediaObjectScoreContainer, key: string) => any) {
+        this.results.forEach(callback);
+    }
+
+    /**
      * Returns an Observable that allows an Observer to be notified about
      * state changes in the QueryService (Started, Ended, Resultset updated).
      *
@@ -107,7 +142,7 @@ export class QueryService {
      *
      * @returns {Map<string, number>}
      */
-    public getFeatures() : Map<string,Feature> {
+    public getFeatures() : Feature[] {
         return this.features;
     }
 
@@ -118,7 +153,7 @@ export class QueryService {
      */
     public rerank() : void {
         this.results.forEach((value) => {
-            value.update();
+            value.update(this.features);
         });
         this.stateSubject.next("FEATURE");
         this.stateSubject.next("UPDATED");
@@ -167,7 +202,7 @@ export class QueryService {
         this.results.clear();
         this.segment_to_object_map.clear();
         this.queryId = id;
-        this.features.clear();
+        this.features = [];
         this.stateSubject.next("STARTED" as QueryChange);
     }
 
@@ -226,7 +261,7 @@ export class QueryService {
             if (objectId != undefined) {
                 if (!this.results.has(objectId)) this.results.set(objectId, new MediaObjectScoreContainer());
                 this.results.get(objectId).addSimilarity(feature, similarity);
-                this.results.get(objectId).update();
+                this.results.get(objectId).update(this.features);
             }
         }
 
@@ -256,11 +291,13 @@ export class QueryService {
      * @return Feature object for the named category.
      */
     private addFeatureForCategory(category : string) : Feature {
-        if (!this.features.has(category)) {
-            this.features.set(category, new Feature(category, category, 100, 100));
+        for (let feature of this.features) {
+            if (feature.name == category) return feature;
         }
+        let feature = new Feature(category, category, 100, 100);
+        this.features.push(feature);
         this.stateSubject.next("FEATURE");
-        return this.features.get(category);
+        return feature;
     }
 }
 
