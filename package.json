@@ -20,6 +20,7 @@
     "@angular/common": "~2.4.0",
     "@angular/compiler": "~2.4.0",
     "@angular/core": "~2.4.0",
+    "@angular/flex-layout": "^2.0.0-beta.5",
     "@angular/forms": "~2.4.0",
     "@angular/http": "~2.4.0",
     "@angular/material": "^2.0.0-beta.1",
@@ -31,19 +32,19 @@
     "core-js": "^2.4.1",
     "hammerjs": "^2.0.8",
     "npm": "^4.0.5",
-    "rxjs": "5.0.1",
+    "rxjs": "5.1.0",
     "start": "^5.1.0",
-    "systemjs": "0.19.40",
+    "systemjs": "0.20.7",
     "zone.js": "^0.7.4"
   },
   "devDependencies": {
     "@types/hammerjs": "^2.0.34",
     "@types/jasmine": "^2.5.36",
-    "@types/node": "^6.0.46",
+    "@types/node": "^7.0.5",
     "canonical-path": "0.0.2",
     "concurrently": "^3.1.0",
     "http-server": "^0.9.0",
-    "jasmine-core": "~2.4.1",
+    "jasmine-core": "~2.5.2",
     "karma": "^1.3.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-cli": "^1.0.1",
@@ -51,10 +52,10 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "lite-server": "^2.2.2",
     "lodash": "^4.16.4",
-    "protractor": "~4.0.14",
+    "protractor": "~5.1.1",
     "rimraf": "^2.5.4",
-    "tslint": "^3.15.1",
-    "typescript": "~2.0.10"
+    "tslint": "^4.4.2",
+    "typescript": "~2.1.6"
   },
   "repository": {}
 }
