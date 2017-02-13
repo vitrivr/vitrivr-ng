@@ -6,7 +6,7 @@ import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.mod
 @Component({
     selector: 'qt-image',
     template:`
-        <img #previewimg style="width:220px; height:220px; border:solid 1px;" (click)="edit()"/>
+        <img #previewimg style="width:200px; height:200px; border:solid 1px;" (click)="edit()"/>
         <div style="display:flex; align-items: center; justify-content: center;">
             <md-icon class="muted">brush</md-icon>
             <div class="toolbar-spacer-small"></div>

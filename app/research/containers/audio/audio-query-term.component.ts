@@ -7,12 +7,8 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
 @Component({
     selector: 'qt-audio',
     template:`
-        <audio #player controls (click)="edit()" style="width:90%;">
-        </audio>
-        
-        <button (click)="edit()" class="icon-button">
-            <md-icon>panorama</md-icon>
-        </button>
+        <img #previewimg style="width:200px; height:200px; border:solid 1px;" (click)="edit()"/>
+        <audio #player controls style="width:200px;"></audio>
         
         <div style="display:flex; align-items: center; justify-content: center;">
             <md-icon class="muted">brush</md-icon>
@@ -21,8 +17,6 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
             <div class="toolbar-spacer-small"></div>
             <md-icon class="muted">insert_photo</md-icon>
         </div>`
-
-
 })
 
 export class AudioQueryTermComponent {

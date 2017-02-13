@@ -1,8 +1,8 @@
 <div style="padding:10px;">
     <md-grid-list cols="4" gutterSize="15px">
-        <md-grid-tile *ngFor="let mediaobject of mediaobjects" [attr.class]="mediaobject.getSegments() > 1 ? 'card-stack' : 'card-single'">
+        <md-grid-tile *ngFor="let mediaobject of mediaobjects" [attr.class]="mediaobject.getSegments() > 1 ? 'card-stack' : 'card-single'" (click)="onTileClicked(mediaobject.mediaObject)">
             <md-grid-tile-header>{{mediaobject.mediaObject.name + " (" + mediaobject.getScorePercentage() + "%)"}}</md-grid-tile-header>
-            <img src="{{_config.host_preview}}/{{mediaobject.mediaObject.objectId}}/{{mediaobject.representativeSegmentId}}.png" [style.width]="'100%'" [style.height]="'100%'"/>
+            <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.getRepresentativeSegment().mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'"/>
         </md-grid-tile>
     </md-grid-list>
 </div>
