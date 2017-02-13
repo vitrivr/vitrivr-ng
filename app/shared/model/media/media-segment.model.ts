@@ -3,9 +3,9 @@
  * (e.g. a sequence of a video).
  */
 export interface MediaSegment {
-    objectId : string, /* FK: Used to associate with MediaType. */
     segmentId : string,
-    segmentstart : number,
-    segmentend : number,
+    objectId : string, /* FK: Used to associate with MediaObject. */
+    start : number,
+    end : number,
     segmentnumber : number
 }

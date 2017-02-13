@@ -1,20 +1,20 @@
-import {MediaSegment} from "../../shared/model/media/media-segment.model";
-import {Similarity} from "../../shared/model/media/similarity.model";
-import {MediaObject} from "../../shared/model/media/media-object.model";
-import {CompoundScoreContainer} from "./compound-score-container.model";
+
+import {ScoreContainer} from "./compound-score-container.model";
 import {SegmentScoreContainer} from "./segment-score-container.model";
-import {Feature} from "../../shared/model/features/feature.model";
+import {MediaObject} from "../../media/media-object.model";
+import {MediaSegment} from "../../media/media-segment.model";
+import {Feature} from "../feature.model";
+import {Similarity} from "../../media/similarity.model";
+import {WeightFunction} from "../weighting/weight-function.interface";
+
 /**
- * The MediaObjectScoreContainer is a CompoundScoreContainer for MediaObjects. It is associated with
+ * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects. It is associated with
  * a single MediaObject (e.g. a video, audio or 3d-model file) and holds the score for that object. That
  * score is determined by the scores of the SegmentScoreContainers hosted by a concrete instance of this class.
  */
-export class MediaObjectScoreContainer extends CompoundScoreContainer {
+export class MediaObjectScoreContainer extends ScoreContainer {
     /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
     private segmentScores : Map<string, SegmentScoreContainer> = new Map();
-
-    /** SegmentId of the segment that is representative for this MediaObject. */
-    private representativeSegmentId : string;
 
     /** Reference to the actual MediaObject this container belongst to. */
     public mediaObject? : MediaObject;
@@ -41,8 +41,14 @@ export class MediaObjectScoreContainer extends CompoundScoreContainer {
      *
      * @returns {string}
      */
-    public getRepresentativeSegmentId() : string {
-        return this.representativeSegmentId;
+    public getRepresentativeSegment() : SegmentScoreContainer {
+        let representativeSegment : SegmentScoreContainer;
+        this.segmentScores.forEach((value, key) => {
+            if (representativeSegment == undefined || representativeSegment.getScore() < value.getScore()) {
+                representativeSegment = value
+            }
+        });
+        return representativeSegment;
     }
 
     /**
@@ -68,23 +74,13 @@ export class MediaObjectScoreContainer extends CompoundScoreContainer {
     }
 
     /**
-     * Updates the features of this MediaObjectScoreContainer. Currently, the highest weight
-     * of the hosted segments is used as weight!
+     * Updates the score of this MediaObjectScoreContainer.
      *
-     * TODO: Check if maybe mean value would be better suited.
-     *
-     * @param features
+     * @param features List of feature categories that should be used to calculate the score.
+     * @param func The weight function that should be used to calculate the score.
      */
-    public update() {
-        this.score = 0;
-        this.segmentScores.forEach((value : SegmentScoreContainer, key: string) => {
-            value.update();
-            let score = value.getScore();
-            if (this.score < score) {
-                this.score = score;
-                this.representativeSegmentId = key;
-            }
-        });
+    public update(features: Feature[], func: WeightFunction) {
+        this.score = func.scoreForObject(features, this);
     }
 
     /**
@@ -94,6 +90,6 @@ export class MediaObjectScoreContainer extends CompoundScoreContainer {
      * @returns {boolean} true if it can be displayed, false otherwise.
      */
     public show() : boolean {
-        return this.mediaObject != undefined && this.representativeSegmentId != undefined;
+        return this.mediaObject != undefined && this.segmentScores.size > 0;
     }
 }

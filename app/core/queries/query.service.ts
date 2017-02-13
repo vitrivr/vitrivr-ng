@@ -1,8 +1,7 @@
 import {Injectable} from "@angular/core";
 import {CineastAPI} from "../api/cineast-api.service";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
-import {MediaObjectScoreContainer} from "./media-object-score-container.model";
+import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
 import {MediaType} from "../../shared/model/media/media-object.model";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {QueryStart} from "../../shared/model/messages/interfaces/query-start.interface";
@@ -12,17 +11,19 @@ import {ObjectQueryResult} from "../../shared/model/messages/interfaces/query-re
 import {Query} from "../../shared/model/messages/query.model";
 import {Feature} from "../../shared/model/features/feature.model";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
+import {WeightFunction} from "../../shared/model/features/weighting/weight-function.interface";
+import {DefaultWeightFunction} from "../../shared/model/features/weighting/default-weight-function.model";
+import {Subject} from "rxjs/Subject";
 
 
 /** Types of changes that can be emitted from the QueryService.
  *
- *  NONE        - No change, this is required due to the way BehaviorSubjects work
  *  STARTED     - New query was started.
  *  ENDED       - Processing of the query has ended.
  *  UPDATED     - New information concerning the running query is available.
  *  FEATURE     - A new feature has become available.
  */
-export type QueryChange = "NONE" | "STARTED" | "ENDED" | "UPDATED" | "FEATURE";
+export type QueryChange = "STARTED" | "ENDED" | "UPDATED" | "FEATURE";
 
 /**
  * This service orchestrates similarity queries using the Cineast API (WebSocket). The service is responsible for
@@ -43,7 +44,12 @@ export class QueryService {
     private features: Feature[] =[];
 
     /** BehaviorSubject that allows Observers to subscribe to changes emmited from the QueryService. */
-    private stateSubject : BehaviorSubject<QueryChange> = new BehaviorSubject("NONE" as QueryChange);
+    private stateSubject : Subject<QueryChange> = new Subject();
+
+    /** Reference to the WeightFunction that's being used with the current instance of QueryService. WeightFunctions are used
+     * to rank results based on their score.
+     */
+    private weightFunction : WeightFunction = new DefaultWeightFunction();
 
     /**
      * Default constructor.
@@ -153,7 +159,7 @@ export class QueryService {
      */
     public rerank() : void {
         this.results.forEach((value) => {
-            value.update(this.features);
+            value.update(this.features, this.weightFunction);
         });
         this.stateSubject.next("FEATURE");
         this.stateSubject.next("UPDATED");
@@ -212,12 +218,14 @@ export class QueryService {
      *
      * This method triggers an observable change in the QueryService class.
      *
-     * @param seg ObjectQueryResult message
+     * @param obj ObjectQueryResult message
      */
     private processObjectMessage(obj: ObjectQueryResult) {
         for (let object of obj.content) {
-            if (!this.results.has(object.objectId)) this.results.set(object.objectId, new MediaObjectScoreContainer());
-            this.results.get(object.objectId).mediaObject = object;
+            if (object) {
+                if (!this.results.has(object.objectId)) this.results.set(object.objectId, new MediaObjectScoreContainer());
+                this.results.get(object.objectId).mediaObject = object;
+            }
         }
 
         /* Inform Observers about changes. */
@@ -261,12 +269,11 @@ export class QueryService {
             if (objectId != undefined) {
                 if (!this.results.has(objectId)) this.results.set(objectId, new MediaObjectScoreContainer());
                 this.results.get(objectId).addSimilarity(feature, similarity);
-                this.results.get(objectId).update(this.features);
             }
         }
 
-        /* Inform Observers about changes. */
-        this.stateSubject.next("UPDATED" as QueryChange);
+        /* Re-rank the results. */
+        this.rerank();
     }
 
     /**

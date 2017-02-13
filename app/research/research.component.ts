@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {MdDialog} from "@angular/material";
-import {QueryService} from "../core/queries/queries.service";
+import {QueryService} from "../core/queries/query.service";
 
 import {MediaType} from "../shared/model/media/media-object.model";
 import {QueryContainerInterface} from "../shared/model/queries/interfaces/query-container.interface";

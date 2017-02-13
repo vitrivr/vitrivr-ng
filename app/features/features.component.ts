@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {MdSliderChange} from "@angular/material";
-import {QueryService} from "../core/queries/queries.service";
-
+import {QueryService} from "../core/queries/query.service";
 import {Feature} from "../shared/model/features/feature.model";
 
 @Component({

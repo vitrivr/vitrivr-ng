@@ -1,13 +1,14 @@
-import {CompoundScoreContainer} from "./compound-score-container.model";
-import {MediaSegment} from "../../shared/model/media/media-segment.model";
-import {Similarity} from "../../shared/model/media/similarity.model";
-import {Feature} from "../../shared/model/features/feature.model";
+import {ScoreContainer} from "./compound-score-container.model";
+import {WeightFunction} from "../weighting/weight-function.interface";
+import {Feature} from "../feature.model";
+import {Similarity} from "../../media/similarity.model";
+import {MediaSegment} from "../../media/media-segment.model";
 /**
- * The SegmentScoreContainer is a CompoundScoreContainer for MediaSegments. It is associated with
+ * The SegmentScoreContainer is a ScoreContainer for MediaSegments. It is associated with
  * a single segment (e.g. a shot of a video) and holds the score for that segment. That
  * score is determined by the actual scores of the segment (per category).
  */
-export class SegmentScoreContainer extends CompoundScoreContainer {
+export class SegmentScoreContainer extends ScoreContainer {
     /** List of scores. Entries should correspond to those in the array categories. */
     private scores : Map<Feature, number> = new Map();
 
@@ -31,15 +32,17 @@ export class SegmentScoreContainer extends CompoundScoreContainer {
      * Updates the score value by multiplying the scores in the scores array by the weights
      * of the associated feature-object. Only features in the provided list are considered.
      *
-     * @param features List of features that should be used to calculate the score.
+     * @param features List of feature categories that should be used to calculate the score.
+     * @param func The weighting function that should be used to calculate the score.
      */
-    public update(features: Feature[]) {
-        this.score = 0;
-        let total = 0;
-        features.forEach((value: Feature) => {
-            if (this.scores.has(value)) this.score += (this.scores.get(value) * value.weight);
-            total += value.weight;
-        });
-        this.score /= total;
+    public update(features: Feature[], func: WeightFunction) {
+        this.score = func.scoreForSegment(features, this);
+    }
+
+    /**
+     *
+     */
+    public getScores() {
+        return this.scores;
     }
 }
