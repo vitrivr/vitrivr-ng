@@ -1,9 +1,9 @@
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {AbstractWebsocketService} from "./abstract-websocket.service";
 import {ConfigService} from "../basics/config.service";
 import {Inject} from "@angular/core";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {MessageType} from "../../shared/model/messages/message-type.model";
+import {Subject} from "rxjs/Subject";
 
 
 export class CineastAPI extends AbstractWebsocketService {
@@ -11,15 +11,14 @@ export class CineastAPI extends AbstractWebsocketService {
      * A Map conatining all the MessageTypes and associated BehaviourSubjects. Must
      * be initialized in the constructor!
      */
-    private messages : BehaviorSubject<[MessageType, string]>;
+    private messages : Subject<[MessageType, string]>;
 
     /**
      * Default constructor.
      */
     constructor(@Inject(ConfigService) _config : ConfigService) {
         super(_config.endpoint_ws, true);
-        let init : [MessageType, string] = ["INIT", JSON.stringify({messagetype:'INIT'})];
-        this.messages = new BehaviorSubject(init);
+        this.messages = new Subject();
         console.log("Cineast API Service is up and running!");
     }
 
