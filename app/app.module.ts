@@ -11,9 +11,22 @@ import {ResearchModule} from "./research/research.module";
 import {PingComponent} from "./toolbar/ping.component";
 import {CoreModule} from "./core/core.module";
 import {FeaturesModule} from "./features/features.module";
+import {ObjectdetailsModule} from "./objectdetails/objectdetails.module";
+import {AppRoutingModule} from "./app-routing.module";
+
 
 @NgModule({
-  imports:      [ BrowserModule, FormsModule,  MaterialModule.forRoot(), GalleryModule, ResearchModule, FeaturesModule, CoreModule ],
+  imports: [
+      CoreModule,
+      BrowserModule,
+      FormsModule,
+      MaterialModule.forRoot(),
+      AppRoutingModule,
+      GalleryModule,
+      ObjectdetailsModule,
+      ResearchModule,
+      FeaturesModule
+  ],
   declarations: [ AppComponent, PingComponent ],
   providers:    [ ],
   bootstrap:    [ AppComponent ]
