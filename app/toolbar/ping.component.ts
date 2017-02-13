@@ -3,13 +3,13 @@ import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import {CineastAPI} from "../core/api/cineast-api.service";
 import {StatusType, Ping} from "../shared/model/messages/interfaces/ping.interface";
-import {ConfigService} from "../core/config.service";
+import {ConfigService} from "../core/basics/config.service";
 
 @Component({
     selector: 'api-status',
     template:`
         <span >
-            API Status:&nbsp;<md-icon style="vertical-align:text-bottom;">{{icon()}}</md-icon>&nbsp;{{latency ? '(' + latency + 'ms)' : ''}}
+            <md-icon style="vertical-align:text-bottom;">{{icon()}}</md-icon>&nbsp;{{latency ? '(' + latency + 'ms)' : ''}}
         </span>
     `
 })

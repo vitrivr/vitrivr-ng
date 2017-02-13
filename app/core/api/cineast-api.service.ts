@@ -1,6 +1,6 @@
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {AbstractWebsocketService} from "./abstract-websocket.service";
-import {ConfigService} from "../config.service";
+import {ConfigService} from "../basics/config.service";
 import {Inject} from "@angular/core";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {MessageType} from "../../shared/model/messages/message-type.model";

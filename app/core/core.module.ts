@@ -1,12 +1,15 @@
 import {NgModule}      from '@angular/core';
-import {QueryService} from "./queries/queries.service";
+import {QueryService} from "./queries/query.service";
 import {CineastAPI} from "./api/cineast-api.service";
-import {ConfigService} from "./config.service";
+import {ConfigService} from "./basics/config.service";
+import {LookupModule} from "./lookup/lookup.module";
+import {ResolverService} from "./basics/resolver.service";
 
 @NgModule({
-    imports:      [ ],
+    imports:      [ LookupModule ],
+    exports:      [ LookupModule ],
     declarations: [ ],
-    providers:    [ QueryService,  ConfigService, CineastAPI ]
+    providers:    [ QueryService,  ConfigService, ResolverService, CineastAPI ]
 })
 
 export class CoreModule { }
