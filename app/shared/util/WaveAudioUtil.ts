@@ -1,33 +1,51 @@
 export class WaveAudioUtil {
+
     /**
      * Converts the content of the provided AudioBuffer to a mono WAV file. The method
      * allows to re-sample the file to a lower sample rate.
      *
      * @param audio AudioBuffer that contains the data for the WAV file.
-     * @param sampleRate Requested sample rate. Must be lower or equal to the sample rate in the AudioFile.
+     * @param channels Number of channels in the output. If it does not coincide with the sampleRate of the data, that data will be re-sampled.
+     * @param sampleRate Samplerate of the output. If it does not coincide with the sampleRate of the data, that data will be re-sampled.
+     * @return {PromiseLike<Blob>}
      */
-    public static toMonoWav(audio: AudioBuffer, sampleRate: number = 44100): Blob {
-        /* Calculate ratio of SampleRate and requested SampleRate. */
-        let ratio = 1;
-        if (audio.sampleRate > sampleRate &&  audio.sampleRate % sampleRate == 0) {
-            ratio =  audio.sampleRate / sampleRate;
-        } else {
-            console.log("Requested sample rate of " + sampleRate + " is larger than actual sample rate of " + audio.sampleRate + " or the two rates don't have a common factor. Using the original sample rate!");
-        }
+    public static toWav(audio: AudioBuffer, channels: number, sampleRate: number) {
+        /* Check if AudioDate needs re-sampling. */
+        return WaveAudioUtil.resample(audio, channels, sampleRate).then((resampled: AudioBuffer) => {
+            /* Allocate buffer and DataView for output. */
+            let audioLength = (resampled.length*resampled.numberOfChannels*2);
+            let buffer = new ArrayBuffer(44 + audioLength);
+            let view = new DataView(buffer);
 
-        /* Allocate buffer and DataView for output. */
-        let audioLength = (audio.length*2)/ratio;
-        let buffer = new ArrayBuffer(44 + audioLength);
-        let view = new DataView(buffer);
+            /* Writes the RIFF WAVE header. */
+            this.writeWavHeader(view, audioLength, resampled.sampleRate, 1);
 
-        /* Writes the RIFF WAVE header. */
-        this.writeWavHeader(view, audioLength, sampleRate, 1);
+            /* Writes actual adui data as 16bit Mono PCM. */
+            this.floatToShortPCM(view, resampled, 44);
 
-        /* Writes actual adui data as 16bit Mono PCM. */
-        this.floatTo16BitMonoPCM(view, audio, 44, ratio);
+            /* Returns WAV file as Blob. */
+            return new Blob([view], {type: "audio/wav"});
+        });
+    }
 
-        /* Returns WAV file as Blob. */
-        return new Blob([view], {type: "audio/wav"});
+    /**
+     * Resamples provided AudioData with the provided settings for channels and sampleRate. If the data already has the desired specs, no re-sampling
+     * will take place.
+     *
+     * @param audio AudioBuffer that should be resampled
+     * @param channels Number of channels in the output. If it does  coincide with the sampleRate of the data, that data will not be re-sampled.
+     * @param sampleRate Samplerate of the output. If it not coincide with the sampleRate of the data, that data will not be re-sampled.
+     * @returns {PromiseLike<AudioBuffer>}
+     */
+    public static resample(audio: AudioBuffer, channels: number, sampleRate: number) {
+        /* If no resampling is necessary, just return a promise. */
+        if (audio.sampleRate == sampleRate && audio.numberOfChannels == channels) return Promise.resolve(audio);
+        let ctx = new OfflineAudioContext(channels, audio.length, sampleRate);
+        let src =  ctx.createBufferSource();
+        src.buffer = audio;
+        src.connect(ctx.destination);
+        src.start();
+        return ctx.startRendering();
     }
 
     /**
@@ -80,25 +98,21 @@ export class WaveAudioUtil {
         }
     }
 
+
     /**
      * Converts a 32bit IEEE float audio stream (as contained in an AudioBuffer) into a 16bit Integer PCM
-     * representation. This method merges different channels into one by calculating the mean value of all
-     * the channels for every sample.
+     * representation.
      *
      * @param output The DataView that should hold the output PCM data.
      * @param input AudioBuffer that acts as input.
      * @param offset Byte offset into the DataView.
-     * @param ratio The ratio between input and output sample rate. Must be an integer value >= 1.
      */
-    private static floatTo16BitMonoPCM(output: DataView, input: AudioBuffer, offset: number, ratio: number) {
-        for (let i = 0; i < input.length; i+=ratio, offset+=2) {
-            let sample: number = 0;
+    private static floatToShortPCM(output: DataView, input: AudioBuffer, offset: number) {
+        for (let i = 0; i < input.length; i+=1, offset+=2) {
             for (let c = 0; c < input.numberOfChannels; c++) {
-                for (let r=0;r<ratio;r++) {
-                    sample += (Math.max(-1, Math.min(1, input.getChannelData(c)[i-r])) / (input.numberOfChannels*ratio));
-                }
+                let sample = (Math.max(-1, Math.min(1, input.getChannelData(c)[i])));
+                output.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
             }
-            output.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
         }
     }
 }

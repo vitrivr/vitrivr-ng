@@ -121,12 +121,12 @@ export class AudioRecorderDialogComponent {
     }
 
     /**
-     * Triggered, whenever the save button is pressed. Convertes the data recorded
+     * Triggered, whenever the save button is pressed. Converts the data recorded
      * in the audio recorder into 22050Hz Mono WAV and returns it to the caller.
      */
     private onSaveButtonPressed() {
-        if (this.recorder.data) {
-            this.dialogRef.close(WaveAudioUtil.toMonoWav(this.recorder.data(), 22050));
+        if (this.recorder.data()) {
+            this.dialogRef.close(WaveAudioUtil.toWav(this.recorder.data(), 1, 22050));
         } else {
             this.dialogRef.close();
         }

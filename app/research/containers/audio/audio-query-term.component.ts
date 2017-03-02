@@ -28,15 +28,20 @@ export class AudioQueryTermComponent {
 
     constructor(public dialog: MdDialog) {}
 
+    /**
+     *
+     */
     edit() {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent);
         dialogRef.afterClosed().subscribe(result => {
-            this.player.nativeElement.src = URL.createObjectURL(result);
-            let reader = new FileReader();
-            reader.onloadend = () => {
-                this.audioTerm.data = reader.result;
-            };
-            reader.readAsDataURL(result);
+            result.then((data: Blob) => {
+                this.player.nativeElement.src = URL.createObjectURL(data);
+                let reader = new FileReader();
+                reader.onloadend = () => {
+                    this.audioTerm.data = reader.result;
+                };
+                reader.readAsDataURL(data);
+            })
         });
     }
 }
