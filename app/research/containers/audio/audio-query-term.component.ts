@@ -11,11 +11,11 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
         <audio #player controls style="width:200px;"></audio>
         
         <div style="display:flex; align-items: center; justify-content: center;">
-            <md-icon class="muted">brush</md-icon>
+            <md-icon class="muted">fingerprint</md-icon>
             <div class="toolbar-spacer-small"></div>
-            <md-slider min="0" max="4" step="1" value="2"></md-slider>
+            <md-slider min="0" max="3" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></md-slider>
             <div class="toolbar-spacer-small"></div>
-            <md-icon class="muted">insert_photo</md-icon>
+            <md-icon class="muted">record_voice_over</md-icon>
         </div>`
 })
 
@@ -24,14 +24,32 @@ export class AudioQueryTermComponent {
 
     @Input() audioTerm: AudioQueryTerm;
 
-    private sliderSetting : number = 2;
+    /** Default value of the slider. */
+    private sliderSetting : number;
 
+    /**
+     * Default constructor.
+     *
+     * @param dialog
+     */
     constructor(public dialog: MdDialog) {}
 
     /**
+     * This method is invoked whenever the slider value changes.
      *
+     * @param event
      */
-    edit() {
+    private onSliderChanged(event:any) {
+        this.audioTerm.setting(this.sliderSetting);
+    }
+
+    /**
+     * This method is invoked, whenever someone clicks on the preview-image
+     * of the AudioQueryTermComponent.
+     *
+     * Shows the audio-recorder dialog.
+     */
+    private edit() {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent);
         dialogRef.afterClosed().subscribe(result => {
             result.then((data: Blob) => {
