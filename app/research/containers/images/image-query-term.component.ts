@@ -38,7 +38,7 @@ export class ImageQueryTermComponent {
         let dialogRef = this.dialog.open(SketchDialogComponent);
         dialogRef.componentInstance.getSketchPad().setImageBase64(this.previewimg.nativeElement.src);
         dialogRef.afterClosed().subscribe(result => {
-            if (result != undefined) {
+            if (result) {
                 this.previewimg.nativeElement.src = result;
                 this.imageTerm.data = result;
             }

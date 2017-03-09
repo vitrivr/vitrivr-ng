@@ -52,14 +52,16 @@ export class AudioQueryTermComponent {
     private edit() {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent);
         dialogRef.afterClosed().subscribe(result => {
-            result.then((data: Blob) => {
-                this.player.nativeElement.src = URL.createObjectURL(data);
-                let reader = new FileReader();
-                reader.onloadend = () => {
-                    this.audioTerm.data = reader.result;
-                };
-                reader.readAsDataURL(data);
-            })
+            if (result) {
+                result.then((data: Blob) => {
+                    this.player.nativeElement.src = URL.createObjectURL(data);
+                    let reader = new FileReader();
+                    reader.onloadend = () => {
+                        this.audioTerm.data = reader.result;
+                    };
+                    reader.readAsDataURL(data);
+                })
+            }
         });
     }
 }
