@@ -40,7 +40,10 @@ export class WaveAudioUtil {
     public static resample(audio: AudioBuffer, channels: number, sampleRate: number) {
         /* If no resampling is necessary, just return a promise. */
         if (audio.sampleRate == sampleRate && audio.numberOfChannels == channels) return Promise.resolve(audio);
-        let ctx = new OfflineAudioContext(channels, audio.length, sampleRate);
+
+        /* Otherwise resample audio. */
+        let ratio = sampleRate/audio.sampleRate;
+        let ctx = new OfflineAudioContext(channels, Math.ceil(audio.length * ratio), sampleRate);
         let src =  ctx.createBufferSource();
         src.buffer = audio;
         src.connect(ctx.destination);
