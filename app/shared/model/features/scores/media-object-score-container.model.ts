@@ -22,7 +22,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     /**
      * Getter for the list of map for segment-scores.
      *
-     * @returns {[segmentId : string] : SegmentScoreContainer}
+     * @returns {Map<string, SegmentScoreContainer>}
      */
     public getSegmentScores() : Map<string, SegmentScoreContainer>  {
         return this.segmentScores;
@@ -59,8 +59,8 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @param segment MediaSegment to add.
      */
     public addMediaSegment(segment : MediaSegment) {
-        if (!this.segmentScores.has(segment.segmentId))  this.segmentScores.set(segment.segmentId, new SegmentScoreContainer());
-        this.segmentScores.get(segment.segmentId).mediaSegment = segment;
+        if (!this.segmentScores.has(segment.segmentId))  this.segmentScores.set(segment.segmentId, new SegmentScoreContainer(segment.segmentId));
+        this.segmentScores.get(segment.segmentId).setMediaSegment(segment);
     }
 
     /**
@@ -69,7 +69,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @param similarity
      */
     public addSimilarity(category : Feature, similarity : Similarity) {
-        if (!this.segmentScores.has(similarity.key)) this.segmentScores.set(similarity.key, new SegmentScoreContainer());
+        if (!this.segmentScores.has(similarity.key)) this.segmentScores.set(similarity.key, new SegmentScoreContainer(similarity.key));
         this.segmentScores.get(similarity.key).addSimilarity(category, similarity);
     }
 

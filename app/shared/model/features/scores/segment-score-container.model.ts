@@ -13,19 +13,43 @@ export class SegmentScoreContainer extends ScoreContainer {
     private scores : Map<Feature, number> = new Map();
 
     /** Reference to the actual MediaSegment this container belongs to. */
-    public mediaSegment? : MediaSegment;
+    private mediaSegment? : MediaSegment;
+
+    /**
+     * Default constructor.
+     *
+     * @param segmentId
+     */
+    public constructor(private segmentId : string) {
+       super();
+    }
 
     /**
      * Adds a similarity object to this SegmentScoreContainer by pushing the category and
-     * the actual value to their respective arrays.
+     * the actual value to their respective arrays. The segmentId of the Similarity object
+     * must be equal to the segmentId of the SegmentScoreContainer.
      *
      * Note: Causes an update of the score value.
      *
      * @param category
      * @param similarity
      */
-    public addSimilarity(category : Feature, similarity : Similarity) {
+    public addSimilarity(category : Feature, similarity : Similarity): boolean {
+        if (similarity.key !== this.segmentId) return false;
         this.scores.set(category, similarity.value);
+        return true;
+    }
+
+    /**
+     * Sets the MediaSegment of the SegmentScoreContainer. The MediaSegment can only be set
+     * once and its segmentId must be equal to the segmentId of the SegmentScoreContainer.
+     *
+     * @param segment MediaSegment to set.
+     * @return true if MediaSegment was set, false otherwise.
+     */
+    public setMediaSegment(segment: MediaSegment) {
+        if (this.mediaSegment || segment.segmentId !== this.segmentId) return false;
+        this.mediaSegment = segment;
     }
 
     /**
@@ -40,9 +64,52 @@ export class SegmentScoreContainer extends ScoreContainer {
     }
 
     /**
+     * Returns the Map of scores
      *
+     * @return {Map<Feature, number>}
      */
     public getScores() {
         return this.scores;
+    }
+
+    /**
+     * Returns the ID of the MediaSegment.
+     *
+     * @returns {string}
+     */
+    public getSegmentId() {
+        return this.segmentId;
+    }
+
+    /**
+     * Returns the ID of the MediaObject associated with the the MediaSegment.
+     *
+     * @returns {string}
+     */
+    public getObjectId() {
+        if (!this.mediaSegment) return null;
+        return this.mediaSegment.objectId;
+    }
+
+    /**
+     * Returns the start time of the MediaSegment in seconds or 0, if segment does
+     * not have a start time.
+     *
+     * @returns {number}
+     */
+    public getStarttime() {
+        if (!this.mediaSegment) return 0;
+        return Math.round(this.mediaSegment.startabs*100)/100;
+    }
+
+    /**
+     * Returns the end time of the MediaSegment in seconds or 0, if segment does
+     * not have an end time.
+     *
+     * @returns {number}
+     */
+    public getEndtime() {
+        if (!this.mediaSegment) return 0;
+        return Math.round(this.mediaSegment.endabs*100)/100;
     }
 }
