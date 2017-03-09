@@ -14,6 +14,7 @@ import {QueryContainerInterface} from "../../shared/model/queries/interfaces/que
 import {WeightFunction} from "../../shared/model/features/weighting/weight-function.interface";
 import {DefaultWeightFunction} from "../../shared/model/features/weighting/default-weight-function.model";
 import {Subject} from "rxjs/Subject";
+import {AverageWeightFunction} from "../../shared/model/features/weighting/average-weight-function.model";
 
 
 /** Types of changes that can be emitted from the QueryService.
@@ -301,7 +302,7 @@ export class QueryService {
         for (let feature of this.features) {
             if (feature.name == category) return feature;
         }
-        let feature = new Feature(category, category, 100, 100);
+        let feature = new Feature(category, category, 100);
         this.features.push(feature);
         this.stateSubject.next("FEATURE");
         return feature;

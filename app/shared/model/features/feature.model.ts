@@ -1,10 +1,17 @@
 export class Feature {
 
     public color : string;
+    public weight: number;
 
-    public constructor(readonly name: string, readonly readableName: string,
-                       readonly defaultWeight: number, public weight: number) {
-        this.color = this.getRandomColor()
+    /**
+     *
+     * @param name
+     * @param readableName
+     * @param defaultWeight
+     */
+    public constructor(readonly name: string, readonly readableName: string, readonly defaultWeight: number) {
+        this.color = this.getRandomColor();
+        this.weight = defaultWeight;
     }
 
     toString(): string {
