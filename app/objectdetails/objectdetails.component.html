@@ -1,0 +1,29 @@
+<div style="padding:10px;">
+    <h2>{{mediaobject.name}} / {{mediaobject.objectId}} ({{mediaobject.mediatype}})</h2>
+    <div>
+        <div style="max-width: 500px;">
+            <video #videoplayer *ngIf="mediaobject.mediatype == 'VIDEO'" src="{{_resolver.pathToObject(mediaobject)}}" controls width="100%"></video>
+            <audio #audioplayer *ngIf="mediaobject.mediatype == 'AUDIO'" src="{{_resolver.pathToObject(mediaobject)}}" controls width="100%"></audio>
+            <img *ngIf="mediaobject.mediatype == 'IMAGE'" src="{{_resolver.pathToObject(mediaobject)}}" width="100%"/>
+        </div>
+    </div>
+
+    <md-tab-group>
+        <md-tab label="Segments ({{segments.length}})">
+            <div class="flex-container" fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
+                <div *ngFor="let segment of segments" class="flex-item" fxFlex="125px" (click)="onSegmentClick(segment.getStarttime())">
+                    <img src="{{_resolver.pathToThumbnailForSegment(segment.mediaSegment)}}" width="125px" height="125px">
+                    <p>{{segment.mediaSegment.segmentId}} ({{segment.getScorePercentage()}})</p>
+                    <p *ngIf="segment.getEndtime() > 0">{{segment.getStarttime()}}-{{segment.getEndtime()}}</p>
+                </div>
+            </div>
+        </md-tab>
+        <md-tab label="Metadata ({{metadata.length}})">
+            <md-list>
+                <md-list-item *ngFor="let metadatum of metadata">
+                    <p md-line><strong>({{metadatum.domain}}) {{metadatum.key}}: </strong>{{metadatum.value}}</p>
+                </md-list-item>
+            </md-list>
+        </md-tab>
+    </md-tab-group>
+</div>
