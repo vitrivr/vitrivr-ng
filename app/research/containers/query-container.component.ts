@@ -17,12 +17,17 @@ import {QueryTermType, QueryTermInterface} from "../../shared/model/queries/inte
                  <button (click)="toggle('AUDIO')" class="icon-button">
                     <md-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</md-icon>
                  </button>
+                 <div class="spacer-small"></div>
+                 <button (click)="toggle('MODEL')" class="icon-button">
+                    <md-icon [attr.class]="containerModel.hasTerm('MODEL') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</md-icon>
+                 </button>
                  <div class="spacer-flex"></div>
                  <button class="icon-button" (click)="handleRemove()"><md-icon>close</md-icon></button>
             </md-card-header>
             <md-card-content>
                 <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
                 <qt-audio *ngIf="containerModel.hasTerm('AUDIO')" [audioTerm]="containerModel.getTerm('AUDIO')"></qt-audio>
+                <qt-m3d *ngIf="containerModel.hasTerm('MODEL')" [m3dTerm]="containerModel.getTerm('MODEL')"></qt-m3d>
             </md-card-content>
         </md-card>
     `
