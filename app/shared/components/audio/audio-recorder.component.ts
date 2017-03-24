@@ -81,7 +81,6 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
         this.stream.getTracks().forEach((track) => {
             track.stop()
         });
-        this.audiocontext.close();
     }
 
     /**
