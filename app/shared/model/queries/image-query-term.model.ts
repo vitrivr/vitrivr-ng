@@ -35,6 +35,9 @@ export class ImageQueryTerm implements QueryTermInterface {
             case 4:
                 this.categories = ['localcolor', 'localfeatures'];
                 break;
+            case 100:
+                this.categories = ['lightfield'];
+                break;
             default:
                 this.categories = ['globalcolor', 'localcolor'];
                 break;
