@@ -11,7 +11,7 @@ export class ConfigService {
     /** BEGIN:  Publicly exposed configuration values. */
 
     /** Path / URL to location where media object thumbnails will be stored. */
-    public readonly host_thumbnails = "http://gasser-hauser.internet-box.ch/vitrivr/thumbnails/";
+    public readonly host_thumbnails = "http://gasser-hauser.internet-box.ch/vitrivr/";
 
     /** Path / URL to location where media object's will be stored. */
     public readonly host_object = "http://gasser-hauser.internet-box.ch/vitrivr/";
