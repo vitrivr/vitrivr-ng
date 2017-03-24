@@ -1,6 +1,7 @@
 "use strict";
 var image_query_term_model_1 = require("./image-query-term.model");
 var audio_query_term_model_1 = require("./audio-query-term.model");
+var m3d_query_term_model_1 = require("./m3d-query-term.model");
 var QueryContainer = (function () {
     function QueryContainer() {
         /**
@@ -27,6 +28,9 @@ var QueryContainer = (function () {
                 break;
             case "AUDIO":
                 this._terms.set(type, new audio_query_term_model_1.AudioQueryTerm());
+                break;
+            case "MODEL":
+                this._terms.set(type, new m3d_query_term_model_1.M3DQueryTerm());
                 break;
             default:
                 return false;

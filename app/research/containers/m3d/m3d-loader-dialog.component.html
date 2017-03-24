@@ -1,0 +1,34 @@
+<md-toolbar color="primary">
+    <button md-icon-button (click)="loader.toggleRotation()">
+        <md-icon>rotate_left</md-icon>
+    </button>
+
+    <button md-icon-button [mdMenuTriggerFor]="toolbarMenu">
+        <md-icon>more_vert</md-icon>
+    </button>
+
+    <md-menu #toolbarMenu="mdMenu">
+        <button md-menu-item (click)="loader.setCubeModel()">
+            <span>Add cube</span>
+        </button>
+        <button md-menu-item (click)="loader.setSphereModel()">
+            <span>Add sphere</span>
+        </button>
+        <button md-menu-item (click)="loader.setCylinderModel()">
+            <span>Add ring</span>
+        </button>
+    </md-menu>
+
+    <span class="spacer-flex"></span>
+
+    <button md-icon-button (click)="onSavePressed($event)">
+        <md-icon>save</md-icon>
+    </button>
+    <button md-icon-button (click)="onLoadFilePressed($event)">
+        <md-icon>file_upload</md-icon>
+    </button>
+</md-toolbar>
+
+<m3d-loader #m3dloader [width]="300" [height]="300" [interaction]="true"></m3d-loader>
+
+<input #fileloader type="file" hidden>

@@ -2,6 +2,7 @@ import {QueryContainerInterface} from "./interfaces/query-container.interface";
 import {QueryTermInterface, QueryTermType} from "./interfaces/query-term.interface";
 import {ImageQueryTerm} from "./image-query-term.model";
 import {AudioQueryTerm} from "./audio-query-term.model";
+import {M3DQueryTerm} from "./m3d-query-term.model";
 
 
 export class QueryContainer implements QueryContainerInterface {
@@ -29,6 +30,9 @@ export class QueryContainer implements QueryContainerInterface {
                 break;
             case "AUDIO":
                 this._terms.set(type, new AudioQueryTerm());
+                break;
+            case "MODEL":
+                this._terms.set(type, new M3DQueryTerm());
                 break;
             default:
                 return false;
