@@ -4,7 +4,8 @@
         <div style="max-width: 500px;">
             <video #videoplayer *ngIf="mediaobject.mediatype == 'VIDEO'" src="{{_resolver.pathToObject(mediaobject)}}" controls width="100%"></video>
             <audio #audioplayer *ngIf="mediaobject.mediatype == 'AUDIO'" src="{{_resolver.pathToObject(mediaobject)}}" controls width="100%"></audio>
-            <img *ngIf="mediaobject.mediatype == 'IMAGE'" src="{{_resolver.pathToObject(mediaobject)}}" width="100%"/>
+            <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'" src="{{_resolver.pathToObject(mediaobject)}}" width="100%"/>
+            <m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'" src="{{_resolver.pathToObject(mediaobject)}}" [width]="200" [height]="200" [interaction]="true"> </m3d-loader>
         </div>
     </div>
 
@@ -12,7 +13,7 @@
         <md-tab label="Segments ({{segments.length}})">
             <div class="flex-container" fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
                 <div *ngFor="let segment of segments" class="flex-item" fxFlex="125px" (click)="onSegmentClick(segment.getStarttime())">
-                    <img src="{{_resolver.pathToThumbnailForSegment(segment.mediaSegment)}}" width="125px" height="125px">
+                    <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" width="125px" height="125px">
                     <p>{{segment.mediaSegment.segmentId}} ({{segment.getScorePercentage()}})</p>
                     <p *ngIf="segment.getEndtime() > 0">{{segment.getStarttime()}}-{{segment.getEndtime()}}</p>
                 </div>

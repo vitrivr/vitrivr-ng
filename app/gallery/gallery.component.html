@@ -5,7 +5,7 @@
                 <span [style.width]="'80%'" [style.float]="'left'" class="truncate">{{mediaobject.mediaObject.name}}</span>
                 <span [style.width]="'80px'" [style.float]="'right'">{{"(" + mediaobject.getScorePercentage() + "%)"}}</span>
             </md-grid-tile-header>
-            <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.getRepresentativeSegment().mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'"/>
+            <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediaObject.mediatype, mediaobject.getRepresentativeSegment().mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'"/>
         </md-grid-tile>
     </md-grid-list>
 </div>
