@@ -1,0 +1,40 @@
+<div>
+    <md-toolbar color="primary">
+        <p>Vitrivr NEXT</p>
+        <span class="spacer-flex"></span>
+
+
+        <button md-icon-button (click)="querysidenav.toggle()"><md-icon>search</md-icon></button>
+
+        <span class="spacer-medium"></span>
+
+        <a md-icon-button routerLink="/gallery" routerLinkActive="active"><md-icon>grid_on</md-icon></a>
+
+        <span class="spacer-medium"></span>
+
+        <a md-icon-button routerLink="/evaluation" routerLinkActive="active"><md-icon>assessment</md-icon></a>
+
+        <span class="spacer-medium"></span>
+
+        <button md-icon-button  (click)="featuressidenav.toggle()"><md-icon>storage</md-icon></button>
+
+        <span class="spacer-flex"></span>
+        <api-status><md-icon>av timer</md-icon></api-status>
+    </md-toolbar>
+
+    <div>
+        <md-progress-bar mode="query" [attr.color]="'accent'" *ngIf="loading"></md-progress-bar>
+    </div>
+
+    <md-sidenav-container #sidenavcontainer fullscreen style="margin-top:75px;">
+        <md-sidenav #querysidenav mode="side" opened="true" align="start" class="vitrivr-sidenav left">
+            <research></research>
+        </md-sidenav>
+
+        <router-outlet> </router-outlet>
+
+        <md-sidenav #featuressidenav mode="side" opened="false" align="end" class="vitrivr-sidenav right">
+            <features></features>
+        </md-sidenav>
+    </md-sidenav-container>
+</div>

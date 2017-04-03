@@ -1,0 +1,21 @@
+<div style="padding:10px;">
+    <md-input-container>
+        <label> </label><input mdInput placeholder="Name" [(ngModel)]="nameFieldValue">
+    </md-input-container>
+    <button md-icon-button (click)="onEvaluationButtonClick()"><md-icon>{{(evaluation && evaluation.isRunning() == true) ? 'stop' : 'play_arrow'}}</md-icon></button>
+    <button md-icon-button (click)="onExportButtonClick()"><md-icon>file_download</md-icon></button>
+    <hr/>
+
+
+    <div style="padding:10px;">
+        <md-grid-list cols="4" gutterSize="15px" rowHeight="1:1">
+            <md-grid-tile *ngFor="let mediaobject of mediaobjects" [attr.class]="mediaobject.getSegments() > 1 ? 'card-stack' : 'card-single'">
+                <md-grid-tile-header>
+                    <span [style.width]="'80%'" [style.float]="'left'" class="truncate">{{mediaobject.mediaObject.name}}</span>
+                    <span [style.width]="'80px'" [style.float]="'right'">{{"(" + mediaobject.getScorePercentage() + "%)"}}</span>
+                </md-grid-tile-header>
+                <img src="{{_resolverService.pathToThumbnailForSegment(mediaobject.mediaObject.mediatype, mediaobject.getRepresentativeSegment().mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'"/>
+            </md-grid-tile>
+        </md-grid-list>
+    </div>
+</div>
