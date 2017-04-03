@@ -1,4 +1,6 @@
 import LoadingManager = THREE.LoadingManager;
+import BufferGeometry = THREE.BufferGeometry;
+import Geometry = THREE.Geometry;
 
 export class Model3DFileLoader {
     /**
@@ -13,14 +15,21 @@ export class Model3DFileLoader {
         let loader =  new (THREE as any).OBJLoader(manager);
         loader.load(window.URL.createObjectURL(file), (object: any) => {
             if (object) {
+                let geometry: THREE.Geometry  = new THREE.Geometry();
                 object.traverse((child : any) => {
-                    if (child instanceof THREE.Mesh ) {
-                        child.material = new THREE.MeshNormalMaterial();
-                        callback(child);
+                    if (child instanceof THREE.Mesh) {
+                        child.updateMatrix();
+                        if (child.geometry instanceof BufferGeometry) {
+                            let partial = (new THREE.Geometry()).fromBufferGeometry( child.geometry );
+                            geometry.merge(partial, child.matrix);
+                        } else if (child.geometry instanceof Geometry) {
+                            geometry.merge(child.geometry, child.matrix);
+                        }
                     }
-                } );
+                });
+                callback(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
             }
-        });
+        })
     }
 
     /**
@@ -34,7 +43,9 @@ export class Model3DFileLoader {
     public static loadSTLFile(file: File, callback : Function, manager?: LoadingManager) {
         let loader =  new (THREE as any).STLLoader(manager);
         loader.load(window.URL.createObjectURL(file), (geometry: any) => {
-            if (geometry) {
+            if (geometry instanceof BufferGeometry) {
+                callback(new THREE.Mesh(new THREE.Geometry().fromBufferGeometry(geometry), new THREE.MeshNormalMaterial()));
+            } else if (geometry instanceof Geometry) {
                 callback(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
             }
         });
