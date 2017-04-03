@@ -9,7 +9,7 @@ import {ConfigService} from "../core/basics/config.service";
     selector: 'api-status',
     template:`
         <span >
-            <md-icon style="vertical-align:text-bottom;">{{icon()}}</md-icon>&nbsp;{{latency ? '(' + latency + 'ms)' : ''}}
+            <md-icon style="vertical-align:text-bottom;">{{getIcon()}}</md-icon>&nbsp;{{getLatency() ? '(' + getLatency() + 'ms)' : ''}}
         </span>
     `
 })
@@ -17,7 +17,7 @@ import {ConfigService} from "../core/basics/config.service";
 export class PingComponent implements OnInit {
     private _apistatus : StatusType = "DISCONNECTED";
     private last : number;
-    private latency: number;
+    private  latency: number;
 
     /**
      * Default constructor. Subscribe for PING messages at the CineastAPI.
@@ -54,9 +54,10 @@ export class PingComponent implements OnInit {
 
     /**
      * Returns the icon name based on the current API status.
+     *
      * @returns {any}
      */
-    private icon() : string {
+    public getIcon() : string {
         switch (this._apistatus) {
             case 'DISCONNECTED':
                 return 'flash_off';
@@ -67,5 +68,14 @@ export class PingComponent implements OnInit {
             default:
                 return 'watch_later'
         }
+    }
+
+    /**
+     * Getter for latency.
+     *
+     * @returns {number}
+     */
+    public getLatency() {
+        return this.latency;
     }
 }

@@ -16,15 +16,15 @@
     </button>
 
     <md-menu #toolbarMenu="mdMenu">
-        <button md-menu-item (click)="onLoadImage($event)">
+        <button md-menu-item (click)="onLoadImage()">
             <md-icon>file_upload</md-icon>
             <span>Load</span>
         </button>
-        <button md-menu-item (click)="onFillCanvas($event)">
+        <button md-menu-item (click)="onFillCanvasClicked()">
             <md-icon>format_color_fill</md-icon>
             <span>Fill canvas</span>
         </button>
-        <button md-menu-item (click)="onClearCanvas($event)">
+        <button md-menu-item (click)="onClearCanvasClicked()">
             <md-icon>clear</md-icon>
             <span>Clear canvas</span>
         </button>

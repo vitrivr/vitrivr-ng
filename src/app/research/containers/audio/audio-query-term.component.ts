@@ -7,7 +7,7 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
 @Component({
     selector: 'qt-audio',
     template:`
-        <img #previewimg style="width:200px; height:200px; border:solid 1px;" (click)="edit()"/>
+        <img #previewimg style="width:200px; height:200px; border:solid 1px;" (click)="onViewerClicked()"/>
         <audio #player controls style="width:200px;"></audio>
         
         <div style="display:flex; align-items: center; justify-content: center;">
@@ -20,12 +20,13 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
 })
 
 export class AudioQueryTermComponent {
+
     @ViewChild('player') private player: any;
 
     @Input() audioTerm: AudioQueryTerm;
 
     /** Default value of the slider. */
-    private sliderSetting : number;
+    public sliderSetting : number;
 
     /**
      * Default constructor.
@@ -39,7 +40,7 @@ export class AudioQueryTermComponent {
      *
      * @param event
      */
-    private onSliderChanged(event:any) {
+    public onSliderChanged(event:any) {
         this.audioTerm.setting(this.sliderSetting);
     }
 
@@ -49,7 +50,7 @@ export class AudioQueryTermComponent {
      *
      * Shows the audio-recorder dialog.
      */
-    private edit() {
+    public onViewerClicked() {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent);
         dialogRef.afterClosed().subscribe(result => {
             if (result) {

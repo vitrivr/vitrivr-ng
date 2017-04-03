@@ -9,15 +9,16 @@ import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.comp
 })
 
 export class SketchDialogComponent {
+
     /** Sketch-canvas component. */
     @ViewChild('sketch')
-    private sketchpad: SketchCanvas;
+    private _sketchpad: SketchCanvas;
 
     /** Hidden input for image upload. */
     @ViewChild('imageloader')
     private imageloader: any;
 
-    private color : string = "#000000";
+    public color : string = "#000000";
     constructor(public dialogRef: MdDialogRef<SketchDialogComponent>) {
 
     }
@@ -31,33 +32,33 @@ export class SketchDialogComponent {
     @HostListener('change', ['$event'])
     onChange(event: any) {
         let URL = window.URL;
-        this.sketchpad.setImageBase64(URL.createObjectURL(event.target.files[0]))
+        this._sketchpad.setImageBase64(URL.createObjectURL(event.target.files[0]))
     };
 
     /**
      *
      */
     public getSketchPad() : SketchCanvas {
-        return this.sketchpad;
+        return this._sketchpad;
     }
 
     /**
      * Triggered when a color value is selected.
      *
-     * @param event
+     * @param color
      */
-    private onColorChange(event:string) {
-        this.color = event;
-        this.sketchpad.setActiveColor(this.color);
+    public onColorChange(color: any) {
+        this.color = color;
+        this._sketchpad.setActiveColor(this.color);
     }
 
     /**
      * Triggered when the slider-value for the line-size changes.
      *
-     * @param event
+     * @param size
      */
-    private onLineSizeChange(size : MdSliderChange) {
-        this.sketchpad.setLineSize(size.value);
+    public onLineSizeChange(size : any) {
+        this._sketchpad.setLineSize(size.value);
     }
 
     /**
@@ -65,8 +66,8 @@ export class SketchDialogComponent {
      *
      * Clears the canvas
      */
-    private onClearCanvas() {
-        this.sketchpad.clearCanvas();
+    public onClearCanvasClicked() {
+        this._sketchpad.clearCanvas();
     }
 
     /**
@@ -74,8 +75,8 @@ export class SketchDialogComponent {
      *
      * Fills the canvas with the default color.
      */
-    private onFillCanvas() {
-        this.sketchpad.fillCanvas();
+    public onFillCanvasClicked() {
+        this._sketchpad.fillCanvas();
     }
 
     /**
@@ -83,7 +84,16 @@ export class SketchDialogComponent {
      *
      * Opens a file-chooser.
      */
-    private onLoadImage() {
+    public onLoadImage() {
        this.imageloader.nativeElement.click();
+    }
+
+    /**
+     * Getter for sketchpad.
+     *
+     * @returns {SketchCanvas}
+     */
+    get sketchpad(): SketchCanvas {
+        return this._sketchpad;
     }
 }

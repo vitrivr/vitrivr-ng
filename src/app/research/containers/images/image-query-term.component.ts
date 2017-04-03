@@ -6,7 +6,7 @@ import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.mod
 @Component({
     selector: 'qt-image',
     template:`
-        <img #previewimg style="width:200px; height:200px; border:solid 1px;" (click)="onEdit()"/>
+        <img #previewimg style="width:200px; height:200px; border:solid 1px;" (click)="onViewerClicked()"/>
         <div style="display:flex; align-items: center; justify-content: center;">
             <md-icon class="muted">brush</md-icon>
             <div class="toolbar-spacer-small"></div>
@@ -19,6 +19,7 @@ import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.mod
 })
 
 export class ImageQueryTermComponent {
+
     /** Component used to display a preview of the selected AND/OR sketched image. */
     @ViewChild('previewimg') private previewimg: any;
 
@@ -26,10 +27,10 @@ export class ImageQueryTermComponent {
     @Input() imageTerm: ImageQueryTerm;
 
     /** Slider to adjust the query-term settings; i.e. to select the features used for image-queries. */
-    private sliderSetting : number = 2;
+    public sliderSetting : number = 2;
 
-    /** Slider to toggle between normal image / sketch mode and 3D-sketch mode. */
-    private toggle3DSetting : boolean = false;
+    /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
+    public toggle3DSetting : boolean = false;
 
     /**
      * Default constructor.
@@ -44,7 +45,7 @@ export class ImageQueryTermComponent {
      *
      * @param event
      */
-    private onSettingsChanged(event:any) {
+    public onSettingsChanged(event:any) {
         if (this.toggle3DSetting) {
             this.imageTerm.setting(100);
         } else {
@@ -56,7 +57,7 @@ export class ImageQueryTermComponent {
      * Triggered whenever someone click on the image, which indicates that it should
      * be edited.
      */
-    private onEdit() {
+    public onViewerClicked() {
         let dialogRef = this.dialog.open(SketchDialogComponent);
         dialogRef.componentInstance.getSketchPad().setImageBase64(this.previewimg.nativeElement.src);
         dialogRef.afterClosed().subscribe(result => {

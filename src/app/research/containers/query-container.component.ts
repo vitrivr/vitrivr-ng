@@ -10,24 +10,24 @@ import {QueryTermType, QueryTermInterface} from "../../shared/model/queries/inte
     template:`
         <md-card style="margin:10px;padding:10px;">
             <md-card-header>
-                 <button (click)="toggle('IMAGE')" class="icon-button">
+                 <button (click)="onToggleButtonClicked('IMAGE')" class="icon-button">
                     <md-icon [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">panorama</md-icon>
                  </button>
                  <div class="spacer-small"></div>
-                 <button (click)="toggle('AUDIO')" class="icon-button">
+                 <button (click)="onToggleButtonClicked('AUDIO')" class="icon-button">
                     <md-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</md-icon>
                  </button>
                  <div class="spacer-small"></div>
-                 <button (click)="toggle('MODEL')" class="icon-button">
-                    <md-icon [attr.class]="containerModel.hasTerm('MODEL') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</md-icon>
+                 <button (click)="onToggleButtonClicked('MODEL3D')" class="icon-button">
+                    <md-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</md-icon>
                  </button>
                  <div class="spacer-flex"></div>
-                 <button class="icon-button" (click)="handleRemove()"><md-icon>close</md-icon></button>
+                 <button class="icon-button" (click)="onRemoveButtonClicked()"><md-icon>close</md-icon></button>
             </md-card-header>
             <md-card-content>
                 <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
                 <qt-audio *ngIf="containerModel.hasTerm('AUDIO')" [audioTerm]="containerModel.getTerm('AUDIO')"></qt-audio>
-                <qt-m3d *ngIf="containerModel.hasTerm('MODEL')" [m3dTerm]="containerModel.getTerm('MODEL')"></qt-m3d>
+                <qt-m3d *ngIf="containerModel.hasTerm('MODEL3D')" [m3dTerm]="containerModel.getTerm('MODEL3D')"></qt-m3d>
             </md-card-content>
         </md-card>
     `
@@ -43,7 +43,7 @@ export class QueryContainerComponent {
     /**
      *
      */
-    private handleRemove() {
+    public onRemoveButtonClicked() {
         let index = this.inList.indexOf(this.containerModel);
         if (index > -1) {
             this.inList.splice(index, 1)
@@ -54,7 +54,7 @@ export class QueryContainerComponent {
      *
      * @param type
      */
-    private toggle(type: QueryTermType) {
+    public onToggleButtonClicked(type: QueryTermType) {
          if (this.containerModel.hasTerm(type)) {
              this.containerModel.removeTerm(type);
          } else {

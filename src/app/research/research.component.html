@@ -3,18 +3,13 @@
     <md-button-toggle checked="{{isActive('IMAGE')}}"><md-icon>image</md-icon></md-button-toggle>
     <md-button-toggle checked="{{isActive('AUDIO')}}"><md-icon>audiotrack</md-icon></md-button-toggle>
     <md-button-toggle checked="{{isActive('VIDEO')}}"><md-icon>video_label</md-icon></md-button-toggle>
-    <md-button-toggle checked="{{isActive('MODE')}}"><md-icon>3d_rotation</md-icon></md-button-toggle>
+    <md-button-toggle checked="{{isActive('MODEL3D')}}"><md-icon>3d_rotation</md-icon></md-button-toggle>
 
     <hr/>
 
     <button md-raised-button style="width:100%" (click)="search()" [color]="'accent'"><md-icon>search</md-icon>Search</button>
 
     <query-container *ngFor="let container of containers" [containerModel]=container [inList]="containers"></query-container>
-
-    <md-menu #addTermMenu>
-        <button md-menu-item (click)="addImageQueryTermComponent()"> Image </button>
-        <button md-menu-item> Help </button>
-    </md-menu>
 
     <button md-fab (click)="addQueryTermContainer()"><md-icon>add</md-icon></button>
 </div>

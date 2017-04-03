@@ -41,7 +41,7 @@ export class M3DLoaderDialogComponent {
      * Triggered when the 'load file' toolbar button is pressed.
      * Opens a file picker.
      */
-    private onLoadFilePressed() {
+    public onLoadFilePressed() {
         this.fileloader.nativeElement.click();
     }
 
@@ -49,7 +49,7 @@ export class M3DLoaderDialogComponent {
      * Triggered when the 'save' toolbar button is pressed.
      * Opens a file picker.
      */
-    private onSavePressed() {
+    public onSavePressed() {
         if (this.loader.getMesh()) {
             this.dialogRef.close(this.loader.getMesh());
         } else {

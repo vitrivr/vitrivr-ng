@@ -31,7 +31,7 @@ export class QueryContainer implements QueryContainerInterface {
             case "AUDIO":
                 this._terms.set(type, new AudioQueryTerm());
                 break;
-            case "MODEL":
+            case "MODEL3D":
                 this._terms.set(type, new M3DQueryTerm());
                 break;
             default:

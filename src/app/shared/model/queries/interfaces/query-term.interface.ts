@@ -4,7 +4,7 @@
  * - QueryTermInterface implementation
  * - QueryTermComponent implementation (see /app/research/components/)
  */
-export type QueryTermType = "IMAGE" | "AUDIO" | "MOTION" | "MODEL";
+export type QueryTermType = "IMAGE" | "AUDIO" | "MOTION" | "MODEL3D";
 
 /**
  * General interface of a QueryTerm.

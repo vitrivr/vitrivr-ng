@@ -28,13 +28,12 @@ import {Feature} from "../shared/model/features/feature.model";
  * on the individual features so as to re-rank the results.
  */
 export class FeaturesComponent {
-
     /**
      * List of features that are currently displayed.
      *
      * @type {Map<any, any>}
      */
-    private features: Feature[] = [];
+    private _features: Feature[] = [];
 
     /**
      * Constructor: Registers with the QueryService to be updated about changes
@@ -52,8 +51,8 @@ export class FeaturesComponent {
      * Invoked whenever the QueryService reports that the features were changed. Causes the
      * features array to be updated and the view to be changed.
      */
-    private onQueryStateChange() {
-        this.features = this._queryService.getFeatures();
+    public onQueryStateChange() {
+        this._features = this._queryService.getFeatures();
     }
 
     /**
@@ -63,8 +62,17 @@ export class FeaturesComponent {
      * @param feature The feature that was changed.
      * @param event MdSliderChange event that contains the new value.
      */
-    private onValueChanged(feature: Feature, event: MdSliderChange) {
+    public onValueChanged(feature: Feature, event: MdSliderChange) {
         feature.weight = event.value;
         this._queryService.rerank();
+    }
+
+    /**
+     * Getter for features.
+     *
+     * @returns {Feature[]}
+     */
+    get features(): Feature[] {
+        return this._features;
     }
 }

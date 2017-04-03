@@ -26,14 +26,14 @@ export class ResearchComponent  {
     /**
      * Adds a new QueryContainer to the list.
      */
-    private addQueryTermContainer() {
+    public  addQueryTermContainer() {
         this.containers.push(new QueryContainer())
     }
 
     /**
      *
      */
-    search() {
+    public search() {
         let query = this._queryTermService.buildQuery(this.activeTypes, this.containers);
         this._queryTermService.query(query);
     }
@@ -43,7 +43,7 @@ export class ResearchComponent  {
      * @param type
      * @returns {boolean}
      */
-    isActive(type : MediaType) : boolean {
+    public isActive(type : MediaType) : boolean {
         return this.activeTypes.indexOf(type) > -1
     }
 
@@ -51,7 +51,7 @@ export class ResearchComponent  {
      *
      * @param type
      */
-    toggleActive(type: MediaType) {
+    public toggleActive(type: MediaType) {
         let idx = this.activeTypes.indexOf(type);
         if (idx == -1) {
             this.activeTypes.push(type);

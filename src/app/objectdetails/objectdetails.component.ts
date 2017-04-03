@@ -15,7 +15,6 @@ import {SegmentScoreContainer} from "../shared/model/features/scores/segment-sco
 
 
 export class ObjectdetailsComponent implements OnInit {
-
     /** */
     @ViewChild('audioplayer')
     private audioplayer: any;
@@ -28,13 +27,13 @@ export class ObjectdetailsComponent implements OnInit {
     private objectId: string;
 
     /** */
-    private mediaobject: MediaObject;
+    private _mediaobject: MediaObject;
 
     /** */
-    private metadata: MediaMetadata[] = [];
+    private _metadata: MediaMetadata[] = [];
 
     /** */
-    private segments: SegmentScoreContainer[] = [];
+    private _segments: SegmentScoreContainer[] = [];
 
 
 
@@ -66,7 +65,7 @@ export class ObjectdetailsComponent implements OnInit {
         /* Subscribes to the MetadataLookupService; whenever a result is returned, that result
          * is assigned to the local metadata field. */
         this._metadataLookup.observable().subscribe((msg) => {
-            this.metadata = msg.content
+            this._metadata = msg.content
         });
     }
 
@@ -103,13 +102,40 @@ export class ObjectdetailsComponent implements OnInit {
      *
      */
     private refresh() {
-        this.mediaobject = this._query.get(this.objectId).mediaObject;
-        this.segments = [];
+        this._mediaobject = this._query.get(this.objectId).mediaObject;
+        this._segments = [];
         this._query.get(this.objectId).getSegmentScores().forEach((value, key) => {
-            this.segments.push(value);
+            this._segments.push(value);
         });
-        this.segments.sort((a,b) => {
+        this._segments.sort((a, b) => {
             return b.getScore()-a.getScore();
         });
+    }
+
+    /**
+     * Getter for mediaobject.
+     *
+     * @returns {MediaObject}
+     */
+    get mediaobject(): MediaObject {
+        return this._mediaobject;
+    }
+
+    /**
+     * Getter for metdata
+     *
+     * @returns {MediaMetadata[]}
+     */
+    get metadata(): MediaMetadata[] {
+        return this._metadata;
+    }
+
+    /**
+     * Getter for segments.
+     *
+     * @returns {SegmentScoreContainer[]}
+     */
+    get segments(): SegmentScoreContainer[] {
+        return this._segments;
     }
 }

@@ -15,10 +15,10 @@ import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-o
 
 export class EvaluationComponent {
     /** */
-    private nameFieldValue: string = "";
+    private _evaluation: Evaluation;
 
     /** */
-    private evaluation: Evaluation;
+    public nameFieldValue: string = "";
 
     /** */
     public mediaobjects : MediaObjectScoreContainer[];
@@ -37,22 +37,31 @@ export class EvaluationComponent {
     /**
      *
      */
-    private onEvaluationButtonClick() {
-        if (!this.evaluation) {
-            this.evaluation = new Evaluation(this.nameFieldValue);
-            this.evaluation.start();
-        } else if (this.evaluation.isRunning()) {
-            this.evaluation.stop();
+    public onEvaluationButtonClick() {
+        if (!this._evaluation) {
+            this._evaluation = new Evaluation(this.nameFieldValue);
+            this._evaluation.start();
+        } else if (this._evaluation.isRunning()) {
+            this._evaluation.stop();
         }
     }
 
     /**
      *
      */
-    private onExportButtonClick() {
-        if (this.evaluation && !this.evaluation.isRunning()) {
-            this.evaluation.download();
+    public onExportButtonClick() {
+        if (this._evaluation && !this._evaluation.isRunning()) {
+            this._evaluation.download();
         }
+    }
+
+    /**
+     * Getter for evaluation.
+     *
+     * @returns {Evaluation}
+     */
+    get evaluation(): Evaluation {
+        return this._evaluation;
     }
 
     /**
@@ -60,7 +69,7 @@ export class EvaluationComponent {
      * @param msg
      */
     private processQueryStateChange(msg: QueryChange) {
-        if (this.evaluation && this.evaluation.isRunning()) {
+        if (this._evaluation && this._evaluation.isRunning()) {
             let event = null;
             switch (msg) {
                 case "STARTED":
@@ -76,7 +85,7 @@ export class EvaluationComponent {
                     this.updateGallery();
                     break;
             }
-            if (event) this.evaluation.addEvent(event);
+            if (event) this._evaluation.addEvent(event);
         }
     }
 
@@ -92,5 +101,14 @@ export class EvaluationComponent {
             cache.sort((a : MediaObjectScoreContainer,b : MediaObjectScoreContainer) => MediaObjectScoreContainer.compareAsc(a,b))
         }
         this.mediaobjects = cache;
+    }
+
+    /**
+     * Getter for namefield.
+     *
+     * @returns {QueryService}
+     */
+    get queryService(): QueryService {
+        return this._queryService;
     }
 }

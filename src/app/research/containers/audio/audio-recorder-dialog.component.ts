@@ -35,7 +35,7 @@ export class AudioRecorderDialogComponent {
     private timer: Subscription;
 
     /** Text representing the current status of the audio-recorder. */
-    private statustext : String;
+    private _statustext : String;
 
     /**
      *
@@ -53,14 +53,14 @@ export class AudioRecorderDialogComponent {
                 this.start = 0;
                 this.status = "Idle";
             } else if (this.status == "Recording") {
-                this.statustext = "Recording: " + TimeFormatterUtil.toTimer(x.timestamp - this.start);
+                this._statustext = "Recording: " + TimeFormatterUtil.toTimer(x.timestamp - this.start);
             } else if (this.status == "Playing") {
-                this.statustext = "Playing: " + TimeFormatterUtil.toTimer(x.timestamp - this.start) + " / " + TimeFormatterUtil.toTimer(this.recorder.duration() * 1000);
+                this._statustext = "Playing: " + TimeFormatterUtil.toTimer(x.timestamp - this.start) + " / " + TimeFormatterUtil.toTimer(this.recorder.duration() * 1000);
             } else if (this.status == "Idle") {
                 if (this.recorder.length() > 0) {
-                    this.statustext = "Idle (Audio available)";
+                    this._statustext = "Idle (Audio available)";
                 } else {
-                    this.statustext = "Idle (No audio)";
+                    this._statustext = "Idle (No audio)";
                 }
             }
         });
@@ -86,7 +86,7 @@ export class AudioRecorderDialogComponent {
      * Triggered whenever the record-button is pressed. Either starts recording or
      * stops it (if recorder is already recording).
      */
-    private onRecordButtonPressed() {
+    public onRecordButtonPressed() {
         if (this.recorder.isRecording()) {
             this.recorder.stop();
         } else if (this.recorder.isPlaying()) {
@@ -101,7 +101,7 @@ export class AudioRecorderDialogComponent {
      * Triggered whenever the play-button is pressed. Either starts playback or
      * stops it (if recorder is already playing something).
      */
-    private onPlayButtonPressed() {
+    public onPlayButtonPressed() {
         if (this.recorder.isPlaying()) {
             this.recorder.stop();
         } else if (this.recorder.isRecording()) {
@@ -116,7 +116,7 @@ export class AudioRecorderDialogComponent {
      * Triggered, whenever the upload button is pressed. Show the select
      * file dialog.
      */
-    private onLoadAudioPressed() {
+    public onLoadAudioPressed() {
         this.audioloader.nativeElement.click();
     }
 
@@ -124,12 +124,21 @@ export class AudioRecorderDialogComponent {
      * Triggered, whenever the save button is pressed. Converts the data recorded
      * in the audio recorder into 22050Hz Mono WAV and returns it to the caller.
      */
-    private onSaveButtonPressed() {
+    public onSaveButtonPressed() {
         if (this.recorder.data()) {
             this.dialogRef.close(WaveAudioUtil.toWav(this.recorder.data(), 1, 22050));
         } else {
             this.dialogRef.close();
         }
+    }
+
+    /**
+     * Getter for statustext.
+     *
+     * @returns {String}
+     */
+    get statustext(): String {
+        return this._statustext;
     }
 }
 

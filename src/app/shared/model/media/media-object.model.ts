@@ -8,7 +8,7 @@
 /**
  * MediaType's currently supported by Vitrivr. Feel free to add to the list ;-)
  */
-export type MediaType = "IMAGE" | "VIDEO" | "AUDIO" | "MODEL";
+export type MediaType = "IMAGE" | "VIDEO" | "AUDIO" | "MODEL3D";
 
 
 /**

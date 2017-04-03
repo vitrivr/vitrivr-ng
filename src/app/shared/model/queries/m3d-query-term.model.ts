@@ -9,7 +9,7 @@ export class M3DQueryTerm implements QueryTermInterface {
     public categories : string[] = ['sphericalharmonics', 'lightfield'];
 
     /** Type of query-term. Defaults to 'MODEL'. */
-    public readonly type: QueryTermType = "MODEL";
+    public readonly type: QueryTermType = "MODEL3D";
 
     /** */
     setting(setting: number): void {
