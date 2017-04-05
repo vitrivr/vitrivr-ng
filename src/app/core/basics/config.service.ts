@@ -1,29 +1,111 @@
 import {Injectable} from "@angular/core";
+import {Http} from "@angular/http";
 
 @Injectable()
 export class ConfigService {
-    private host = "localhost:4567";
-    private path = "api";
-    private version = "v1";
-    private protocol_http = "http://";
-    private protocol_ws ="ws://";
+    /** Context of the Cineast API. */
+    private static CONTEXT = "api";
 
-    /** BEGIN:  Publicly exposed configuration values. */
+    /** Version of the Cineast API. */
+    private static VERSION = "v1";
 
-    /** Path / URL to location where media object thumbnails will be stored. */
-    public readonly host_thumbnails = "http://gasser-hauser.internet-box.ch/vitrivr/";
+    /**
+     * Contains API specific configuration like hostname, port and protocols
+     * used for communication.
+     *
+     * @type {{host: string; port: number}}
+     */
+    private api = {
+        host : "localhost",
+        port : 4567,
+        protocol_http: "http",
+        protocol_ws: "ws",
 
-    /** Path / URL to location where media object's will be stored. */
-    public readonly host_object = "http://gasser-hauser.internet-box.ch/vitrivr/";
+        /* Default ping interval in milliseconds. */
+        ping_interval: 10000
+    };
 
-    /** Full URL to HTTP/RESTful endpoint for Vitrivr NG (IMPORTANT: Don't forget trailing /). */
-    public readonly endpoint_http = this.protocol_http + this.host + "/" + this.path + "/" + this.version + "/";
+    /**
+     * Contains information concerning access to resources like multimedia objects
+     * and thumbnails for preview.
+     *
+     * @type {{}}
+     */
+    private resources = {
+        /** Path / URL to location where media object thumbnails will be stored. */
+        host_thumbnails: "http://localhost/vitrivr",
 
-    /** Full URL to WebSocket endpoint for Vitrivr NG (IMPORTANT: Don't forget trailing /). */
-    public readonly endpoint_ws = this.protocol_ws + this.host + "/" + this.path + "/" + this.version + "/";
+        /** Path / URL to location where media object's will be stored. */
+        host_object: "http://localhost/vitrivr",
+    };
 
-    /* Default ping interval in milliseconds. */
-    public readonly ping_interval = 10000;
+    /**
+     * Default constructor.
+     *
+     * @param _http
+     */
+    constructor(_http: Http) {
+        let request = new XMLHttpRequest();
+        request.open('GET', 'config.json', false);  // `false` makes the request synchronous
+        request.send(null);
+        if (request.status === 200) {
+            let result = JSON.parse(request.responseText);
+            /* Load API configuration. */
+            if (result["api"]["host"]) this.api.host = result["api"]["host"];
+            if (result["api"]["port"]) this.api.port = result["api"]["port"];
+            if (result["api"]["protocol_http"]) this.api.protocol_http = result["api"]["protocol_http"];
+            if (result["api"]["protocol_ws"]) this.api.protocol_ws = result["api"]["protocol_ws"];
+            if (result["api"]["ping_interval"]) this.api.ping_interval = result["api"]["ping_interval"];
 
-    /** END:  Publicly exposed configuration values. */
+            /* Load resources configuration. */
+            if (result["resources"]["host_thumbnails"]) this.resources.host_thumbnails = result["resources"]["host_thumbnails"];
+            if (result["resources"]["host_object"]) this.resources.host_thumbnails = result["resources"]["host_object"];
+
+        }
+    }
+
+    /**
+     * Getter for Path/URL to host of thumbnails
+     *
+     * @return {string}
+     */
+    get host_thumbnails(): string {
+        return this.resources.host_thumbnails;
+    }
+
+    /**
+     * Getter for Path/URL to host of multimedia-objects
+     *
+     * @return {string}
+     */
+    get host_object(): string {
+        return this.resources.host_object;
+    }
+
+    /**
+     * Returns URL to WebSocket endpoint for Vitrivr NG.
+     *
+     * @return {string}
+     */
+    get endpoint_ws(): string {
+        return this.api.protocol_ws + "://" + this.api.host + ":" + this.api.port + "/" + ConfigService.CONTEXT + "/" + ConfigService.VERSION + "/";
+    }
+
+    /**
+     * Full URL to HTTP/RESTful endpoint for Vitrivr NG.
+     *
+     * @return {string}
+     */
+    get endpoint_http(): string {
+        return this.api.protocol_http + "://" + this.api.host + ":" + this.api.port + "/" + ConfigService.CONTEXT + "/" + ConfigService.VERSION + "/";
+    }
+
+    /**
+     * Getter for PING interval (WebSocket & RestFul interface).
+     *
+     * @return {number}
+     */
+    get ping_interval(): number {
+        return this.api.ping_interval;
+    }
 }

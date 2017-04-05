@@ -8,8 +8,7 @@ import {Subject} from "rxjs/Subject";
 
 export class CineastAPI extends AbstractWebsocketService {
     /**
-     * A Map conatining all the MessageTypes and associated BehaviourSubjects. Must
-     * be initialized in the constructor!
+     * Subject a Observer of the API can subscribe to.
      */
     private messages : Subject<[MessageType, string]>;
 
