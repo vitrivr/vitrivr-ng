@@ -59,7 +59,7 @@ export class ConfigService {
 
             /* Load resources configuration. */
             if (result["resources"]["host_thumbnails"]) this.resources.host_thumbnails = result["resources"]["host_thumbnails"];
-            if (result["resources"]["host_object"]) this.resources.host_thumbnails = result["resources"]["host_object"];
+            if (result["resources"]["host_object"]) this.resources.host_object = result["resources"]["host_object"];
 
         }
     }
