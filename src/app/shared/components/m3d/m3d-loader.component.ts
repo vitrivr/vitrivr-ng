@@ -87,17 +87,7 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
         this.container.nativeElement.appendChild(this.renderer.domElement);
 
         /* If src has been specified; Load the model file. */
-        if (this.src != null) {
-            this.http.get(this.src).subscribe(res => {
-                if (res.ok) {
-                    let path = this.src.split("/");
-                    let blob : any = res.blob();
-                    blob.lastModifiedDate = new Date();
-                    blob.name = path[path.length-1];
-                    this.loadMesh(<File>blob)
-                }
-            });
-        }
+        if (this.src != null) this.loadMeshFromPath(this.src);
 
         /* Start animation of render control. */
         this.animate();
@@ -177,8 +167,16 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
      *
      * @param file File to load the mesh from.
      */
-    public loadMesh(file: File) {
-        Model3DFileLoader.loadFile(file, (mesh : Mesh) => this.setMesh(mesh), this.manager);
+    public loadMeshFromFile(file: File) {
+        Model3DFileLoader.loadFromFile(file, (mesh : Mesh) => this.setMesh(mesh), this.manager);
+    }
+
+    /**
+     *
+     * @param path
+     */
+    public loadMeshFromPath(path: string) {
+        Model3DFileLoader.loadFromPath(path, (mesh : Mesh) => this.setMesh(mesh), this.manager);
     }
 
     /**

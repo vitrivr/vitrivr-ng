@@ -34,7 +34,7 @@ export class M3DLoaderDialogComponent {
     @HostListener('change', ['$event'])
     private onChange(event: any) {
         let URL = window.URL;
-        this.loader.loadMesh(event.target.files[0])
+        this.loader.loadMeshFromFile(event.target.files[0])
     };
 
     /**
