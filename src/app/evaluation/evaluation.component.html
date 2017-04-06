@@ -1,11 +1,31 @@
 <div style="padding:10px;">
-    <md-input-container>
-        <label> </label><input mdInput placeholder="Name" [(ngModel)]="nameFieldValue">
-    </md-input-container>
-    <button md-icon-button (click)="onEvaluationButtonClick()"><md-icon>{{(evaluation && evaluation.isRunning() == true) ? 'stop' : 'play_arrow'}}</md-icon></button>
-    <button md-icon-button (click)="onExportButtonClick()"><md-icon>file_download</md-icon></button>
-    <hr/>
 
+    <div style="display:flex;">
+        <div>
+            <md-input-container>
+                <label> </label><input mdInput placeholder="Name" [(ngModel)]="nameFieldValue">
+            </md-input-container>
+            <button md-button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()">Start evaluation</button>
+            <button md-button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()">Accept resultset</button>
+            <button md-button (click)="onEvaluationStopButtonClick()" [disabled]="!canBeStopped()">Finish evaluation</button>
+
+        </div>
+
+        <div class="spacer-flex"></div>
+
+        <div>
+            <button md-icon-button (click)="onDownloadButtonClick()" mdTooltip="Download all results."><md-icon>cloud_download</md-icon></button>
+        </div>
+
+        <div class="spacer-tiny"></div>
+
+        <md-chip-list>
+            <md-chip><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
+            <md-chip><strong>Results:</strong> {{numberOfResults()}}</md-chip>
+        </md-chip-list>
+    </div>
+
+    <hr/>
 
     <div style="padding:10px;">
         <md-grid-list cols="4" gutterSize="15px" rowHeight="1:1">
@@ -14,7 +34,17 @@
                     <span [style.width]="'80%'" [style.float]="'left'" class="truncate">{{mediaobject.mediaObject.name}}</span>
                     <span [style.width]="'80px'" [style.float]="'right'">{{"(" + mediaobject.getScorePercentage() + "%)"}}</span>
                 </md-grid-tile-header>
+
                 <img src="{{_resolverService.pathToThumbnailForSegment(mediaobject.mediaObject.mediatype, mediaobject.getRepresentativeSegment().mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'"/>
+
+                <md-grid-tile-footer *ngIf="objectCanBeRated(mediaobject)">
+                    <div style="display:flex; justify-content:center;">
+                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 0)"><md-icon [style.color]="colorForButton(mediaobject, 0)">star_rate</md-icon></button></div>
+                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 1)"><md-icon [style.color]="colorForButton(mediaobject, 1)">star_rate</md-icon></button></div>
+                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 2)"><md-icon [style.color]="colorForButton(mediaobject, 2)">star_rate</md-icon></button></div>
+                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 3)"><md-icon [style.color]="colorForButton(mediaobject, 3)">star_rate</md-icon></button></div>
+                    </div>
+                </md-grid-tile-footer>
             </md-grid-tile>
         </md-grid-list>
     </div>
