@@ -40,6 +40,9 @@ export class QueryService {
     /** ID that identifies an ongoing research. If it's null, then no research is ongoing. */
     private queryId : string = null;
 
+    /** Flag indicating whether a query is currently running. */
+    private running : boolean = false;
+
     /** List of all the features that are used the current query and hence known to the service. */
     private features: Feature[] =[];
 
@@ -89,7 +92,7 @@ export class QueryService {
      * @returns {boolean} true if research was issued, false otherwise.
      */
     public query(query : Query) : boolean {
-        if (this.queryId == null) {
+        if (!this.running) {
             this._api.send(query);
             return true;
         } else {
@@ -143,7 +146,7 @@ export class QueryService {
 
     /**
      * Returns an Observable that allows an Observer to be notified about
-     * state changes in the QueryService (Started, Ended, Resultset updated).
+     * state changes in the QueryService (RunningQueries, Finished, Resultset updated).
      *
      * @returns {Observable<T>}
      */
@@ -205,7 +208,7 @@ export class QueryService {
     }
 
     /**
-     * Starts a new Query in response to a QR_START message. Stores the
+     * Starts a new RunningQueries in response to a QR_START message. Stores the
      * queryId for further reference and purges the similarities and segment_to_object_map.
      *
      * This method triggers an observable change in the QueryService class.
@@ -217,6 +220,7 @@ export class QueryService {
         this.segment_to_object_map.clear();
         this.queryId = id;
         this.features = [];
+        this.running = true;
         this.stateSubject.next("STARTED" as QueryChange);
     }
 
@@ -285,18 +289,6 @@ export class QueryService {
     }
 
     /**
-     * Finalizes a running Query by setting the queryId field to null. Does
-     * some cleanup.
-     *
-     * This method triggers an observable change in the QueryService class.
-     */
-    private finalizeQuery() {
-        this.queryId = null;
-        this.segment_to_object_map.clear();
-        this.stateSubject.next("ENDED" as QueryChange);
-    }
-
-    /**
      * Creates a new Feature object for a named category. The method makes sure that for any given
      * category only a single Feature object is instantiated and returned.
      *
@@ -313,6 +305,17 @@ export class QueryService {
         this.features.push(feature);
         this.stateSubject.next("FEATURE");
         return feature;
+    }
+
+    /**
+     * Finalizes a running RunningQueries and does some cleanup.
+     *
+     * This method triggers an observable change in the QueryService class.
+     */
+    private finalizeQuery() {
+        this.segment_to_object_map.clear();
+        this.running = false;
+        this.stateSubject.next("ENDED" as QueryChange);
     }
 }
 
