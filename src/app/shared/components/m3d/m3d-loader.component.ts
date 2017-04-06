@@ -172,8 +172,9 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Tries to load a Mesh from a provided URL or path.
      *
-     * @param path
+     * @param path Path to the file containing the Mesh.
      */
     public loadMeshFromPath(path: string) {
         Model3DFileLoader.loadFromPath(path, (mesh : Mesh) => this.setMesh(mesh), this.manager);
