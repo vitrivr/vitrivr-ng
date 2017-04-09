@@ -810,4 +810,9 @@ hr.fade {
   height: 1px;
   background-image: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.75), transparent); }
 
+/** Default evaluation card. */
+.evaluation-card {
+  width: 400px;
+  margin: 10% auto; }
+
 /*# sourceMappingURL=styles.css.map */

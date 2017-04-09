@@ -4,19 +4,19 @@
         <span class="spacer-flex"></span>
 
 
-        <button md-icon-button (click)="querysidenav.toggle()"><md-icon>search</md-icon></button>
+        <button md-icon-button (click)="querysidenav.toggle()" mdTooltip="Toggle query sidebar"><md-icon>search</md-icon></button>
 
         <span class="spacer-medium"></span>
 
-        <a md-icon-button routerLink="/gallery" routerLinkActive="active"><md-icon>grid_on</md-icon></a>
+        <a md-icon-button routerLink="/gallery" routerLinkActive="active" mdTooltip="Navigate to gallery"><md-icon>grid_on</md-icon></a>
 
         <span class="spacer-medium"></span>
 
-        <a md-icon-button routerLink="/evaluation" routerLinkActive="active"><md-icon>assessment</md-icon></a>
+        <a md-icon-button routerLink="/evaluation" routerLinkActive="active" mdTooltip="Navigate to evaluation module"><md-icon>assessment</md-icon></a>
 
         <span class="spacer-medium"></span>
 
-        <button md-icon-button  (click)="featuressidenav.toggle()"><md-icon>storage</md-icon></button>
+        <button md-icon-button  (click)="featuressidenav.toggle()" mdTooltip="Toggle features & weights sidebar"><md-icon>storage</md-icon></button>
 
         <span class="spacer-flex"></span>
         <api-status><md-icon>av timer</md-icon></api-status>
