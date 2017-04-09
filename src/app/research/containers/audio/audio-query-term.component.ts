@@ -7,22 +7,28 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
 @Component({
     selector: 'qt-audio',
     template:`
-        <img #previewimg style="width:200px; height:200px; border:solid 1px;" (click)="onViewerClicked()"/>
-        <audio #player controls style="width:200px;"></audio>
-        
+
         <div style="display:flex; align-items: center; justify-content: center;">
-            <md-icon class="muted">fingerprint</md-icon>
+            <audio #player controls style="width:150px"></audio> <button md-icon-button (click)="onViewerClicked()"><md-icon>more_horiz</md-icon></button>
+        </div>
+        <div style="display:flex; align-items: center; justify-content: center;">
+            <md-icon class="muted" mdTooltip="Audio fingerprinting">fingerprint</md-icon>
             <div class="toolbar-spacer-small"></div>
             <md-slider min="0" max="3" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></md-slider>
             <div class="toolbar-spacer-small"></div>
-            <md-icon class="muted">record_voice_over</md-icon>
-        </div>`
+            <md-icon class="muted" mdTooltip="Query-by-Humming">record_voice_over</md-icon>
+        </div>
+        <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>
+        `
+
+
 })
 
 export class AudioQueryTermComponent {
-
+    /** Component used to display a preview of the recorded/selected audio. */
     @ViewChild('player') private player: any;
 
+    /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the query-settings. */
     @Input() audioTerm: AudioQueryTerm;
 
     /** Default value of the slider. */
@@ -33,7 +39,7 @@ export class AudioQueryTermComponent {
      *
      * @param dialog
      */
-    constructor(public dialog: MdDialog) {}
+    constructor(private dialog: MdDialog) {}
 
     /**
      * This method is invoked whenever the slider value changes.
@@ -52,7 +58,7 @@ export class AudioQueryTermComponent {
      */
     public onViewerClicked() {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent);
-        dialogRef.afterClosed().subscribe(result => {
+        let subscription = dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 result.then((data: Blob) => {
                     this.player.nativeElement.src = URL.createObjectURL(data);
@@ -63,6 +69,7 @@ export class AudioQueryTermComponent {
                     reader.readAsDataURL(data);
                 })
             }
+            subscription.unsubscribe();
         });
     }
 }

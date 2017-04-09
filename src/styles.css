@@ -804,4 +804,10 @@ div.weight-distribution {
   text-align: left;
   text-decoration: none; }
 
+/* */
+hr.fade {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.75), transparent); }
+
 /*# sourceMappingURL=styles.css.map */

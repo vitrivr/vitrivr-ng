@@ -22,7 +22,7 @@ export class M3DLoaderDialogComponent {
      *
      * @param dialogRef
      */
-    constructor(public dialogRef: MdDialogRef<M3DLoaderDialogComponent>) {
+    constructor(private dialogRef: MdDialogRef<M3DLoaderDialogComponent>) {
     }
 
     /**

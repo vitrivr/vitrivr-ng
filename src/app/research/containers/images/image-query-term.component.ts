@@ -1,8 +1,9 @@
-import {Component, ViewChild, Input} from "@angular/core";
+import {Component, ViewChild, Input, OnDestroy, OnInit} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
 import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'qt-image',
@@ -20,10 +21,11 @@ import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
             <div class="toolbar-spacer-small"></div>
             <md-icon class="muted"  mdTooltip="Example image">insert_photo</md-icon>
         </div>
+        <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>
     `
 })
 
-export class ImageQueryTermComponent {
+export class ImageQueryTermComponent implements OnInit, OnDestroy {
 
     /** Component used to display a preview of the selected AND/OR sketched image. */
     @ViewChild('previewimg') private previewimg: any;
@@ -37,21 +39,35 @@ export class ImageQueryTermComponent {
     /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
     public mode3D : boolean = false;
 
+    /** */
+    private dialogAfterOpenSubscription : Subscription;
+
     /**
      * Default constructor.
      *
      * @param dialog
      */
-    constructor(public dialog: MdDialog) {
-        this.dialog.afterOpen.subscribe(dialogRef => {
+    constructor(private dialog: MdDialog) {}
+
+    /**
+     * Called when component is initialized; subscribes to MDDialog afterOpen subscription.
+     */
+    public ngOnInit() {
+        this.dialogAfterOpenSubscription = this.dialog.afterOpen.subscribe(dialogRef => {
             let component = <SketchDialogComponent> dialogRef.componentInstance;
-            let switched = false;
 
             /* Transfer current image if mode hasn't changed. */
             if (!this.mode3D) {
                 component.sketchpad.setImageBase64(this.previewimg.nativeElement.src);
             }
         });
+    }
+
+    /**
+     * Called when component is destroyed; un-subscribes from MDDialog afterOpen subscription.
+     */
+    public ngOnDestroy() {
+        this.dialogAfterOpenSubscription.unsubscribe();
     }
 
     /**
@@ -93,11 +109,12 @@ export class ImageQueryTermComponent {
         }
 
         /* Register the onClose callback. */
-        dialogRef.afterClosed().subscribe(result => {
+        let subscription = dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.previewimg.nativeElement.src = result;
                 this.imageTerm.data = result;
             }
+            subscription.unsubscribe();
         });
     }
 }

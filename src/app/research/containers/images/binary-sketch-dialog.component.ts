@@ -24,7 +24,7 @@ export class BinarySketchDialogComponent implements AfterViewInit {
      *
      * @param dialogRef
      */
-    constructor(public dialogRef: MdDialogRef<BinarySketchDialogComponent>) {
+    constructor(private dialogRef: MdDialogRef<BinarySketchDialogComponent>) {
     }
 
 

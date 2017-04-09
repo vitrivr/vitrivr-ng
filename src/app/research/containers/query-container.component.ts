@@ -1,9 +1,6 @@
 import {Component, Input} from "@angular/core";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
-import {QueryContainer} from "../../shared/model/queries/query-container.model";
-import {ImageQueryTerm} from "../../shared/model/queries/image-query-term.model";
-import {AudioQueryTerm} from "../../shared/model/queries/audio-query-term.model";
-import {QueryTermType, QueryTermInterface} from "../../shared/model/queries/interfaces/query-term.interface";
+import {QueryTermType} from "../../shared/model/queries/interfaces/query-term.interface";
 
 @Component({
     selector: 'query-container',
@@ -26,7 +23,9 @@ import {QueryTermType, QueryTermInterface} from "../../shared/model/queries/inte
             </md-card-header>
             <md-card-content>
                 <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
+                
                 <qt-audio *ngIf="containerModel.hasTerm('AUDIO')" [audioTerm]="containerModel.getTerm('AUDIO')"></qt-audio>
+                                
                 <qt-m3d *ngIf="containerModel.hasTerm('MODEL3D')" [m3dTerm]="containerModel.getTerm('MODEL3D')"></qt-m3d>
             </md-card-content>
         </md-card>

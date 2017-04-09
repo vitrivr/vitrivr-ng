@@ -24,7 +24,7 @@ export class SketchDialogComponent implements OnInit {
      *
      * @param dialogRef
      */
-    constructor(public dialogRef: MdDialogRef<SketchDialogComponent>) {
+    constructor(private dialogRef: MdDialogRef<SketchDialogComponent>) {
     }
 
 

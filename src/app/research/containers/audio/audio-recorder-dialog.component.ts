@@ -41,7 +41,7 @@ export class AudioRecorderDialogComponent {
      *
      * @param dialogRef
      */
-    constructor(public dialogRef: MdDialogRef<AudioRecorderDialogComponent>) {
+    constructor(private dialogRef: MdDialogRef<AudioRecorderDialogComponent>) {
         this.timer = Observable.timer(0, 500).timestamp().subscribe((x) => {
             if (this.recorder.isPlaying() && this.status != "Playing") {
                 this.start = x.timestamp;
