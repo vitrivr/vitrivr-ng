@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {MediaMetadata} from "../shared/model/media/media-metadata.model";
 import {MetadataLookupService} from "../core/lookup/metadata-lookup.service";
@@ -6,6 +6,7 @@ import {QueryService} from "../core/queries/query.service";
 import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
+import {Subscription} from "rxjs";
 
 @Component({
     moduleId: module.id,
@@ -14,7 +15,7 @@ import {SegmentScoreContainer} from "../shared/model/features/scores/segment-sco
 })
 
 
-export class ObjectdetailsComponent implements OnInit {
+export class ObjectdetailsComponent implements OnInit, OnDestroy{
     /** */
     @ViewChild('audioplayer')
     private audioplayer: any;
@@ -35,7 +36,11 @@ export class ObjectdetailsComponent implements OnInit {
     /** */
     private _segments: SegmentScoreContainer[] = [];
 
+    /** Reference to the Subscription for Router. */
+    private routeSubscription : Subscription;
 
+    /** Reference to the Subscription for MetadataLookupService. */
+    private metadataLookupSubscription : Subscription;
 
     /**
      *
@@ -57,29 +62,38 @@ export class ObjectdetailsComponent implements OnInit {
      * Invoked once when the component is initialized. Subscribes to the different services
      * and installs appropriate callback methods.
      */
-    ngOnInit() {
+    public ngOnInit() {
         /* Subscribes to changes of the Router class. Whenever the parameter becomes available,
          * the onParamsAvailable method is invoked. */
-        this._route.params.subscribe((params: Params) => this.onParamsAvailable(params));
+        this.routeSubscription = this._route.params.subscribe((params: Params) => this.onParamsAvailable(params));
 
         /* Subscribes to the MetadataLookupService; whenever a result is returned, that result
          * is assigned to the local metadata field. */
-        this._metadataLookup.observable().subscribe((msg) => {
+        this.metadataLookupSubscription = this._metadataLookup.observable().subscribe((msg) => {
             this._metadata = msg.content
         });
     }
 
     /**
+     * Unsubscribes from all active subscriptions.
+     */
+    public ngOnDestroy() {
+        this.metadataLookupSubscription.unsubscribe();
+        this.routeSubscription.unsubscribe();
+        this.metadataLookupSubscription = null;
+        this.routeSubscription = null;
+    }
+
+    /**
+     * Invoked when parameters from the ActiveRouter become available.
      *
-     * @param params
+     * @param params Parameters.
      */
     private onParamsAvailable(params: Params) {
         this.objectId = params['objectId'];
         if (this.objectId && this._query.has(this.objectId)) {
             this._metadataLookup.lookup(this.objectId);
             this.refresh();
-        } else {
-            this._router.navigate(['/gallery']);
         }
     }
 
