@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import OBJLoader from 'three-obj-loader';
-import STLLoader from 'three-stl-loader';
+import OBJLoaderProto from 'three-obj-loader';
+import STLLoaderProto from 'three-stl-loader';
 
-OBJLoader(THREE);
-STLLoader(THREE);
+OBJLoaderProto(THREE);
+let STLLoader = STLLoaderProto(THREE);
 
 import LoadingManager = THREE.LoadingManager;
 import BufferGeometry = THREE.BufferGeometry;
@@ -74,7 +74,7 @@ export class Model3DFileLoader {
      * @param manager LoadingManager to use together with the loader class.
      */
     public static loadSTLFromPath(path: string, callback: Function, manager?: LoadingManager) {
-        let loader =  new (THREE as any).STLLoader(manager);
+        let loader =  new STLLoader(manager);
         loader.load(path, (geometry: any) => {
             if (geometry instanceof BufferGeometry) {
                 callback(new THREE.Mesh(new THREE.Geometry().fromBufferGeometry(geometry), new THREE.MeshNormalMaterial()));
@@ -112,9 +112,10 @@ export class Model3DFileLoader {
      * @param manager LoadingManager to use together with the loader class.
      */
     public static loadFromPath(path: string, callback : Function, manager?: LoadingManager) {
-        if (path.endsWith(".obj")) {
+        let lpath = path.toLowerCase();
+        if (lpath.endsWith(".obj")) {
             Model3DFileLoader.loadOBJFromPath(path, callback, manager);
-        } else if (path.endsWith(".stl")) {
+        } else if (lpath.endsWith(".stl")) {
             Model3DFileLoader.loadSTLFromPath(path, callback, manager);
         } else {
             console.log("File '" + path + "' has an unsupported format.");
