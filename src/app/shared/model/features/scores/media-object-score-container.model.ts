@@ -16,7 +16,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
     private segmentScores : Map<string, SegmentScoreContainer> = new Map();
 
-    /** Reference to the actual MediaObject this container belongst to. */
+    /** Reference to the actual MediaObject this container belongs to. */
     public mediaObject? : MediaObject;
 
     /**
@@ -44,7 +44,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     public getRepresentativeSegment() : SegmentScoreContainer {
         let representativeSegment : SegmentScoreContainer;
         this.segmentScores.forEach((value, key) => {
-            if (representativeSegment == undefined || representativeSegment.getScore() < value.getScore()) {
+            if (representativeSegment == undefined || representativeSegment.score < value.score) {
                 representativeSegment = value
             }
         });
@@ -80,7 +80,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @param func The weight function that should be used to calculate the score.
      */
     public update(features: Feature[], func: WeightFunction) {
-        this.score = func.scoreForObject(features, this);
+        this._score = func.scoreForObject(features, this);
     }
 
     /**

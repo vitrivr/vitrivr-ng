@@ -15,7 +15,7 @@ import {Similarity} from "../../media/similarity.model";
  */
 export abstract class ScoreContainer {
     /** Score value. How it is obtained is up to the implementing class. */
-    protected score : number = 0;
+    protected _score : number = 0;
 
     /**
      * Adds a Similarity object to the ScoreContainer. Usually, that object is somehow used to influence,
@@ -39,15 +39,15 @@ export abstract class ScoreContainer {
     /**
      * Getter for the container's score.
      */
-    public getScore() : number {
-        return this.score;
+    get score() : number {
+        return this._score;
     };
 
     /**
      * Getter for the container's score as percent value.
      */
     public getScorePercentage() : number {
-        return Math.round(this.getScore() * 1000)/10
+        return Math.round(this._score * 1000)/10
     }
 
     /**
@@ -55,10 +55,10 @@ export abstract class ScoreContainer {
      * are sorted in a descending order. Can be used with Array.prototype.sort();
      */
     public static compareDesc (a : ScoreContainer , b : ScoreContainer) {
-        if (a.getScore() < b.getScore()) {
+        if (a._score < b._score) {
             return -1;
         }
-        if (a.getScore() > b.getScore()) {
+        if (a._score > b._score) {
             return 1;
         }
 
@@ -70,10 +70,10 @@ export abstract class ScoreContainer {
      * are sorted in a ascending order. Can be used with Array.prototype.sort();
      */
     public static compareAsc (a : ScoreContainer , b : ScoreContainer) {
-        if (a.getScore() > b.getScore()) {
+        if (a._score > b._score) {
             return -1;
         }
-        if (a.getScore() < b.getScore()) {
+        if (a._score < b._score) {
             return 1;
         }
 

@@ -19,8 +19,8 @@ export class AverageWeightFunction implements WeightFunction {
         let count = 0;
         mediaObjectScoreContainer.getSegmentScores().forEach((value: SegmentScoreContainer, key: string) => {
             value.update(features, this);
-            if (value.getScore() > 0) {
-                score += value.getScore();
+            if (value.score > 0) {
+                score += value.score;
                 count += 1;
             }
         });

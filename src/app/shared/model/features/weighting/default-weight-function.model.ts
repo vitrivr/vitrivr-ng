@@ -18,7 +18,7 @@ export class DefaultWeightFunction implements WeightFunction {
         let score = 0;
         mediaObjectScoreContainer.getSegmentScores().forEach((value : SegmentScoreContainer, key: string) => {
             value.update(features, this);
-            score = Math.max(score, value.getScore())
+            score = Math.max(score, value.score)
         });
 
         return score;

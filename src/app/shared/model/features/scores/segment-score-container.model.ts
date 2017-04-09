@@ -60,7 +60,7 @@ export class SegmentScoreContainer extends ScoreContainer {
      * @param func The weighting function that should be used to calculate the score.
      */
     public update(features: Feature[], func: WeightFunction) {
-        this.score = func.scoreForSegment(features, this);
+        this._score = func.scoreForSegment(features, this);
     }
 
     /**

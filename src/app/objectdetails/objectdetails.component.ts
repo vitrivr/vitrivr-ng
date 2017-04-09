@@ -108,7 +108,7 @@ export class ObjectdetailsComponent implements OnInit {
             this._segments.push(value);
         });
         this._segments.sort((a, b) => {
-            return b.getScore()-a.getScore();
+            return b.score-a.score;
         });
     }
 
