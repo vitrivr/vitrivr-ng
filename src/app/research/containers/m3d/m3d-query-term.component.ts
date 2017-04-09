@@ -8,7 +8,8 @@ import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.comp
 @Component({
     selector: 'qt-m3d',
     template:`
-        <m3d-loader #preview  [width]="200" [height]="200" [interaction]="false" (click)="onViewerClicked()"></m3d-loader>
+        <m3d-loader #preview  [width]="150" [height]="150" [interaction]="false" (click)="onViewerClicked()"></m3d-loader>
+        <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>
     `
 })
 
@@ -30,7 +31,7 @@ export class M3DQueryTermComponent {
      * @param dialog
      * @param _renderer
      */
-    constructor(public dialog: MdDialog) {}
+    constructor(private dialog: MdDialog) {}
 
     /**
      * Triggered whenever the m3d-loader component is clicked by the user. Causes the
@@ -38,12 +39,13 @@ export class M3DQueryTermComponent {
      */
     public onViewerClicked() {
         let dialogRef = this.dialog.open(M3DLoaderDialogComponent);
-        dialogRef.afterClosed().subscribe((result : Mesh) => {
+        let subscription = dialogRef.afterClosed().subscribe((result : Mesh) => {
             if (result) {
                 this.preview.setMesh(result);
                 this.preview.render();
                 this.m3dTerm.data =  "data:application/3d-json;base64," + btoa(JSON.stringify(result.geometry.toJSON().data));
             }
+            subscription.unsubscribe();
         });
     }
 }
