@@ -1,19 +1,24 @@
 import {Component, ViewChild, Input} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
-import {MdDialog} from '@angular/material';
+import {MdDialog, MdDialogRef} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
+import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
 
 @Component({
     selector: 'qt-image',
     template:`
-        <img #previewimg style="width:200px; height:200px; border:solid 1px;" (click)="onViewerClicked()"/>
+        <img #previewimg style="width:150px; height:150px; border:solid 1px;" (click)="onViewerClicked()"/>
+        
         <div style="display:flex; align-items: center; justify-content: center;">
-            <md-icon class="muted">brush</md-icon>
+            <md-slide-toggle [(ngModel)]="mode3D" (change)="onModeToggled($event)">3D sketch mode</md-slide-toggle>
+        </div>
+        
+        <div style="display:flex; align-items: center; justify-content: center;" *ngIf="!mode3D">
+            <md-icon class="muted" mdTooltip="Rough sketch">brush</md-icon>
             <div class="toolbar-spacer-small"></div>
             <md-slider min="0" max="4" step="1" value="2" [(ngModel)]="sliderSetting" (change)="onSettingsChanged($event)"></md-slider>
             <div class="toolbar-spacer-small"></div>
-            <md-icon class="muted">insert_photo</md-icon>
-            <md-slide-toggle [(ngModel)]="toggle3DSetting" (change)="onSettingsChanged($event)">3D</md-slide-toggle>
+            <md-icon class="muted"  mdTooltip="Example image">insert_photo</md-icon>
         </div>
     `
 })
@@ -30,27 +35,48 @@ export class ImageQueryTermComponent {
     public sliderSetting : number = 2;
 
     /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
-    public toggle3DSetting : boolean = false;
+    public mode3D : boolean = false;
 
     /**
      * Default constructor.
      *
      * @param dialog
      */
-    constructor(public dialog: MdDialog) {}
+    constructor(public dialog: MdDialog) {
+        this.dialog.afterOpen.subscribe(dialogRef => {
+            let component = <SketchDialogComponent> dialogRef.componentInstance;
+            let switched = false;
+
+            /* Transfer current image if mode hasn't changed. */
+            if (!this.mode3D) {
+                component.sketchpad.setImageBase64(this.previewimg.nativeElement.src);
+            }
+        });
+    }
 
     /**
-     * Triggered whenever either the slider is dragged or the toggle3DSetting switch
-     * is toggled. Adjust the settings in the ImageQueryTerm.
+     * Triggered whenever either the slider for the query settings is used.
+     * Adjusts the settings in the ImageQueryTerm.
      *
      * @param event
      */
     public onSettingsChanged(event:any) {
-        if (this.toggle3DSetting) {
-            this.imageTerm.setting(100);
+        this.imageTerm.setting(this.sliderSetting);
+    }
+
+    /**
+     * Triggered whenever the Mode 3D Slide toggle is used to switch between
+     * 3D-sketch mode and normal mode.
+     *
+     * @param event
+     */
+    public onModeToggled(event:any) {
+        if (this.mode3D) {
+            this.sliderSetting = 101;
         } else {
-            this.imageTerm.setting(this.sliderSetting);
+            this.sliderSetting = 2;
         }
+        this.imageTerm.setting(this.sliderSetting);
     }
 
     /**
@@ -58,8 +84,15 @@ export class ImageQueryTermComponent {
      * be edited.
      */
     public onViewerClicked() {
-        let dialogRef = this.dialog.open(SketchDialogComponent);
-        dialogRef.componentInstance.getSketchPad().setImageBase64(this.previewimg.nativeElement.src);
+        /* Initialize the correct dialog-component. */
+        let dialogRef = null;
+        if (this.mode3D) {
+            dialogRef = this.dialog.open(BinarySketchDialogComponent)
+        } else {
+            dialogRef = this.dialog.open(SketchDialogComponent)
+        }
+
+        /* Register the onClose callback. */
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.previewimg.nativeElement.src = result;

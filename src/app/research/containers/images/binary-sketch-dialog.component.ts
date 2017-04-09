@@ -1,14 +1,14 @@
-import {Component, ViewChild, HostListener, OnInit} from '@angular/core';
+import {Component, ViewChild, HostListener, OnInit, AfterViewInit} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.component";
 
 @Component({
     moduleId: module.id,
-    selector: 'sketchpad',
-    templateUrl: 'sketch-dialog.component.html'
+    selector: 'binary-sketchpad',
+    templateUrl: 'binary-sketch-dialog.component.html'
 })
 
-export class SketchDialogComponent implements OnInit {
+export class BinarySketchDialogComponent implements AfterViewInit {
     /** Hidden input for image upload. */
     @ViewChild('imageloader')
     private imageloader: any;
@@ -17,21 +17,22 @@ export class SketchDialogComponent implements OnInit {
     @ViewChild('sketch')
     private _sketchpad: SketchCanvas;
 
-    /** Default color (black). */
+    /** Default color (black) . */
     public color : string = "#000000";
 
     /**
      *
      * @param dialogRef
      */
-    constructor(public dialogRef: MdDialogRef<SketchDialogComponent>) {
+    constructor(public dialogRef: MdDialogRef<BinarySketchDialogComponent>) {
     }
 
 
     /**
      * Invoked after initialization. applies the binary mode, if specified.
      */
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
+        this.onClearCanvasClicked();
     }
 
     /**
@@ -78,7 +79,9 @@ export class SketchDialogComponent implements OnInit {
      * Clears the canvas
      */
     public onClearCanvasClicked() {
-        this._sketchpad.clearCanvas();
+        this._sketchpad.setActiveColor("#000000");
+        this._sketchpad.fillCanvas();
+        this._sketchpad.setActiveColor("#FFFFFF");
     }
 
     /**
@@ -88,14 +91,5 @@ export class SketchDialogComponent implements OnInit {
      */
     public onFillCanvasClicked() {
         this._sketchpad.fillCanvas();
-    }
-
-    /**
-     * Triggered when the 'load-image' menu-item is pressed.
-     *
-     * Opens a file-chooser.
-     */
-    public onLoadImage() {
-        this.imageloader.nativeElement.click();
     }
 }

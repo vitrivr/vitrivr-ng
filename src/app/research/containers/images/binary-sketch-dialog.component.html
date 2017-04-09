@@ -1,9 +1,15 @@
 <md-toolbar color="primary">
-    <md-icon [(colorPicker)]="color"  [cpPosition]="'bottom'" [style.color]="color" [cpPositionOffset]="'50%'" [cpPositionRelativeToArrow]="true" (colorPickerChange)="onColorChange($event)">palette</md-icon>
-    <span class="spacer-small"></span>
+    <span [style.width]="'15px'"[style.height]="'15px'" [style.background-color]="'#FFFFFF'" [style.border-style]="color == '#FFFFFF' ? 'solid' : 'none'" [style.border-color]="'red'" (click)="onColorChange('#FFFFFF')"></span>
+
+    <span class="spacer-tiny"></span>
+
+    <span [style.width]="'15px'"[style.height]="'15px'" [style.background-color]="'#000000'" [style.border-style]="color == '#000000' ? 'solid' : 'none'" [style.border-color]="'red'" (click)="onColorChange('#000000')"></span>
+
+    <span class="spacer-tiny"></span>
 
     <md-icon>line_weight</md-icon>
     <span class="spacer-tiny"></span>
+
     <md-slider min="1" max="100" step="1" value="1" [style.min-width]="'100px'" (change)="onLineSizeChange($event)" tickInterval="auto"></md-slider>
     <span class="spacer-flex"></span>
 
@@ -16,19 +22,13 @@
     </button>
 
     <md-menu #toolbarMenu="mdMenu">
-        <button md-menu-item (click)="onLoadImage()">
-            <md-icon>file_upload</md-icon>
-            <span>Load</span>
-        </button>
-        <button md-menu-item (click)="onFillCanvasClicked()">
-            <md-icon>format_color_fill</md-icon>
-            <span>Fill canvas</span>
-        </button>
         <button md-menu-item (click)="onClearCanvasClicked()">
             <md-icon>clear</md-icon>
             <span>Clear canvas</span>
         </button>
     </md-menu>
 </md-toolbar>
+
 <sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
+
 <input #imageloader type="file" hidden>
