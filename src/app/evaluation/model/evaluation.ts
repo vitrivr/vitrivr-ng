@@ -52,7 +52,7 @@ export class Evaluation {
     public accept(results: MediaObjectScoreContainer[]): EvaluationState {
         if (this._state == EvaluationState.RunningQueries) {
             results.forEach((value : MediaObjectScoreContainer, index : number) => {
-                this.ratings.push(new EvaluationRating(value.mediaObject.objectId, index));
+                this.ratings.push(new EvaluationRating(value.mediaObject.objectId, index, value.score));
             });
             this._state = EvaluationState.RankingResults;
         }

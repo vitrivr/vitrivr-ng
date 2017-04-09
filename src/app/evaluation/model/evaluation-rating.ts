@@ -3,7 +3,7 @@ export class EvaluationRating {
     private _rating = -1;
 
     /* Default constructor. */
-    constructor(public readonly id: String, public readonly rank: number) {}
+    constructor(public readonly id: String, public readonly rank: number, public relevance: number) {}
 
 
     /**
