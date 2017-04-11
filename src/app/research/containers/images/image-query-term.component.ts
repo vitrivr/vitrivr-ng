@@ -86,9 +86,9 @@ export class ImageQueryTermComponent implements OnInit, OnDestroy {
      *
      * @param event
      */
-    public onModeToggled(event:any) {
+    public onModeToggled(event: any) {
         if (this.mode3D) {
-            this.sliderSetting = 101;
+            this.sliderSetting = 100;
         } else {
             this.sliderSetting = 2;
         }
@@ -109,12 +109,11 @@ export class ImageQueryTermComponent implements OnInit, OnDestroy {
         }
 
         /* Register the onClose callback. */
-        let subscription = dialogRef.afterClosed().subscribe(result => {
+        dialogRef.afterClosed().first().subscribe(result => {
             if (result) {
                 this.previewimg.nativeElement.src = result;
                 this.imageTerm.data = result;
             }
-            subscription.unsubscribe();
         });
     }
 }
