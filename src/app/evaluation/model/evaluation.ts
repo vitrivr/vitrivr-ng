@@ -3,11 +3,9 @@ import {EvaluationRating} from "./evaluation-rating";
 import {EvaluationState} from "./evaluation-state";
 import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
 import {TimeFormatterUtil} from "../../shared/util/TimeFormatterUtil";
+import {EvaluationScenario} from "./evaluation-scenario";
 
 export class Evaluation {
-
-    /** Unique ID for the evaluation. */
-    private uid: string;
 
     /** Date/time of the begin of the current evaluation. */
     private begin: Date;
@@ -18,18 +16,54 @@ export class Evaluation {
     /** State indicator; true if evaluation is running and false otherwise. */
     private _state: EvaluationState = EvaluationState.NotStarted;
 
+    /** */
+    private _scenario: EvaluationScenario;
+
     /** List of evaluation events. */
     private events: EvaluationEvent[] = [];
 
     /** List of evaluation events. */
     private ratings: EvaluationRating[] = [];
 
+
+    private _k : number;
+
     /**
      *
-     * @param name
-     * @param start
+     * @param _name
+     * @param _k
      */
-    constructor(private name : string) {}
+    constructor(scenario: EvaluationScenario) {
+        this._scenario = scenario;
+        this._k = scenario.k;
+    }
+
+    /**
+     * Getter for scenario.
+     *
+     * @return {EvaluationScenario}
+     */
+    get scenario(): EvaluationScenario {
+        return this._scenario;
+    }
+
+    /**
+     * Getter for evaluation state.
+     *
+     * @returns {EvaluationState}
+     */
+    get state(): EvaluationState {
+        return this._state;
+    }
+
+    /**
+     * Getter for the K.
+     *
+     * @return {number}
+     */
+    get k(): number {
+        return this._k;
+    }
 
     /**
      * Starts the evaluation. Sets the start timestamp and changes the state to running.
@@ -81,15 +115,6 @@ export class Evaluation {
         this._state = EvaluationState.Aborted;
         this.end = new Date();
         return this.state;
-    }
-
-    /**
-     * Getter for evaluation state.
-     *
-     * @returns {EvaluationState}
-     */
-    get state(): EvaluationState {
-        return this._state;
     }
 
     /**
@@ -158,7 +183,6 @@ export class Evaluation {
      * @returns {number}
      */
     public precisionAtK(k: number): number {
-
         /* Check; k must be > 0. */
         if (k <= 0) return 0;
 
@@ -189,5 +213,24 @@ export class Evaluation {
             dcg += key.rating/(Math.log(2+value));
         });
         return dcg;
+    }
+
+    /**
+     * Returns a compact JSON representation of the evaluation.
+     */
+    public toObject() : any {
+        return {
+            scenario: this._scenario.id,
+            begin : this.begin,
+            end: this.end,
+            events: this.events,
+            ratings: this.ratings,
+            complete: (this.state == EvaluationState.Finished),
+            dcg: this.discountedCumulativeGain,
+            pAt5: this.precisionAtK(5),
+            pAt10: this.precisionAtK(10),
+            pAt15: this.precisionAtK(15),
+            pAt20: this.precisionAtK(20)
+        };
     }
 }

@@ -1,28 +1,27 @@
 <div style="padding:10px;">
-
     <div style="display:flex;">
         <div>
-            <md-input-container>
-                <label> </label><input mdInput placeholder="Name" [(ngModel)]="nameFieldValue">
-            </md-input-container>
-            <button md-button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()">Start evaluation</button>
-            <button md-button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()">Accept resultset</button>
-            <button md-button (click)="onEvaluationStopButtonClick()" [disabled]="!canBeStopped()">Finish evaluation</button>
-
+            <md-chip-list>
+                <md-chip (click)="onScenarioClick()"><strong>Scenario:</strong> {{scenarioDescriptor()}}</md-chip>
+                <md-chip><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
+                <md-chip><strong>Results:</strong> {{numberOfResults()}}</md-chip>
+            </md-chip-list>
         </div>
 
         <div class="spacer-flex"></div>
 
         <div>
-            <button md-icon-button (click)="onDownloadButtonClick()" mdTooltip="Download all results."><md-icon>cloud_download</md-icon></button>
+            <button md-icon-button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()" mdTooltip="Start scenario"><md-icon>flag</md-icon></button>
+            <button md-icon-button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()" mdTooltip="Accept resultset"><md-icon>thumb_up</md-icon></button>
+            <button md-icon-button (click)="onEvaluationStopButtonClick()" [disabled]="!canBeStopped()" mdTooltip="Complete scenario"><md-icon>done</md-icon></button>
         </div>
 
-        <div class="spacer-tiny"></div>
+        <div class="spacer-small"></div>
 
-        <md-chip-list>
-            <md-chip><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
-            <md-chip><strong>Results:</strong> {{numberOfResults()}}</md-chip>
-        </md-chip-list>
+
+        <div>
+            <button md-icon-button (click)="onDownloadButtonClick()" mdTooltip="Download all results"><md-icon>cloud_download</md-icon></button>
+        </div>
     </div>
 
     <hr/>

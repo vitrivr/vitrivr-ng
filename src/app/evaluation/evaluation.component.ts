@@ -1,13 +1,17 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {QueryService, QueryChange} from "../core/queries/query.service";
-import {Evaluation} from "./model/evaluation";
 import {EvaluationEvent} from "./model/evaluation-event";
 import {EvaluationState} from "./model/evaluation-state";
 import {ResolverService} from "../core/basics/resolver.service";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {Subscription} from "rxjs";
-import {MdSnackBar} from "@angular/material";
+import {MdSnackBar, MdDialog} from "@angular/material";
 import {StorageService} from "../core/basics/storage.service";
+import {EvaluationTemplate} from "./model/evaluation-template";
+import {ActivatedRoute, Params} from "@angular/router";
+import {Http} from "@angular/http";
+import {EvaluationSet} from "./model/evaluation-set";
+import {ScenarioDetailsDialogComponent} from "./scenario-details-dialog.component";
 
 
 @Component({
@@ -16,14 +20,12 @@ import {StorageService} from "../core/basics/storage.service";
     templateUrl: 'evaluation.component.html'
 })
 export class EvaluationComponent implements OnInit, OnDestroy {
+
     /** Storage key used to persistently store evaluation data. */
     private static EVALUATION_STORAGE_KEY = "vitrivr_ng_evaluation";
 
     /** Reference to the current evaluation object. */
-    private _evaluation: Evaluation;
-
-    /** Holds the value of the name input field. Defaults to an empty string. */
-    public nameFieldValue: string = "";
+    private _evaluationset: EvaluationSet;
 
     /** Current list of query results. */
     public mediaobjects : MediaObjectScoreContainer[] = [];
@@ -31,8 +33,11 @@ export class EvaluationComponent implements OnInit, OnDestroy {
     /** Reference to the subscription to the QueryService. */
     private queryServiceSubscription : Subscription;
 
-    /** */
-    private k: number = 10;
+    /** Reference to the Subscription for Router. */
+    private routeSubscription : Subscription;
+
+    /** Reference to the Subscription for Router. */
+    private dialogSubscription : Subscription;
 
     /**
      * Constructor; injects the required services for evaluation.
@@ -46,7 +51,10 @@ export class EvaluationComponent implements OnInit, OnDestroy {
         private _queryService : QueryService,
         private _storageService: StorageService,
         private _resolverService: ResolverService,
-        private snackBar: MdSnackBar) {}
+        private _route: ActivatedRoute,
+        private _http: Http,
+        private _snackBar: MdSnackBar,
+        private _dialog: MdDialog) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
@@ -55,60 +63,82 @@ export class EvaluationComponent implements OnInit, OnDestroy {
         this.queryServiceSubscription = this._queryService.observable()
             .filter(msg => (["UPDATED", "STARTED", "ENDED", "FEATURE"].indexOf(msg) > -1))
             .subscribe((msg) => this.processQueryStateChange(msg));
+
+        /*
+         * Subscribes to changes of the Router class. Whenever the parameter becomes available,
+         * the onParamsAvailable method is invoked.
+         */
+        this.routeSubscription = this._route.params.subscribe((params: Params) => this.onParamsAvailable(params));
+
+        /**
+         *
+         */
+        this.dialogSubscription = this._dialog.afterOpen.subscribe(dialogRef => {
+            let component: ScenarioDetailsDialogComponent = <ScenarioDetailsDialogComponent>(dialogRef.componentInstance);
+            component.scenario = this._evaluationset.current.scenario;
+        });
     }
 
     /**
      * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
      */
     public ngOnDestroy() {
+        this.routeSubscription.unsubscribe();
         this.queryServiceSubscription.unsubscribe();
         this.queryServiceSubscription = null;
+        this.routeSubscription = null;
     }
 
     /**
+     * Getter for queryService field.
      *
+     * @returns {QueryService}
+     */
+    get queryService(): QueryService {
+        return this._queryService;
+    }
+
+    /**
+     * Invoked whenever the 'Start Scenario' button is clicked.
      */
     public onEvaluationStartButtonClick() {
         if (this.canBeStarted()) {
-            if (this.nameFieldValue.trim().length > 0) {
-                this._evaluation = new Evaluation(this.nameFieldValue.trim());
-                this._evaluation.start();
-                this.snackBar.open('Evaluation started. Happy searching!', null, {duration: 2000});
-            } else {
-                this.snackBar.open('You must specify a name for the evaluation.', null, {duration: 2000});
-            }
+            this._evaluationset.current.start();
+            this._snackBar.open('Evaluation started. Happy searching!', null, {duration: 2000});
         }
     }
 
     /**
-     *
+     * Invoked whenever the 'Complete Scenario' button is clicked.
      */
     public onEvaluationStopButtonClick() {
         if (this.canBeStopped()) {
-            if (this.evaluation.state == EvaluationState.RankingResults) {
-                this._evaluation.stop();
-                this._storageService.pushToArrayForKey(EvaluationComponent.EVALUATION_STORAGE_KEY, this.evaluation);
-                this.snackBar.open('Evaluation stopped. Thank you for participating!', null, {duration: 2000});
+            if (this._evaluationset.current.state == EvaluationState.RankingResults) {
+                this._evaluationset.current.stop();
+                this._storageService.pushToArrayForKey(EvaluationComponent.EVALUATION_STORAGE_KEY, this._evaluationset.toObject());
+                if (!this._evaluationset.next()) {
+                    this._snackBar.open('Evaluation finished. Thank you for participating!', null, {duration: 2000});
+                }
             } else {
-                this._evaluation.abort();
-                this.snackBar.open('Evaluation aborted.', null, {duration: 2000});
+                this._evaluationset.current.abort();
+                this._snackBar.open('Evaluation aborted.', null, {duration: 2000});
             }
         }
     }
 
     /**
-     *
+     * Invoked whenever the 'Accept results' button is clicked.
      */
     public onResultsAcceptButtonClick() {
         if (this.canBeAccepted()) {
-            if (this._evaluation.accept(this.mediaobjects) == EvaluationState.RankingResults) {
-                this.snackBar.open('Results accepted. Now please rate the relevance of the top ' + this.k + " results." , null, {duration: 2000});
+            if (this._evaluationset.current.accept(this.mediaobjects) == EvaluationState.RankingResults) {
+                this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: 2000});
             }
         }
     }
 
     /**
-     *
+     * Invoked whenever the 'Download results' button is clicked.
      */
     public onDownloadButtonClick() {
         let data = this._storageService.readPrimitiveForKey(EvaluationComponent.EVALUATION_STORAGE_KEY);
@@ -129,19 +159,29 @@ export class EvaluationComponent implements OnInit, OnDestroy {
         if (!this.canBeRated()) return;
         let objectindex = this.mediaobjects.indexOf(object);
         if (objectindex > -1) {
-            this.evaluation.rate(objectindex, rating);
+            this._evaluationset.current.rate(objectindex, rating);
         }
     }
 
     /**
+     * Invoked whenever the 'Scenario' chip is clicked.
+     */
+    public onScenarioClick() {
+        if (!this._evaluationset) return;
+        this._dialog.open(ScenarioDetailsDialogComponent);
+    }
+
+    /**
+     * Returns the colour of the star-button for the specified mediaobject and the specified rank.
+     * If the button is active, then the colour will be yellow otherwise it is white.
      *
-     * @param mediaobject
-     * @param rank
+     * @param mediaobject MediaObjectScoreContainer to which the star-button belongs.
+     * @param rank Rank the star-button is representing.
      * @returns {any}
      */
     public colorForButton(mediaobject : MediaObjectScoreContainer, rank : number) {
         let objectindex = this.mediaobjects.indexOf(mediaobject);
-        let objectrank = this.evaluation.getRating(objectindex);
+        let objectrank = this._evaluationset.current.getRating(objectindex);
         if (objectrank >= rank) {
             return "#FFD700";
         } else {
@@ -149,58 +189,26 @@ export class EvaluationComponent implements OnInit, OnDestroy {
         }
     }
 
-
-
     /**
-     * Getter for evaluation.
+     * Returns a string descriptor of the current scenario or an
+     * indication if no scenario is currently active.
      *
-     * @returns {Evaluation}
+     * @return {string}
      */
-    get evaluation(): Evaluation {
-        return this._evaluation;
+    public scenarioDescriptor() : string {
+        if (!this._evaluationset) return "n/a";
+        return this._evaluationset.description();
     }
 
     /**
-     * Getter for queryService field.
+     * Returns a string descriptor of the current scenario state or
+     * an indication if no scenario is currently active.
      *
-     * @returns {QueryService}
-     */
-    get queryService(): QueryService {
-        return this._queryService;
-    }
-
-    /**
-     *
-     * @param msg
-     */
-    private processQueryStateChange(msg: QueryChange) {
-        if (this._evaluation && this._evaluation.state == EvaluationState.RunningQueries) {
-            let event = null;
-            switch (msg) {
-                case "STARTED":
-                    event = new EvaluationEvent(new Date(), "STARTED", this._queryService.getQueryId(), null);
-                    break;
-                case "FEATURE":
-                    event = new EvaluationEvent(new Date(), "FEATURE_AVAILABLE", this._queryService.getQueryId(), this._queryService.getFeatures()[this._queryService.getFeatures().length-1].readableName);
-                    break;
-                case "ENDED":
-                    event = new EvaluationEvent(new Date(), "ENDED", this._queryService.getQueryId(), null);
-                    break;
-                case "UPDATED":
-                    this.updateGallery();
-                    break;
-            }
-            if (event) this._evaluation.addEvent(event);
-        }
-    }
-
-    /**
-     *
-     * @returns {any}
+     * @returns {string}
      */
     public stateDescriptor() : string {
-        if (!this.evaluation) return "Not started";
-        switch (this.evaluation.state) {
+        if (!this._evaluationset) return "n/a";
+        switch (this._evaluationset.current.state) {
             case EvaluationState.NotStarted:
                 return "Not started";
             case EvaluationState.RunningQueries:
@@ -234,8 +242,8 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      * Used to make UI related decisions.
      */
     public canBeStarted(): boolean {
-        if (this.evaluation == null) return true;
-        return this.evaluation.state == EvaluationState.NotStarted || this.evaluation.state ==EvaluationState.Finished || this.evaluation.state ==EvaluationState.Aborted
+        if (this._evaluationset == null) return false;
+        return this._evaluationset.current.state == EvaluationState.NotStarted || this._evaluationset.current.state == EvaluationState.Finished || this._evaluationset.current.state ==EvaluationState.Aborted
     }
 
     /**
@@ -245,8 +253,8 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      * Used to make UI related decisions.
      */
     public canBeStopped(): boolean {
-        if (this.evaluation == null) return false;
-        return this.evaluation.state == EvaluationState.RunningQueries || this.evaluation.state == EvaluationState.RankingResults
+        if (this._evaluationset == null) return false;
+        return this._evaluationset.current.state == EvaluationState.RunningQueries || this._evaluationset.current.state == EvaluationState.RankingResults
 
     }
 
@@ -257,8 +265,8 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      * Used to make UI related decisions.
      */
     public canBeAccepted(): boolean {
-        if (this.evaluation == null) return false;
-        return this.evaluation.state == EvaluationState.RunningQueries && this.mediaobjects.length > 0;
+        if (this._evaluationset == null) return false;
+        return this._evaluationset.current.state == EvaluationState.RunningQueries && this.mediaobjects.length > 0;
     }
 
     /**
@@ -267,8 +275,8 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      * Used to make UI related decisions.
      */
     public canBeRated(): boolean {
-        if (this.evaluation == null) return false;
-        return this.evaluation.state == EvaluationState.RankingResults;
+        if (this._evaluationset == null) return false;
+        return this._evaluationset.current.state == EvaluationState.RankingResults;
     }
 
     /**
@@ -281,8 +289,9 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      */
     public objectCanBeRated(mediaobject: MediaObjectScoreContainer) {
         if (this.canBeRated() == false) return false;
-        return this.mediaobjects.indexOf(mediaobject) < this.k
+        return this.mediaobjects.indexOf(mediaobject) < this._evaluationset.current.k
     }
+
 
     /**
      * Returns the total number of evaluation results that are available for downloading.
@@ -291,5 +300,75 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      */
     public numberOfResults(): number {
         return this._storageService.sizeOfArray(EvaluationComponent.EVALUATION_STORAGE_KEY);
+    }
+
+    /**
+     *
+     * @param msg
+     */
+    private processQueryStateChange(msg: QueryChange) {
+        if (this._evaluationset && this._evaluationset.current.state == EvaluationState.RunningQueries) {
+            let event = null;
+            switch (msg) {
+                case "STARTED":
+                    event = new EvaluationEvent(new Date(), "STARTED", this._queryService.getQueryId(), null);
+                    break;
+                case "FEATURE":
+                    event = new EvaluationEvent(new Date(), "FEATURE_AVAILABLE", this._queryService.getQueryId(), this._queryService.getFeatures()[this._queryService.getFeatures().length-1].readableName);
+                    break;
+                case "ENDED":
+                    event = new EvaluationEvent(new Date(), "ENDED", this._queryService.getQueryId(), null);
+                    break;
+                case "UPDATED":
+                    this.updateGallery();
+                    break;
+            }
+            if (event) this._evaluationset.current.addEvent(event);
+        }
+    }
+
+    /**
+     * Invoked once parameters from the routing become available. Tries
+     * to load the specified evaluation template.
+     */
+    private onParamsAvailable(params: Params) {
+        let template = atob(params['template']);
+        let participant = params['participant'];
+        if (template && participant) {
+            this.loadEvaluationTemplate(template, participant);
+        } else {
+            this.onEvaluationTemplateError();
+        }
+    }
+
+    /**
+     * This method is called whenever an error occurs during the loading
+     * phase of an EvaluationTemplate i.e. if no URL was specified, the specified
+     * URL is not reachable or does not point to a valid template.
+     */
+    private onEvaluationTemplateError() {
+        this._snackBar.open('Could not load the specified evaluation template!', null, {duration: 2000});
+    }
+
+    /**
+     * Tries to load an evaluation template (JSON-file) from the specified
+     * URL location.
+     *
+     * @param url URL from which to load the template.
+     * @param participant ID of the participant.
+     */
+    private loadEvaluationTemplate(url: string, participant: string) {
+        this._http.get(url).first().subscribe(response=> {
+            if (response.ok) {
+                let template = EvaluationTemplate.fromJson(response.json());
+                if (template) {
+                    this._evaluationset = new EvaluationSet(participant, template);
+                } else {
+                    this.onEvaluationTemplateError();
+                }
+            } else {
+                this.onEvaluationTemplateError();
+            }
+        });
     }
 }

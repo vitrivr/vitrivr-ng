@@ -22,6 +22,24 @@ export class EvaluationTemplate {
     }
 
     /**
+     * Getter for name.
+     *
+     * @return {string}
+     */
+    get name(): string {
+        return this._name;
+    }
+
+    /**
+     * Getter for scenarios.
+     *
+     * @return {EvaluationScenario[]}
+     */
+    get scenarios(): EvaluationScenario[] {
+        return this._scenarios;
+    }
+
+    /**
      * Adds an evaluation scenario object to the evaluation template.
      *
      * @param scenario EvalationScenario to add.
@@ -100,7 +118,7 @@ export class EvaluationTemplate {
             for (let scenario of object["_scenarios"]) {
                 let materials: EvaluationMaterial[] = [];
                 for (let material of scenario["_material"]) {
-                    material.push(new EvaluationMaterial(material["_name"], material["_description"], material["_url"]));
+                    materials.push(new EvaluationMaterial(material["_name"], material["_description"], material["_url"]));
                 }
                 template.addScenario(new EvaluationScenario(scenario["_id"], scenario["_name"], scenario["_description"], scenario["_k"], materials));
             }

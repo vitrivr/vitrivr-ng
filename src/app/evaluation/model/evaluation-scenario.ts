@@ -1,6 +1,7 @@
 import {EvaluationMaterial} from "./evaluation-material";
 import {Evaluation} from "./evaluation";
 export class EvaluationScenario {
+
     /** Default K value to calculate p@K and number of items a user is supposed to rate. */
     private _id : string;
 
@@ -69,11 +70,11 @@ export class EvaluationScenario {
     }
 
     /**
-     * Generates and returns a new Evaluation object.
+     * Getter for material.
      *
-     * @return {Evaluation}
+     * @return {EvaluationMaterial[]}
      */
-    public generateEvaluation(): Evaluation {
-        return new Evaluation(this._name, this._k);
+    get material(): EvaluationMaterial[] {
+        return this._material;
     }
 }

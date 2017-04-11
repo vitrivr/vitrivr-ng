@@ -35,6 +35,7 @@
     "three-obj-loader": "^1.0.2",
     "three-stl-loader": "^1.0.4",
     "three-trackballcontrols": "^0.0.5",
+    "ts-md5": "^1.2.0",
     "typescript": "^2.2.2",
     "zone.js": "^0.8.4"
   },
