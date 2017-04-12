@@ -24,8 +24,8 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
     @Input() width: number = 400;
     @Input() height: number = 150;
 
-    /** */
-    readonly audiocontext : AudioContext = new AudioContext();
+    /** AudioContext used for audio signal processing. */
+    private audiocontext : AudioContext;
 
     /** MediaStream that is obtained by calls to navigator.getUserMedia. Represents the microphone audio source.*/
     private stream: MediaStream;
@@ -66,21 +66,24 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      * Requests access to the user's microphone. If this succeeds, a MediaStream object is passed
      * to the onStreamAvailable() method.
      */
-    ngOnInit() {
+    public ngOnInit() {
         navigator.getUserMedia = ( navigator.getUserMedia || navigator.mediaDevices.getUserMedia);
         navigator.mediaDevices.getUserMedia({audio: true, video: false})
-            .then((stream: MediaStream) => this.onStreamAvailable(stream))
+            .then((stream: MediaStream) => this.onStreamAvailable(stream));
+        this.audiocontext = new AudioContext();
     }
 
     /**
      * Stops the recording (if it's still running) and closes all open tracks, thus releasing
      * the media-stream.
      */
-    ngOnDestroy() {
+    public ngOnDestroy() {
         this.stop();
         this.stream.getTracks().forEach((track) => {
             track.stop()
         });
+        if (this.audiocontext) this.audiocontext.close();
+        this.audiocontext = null;
     }
 
     /**
