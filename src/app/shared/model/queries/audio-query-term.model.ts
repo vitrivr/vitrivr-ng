@@ -5,7 +5,7 @@ export class AudioQueryTerm implements QueryTermInterface {
     public data: string;
 
     /** Array with the active feature categories. */
-    public categories : string[] = ['audiobassline', 'audiobassline', 'audiofingerprint'];
+    public categories : string[] = ['audiobassline', 'audiomelody', 'audiofingerprint'];
 
     /** Type of query-term. Defaults to 'Audio'. */
     public readonly type: QueryTermType = "AUDIO";
