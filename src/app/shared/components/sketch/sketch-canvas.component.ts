@@ -1,12 +1,13 @@
-import {Component, ViewChild, HostListener, Input} from '@angular/core';
+import {Component, ViewChild, HostListener, Input, AfterViewInit, ElementRef} from '@angular/core';
 
 @Component({
     selector: 'sketch-canvas',
-    template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px;" ></canvas>`
+    template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px;" (mousedown)="onMousedown($event)" (mouseup)="onMouseup($event)" (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)"></canvas>`
+
 })
 
-export class SketchCanvas  {
-    @ViewChild('sketch') private canvas: any;
+export class SketchCanvas implements AfterViewInit  {
+    @ViewChild('sketch') private canvas: ElementRef;
 
     @Input() width: number = 400;
     @Input() height: number = 400;
@@ -16,34 +17,46 @@ export class SketchCanvas  {
     private last: Point = null;
     private current: Point = null;
 
-    ngAfterViewInit() {
+    public ngAfterViewInit() {
         let canvas = this.canvas.nativeElement;
         this.context = canvas.getContext("2d");
         this.context.lineJoin = "round"
     }
 
-    @HostListener('mousedown', ['$event'])
-    onMousedown(event: MouseEvent) {
+    /**
+     *
+     * @param event
+     */
+    public onMousedown(event: MouseEvent) {
         this.paint = true;
-        this.current = new Point(event.x - this.canvas.nativeElement.offsetLeft, event.y - this.canvas.nativeElement.offsetTop);
+        this.current = new Point(event.offsetX, event.offsetY);
         SketchCanvas.drawCircle(this.context, this.current);
         this.last = this.current;
     };
 
-    @HostListener('mouseup', ['$event'])
-    onMouseup(event: MouseEvent) {
+    /**
+     *
+     * @param event
+     */
+    public onMouseup(event: MouseEvent) {
         this.paint = false;
     };
 
-    @HostListener('mouseleave', ['$event'])
-    onMouseLeave(event: MouseEvent) {
+    /**
+     *
+     * @param event
+     */
+    public onMouseLeave(event: MouseEvent) {
         this.paint = false;
     };
 
-    @HostListener('mousemove', ['$event'])
-    onMousemove(event: MouseEvent) {
+    /**
+     *
+     * @param event
+     */
+    public onMousemove(event: MouseEvent) {
         if(this.paint && event.target == this.canvas.nativeElement) {
-            this.current = new Point(event.x - this.canvas.nativeElement.offsetLeft, event.y  - this.canvas.nativeElement.offsetTop);
+            this.current = new Point(event.offsetX, event.offsetY);
             if (this.last !== null) {
                 SketchCanvas.drawLine(this.context, this.last, this.current);
             }
