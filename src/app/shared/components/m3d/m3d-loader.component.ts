@@ -58,7 +58,7 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
     protected manager: LoadingManager;
 
     /** THREE Trackball Controls */
-    private controls: TrackballControls;
+    private controls: THREE.TrackballControls;
 
     /** Currently active Mesh that's being displayed by the M3DRendererService. */
     protected mesh: Mesh;
