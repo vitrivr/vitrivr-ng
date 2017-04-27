@@ -2,32 +2,31 @@ import {Injectable} from "@angular/core";
 import {CineastAPI} from "../api/cineast-api.service";
 import {Observable} from "rxjs/Observable";
 import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
-import {MediaType} from "../../shared/model/media/media-object.model";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {QueryStart} from "../../shared/model/messages/interfaces/query-start.interface";
 import {SegmentQueryResult} from "../../shared/model/messages/interfaces/query-result-segment.interface";
 import {SimilarityQueryResult} from "../../shared/model/messages/interfaces/query-result-similarty.interface";
 import {ObjectQueryResult} from "../../shared/model/messages/interfaces/query-result-object.interface";
-import {Query} from "../../shared/model/messages/query.model";
+import {SimilarityQuery} from "../../shared/model/messages/similarity-query.model";
 import {Feature} from "../../shared/model/features/feature.model";
-import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
 import {WeightFunction} from "../../shared/model/features/weighting/weight-function.interface";
 import {DefaultWeightFunction} from "../../shared/model/features/weighting/default-weight-function.model";
 import {Subject} from "rxjs/Subject";
+import {MoreLikeThisQuery} from "../../shared/model/messages/more-like-this-query.model";
 
 
 /** Types of changes that can be emitted from the QueryService.
  *
- *  STARTED     - New query was started.
- *  ENDED       - Processing of the query has ended.
- *  UPDATED     - New information concerning the running query is available.
+ *  STARTED     - New findSimilar was started.
+ *  ENDED       - Processing of the findSimilar has ended.
+ *  UPDATED     - New information concerning the running findSimilar is available.
  *  FEATURE     - A new feature has become available.
  */
 export type QueryChange = "STARTED" | "ENDED" | "UPDATED" | "FEATURE";
 
 /**
  * This service orchestrates similarity queries using the Cineast API (WebSocket). The service is responsible for
- * issuing query requests, processing incoming responses and ranking of the queries.
+ * issuing findSimilar requests, processing incoming responses and ranking of the queries.
  */
 @Injectable()
 export class QueryService {
@@ -40,10 +39,10 @@ export class QueryService {
     /** ID that identifies an ongoing research. If it's null, then no research is ongoing. */
     private queryId : string = null;
 
-    /** Flag indicating whether a query is currently running. */
+    /** Flag indicating whether a findSimilar is currently running. */
     private running : boolean = false;
 
-    /** List of all the features that are used the current query and hence known to the service. */
+    /** List of all the features that are used the current findSimilar and hence known to the service. */
     private features: Feature[] =[];
 
     /** BehaviorSubject that allows Observers to subscribe to changes emmited from the QueryService. */
@@ -67,37 +66,41 @@ export class QueryService {
     }
 
     /**
+     * Starts a new similarity query. Success is indicated by the return value.
      *
-     * @param types
-     * @param containers
-     * @returns {Query}
+     * Note: Queries can only be started if no query is currently ongoing.
+     *
+     * @param query The SimilarityQueryMessage.
+     * @returns {boolean} true if query was issued, false otherwise.
      */
-    public buildQuery(types: MediaType[], containers: QueryContainerInterface[]) {
-        let query = new Query();
-        for (let container of containers) {
-            query.containers.push(container);
-        }
-        for (let type of types) {
-            query.types.push(type);
-        }
-        return query;
-    }
-
-    /**
-     * Starts a new research - success is indicated by the return value.
-     *
-     * Note: Queries can only be started if no research is currently ongoing.
-     *
-     * @param query
-     * @returns {boolean} true if research was issued, false otherwise.
-     */
-    public query(query : Query) : boolean {
+    public findSimilar(query : SimilarityQuery) : boolean {
         if (!this.running) {
             this._api.send(query);
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Starts a new MoreLikeThis query. Success is indicated by the return value.
+     *
+     * Note: Queries can only be started if no query is currently ongoing.
+     *
+     * @param segmentId The ID of the segment that should serve as example.
+     * @returns {boolean} true if query was issued, false otherwise.
+     */
+    public findMoreLikeThis(segmentId: string) : boolean {
+        if (this.running) return false;
+        if (this.features.length == 0) return false;
+
+        let categories: string[] = [];
+        for (let feature of this.features) {
+            categories.push(feature.name);
+        }
+
+        this._api.send(new MoreLikeThisQuery(segmentId, categories));
+        return true;
     }
 
     /**
