@@ -8,7 +8,7 @@ import {SketchModule} from "../shared/components/sketch/sketch.module";
 import {QueryContainerModule} from "./containers/query-container.module";
 
 @NgModule({
-    imports:      [ BrowserModule, FormsModule, MaterialModule.forRoot(), SketchModule, QueryContainerModule ],
+    imports:      [ BrowserModule, FormsModule, MaterialModule, SketchModule, QueryContainerModule ],
     declarations: [ ResearchComponent ],
     exports:      [ ResearchComponent ]
 })
