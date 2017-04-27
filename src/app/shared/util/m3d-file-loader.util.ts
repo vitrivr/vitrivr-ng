@@ -2,8 +2,14 @@ import * as THREE from 'three';
 import OBJLoaderProto from 'three-obj-loader';
 import STLLoaderProto from 'three-stl-loader';
 
-OBJLoaderProto(THREE);
-let STLLoader = STLLoaderProto(THREE);
+/* UGLY: Load the model-file loaders. */
+
+let Loaders = THREE;
+OBJLoaderProto(Loaders);
+let OBJLoader = (Loaders as any).OBJLoader;
+let STLLoader = STLLoaderProto(Loaders);
+
+/* /UGLY */
 
 import LoadingManager = THREE.LoadingManager;
 import BufferGeometry = THREE.BufferGeometry;
@@ -27,12 +33,12 @@ export class Model3DFileLoader {
      * Tries to load a Mesh from the provided OBJ file. No prior checks are performed and the file
      * is directly handed to the THREE OBJLoader class.
      *
-     * @param file File object that should be loaded.
+     * @param path File object that should be loaded.
      * @param callback Callback function that will be executed once the file has been loaded.
      * @param manager LoadingManager to use together with the loader class.
      */
     public static loadOBJFromPath(path: string, callback : Function, manager?: LoadingManager) {
-        let loader = new (THREE as any).OBJLoader(manager);
+        let loader = new OBJLoader(manager);
         loader.load(path, (object: any) => {
             if (object) {
                 let geometry: THREE.Geometry  = new THREE.Geometry();

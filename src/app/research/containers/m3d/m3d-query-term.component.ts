@@ -1,9 +1,11 @@
+import * as THREE from 'three';
 import {Component, ViewChild, Input} from "@angular/core";
 import {MdDialog} from '@angular/material';
 import {M3DQueryTerm} from "../../../shared/model/queries/m3d-query-term.model";
 import {M3DLoaderDialogComponent} from "./m3d-loader-dialog.component";
-import Mesh = THREE.Mesh;
 import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.component";
+
+import Mesh = THREE.Mesh;
 
 @Component({
     selector: 'qt-m3d',
