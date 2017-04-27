@@ -1,4 +1,5 @@
-import {QueryTermInterface, QueryTermType} from "./interfaces/query-term.interface";
+import {QueryTermInterface} from "./interfaces/query-term.interface";
+import {QueryTermType} from "./interfaces/query-term-type.interface";
 
 export class AudioQueryTerm implements QueryTermInterface {
     /** Base64 encoded audio data. */
@@ -7,7 +8,7 @@ export class AudioQueryTerm implements QueryTermInterface {
     /** Array with the active feature categories. */
     public categories : string[] = ['audiobassline', 'audiomelody', 'audiofingerprint'];
 
-    /** Type of query-term. Defaults to 'Audio'. */
+    /** Type of findSimilar-term. Defaults to 'Audio'. */
     public readonly type: QueryTermType = "AUDIO";
 
     /**
@@ -28,6 +29,9 @@ export class AudioQueryTerm implements QueryTermInterface {
                 break;
             case 3:
                 this.categories = ['audiobassline', 'audiomelody'];
+                break;
+            case 4:
+                this.categories = ['pitchsequence'];
                 break;
             default:
                 this.categories = ['audiobassline', 'audiomelody', 'audiofingerprint'];

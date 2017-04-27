@@ -1,8 +1,9 @@
 import {QueryContainerInterface} from "./interfaces/query-container.interface";
-import {QueryTermInterface, QueryTermType} from "./interfaces/query-term.interface";
+import {QueryTermInterface} from "./interfaces/query-term.interface";
 import {ImageQueryTerm} from "./image-query-term.model";
 import {AudioQueryTerm} from "./audio-query-term.model";
 import {M3DQueryTerm} from "./m3d-query-term.model";
+import {QueryTermType} from "./interfaces/query-term-type.interface";
 
 
 export class QueryContainer implements QueryContainerInterface {

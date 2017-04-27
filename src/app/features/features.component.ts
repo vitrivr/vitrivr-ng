@@ -23,7 +23,7 @@ import {Feature} from "../shared/model/features/feature.model";
 })
 
 /**
- * Component that displays all the relevant features for the Query that is currently
+ * Component that displays all the relevant features for the SimilarityQuery that is currently
  * active in the QueryService. The component allows the user to change the features
  * on the individual features so as to re-rank the results.
  */

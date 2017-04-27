@@ -1,4 +1,5 @@
-import {QueryTermInterface, QueryTermType} from "./query-term.interface";
+import {QueryTermInterface} from "./query-term.interface";
+import {QueryTermType} from "./query-term-type.interface";
 
 /**
  *

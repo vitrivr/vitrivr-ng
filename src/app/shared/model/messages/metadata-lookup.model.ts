@@ -2,10 +2,10 @@ import {MessageType} from "./message-type.model";
 import {MetadataLookupMessage} from "./interfaces/metadata-lookup.interface";
 
 export class MetadataLookup implements MetadataLookupMessage {
-    messagetype : MessageType = "M_LOOKUP";
+    readonly messagetype : MessageType = "M_LOOKUP";
 
     /** Object IDs for which to lookup metadata. */
-    objectids : string[] = [];
+    readonly objectids : string[] = [];
 
     /** Domains to include in the lookup. If empty, all domains will be considered.
      *
@@ -13,7 +13,7 @@ export class MetadataLookup implements MetadataLookupMessage {
      *
      * @type {Array}
      */
-    domains : string[] = [];
+    readonly domains : string[] = [];
 
     /**
      *

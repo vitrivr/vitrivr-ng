@@ -1,11 +1,9 @@
 import {Message} from "./message.interface";
-import {MediaType} from "../../media/media-object.model";
 import {QueryContainerInterface} from "../../queries/interfaces/query-container.interface";
 
 /**
- * Basic interfaces of a QueryMessage.
+ * Basic interfaces of a SimilarityQueryMessage.
  */
-export interface QueryMessage extends Message {
+export interface SimilarityQueryMessage extends Message {
     containers : QueryContainerInterface[];
-    types: MediaType[]
 }
