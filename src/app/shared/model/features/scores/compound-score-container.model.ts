@@ -46,7 +46,7 @@ export abstract class ScoreContainer {
     /**
      * Getter for the container's score as percent value.
      */
-    public getScorePercentage() : number {
+    get scorePercentage() : number {
         return Math.round(this._score * 1000)/10
     }
 

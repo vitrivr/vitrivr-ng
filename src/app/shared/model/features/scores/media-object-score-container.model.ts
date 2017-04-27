@@ -14,36 +14,55 @@ import {WeightFunction} from "../weighting/weight-function.interface";
  */
 export class MediaObjectScoreContainer extends ScoreContainer {
     /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
-    private segmentScores : Map<string, SegmentScoreContainer> = new Map();
+    private _segmentScores : Map<string, SegmentScoreContainer> = new Map();
 
     /** Reference to the actual MediaObject this container belongs to. */
-    public mediaObject? : MediaObject;
+    private _mediaObject? : MediaObject;
 
     /**
      * Getter for the list of map for segment-scores.
      *
      * @returns {Map<string, SegmentScoreContainer>}
      */
-    public getSegmentScores() : Map<string, SegmentScoreContainer>  {
-        return this.segmentScores;
+    get segmentScores(): Map<string, SegmentScoreContainer> {
+        return this._segmentScores;
     }
 
     /**
-     * Number of segments for
+     * Getter for MediaObject
+     *
+     * @return {MediaObject}
+     */
+    get mediaObject(): MediaObject {
+        return this._mediaObject;
+    }
+
+    /**
+     * Setter for MediaObject
+     * 
+     * @param value
+     */
+    set mediaObject(value: MediaObject) {
+        this._mediaObject = value;
+    }
+
+    /**
+     * Number of segments that were retrieved for the current MediaObjectScoreContainer
+     *
      * @returns {MediaObject}
      */
-    public getSegments() : number {
-        return this.segmentScores.size;
+    get numberOfSegments() : number {
+        return this._segmentScores.size;
     }
 
     /**
-     * Getter for representativeSegmentId.
+     * Getter for the most representative segment.
      *
-     * @returns {string}
+     * @returns {SegmentScoreContainer}
      */
-    public getRepresentativeSegment() : SegmentScoreContainer {
+    get representativeSegment() : SegmentScoreContainer {
         let representativeSegment : SegmentScoreContainer;
-        this.segmentScores.forEach((value, key) => {
+        this._segmentScores.forEach((value, key) => {
             if (representativeSegment == undefined || representativeSegment.score < value.score) {
                 representativeSegment = value
             }
@@ -59,8 +78,8 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @param segment MediaSegment to add.
      */
     public addMediaSegment(segment : MediaSegment) {
-        if (!this.segmentScores.has(segment.segmentId))  this.segmentScores.set(segment.segmentId, new SegmentScoreContainer(segment.segmentId));
-        this.segmentScores.get(segment.segmentId).setMediaSegment(segment);
+        if (!this._segmentScores.has(segment.segmentId))  this._segmentScores.set(segment.segmentId, new SegmentScoreContainer(segment.segmentId));
+        this._segmentScores.get(segment.segmentId).setMediaSegment(segment);
     }
 
     /**
@@ -69,8 +88,8 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @param similarity
      */
     public addSimilarity(category : Feature, similarity : Similarity) {
-        if (!this.segmentScores.has(similarity.key)) this.segmentScores.set(similarity.key, new SegmentScoreContainer(similarity.key));
-        this.segmentScores.get(similarity.key).addSimilarity(category, similarity);
+        if (!this._segmentScores.has(similarity.key)) this._segmentScores.set(similarity.key, new SegmentScoreContainer(similarity.key));
+        this._segmentScores.get(similarity.key).addSimilarity(category, similarity);
     }
 
     /**
@@ -90,6 +109,6 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @returns {boolean} true if it can be displayed, false otherwise.
      */
     public show() : boolean {
-        return this.mediaObject != undefined && this.segmentScores.size > 0;
+        return this._mediaObject != undefined && this._segmentScores.size > 0;
     }
 }

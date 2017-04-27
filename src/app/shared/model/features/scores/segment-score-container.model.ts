@@ -10,17 +10,17 @@ import {MediaSegment} from "../../media/media-segment.model";
  */
 export class SegmentScoreContainer extends ScoreContainer {
     /** List of scores. Entries should correspond to those in the array categories. */
-    private scores : Map<Feature, number> = new Map();
+    private _scores : Map<Feature, number> = new Map();
 
     /** Reference to the actual MediaSegment this container belongs to. */
-    private mediaSegment? : MediaSegment;
+    private _mediaSegment? : MediaSegment;
 
     /**
      * Default constructor.
      *
-     * @param segmentId
+     * @param _segmentId
      */
-    public constructor(private segmentId : string) {
+    public constructor(private _segmentId : string) {
        super();
     }
 
@@ -35,7 +35,7 @@ export class SegmentScoreContainer extends ScoreContainer {
      * @param similarity
      */
     public addSimilarity(category : Feature, similarity : Similarity): boolean {
-        if (similarity.key !== this.segmentId) return false;
+        if (similarity.key !== this._segmentId) return false;
         this.scores.set(category, similarity.value);
         return true;
     }
@@ -48,8 +48,8 @@ export class SegmentScoreContainer extends ScoreContainer {
      * @return true if MediaSegment was set, false otherwise.
      */
     public setMediaSegment(segment: MediaSegment) {
-        if (this.mediaSegment || segment.segmentId !== this.segmentId) return false;
-        this.mediaSegment = segment;
+        if (this._mediaSegment || segment.segmentId !== this._segmentId) return false;
+        this._mediaSegment = segment;
     }
 
     /**
@@ -68,8 +68,8 @@ export class SegmentScoreContainer extends ScoreContainer {
      *
      * @return {Map<Feature, number>}
      */
-    public getScores() {
-        return this.scores;
+    get scores() {
+        return this._scores;
     }
 
     /**
@@ -77,8 +77,8 @@ export class SegmentScoreContainer extends ScoreContainer {
      *
      * @returns {string}
      */
-    public getSegmentId() {
-        return this.segmentId;
+    get segmentId() {
+        return this._segmentId;
     }
 
     /**
@@ -86,9 +86,9 @@ export class SegmentScoreContainer extends ScoreContainer {
      *
      * @returns {string}
      */
-    public getObjectId() {
-        if (!this.mediaSegment) return null;
-        return this.mediaSegment.objectId;
+    get objectId() {
+        if (!this._mediaSegment) return null;
+        return this._mediaSegment.objectId;
     }
 
     /**
@@ -97,9 +97,9 @@ export class SegmentScoreContainer extends ScoreContainer {
      *
      * @returns {number}
      */
-    public getStarttime() {
-        if (!this.mediaSegment) return 0;
-        return Math.round(this.mediaSegment.startabs*100)/100;
+    get starttime() {
+        if (!this._mediaSegment) return 0;
+        return Math.round(this._mediaSegment.startabs*100)/100;
     }
 
     /**
@@ -108,8 +108,17 @@ export class SegmentScoreContainer extends ScoreContainer {
      *
      * @returns {number}
      */
-    public getEndtime() {
-        if (!this.mediaSegment) return 0;
-        return Math.round(this.mediaSegment.endabs*100)/100;
+    get endtime() {
+        if (!this._mediaSegment) return 0;
+        return Math.round(this._mediaSegment.endabs*100)/100;
+    }
+
+    /**
+     * Getter for the actual MediaSegment.
+     *
+     * @return {MediaSegment}
+     */
+    get mediaSegment(): MediaSegment {
+        return this._mediaSegment;
     }
 }

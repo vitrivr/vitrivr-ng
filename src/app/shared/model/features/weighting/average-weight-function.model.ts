@@ -17,7 +17,7 @@ export class AverageWeightFunction implements WeightFunction {
     scoreForObject(features: Feature[], mediaObjectScoreContainer: MediaObjectScoreContainer): number {
         let score = 0;
         let count = 0;
-        mediaObjectScoreContainer.getSegmentScores().forEach((value: SegmentScoreContainer, key: string) => {
+        mediaObjectScoreContainer.segmentScores.forEach((value: SegmentScoreContainer, key: string) => {
             value.update(features, this);
             if (value.score > 0) {
                 score += value.score;
@@ -46,7 +46,7 @@ export class AverageWeightFunction implements WeightFunction {
         let score = 0;
         let total = 0;
         features.forEach((value: Feature) => {
-            if (segmentScoreContainer.getScores().has(value))score += (segmentScoreContainer.getScores().get(value) * value.weight);
+            if (segmentScoreContainer.scores.has(value))score += (segmentScoreContainer.scores.get(value) * value.weight);
             total += value.weight;
         });
         return (score / total);
