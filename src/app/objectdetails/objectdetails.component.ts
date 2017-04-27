@@ -118,7 +118,7 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy{
     private refresh() {
         this._mediaobject = this._query.get(this.objectId).mediaObject;
         this._segments = [];
-        this._query.get(this.objectId).getSegmentScores().forEach((value, key) => {
+        this._query.get(this.objectId).segmentScores.forEach((value, key) => {
             this._segments.push(value);
         });
         this._segments.sort((a, b) => {

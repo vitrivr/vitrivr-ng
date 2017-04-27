@@ -14,7 +14,7 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
         <div style="display:flex; align-items: center; justify-content: center;">
             <md-icon class="muted" mdTooltip="Audio fingerprinting">fingerprint</md-icon>
             <div class="toolbar-spacer-small"></div>
-            <md-slider min="0" max="3" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></md-slider>
+            <md-slider min="0" max="4" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></md-slider>
             <div class="toolbar-spacer-small"></div>
             <md-icon class="muted" mdTooltip="Query-by-Humming">record_voice_over</md-icon>
         </div>
@@ -28,7 +28,7 @@ export class AudioQueryTermComponent {
     /** Component used to display a preview of the recorded/selected audio. */
     @ViewChild('player') private player: any;
 
-    /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the query-settings. */
+    /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the findSimilar-settings. */
     @Input() audioTerm: AudioQueryTerm;
 
     /** Default value of the slider. */

@@ -12,10 +12,10 @@
     <md-tab-group>
         <md-tab label="Segments ({{segments.length}})">
             <div class="flex-container" fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
-                <div *ngFor="let segment of segments" class="flex-item" fxFlex="125px" (click)="onSegmentClick(segment.getStarttime())">
+                <div *ngFor="let segment of segments" class="flex-item" fxFlex="125px" (click)="onSegmentClick(segment.starttime)">
                     <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" width="125px" height="125px">
-                    <p>{{segment.mediaSegment.segmentId}} ({{segment.getScorePercentage()}})</p>
-                    <p *ngIf="segment.getEndtime() > 0">{{segment.getStarttime()}}-{{segment.getEndtime()}}</p>
+                    <p>{{segment.mediaSegment.segmentId}} ({{segment.scorePercentage}})</p>
+                    <p *ngIf="segment.endtime > 0">{{segment.endtime}}-{{segment.starttime}}</p>
                 </div>
             </div>
         </md-tab>
