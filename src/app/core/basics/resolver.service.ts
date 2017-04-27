@@ -1,8 +1,8 @@
 import {Injectable} from "@angular/core";
 import {ConfigService} from "./config.service";
-import {MediaObject, MediaType} from "../../shared/model/media/media-object.model";
+import {MediaObject} from "../../shared/model/media/media-object.model";
 import {MediaSegment} from "../../shared/model/media/media-segment.model";
-
+import {MediaType, MediaTypes} from "../../shared/model/media/media-type.model";
 
 /**
  * This class can be used to resolve paths / URL's to media-objects (original file)
@@ -16,12 +16,26 @@ export class ResolverService {
     /** Name of the sub-folder that holds the actual media objects. */
     private static OBJECTS_FOLDER_NAME : string = "objects";
 
+    /** A map containing the definition of file-suffices for thumbnails per mediatype */
+    private suffices : Map<MediaType, string> = new Map();
+
     /**
-     * Default constructor.
+     * Default constructor; Initializes the map of suffixes per media-type based on
+     * the configuration.
      *
      * @param _config ConfigService reference; injected.
      */
     constructor(private _config: ConfigService) {
+        let def = _config.suffix_default;
+        let suffices = _config.suffix;
+        for (let type of MediaTypes) {
+            let suffix: string = suffices[type];
+            if (typeof suffix == "string") {
+                this.suffices.set(type, (suffix.charAt(0) == "." ? "" : ".") + suffix);
+            } else {
+                this.suffices.set(type, (def.charAt(0) == "." ? "" : ".") + def);
+            }
+        }
     }
 
     /**
@@ -32,10 +46,11 @@ export class ResolverService {
      * @param segmentId Segment ID of the media-segment
      */
     public pathToThumbnail(mediatype: MediaType, objectId: string, segmentId: string) {
+        let suffix = this.suffices.get(mediatype);
         if (this._config.host_thumbnails.endsWith("/")) {
-            return this._config.host_thumbnails + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + ".jpg";
+            return this._config.host_thumbnails + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix;
         } else {
-            return this._config.host_thumbnails + "/" + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + ".jpg";
+            return this._config.host_thumbnails + "/" + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix;
         }
     }
 

@@ -37,6 +37,12 @@ export class ConfigService {
 
         /** Path / URL to location where media object's will be stored. */
         host_object: "http://localhost/vitrivr",
+
+        /** Default suffix for thumbnails. */
+        suffix_default: ".jpg",
+
+        /** Per-mediatype suffix definition for thumbnails. */
+        suffix: {}
     };
 
     /**
@@ -60,6 +66,8 @@ export class ConfigService {
             /* Load resources configuration. */
             if (result["resources"]["host_thumbnails"]) this.resources.host_thumbnails = result["resources"]["host_thumbnails"];
             if (result["resources"]["host_object"]) this.resources.host_object = result["resources"]["host_object"];
+            if (result["resources"]["suffix_default"]) this.resources.suffix_default = result["resources"]["suffix_default"];
+            if (result["resources"]["suffix"]) this.resources.suffix = result["resources"]["suffix"];
 
         }
     }
@@ -108,4 +116,22 @@ export class ConfigService {
     get ping_interval(): number {
         return this.api.ping_interval;
     }
-}
+
+    /**
+     * Getter for default suffix.
+     *
+     * @return {string}
+     */
+    get suffix_default(): string {
+        return this.resources.suffix_default;
+    }
+
+    /**
+     * Getter for per-mediatype suffix definition.
+     *
+     * @return {{}|any}
+     */
+    get suffix(): any {
+        return this.resources.suffix;
+    }
+ }

@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "10.34.58.10",
+    "host" : "localhost",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
@@ -8,6 +8,11 @@
   },
   "resources": {
     "host_thumbnails" : "http://10.34.58.10/vitrivr/",
-    "host_object": "http://10.34.58.10/vitrivr/"
+    "host_object": "http://10.34.58.10/vitrivr/",
+    "suffix_default":".jpg",
+    "suffix": {
+      "IMAGE": "png",
+      "VIDEO": "png"
+    }
   }
 }
