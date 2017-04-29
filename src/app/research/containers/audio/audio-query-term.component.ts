@@ -28,10 +28,10 @@ export class AudioQueryTermComponent {
     /** Component used to display a preview of the recorded/selected audio. */
     @ViewChild('player') private player: any;
 
-    /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the findSimilar-settings. */
+    /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the query-settings. */
     @Input() audioTerm: AudioQueryTerm;
 
-    /** Default value of the slider. */
+    /** Value of the slider. */
     public sliderSetting : number;
 
     /**
