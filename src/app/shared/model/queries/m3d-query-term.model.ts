@@ -7,13 +7,25 @@ export class M3DQueryTerm implements QueryTermInterface {
     public data : string;
 
     /** The active categories for the findSimilar-term. */
-    public categories : string[] = ['sphericalharmonics'];
+    public categories : string[] = ['sphericalharmonicsdefault'];
 
     /** Type of findSimilar-term. Defaults to 'MODEL'. */
     public readonly type: QueryTermType = "MODEL3D";
 
     /** */
     setting(setting: number): void {
-
+        switch (setting) {
+            case 0:
+                this.categories = ['sphericalharmonicslow'];
+                break;
+            case 1:
+                this.categories = ['sphericalharmonicsdefault'];
+                break;
+            case 2:
+                this.categories = ['sphericalharmonicshigh'];
+                break;
+            default:
+                break;
+        }
     }
 }
