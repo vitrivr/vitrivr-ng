@@ -11,8 +11,25 @@
     box-shadow: 0.15em 0.15em 0.05em 0 rgba(0, 0, 0, 0.4); /* The top layer shadow */
 }
 
-.truncate {
+div.filename {
+    max-width:80%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+div.score {
+    max-width:80px;
+    font-size:11px;
+}
+
+div.score p {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+div.score md-icon {
+    font-size:8px;
+    width:10px;
+    height:10px;
 }
