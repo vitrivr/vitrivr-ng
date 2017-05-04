@@ -22,7 +22,7 @@ export class AppComponent  {
      * @param _queryService
      */
     constructor(private _queryService : QueryService) {
-        _queryService.observable()
+        _queryService.observable
             .filter(msg => ["STARTED", "ENDED"].indexOf(msg) > -1)
             .subscribe((msg) => this.onQueryStateChange(msg));
 

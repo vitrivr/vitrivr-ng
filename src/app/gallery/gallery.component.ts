@@ -19,6 +19,7 @@ export class GalleryComponent {
     /** List of MediaObjectScoreContainers currently displayed by the gallery. */
     private _mediaobjects : MediaObjectScoreContainer[];
 
+    /** Reference to the MediaObjectScoreContainer that is currently in focus. */
     private _focus: MediaObjectScoreContainer;
 
     /**
@@ -29,7 +30,7 @@ export class GalleryComponent {
      * @param _router
      */
     constructor(private _queryService : QueryService, private _resolver: ResolverService, private _router: Router) {
-        _queryService.observable()
+        _queryService.observable
             .filter(msg => (msg == "UPDATED"))
             .subscribe((msg) => this.onQueryStateChange());
 
@@ -102,11 +103,14 @@ export class GalleryComponent {
     private updateGallery() {
         let cache : MediaObjectScoreContainer[] = [];
         this._queryService.forEach(function(value : MediaObjectScoreContainer, key : string) {
-            if (value.show()) cache.push(value)
-        });
+            cache.push(value)
+        }, true);
         if (cache.length > 1) {
             cache.sort((a : MediaObjectScoreContainer,b : MediaObjectScoreContainer) => MediaObjectScoreContainer.compareAsc(a,b))
         }
+
+        /* Set the list of Mediaobjects and reset the object in focus. */
         this._mediaobjects = cache;
+        this._focus = null;
     }
 }

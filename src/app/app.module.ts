@@ -11,7 +11,7 @@ import {GalleryModule} from "./gallery/gallery.module";
 import {ResearchModule} from "./research/research.module";
 import {PingComponent} from "./toolbar/ping.component";
 import {CoreModule} from "./core/core.module";
-import {FeaturesModule} from "./features/features.module";
+import {FeaturesModule} from "./refinement/refinement.module";
 import {ObjectdetailsModule} from "./objectdetails/objectdetails.module";
 import {AppRoutingModule} from "./app-routing.module";
 import {EvaluationModule} from "./evaluation/evaluation.module";

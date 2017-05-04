@@ -60,7 +60,7 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
      */
     public ngOnInit() {
-        this.queryServiceSubscription = this._queryService.observable()
+        this.queryServiceSubscription = this._queryService.observable
             .filter(msg => (["UPDATED", "STARTED", "ENDED", "FEATURE"].indexOf(msg) > -1))
             .subscribe((msg) => this.processQueryStateChange(msg));
 
@@ -311,13 +311,13 @@ export class EvaluationComponent implements OnInit, OnDestroy {
             let event = null;
             switch (msg) {
                 case "STARTED":
-                    event = new EvaluationEvent(new Date(), "STARTED", this._queryService.getQueryId(), null);
+                    event = new EvaluationEvent(new Date(), "STARTED", this._queryService.queryId, null);
                     break;
                 case "FEATURE":
-                    event = new EvaluationEvent(new Date(), "FEATURE_AVAILABLE", this._queryService.getQueryId(), this._queryService.getFeatures()[this._queryService.getFeatures().length-1].readableName);
+                    event = new EvaluationEvent(new Date(), "FEATURE_AVAILABLE", this._queryService.queryId, this._queryService.features[this._queryService.features.length-1].readableName);
                     break;
                 case "ENDED":
-                    event = new EvaluationEvent(new Date(), "ENDED", this._queryService.getQueryId(), null);
+                    event = new EvaluationEvent(new Date(), "ENDED", this._queryService.queryId, null);
                     break;
                 case "UPDATED":
                     this.updateGallery();
