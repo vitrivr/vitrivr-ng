@@ -13,13 +13,15 @@ import {WeightFunction} from "../../shared/model/features/weighting/weight-funct
 import {DefaultWeightFunction} from "../../shared/model/features/weighting/default-weight-function.model";
 import {Subject} from "rxjs/Subject";
 import {MoreLikeThisQuery} from "../../shared/model/messages/more-like-this-query.model";
+import {MediaType} from "../../shared/model/media/media-type.model";
 
 
-/** Types of changes that can be emitted from the QueryService.
+/**
+ *  Types of changes that can be emitted from the QueryService.
  *
- *  STARTED     - New findSimilar was started.
- *  ENDED       - Processing of the findSimilar has ended.
- *  UPDATED     - New information concerning the running findSimilar is available.
+ *  STARTED     - New query was started.
+ *  ENDED       - Processing of the query has ended.
+ *  UPDATED     - New information concerning the running query is available OR post-execution refinements were performed.
  *  FEATURE     - A new feature has become available.
  */
 export type QueryChange = "STARTED" | "ENDED" | "UPDATED" | "FEATURE";
@@ -30,25 +32,36 @@ export type QueryChange = "STARTED" | "ENDED" | "UPDATED" | "FEATURE";
  */
 @Injectable()
 export class QueryService {
-    /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a research are assembled. */
+
+    /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
     private results : Map<string,MediaObjectScoreContainer> = new Map();
 
-    /** A Map that maps segmentId's to objectId's. This is a cache-structure. */
+    /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
     private segment_to_object_map : Map<string,string> = new Map();
 
     /** ID that identifies an ongoing research. If it's null, then no research is ongoing. */
-    private queryId : string = null;
+    private _queryId : string = null;
 
-    /** Flag indicating whether a findSimilar is currently running. */
-    private running : boolean = false;
+    /** Flag indicating whether a query is currently being executed. */
+    private _running : boolean = false;
 
-    /** List of all the features that are used the current findSimilar and hence known to the service. */
-    private features: Feature[] =[];
+    /** List of all the refinement that were used by the current findSimilar() and hence known to the service. */
+    private _features: Feature[] = [];
 
-    /** BehaviorSubject that allows Observers to subscribe to changes emmited from the QueryService. */
-    private stateSubject : Subject<QueryChange> = new Subject();
+    /**
+     * Map of all mediatypes that have been returned by the current query. Empty map indicates, that no
+     * results have been returned yet OR that no query is running.
+     *
+     * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
+     * be filtered).
+     */
+    private _mediatypes: Map<MediaType,boolean> = new Map();
 
-    /** Reference to the WeightFunction that's being used with the current instance of QueryService. WeightFunctions are used
+    /** BehaviorSubject that allows Observers to subscribe to changes emitted from the QueryService. */
+    private _stateSubject : Subject<QueryChange> = new Subject();
+
+    /**
+     * Reference to the WeightFunction that's being used with the current instance of QueryService. WeightFunctions are used
      * to rank results based on their score.
      */
     private weightFunction : WeightFunction = new DefaultWeightFunction();
@@ -74,7 +87,7 @@ export class QueryService {
      * @returns {boolean} true if query was issued, false otherwise.
      */
     public findSimilar(query : SimilarityQuery) : boolean {
-        if (!this.running) {
+        if (!this._running) {
             this._api.send(query);
             return true;
         } else {
@@ -91,24 +104,16 @@ export class QueryService {
      * @returns {boolean} true if query was issued, false otherwise.
      */
     public findMoreLikeThis(segmentId: string) : boolean {
-        if (this.running) return false;
-        if (this.features.length == 0) return false;
+        if (this._running) return false;
+        if (this._features.length == 0) return false;
 
         let categories: string[] = [];
-        for (let feature of this.features) {
+        for (let feature of this._features) {
             categories.push(feature.name);
         }
 
         this._api.send(new MoreLikeThisQuery(segmentId, categories));
         return true;
-    }
-
-    /**
-     *
-     * @returns {string}
-     */
-    public getQueryId(): string {
-        return this.queryId;
     }
 
     /**
@@ -122,9 +127,10 @@ export class QueryService {
     }
 
     /**
-     * Returns the number of available results. If this methods returns 0, no
-     * results are available.
+     * Returns true, if the results map contains the specified objectId and
+     * false otherwise.
      *
+     * @param objectId The ID of the desired object.
      * @returns {number}
      */
     public has(objectId: string) : boolean {
@@ -132,7 +138,10 @@ export class QueryService {
     }
 
     /**
+     * Returns the value of the the item in the results map or null,
+     * if no item exists of the specified key.
      *
+     * @param objectId The ID of the desired object.
      * @returns {number}
      */
     public get(objectId: string) : MediaObjectScoreContainer {
@@ -140,30 +149,24 @@ export class QueryService {
     }
 
     /**
+     * Applies the provided callback function to the resultset. The callback will only be
+     * applied to results that a) are ready to be displayed and b) have not been filtered
+     * by the filter settings.
      *
-     * @param callback
-     */
-    public forEach(callback: (value: MediaObjectScoreContainer, key: string) => any) {
-        this.results.forEach(callback);
-    }
-
-    /**
-     * Returns an Observable that allows an Observer to be notified about
-     * state changes in the QueryService (RunningQueries, Finished, Resultset updated).
+     * This is the preferred way to access the results in the result-set. Be aware, that they
+     * results are not sorted.
      *
-     * @returns {Observable<T>}
+     * @param callback Callback function that should be applied.
+     * @param filtered Indicates whether or not to honour the MediaType filters. Defaults to true.
      */
-    public observable() : Observable<QueryChange>{
-        return this.stateSubject.asObservable();
-    }
-
-    /**
-     * Returns the Map of features.
-     *
-     * @returns {Map<string, number>}
-     */
-    public getFeatures() : Feature[] {
-        return this.features;
+    public forEach(callback: (value: MediaObjectScoreContainer, key: string) => any, filtered: boolean = true) {
+        this.results.forEach((value, key) => {
+            if (filtered && value.show() && this._mediatypes.get(value.mediaObject.mediatype)) {
+                callback(value, key);
+            } else if (!filtered && value.show()) {
+                callback(value, key);
+            }
+        });
     }
 
     /**
@@ -173,10 +176,72 @@ export class QueryService {
      */
     public rerank() : void {
         this.results.forEach((value) => {
-            value.update(this.features, this.weightFunction);
+            value.update(this._features, this.weightFunction);
         });
-        this.stateSubject.next("FEATURE");
-        this.stateSubject.next("UPDATED");
+        this._stateSubject.next("UPDATED");
+    }
+
+    /**
+     * Changes the filter attribute for the provided mediatype. If the mediatype is unknwon
+     * to the QueryService, this method has no effect.
+     *
+     * Invocation of this method triggers an observable change in the QueryService class, if
+     * the filter-status of a MediaType actually changes.
+     *
+     * @param type MediaType that should be changed.
+     * @param active New filter status. True = is visible, false = will be filtered
+     */
+    public toggleMediatype(type: MediaType, active: boolean) {
+        if (this._mediatypes.has(type) && this._mediatypes.get(type) != active) {
+            this._mediatypes.set(type, active);
+            this._stateSubject.next("UPDATED");
+        }
+    }
+
+    /**
+     * Getter for QueryID.
+     *
+     * @return {string}
+     */
+    get queryId(): string {
+        return this._queryId;
+    }
+
+    /**
+     * Getter for running.
+     *
+     * @return {boolean}
+     */
+    get running(): boolean {
+        return this._running;
+    }
+
+    /**
+     * Returns an Observable that allows an Observer to be notified about
+     * state changes in the QueryService (RunningQueries, Finished, Resultset updated).
+     *
+     * @returns {Observable<QueryChange>}
+     */
+    get observable() : Observable<QueryChange>{
+        return this._stateSubject.asObservable();
+    }
+
+    /**
+     * Getter for the Map of refinement.
+     *
+     * @returns {Map<string, number>}
+     */
+    get features(): Feature[] {
+        return this._features;
+    }
+
+    /**
+     * Getter for the list of mediatypes.
+     *
+     * @return {Map<MediaType, boolean>}
+     */
+    get mediatypes() : Map<MediaType,boolean> {
+        return this._mediatypes;
     }
 
     /**
@@ -194,15 +259,15 @@ export class QueryService {
                 break;
             case "QR_OBJECT":
                 let obj = <ObjectQueryResult>parsed;
-                if (obj.queryId == this.queryId) this.processObjectMessage(obj);
+                if (obj.queryId == this._queryId) this.processObjectMessage(obj);
                 break;
             case "QR_SEGMENT":
                 let seg = <SegmentQueryResult>parsed;
-                if (seg.queryId == this.queryId) this.processSegmentMessage(seg);
+                if (seg.queryId == this._queryId) this.processSegmentMessage(seg);
                 break;
             case "QR_SIMILARITY":
                 let sim = <SimilarityQueryResult>parsed;
-                if (sim.queryId == this.queryId) this.processSimilarityMessage(sim);
+                if (sim.queryId == this._queryId) this.processSimilarityMessage(sim);
                 break;
             case "QR_END":
                 this.finalizeQuery();
@@ -219,12 +284,16 @@ export class QueryService {
      * @param id ID of the new research. Used to associate responses.
      */
     private startNewQuery(id : string) {
+        /* Clears the helper data structures. */
         this.results.clear();
+        this._mediatypes.clear();
         this.segment_to_object_map.clear();
-        this.queryId = id;
-        this.features = [];
-        this.running = true;
-        this.stateSubject.next("STARTED" as QueryChange);
+        this._features.length = 0;
+
+        /* Start the actual query. */
+        this._queryId = id;
+        this._running = true;
+        this._stateSubject.next("STARTED" as QueryChange);
     }
 
     /**
@@ -238,13 +307,17 @@ export class QueryService {
     private processObjectMessage(obj: ObjectQueryResult) {
         for (let object of obj.content) {
             if (object) {
+                /* Check if object's mediatype is already known to the service. Otherwise, add it. */
+                if (!this._mediatypes.has(object.mediatype)) this._mediatypes.set(object.mediatype, true);
+
+                /* Complete the resultset. */
                 if (!this.results.has(object.objectId)) this.results.set(object.objectId, new MediaObjectScoreContainer());
                 this.results.get(object.objectId).mediaObject = object;
             }
         }
 
         /* Inform Observers about changes. */
-        this.stateSubject.next("UPDATED" as QueryChange);
+        this._stateSubject.next("UPDATED" as QueryChange);
     }
 
     /**
@@ -263,7 +336,7 @@ export class QueryService {
         }
 
         /* Inform Observers about changes. */
-        this.stateSubject.next("UPDATED" as QueryChange);
+        this._stateSubject.next("UPDATED" as QueryChange);
     }
 
     /**
@@ -275,7 +348,7 @@ export class QueryService {
      * @param sim SimilarityQueryResult message
      */
     private processSimilarityMessage(sim : SimilarityQueryResult) {
-        /* Add feature to the list of features. */
+        /* Add feature to the list of refinement. */
         let feature: Feature = this.addFeatureForCategory(sim.category);
 
         /* Updates the Similarity information and re-calculates the scores.  */
@@ -301,12 +374,12 @@ export class QueryService {
      * @return Feature object for the named category.
      */
     private addFeatureForCategory(category : string) : Feature {
-        for (let feature of this.features) {
+        for (let feature of this._features) {
             if (feature.name == category) return feature;
         }
         let feature = new Feature(category, category, 100);
-        this.features.push(feature);
-        this.stateSubject.next("FEATURE");
+        this._features.push(feature);
+        this._stateSubject.next("FEATURE");
         return feature;
     }
 
@@ -317,8 +390,8 @@ export class QueryService {
      */
     private finalizeQuery() {
         this.segment_to_object_map.clear();
-        this.running = false;
-        this.stateSubject.next("ENDED" as QueryChange);
+        this._running = false;
+        this._stateSubject.next("ENDED" as QueryChange);
     }
 }
 
