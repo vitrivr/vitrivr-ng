@@ -33,7 +33,7 @@ export class ImageQueryTermComponent implements OnInit, OnDestroy {
     /** The ImageQueryTerm object associated with this ImageQueryTermComponent. That object holds all the settings. */
     @Input() imageTerm: ImageQueryTerm;
 
-    /** Slider to adjust the findSimilar-term settings; i.e. to select the features used for image-queries. */
+    /** Slider to adjust the query-term settings; i.e. to select the refinement used for image-queries. */
     public sliderSetting : number = 2;
 
     /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
