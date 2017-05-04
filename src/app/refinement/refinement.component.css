@@ -1,0 +1,17 @@
+.constrained {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+}
+
+.checkbox-group md-checkbox {
+    width: 100px;
+}

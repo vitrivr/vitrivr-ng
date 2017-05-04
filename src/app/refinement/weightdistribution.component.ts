@@ -4,7 +4,6 @@ import {Feature} from "../shared/model/features/feature.model";
     moduleId: module.id,
     selector: 'weight-distribution',
     template: `
-        <h4>Weight distribution</h4>
         <div class="weight-distribution">
             <div *ngFor="let feature of features" [style.width]="getWidth(feature)" [style.height]="'10px'" [style.background-color]="feature.color"></div>
         </div>   
@@ -17,17 +16,17 @@ import {Feature} from "../shared/model/features/feature.model";
  */
 export class WeightDistributionComponent {
     /**
-     * List of features that are currently displayed.
+     * List of refinement that are currently displayed.
      *
      * @type {Map<any, any>}
      */
     @Input() features: Feature[] = [];
 
     /**
-     * Returns the total weight of all features currently known
+     * Returns the total weight of all refinement currently known
      * to the component.
      *
-     * @returns {number} Total weight of all features.
+     * @returns {number} Total weight of all refinement.
      */
     public getTotal(): number {
         return this.features
