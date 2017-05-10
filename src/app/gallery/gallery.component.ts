@@ -17,10 +17,10 @@ import {SegmentScoreContainer} from "../shared/model/features/scores/segment-sco
 export class GalleryComponent {
 
     /** List of MediaObjectScoreContainers currently displayed by the gallery. */
-    private _mediaobjects : MediaObjectScoreContainer[];
+    protected _mediaobjects : MediaObjectScoreContainer[] = [];
 
     /** Reference to the MediaObjectScoreContainer that is currently in focus. */
-    private _focus: MediaObjectScoreContainer;
+    protected _focus: MediaObjectScoreContainer;
 
     /**
      * Default constructor.
@@ -29,7 +29,7 @@ export class GalleryComponent {
      * @param _resolver
      * @param _router
      */
-    constructor(private _queryService : QueryService, private _resolver: ResolverService, private _router: Router) {
+    constructor(protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {
         _queryService.observable
             .filter(msg => (msg == "UPDATED"))
             .subscribe((msg) => this.onQueryStateChange());
@@ -72,7 +72,7 @@ export class GalleryComponent {
      * Invoked whenever the QueryService reports that the results were updated. Causes
      * the gallery to be re-rendered.
      */
-    private onQueryStateChange() {
+    public onQueryStateChange() {
         this.updateGallery();
     }
 
@@ -82,7 +82,7 @@ export class GalleryComponent {
      *
      * @param object MediaObject for which details should be displayed.
      */
-    private onDetailsButtonClicked(object: MediaObject) {
+    public onDetailsButtonClicked(object: MediaObject) {
         this._router.navigate(['/mediaobject/' + object.objectId]);
     }
 
@@ -100,7 +100,7 @@ export class GalleryComponent {
     /**
      * This method is used internally to update the gallery view.
      */
-    private updateGallery() {
+    protected updateGallery() {
         let cache : MediaObjectScoreContainer[] = [];
         this._queryService.forEach(function(value : MediaObjectScoreContainer, key : string) {
             cache.push(value)
