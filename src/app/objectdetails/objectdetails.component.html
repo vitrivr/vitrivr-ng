@@ -1,5 +1,5 @@
 <div style="padding:10px;">
-    <h2>{{mediaobject.name}} / {{mediaobject.objectId}} ({{mediaobject.mediatype}})</h2>
+    <h2>{{mediaobject.name}} / {{mediaobject.objectId}} ({{mediaobject.mediatype}}) <a href="{{_resolver.pathToObject(mediaobject)}}" download><md-icon>file_download</md-icon></a></h2>
     <div>
         <div style="max-width: 500px;">
             <video #videoplayer *ngIf="mediaobject.mediatype == 'VIDEO'" src="{{_resolver.pathToObject(mediaobject)}}" controls width="100%"></video>
