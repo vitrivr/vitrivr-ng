@@ -1,24 +1,28 @@
 import {Component} from "@angular/core";
 import {MdDialogRef} from "@angular/material";
-import {EvaluationScenario} from "./model/evaluation-scenario";
+import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario";
 
 @Component({
     moduleId: module.id,
     selector: 'evaluation',
-    template: `
-        <div>
-            <h2>Scenario: {{scenario ? scenario.name : "loading..."}} ({{scenario ? scenario.id : "loading..."}})</h2>
-            <hr class="fade"/>
+    template: `        
+        <h2 md-dialog-title>Scenario: {{scenario.name}} (ID: {{scenario.id}})</h2>
+        <hr class="fade"/>
+        <md-dialog-content>
+            <h5>Task description</h5>
+            <dd>{{scenario.description}}</dd>
+            <div *ngIf="scenario.illustrations.length > 0">
+                <h5>Illustrations</h5>
+                <img *ngFor="let illustration of scenario.illustrations" src="{{illustration.url}}"  mdTooltip="{{illustration.description}}" [style.width]="'200px'"/>
+            </div>
             
-            <h5>Description</h5>
-            <dd>{{scenario ? scenario.description : "loading..."}}</dd>
-            
-            <h5>Material</h5>
-            <ul>
-                <li *ngFor="let material of scenario.material"><a href="{{material.url}}" target="_blank" mdTooltip="{{material.description}}">{{material.name}}</a></li>
-            </ul>   
-            <button md-button (click)="dialogRef.close()">Close</button>
-        </div>
+            <div *ngIf="scenario.material.length > 0">
+                <h5>Helper material (Download)</h5>
+                <ul>
+                    <li *ngFor="let material of scenario.material"><a href="{{material.url}}" mdTooltip="{{material.description}}" download>{{material.name}}</a></li>
+                </ul>
+            </div>
+        </md-dialog-content>
      `
 })
 export class ScenarioDetailsDialogComponent {
@@ -30,7 +34,9 @@ export class ScenarioDetailsDialogComponent {
      *
      * @param _dialogRef
      */
-    constructor(private _dialogRef: MdDialogRef<ScenarioDetailsDialogComponent>) {}
+    constructor(public readonly _dialogRef: MdDialogRef<ScenarioDetailsDialogComponent>) {
+        this._scenario = _dialogRef.config.data;
+    }
 
     /**
      * Getter for scenario.
@@ -39,15 +45,6 @@ export class ScenarioDetailsDialogComponent {
      */
     get scenario(): EvaluationScenario {
         return this._scenario;
-    }
-
-    /**
-     * Setter for scenario.
-     *
-     * @param value
-     */
-    set scenario(value: EvaluationScenario) {
-        this._scenario = value;
     }
 
     /**
