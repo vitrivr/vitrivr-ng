@@ -114,6 +114,15 @@ export class StorageService {
     }
 
     /**
+     * Removes the specified item from the local storage.
+     *
+     * @param key Key of the item that should be removed.
+     */
+    public remove(key: string) {
+        return this.storage.removeItem(key);
+    }
+
+    /**
      * Returns true if local-storage is supported by the current browser and
      * false otherwise.
      *
