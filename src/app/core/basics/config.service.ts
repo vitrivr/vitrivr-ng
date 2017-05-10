@@ -46,6 +46,16 @@ export class ConfigService {
     };
 
     /**
+     * Contains information concerning the configuration of the evaluation module.
+     *
+     * @type {{}}
+     */
+    private evaluation = {
+        active: true,
+        templates: []
+    };
+
+    /**
      * Default constructor.
      *
      * @param _http
@@ -69,6 +79,9 @@ export class ConfigService {
             if (result["resources"]["suffix_default"]) this.resources.suffix_default = result["resources"]["suffix_default"];
             if (result["resources"]["suffix"]) this.resources.suffix = result["resources"]["suffix"];
 
+            /* Load evaluation configuration. */
+            if (result["evaluation"]["active"]) this.evaluation.active = result["evaluation"]["active"];
+            if (result["evaluation"]["templates"]) this.evaluation.templates = result["evaluation"]["templates"];
         }
     }
 
@@ -133,5 +146,21 @@ export class ConfigService {
      */
     get suffix(): any {
         return this.resources.suffix;
+    }
+
+    /**
+     * Returns true, if the EvaluationModule is on and false otherwise.
+     *
+     * @return {boolean}
+     */
+    get evaluationOn(): boolean {
+        return this.evaluation.active;
+    }
+    /**
+     *
+     * @return {Array}
+     */
+    get evaluationTemplates(): any {
+        return this.evaluation.templates;
     }
  }

@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "localhost",
+    "host" : "127.0.0.1",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
@@ -14,5 +14,12 @@
       "IMAGE": "png",
       "VIDEO": "png"
     }
+  },
+  "evaluation": {
+    "active":true,
+    "templates":[
+      {"name":"Testset A", "url":"http://10.34.58.10/vitrivr/testset/evaluation_a.json"},
+      {"name":"Testset B", "url":"http://10.34.58.10/vitrivr/testset/evaluation_b.json"}
+    ]
   }
 }
