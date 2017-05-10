@@ -1,23 +1,33 @@
 <div style="padding:10px;">
     <div style="display:flex;">
+
+
+        <div class="spacer-small"></div>
+
         <div>
             <md-chip-list>
                 <md-chip (click)="onScenarioClick()"><strong>Scenario:</strong> {{scenarioDescriptor()}}</md-chip>
-                <md-chip><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
-                <md-chip><strong>Results:</strong> {{numberOfResults()}}</md-chip>
+                <md-chip color="{{stateColor()}}"><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
             </md-chip-list>
         </div>
 
         <div class="spacer-flex"></div>
 
         <div>
-            <button md-icon-button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()" mdTooltip="Start scenario"><md-icon>flag</md-icon></button>
-            <button md-icon-button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()" mdTooltip="Accept resultset"><md-icon>thumb_up</md-icon></button>
-            <button md-icon-button (click)="onEvaluationStopButtonClick()" [disabled]="!canBeStopped()" mdTooltip="Complete scenario"><md-icon>done</md-icon></button>
+            <button md-icon-button (click)="_evaluationset.previous()" mdTooltip="Previous scenario"><md-icon>keyboard_arrow_left</md-icon></button>
+            <button md-icon-button (click)="_evaluationset.next()" mdTooltip="Next Scenario"><md-icon>keyboard_arrow_right</md-icon></button>
         </div>
 
         <div class="spacer-small"></div>
 
+        <div>
+            <button md-icon-button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()" mdTooltip="Start scenario"><md-icon>flag</md-icon></button>
+            <button md-icon-button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()" mdTooltip="Accept result set"><md-icon>thumb_up</md-icon></button>
+            <button md-icon-button (click)="onEvaluationCompleteButtonClick()" [disabled]="!canBeCompleted()" mdTooltip="Complete scenario"><md-icon>done</md-icon></button>
+            <button md-icon-button (click)="onEvaluationAbortButtonClick()" [disabled]="!canBeAborted()" mdTooltip="Abort/Restart scenario"><md-icon>cancel</md-icon></button>
+        </div>
+
+        <div class="spacer-small"></div>
 
         <div>
             <button md-icon-button (click)="onDownloadButtonClick()" mdTooltip="Download all results"><md-icon>cloud_download</md-icon></button>
@@ -28,20 +38,28 @@
 
     <div style="padding:10px;">
         <md-grid-list cols="4" gutterSize="15px" rowHeight="1:1">
-            <md-grid-tile *ngFor="let mediaobject of mediaobjects" [attr.class]="mediaobject.getSegments() > 1 ? 'card-stack' : 'card-single'">
-                <md-grid-tile-header>
-                    <span [style.width]="'80%'" [style.float]="'left'" class="truncate">{{mediaobject.mediaObject.name}}</span>
-                    <span [style.width]="'80px'" [style.float]="'right'">{{"(" + mediaobject.getScorePercentage() + "%)"}}</span>
+            <md-grid-tile *ngFor="let mediaobject of mediaobjects" [attr.class]="'card-single'" (mouseover)="setFocus(mediaobject)">
+                <md-grid-tile-header [style.display]="'flex'" [style.justify-content]="'space-between'">
+                    <div class="filename">{{mediaobject.mediaObject.name}}</div>
+                    <div class="score">
+                        <p>{{mediaobject.scorePercentage}}&#37;</p>
+                        <p><md-icon>filter_none</md-icon>&nbsp;{{mediaobject.numberOfSegments}}</p>
+                    </div>
                 </md-grid-tile-header>
 
-                <img src="{{_resolverService.pathToThumbnailForSegment(mediaobject.mediaObject.mediatype, mediaobject.getRepresentativeSegment().mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'"/>
+                <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediaObject.mediatype, mediaobject.representativeSegment.mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'"/>
 
-                <md-grid-tile-footer *ngIf="objectCanBeRated(mediaobject)">
-                    <div style="display:flex; justify-content:center;">
-                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 0)"><md-icon [style.color]="colorForButton(mediaobject, 0)">star_rate</md-icon></button></div>
-                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 1)"><md-icon [style.color]="colorForButton(mediaobject, 1)">star_rate</md-icon></button></div>
-                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 2)"><md-icon [style.color]="colorForButton(mediaobject, 2)">star_rate</md-icon></button></div>
-                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 3)"><md-icon [style.color]="colorForButton(mediaobject, 3)">star_rate</md-icon></button></div>
+                <md-grid-tile-footer *ngIf="inFocus(mediaobject) || objectCanBeRated(mediaobject)">
+                    <div style="display:flex; justify-content:space-between;">
+                        <div *ngIf="objectCanBeRated(mediaobject)" style="display:flex; justify-content:flex-start;">
+                            <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 0)"><md-icon [style.color]="colorForButton(mediaobject, 0)">star_rate</md-icon></button></div>
+                            <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 1)"><md-icon [style.color]="colorForButton(mediaobject, 1)">star_rate</md-icon></button></div>
+                            <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 2)"><md-icon [style.color]="colorForButton(mediaobject, 2)">star_rate</md-icon></button></div>
+                            <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 3)"><md-icon [style.color]="colorForButton(mediaobject, 3)">star_rate</md-icon></button></div>
+                        </div>
+
+                        <div *ngIf="!inFocus(mediaobject)"><button md-icon-button (click)="onMltButtonClicked(mediaobject.representativeSegment)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button></div>
+                        <div><button md-icon-button (click)="onDetailsButtonClicked(mediaobject.mediaObject)" mdTooltip="Show details"><md-icon>remove_red_eye</md-icon></button></div>
                     </div>
                 </md-grid-tile-footer>
             </md-grid-tile>

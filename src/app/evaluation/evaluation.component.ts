@@ -1,43 +1,37 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {QueryService, QueryChange} from "../core/queries/query.service";
-import {EvaluationEvent} from "./model/evaluation-event";
-import {EvaluationState} from "./model/evaluation-state";
+import {EvaluationEvent} from "../shared/model/evaluation/evaluation-event";
+import {EvaluationState} from "../shared/model/evaluation/evaluation-state";
 import {ResolverService} from "../core/basics/resolver.service";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {Subscription} from "rxjs";
-import {MdSnackBar, MdDialog} from "@angular/material";
+import {MdSnackBar, MdDialog, MdDialogConfig} from "@angular/material";
 import {StorageService} from "../core/basics/storage.service";
-import {EvaluationTemplate} from "./model/evaluation-template";
-import {ActivatedRoute, Params} from "@angular/router";
+import {EvaluationTemplate} from "../shared/model/evaluation/evaluation-template";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {Http} from "@angular/http";
-import {EvaluationSet} from "./model/evaluation-set";
+import {EvaluationSet} from "../shared/model/evaluation/evaluation-set";
 import {ScenarioDetailsDialogComponent} from "./scenario-details-dialog.component";
+import {GalleryComponent} from "../gallery/gallery.component";
+import {EvaluationService} from "../core/evaluation/evaluation.service";
+import {Observable} from "rxjs/Observable";
 
 
 @Component({
     moduleId: module.id,
     selector: 'evaluation',
-    templateUrl: 'evaluation.component.html'
+    templateUrl: 'evaluation.component.html',
+    styleUrls: ['evaluation.component.css']
 })
-export class EvaluationComponent implements OnInit, OnDestroy {
-
-    /** Storage key used to persistently store evaluation data. */
-    private static EVALUATION_STORAGE_KEY = "vitrivr_ng_evaluation";
-
+export class EvaluationComponent extends GalleryComponent implements OnInit, OnDestroy {
     /** Reference to the current evaluation object. */
     private _evaluationset: EvaluationSet;
 
-    /** Current list of query results. */
-    public mediaobjects : MediaObjectScoreContainer[] = [];
+    /** Reference to the current evaluation object. */
+    private _template: EvaluationTemplate;
 
     /** Reference to the subscription to the QueryService. */
     private queryServiceSubscription : Subscription;
-
-    /** Reference to the Subscription for Router. */
-    private routeSubscription : Subscription;
-
-    /** Reference to the Subscription for Router. */
-    private dialogSubscription : Subscription;
 
     /**
      * Constructor; injects the required services for evaluation.
@@ -48,13 +42,15 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      * @param snackBar
      */
     constructor(
-        private _queryService : QueryService,
-        private _storageService: StorageService,
-        private _resolverService: ResolverService,
+        _queryService : QueryService,
+        _resolver: ResolverService,
+        _router: Router,
+        private _evaluation: EvaluationService,
         private _route: ActivatedRoute,
-        private _http: Http,
         private _snackBar: MdSnackBar,
-        private _dialog: MdDialog) {}
+        private _dialog: MdDialog) {
+        super(_queryService, _resolver, _router);
+    }
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
@@ -68,25 +64,15 @@ export class EvaluationComponent implements OnInit, OnDestroy {
          * Subscribes to changes of the Router class. Whenever the parameter becomes available,
          * the onParamsAvailable method is invoked.
          */
-        this.routeSubscription = this._route.params.subscribe((params: Params) => this.onParamsAvailable(params));
-
-        /**
-         *
-         */
-        this.dialogSubscription = this._dialog.afterOpen.subscribe(dialogRef => {
-            let component: ScenarioDetailsDialogComponent = <ScenarioDetailsDialogComponent>(dialogRef.componentInstance);
-            component.scenario = this._evaluationset.current.scenario;
-        });
+        this._route.params.first().subscribe((params: Params) => this.onParamsAvailable(params));
     }
 
     /**
      * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
      */
     public ngOnDestroy() {
-        this.routeSubscription.unsubscribe();
         this.queryServiceSubscription.unsubscribe();
         this.queryServiceSubscription = null;
-        this.routeSubscription = null;
     }
 
     /**
@@ -104,25 +90,34 @@ export class EvaluationComponent implements OnInit, OnDestroy {
     public onEvaluationStartButtonClick() {
         if (this.canBeStarted()) {
             this._evaluationset.current.start();
+            this._evaluation.saveEvaluation(this._evaluationset);
             this._snackBar.open('Evaluation started. Happy searching!', null, {duration: 2000});
+        }
+    }
+
+    /**
+     * Invoked whenever the 'Abort Scenario' button is clicked.
+     */
+    public onEvaluationAbortButtonClick() {
+        if (this.canBeAborted()) {
+            this._evaluationset.current.abort();
+            this._evaluation.saveEvaluation(this._evaluationset);
+            this._snackBar.open('Scenario aborted. You can restart it any time.', null, {duration: 2000});
         }
     }
 
     /**
      * Invoked whenever the 'Complete Scenario' button is clicked.
      */
-    public onEvaluationStopButtonClick() {
-        if (this.canBeStopped()) {
-            if (this._evaluationset.current.state == EvaluationState.RankingResults) {
-                this._evaluationset.current.stop();
-                this._storageService.pushToArrayForKey(EvaluationComponent.EVALUATION_STORAGE_KEY, this._evaluationset.toObject());
-                if (!this._evaluationset.next()) {
-                    this._snackBar.open('Evaluation finished. Thank you for participating!', null, {duration: 2000});
-                }
+    public onEvaluationCompleteButtonClick() {
+        if (this.canBeCompleted() && this._evaluationset.current.state == EvaluationState.RankingResults) {
+            this._evaluationset.current.complete();
+            if (!this._evaluationset.next()) {
+                this._snackBar.open('Evaluation completed. Thank you for participating!', null, {duration: 2000});
             } else {
-                this._evaluationset.current.abort();
-                this._snackBar.open('Evaluation aborted.', null, {duration: 2000});
+                this._snackBar.open('Next scenario is up ahead!', null, {duration: 2000});
             }
+            this._evaluation.saveEvaluation(this._evaluationset);
         }
     }
 
@@ -132,6 +127,7 @@ export class EvaluationComponent implements OnInit, OnDestroy {
     public onResultsAcceptButtonClick() {
         if (this.canBeAccepted()) {
             if (this._evaluationset.current.accept(this.mediaobjects) == EvaluationState.RankingResults) {
+                this._evaluation.saveEvaluation(this._evaluationset);
                 this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: 2000});
             }
         }
@@ -141,12 +137,8 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      * Invoked whenever the 'Download results' button is clicked.
      */
     public onDownloadButtonClick() {
-        let data = this._storageService.readPrimitiveForKey(EvaluationComponent.EVALUATION_STORAGE_KEY);
-        if (data) {
-            let blob = new Blob([data, {type: "application/json"}]);
-            let url = window.URL.createObjectURL(blob);
-            window.open(url);
-        }
+        let url = window.URL.createObjectURL(this._evaluation.evaluationData());
+        window.open(url);
     }
 
     /**
@@ -160,6 +152,7 @@ export class EvaluationComponent implements OnInit, OnDestroy {
         let objectindex = this.mediaobjects.indexOf(object);
         if (objectindex > -1) {
             this._evaluationset.current.rate(objectindex, rating);
+            this._evaluation.saveEvaluation(this._evaluationset);
         }
     }
 
@@ -168,7 +161,10 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      */
     public onScenarioClick() {
         if (!this._evaluationset) return;
-        this._dialog.open(ScenarioDetailsDialogComponent);
+        let config = new MdDialogConfig();
+        config.width='500px';
+        config.data = this._template.evaluationScenario(this._evaluationset.position);
+        this._dialog.open(ScenarioDetailsDialogComponent, config);
     }
 
     /**
@@ -197,7 +193,8 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      */
     public scenarioDescriptor() : string {
         if (!this._evaluationset) return "n/a";
-        return this._evaluationset.description();
+        if (!this._template) return "loading...";
+        return this._template.evaluationScenario(this._evaluationset.position).name + " (" + (this._evaluationset.position + 1) + "/" + this._evaluationset.count() + ")";
     }
 
     /**
@@ -223,17 +220,25 @@ export class EvaluationComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Returns a string descriptor of the current scenario state or
+     * an indication if no scenario is currently active.
      *
+     * @returns {string}
      */
-    private updateGallery() {
-        let cache : MediaObjectScoreContainer[] = [];
-        this._queryService.forEach(function(value : MediaObjectScoreContainer, key : string) {
-            if (value.show()) cache.push(value)
-        });
-        if (cache.length > 1) {
-            cache.sort((a : MediaObjectScoreContainer,b : MediaObjectScoreContainer) => MediaObjectScoreContainer.compareAsc(a,b))
+    public stateColor() : string {
+        if (!this._evaluationset) return "";
+        switch (this._evaluationset.current.state) {
+            case EvaluationState.NotStarted:
+                return "";
+            case EvaluationState.RunningQueries:
+                return "accent";
+            case EvaluationState.RankingResults:
+                return "accent";
+            case EvaluationState.Aborted:
+                return "warn";
+            case EvaluationState.Finished:
+                return "#00FF00";
         }
-        this.mediaobjects = cache;
     }
 
     /**
@@ -243,7 +248,7 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      */
     public canBeStarted(): boolean {
         if (this._evaluationset == null) return false;
-        return this._evaluationset.current.state == EvaluationState.NotStarted || this._evaluationset.current.state == EvaluationState.Finished || this._evaluationset.current.state ==EvaluationState.Aborted
+        return this._evaluationset.current.state == EvaluationState.NotStarted || this._evaluationset.current.state == EvaluationState.Aborted
     }
 
     /**
@@ -252,9 +257,18 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      *
      * Used to make UI related decisions.
      */
-    public canBeStopped(): boolean {
+    public canBeAborted(): boolean {
         if (this._evaluationset == null) return false;
-        return this._evaluationset.current.state == EvaluationState.RunningQueries || this._evaluationset.current.state == EvaluationState.RankingResults
+        return this._evaluationset.current.state != EvaluationState.NotStarted && this._evaluationset.current.state != EvaluationState.Aborted;
+    }
+
+    /**
+     *
+     * @return {boolean}
+     */
+    public canBeCompleted(): boolean {
+        if (this._evaluationset == null) return false;
+        return this._evaluationset.current.state == EvaluationState.RankingResults
 
     }
 
@@ -276,7 +290,7 @@ export class EvaluationComponent implements OnInit, OnDestroy {
      */
     public canBeRated(): boolean {
         if (this._evaluationset == null) return false;
-        return this._evaluationset.current.state == EvaluationState.RankingResults;
+        return this._evaluationset.current.state == EvaluationState.RankingResults && this.mediaobjects.length > 0;
     }
 
     /**
@@ -290,16 +304,6 @@ export class EvaluationComponent implements OnInit, OnDestroy {
     public objectCanBeRated(mediaobject: MediaObjectScoreContainer) {
         if (this.canBeRated() == false) return false;
         return this.mediaobjects.indexOf(mediaobject) < this._evaluationset.current.k
-    }
-
-
-    /**
-     * Returns the total number of evaluation results that are available for downloading.
-     *
-     * @return {number}
-     */
-    public numberOfResults(): number {
-        return this._storageService.sizeOfArray(EvaluationComponent.EVALUATION_STORAGE_KEY);
     }
 
     /**
@@ -335,9 +339,14 @@ export class EvaluationComponent implements OnInit, OnDestroy {
         let template = atob(params['template']);
         let participant = params['participant'];
         if (template && participant) {
-            this.loadEvaluationTemplate(template, participant);
+            if (!this.loadRunningEvaluation(participant)) {
+                this.startNewEvaluation(template,participant);
+                this._snackBar.open('Evaluation loaded successfully. Thank you for participating!', null, {duration: 2000});
+            } else {
+                this._snackBar.open('Evaluation resumed. Welcome back!', null, {duration: 2000});
+            }
         } else {
-            this.onEvaluationTemplateError();
+            this.onMissingInformation();
         }
     }
 
@@ -351,24 +360,54 @@ export class EvaluationComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * This method is called whenever either the pariticpant or the URL of the evaluation-template
+     * is missing.
+     */
+    private onMissingInformation() {
+        this._snackBar.open('Could not load the evaluation module because some information is missing.', null, {duration: 2000});
+    }
+
+    /**
+     *
+     * @param participant
+     * @return {boolean}
+     */
+    private loadRunningEvaluation(participant: string): boolean {
+        let set = this._evaluation.loadEvaluation(participant);
+        if (set != null) {
+            this._evaluationset = set;
+            this._evaluation.loadEvaluationTemplate(this._evaluationset.template).first().subscribe(
+                template => {
+                    this._template = template;
+                },
+                error => {
+                    console.log(error);
+                    this.onEvaluationTemplateError();
+                }
+            );
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Tries to load an evaluation template (JSON-file) from the specified
      * URL location.
      *
      * @param url URL from which to load the template.
      * @param participant ID of the participant.
      */
-    private loadEvaluationTemplate(url: string, participant: string) {
-        this._http.get(url).first().subscribe(response=> {
-            if (response.ok) {
-                let template = EvaluationTemplate.fromJson(response.json());
-                if (template) {
-                    this._evaluationset = new EvaluationSet(participant, template);
-                } else {
-                    this.onEvaluationTemplateError();
-                }
-            } else {
+    private startNewEvaluation(url: string, participant: string) {
+        this._evaluation.loadEvaluationTemplate(url).first().subscribe(
+            template => {
+                this._template = template;
+                this._evaluationset = EvaluationSet.fromTemplate(participant, template);
+            },
+            error => {
+                console.log(error);
                 this.onEvaluationTemplateError();
             }
-        });
+        );
     }
 }
