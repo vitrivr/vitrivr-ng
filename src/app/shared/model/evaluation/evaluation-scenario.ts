@@ -1,6 +1,6 @@
 import {EvaluationMaterial} from "./evaluation-material";
-import {Evaluation} from "./evaluation";
 export class EvaluationScenario {
+
 
     /** Default K value to calculate p@K and number of items a user is supposed to rate. */
     private _id : string;
@@ -14,8 +14,11 @@ export class EvaluationScenario {
     /** Default K value to calculate p@K and number of items a user is supposed to rate. */
     private _k : number = 15;
 
-    /** Array containing the material that can be used to support the scenario. */
+    /** Array containing the material that can be used to fulfill the scenario. */
     private _material: EvaluationMaterial[] = [];
+
+    /** Array containing the material that can is used as illustration. */
+    private _illustrations: EvaluationMaterial[] = [];
 
     /**
      *
@@ -23,13 +26,15 @@ export class EvaluationScenario {
      * @param name
      * @param description
      * @param k
+     * @param illustrations
      * @param material
      */
-    constructor(id, name, description, k, material) {
+    constructor(id, name, description, k, illustrations, material) {
         this._id = id;
         this._name = name;
         this._description = description;
         this._k = k;
+        this._illustrations = illustrations;
         this._material = material;
     }
 
@@ -67,6 +72,15 @@ export class EvaluationScenario {
      */
     get description(): string {
         return this._description;
+    }
+
+    /**
+     * Getter for illustrations
+     *
+     * @return {EvaluationMaterial[]}
+     */
+    get illustrations(): EvaluationMaterial[] {
+        return this._illustrations;
     }
 
     /**

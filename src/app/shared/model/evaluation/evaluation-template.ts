@@ -1,6 +1,10 @@
 import {EvaluationScenario} from "./evaluation-scenario";
 import {EvaluationMaterial} from "./evaluation-material";
 export class EvaluationTemplate {
+
+    /** URI of the evaluation template. */
+    private _uri: string;
+
     /** Name of the evaluation template. */
     private _name: string;
 
@@ -13,12 +17,23 @@ export class EvaluationTemplate {
     /**
      * Default constructor.
      *
+     * @param uri
      * @param name
      * @param description
      */
-    constructor(name: string, description: string) {
+    constructor(uri: string, name: string, description: string) {
+        this._uri = uri;
         this._name = name;
         this._description = description;
+    }
+
+    /**
+     * Getter for uri.
+     *
+     * @return {string}
+     */
+    get uri(): string {
+        return this._uri;
     }
 
     /**
@@ -111,16 +126,25 @@ export class EvaluationTemplate {
      * @param object The
      * @return {EvaluationTemplate|null}
      */
-    public static fromJson(object : any): EvaluationTemplate {
+    public static fromJson(object : any, url: string): EvaluationTemplate {
         try {
             if (typeof object == 'string') object = JSON.parse(object);
-            let template = new EvaluationTemplate(object["_name"], object["_description"]);
+            let template = new EvaluationTemplate(url, object["_name"], object["_description"]);
+            let baseURL = url.substr(0, url.lastIndexOf("/")) + "/";
             for (let scenario of object["_scenarios"]) {
                 let materials: EvaluationMaterial[] = [];
-                for (let material of scenario["_material"]) {
-                    materials.push(new EvaluationMaterial(material["_name"], material["_description"], material["_url"]));
+                let illustrations: EvaluationMaterial[] = [];
+                if (scenario["_material"]) {
+                    for (let material of scenario["_material"]) {
+                        materials.push(new EvaluationMaterial(material["_name"], material["_description"], baseURL + material["_url"]));
+                    }
                 }
-                template.addScenario(new EvaluationScenario(scenario["_id"], scenario["_name"], scenario["_description"], scenario["_k"], materials));
+                if (scenario["_illustrations"]) {
+                    for (let illustration of scenario["_illustrations"]) {
+                        illustrations.push(new EvaluationMaterial(illustration["_name"], illustration["_description"], baseURL + illustration["_url"]));
+                    }
+                }
+                template.addScenario(new EvaluationScenario(scenario["_id"], scenario["_name"], scenario["_description"], scenario["_k"], illustrations, materials));
             }
             return template;
         } catch (e){

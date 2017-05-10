@@ -1,41 +1,49 @@
 import {EvaluationEvent} from "./evaluation-event";
 import {EvaluationRating} from "./evaluation-rating";
 import {EvaluationState} from "./evaluation-state";
-import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
-import {TimeFormatterUtil} from "../../shared/util/TimeFormatterUtil";
+import {MediaObjectScoreContainer} from "../features/scores/media-object-score-container.model";
+import {TimeFormatterUtil} from "../../util/TimeFormatterUtil";
 import {EvaluationScenario} from "./evaluation-scenario";
 
 export class Evaluation {
 
     /** Date/time of the begin of the current evaluation. */
-    private begin: Date;
+    private _begin: Date;
 
     /** Date/time of the end of the current evaluation. */
-    private end: Date;
+    private _end: Date;
+
+    /** The number of items that should be ranked (counted from the top). */
+    private _k : number;
 
     /** State indicator; true if evaluation is running and false otherwise. */
     private _state: EvaluationState = EvaluationState.NotStarted;
 
-    /** */
-    private _scenario: EvaluationScenario;
+    /** ID of the EvaluationScenario */
+    private _scenario: string;
 
     /** List of evaluation events. */
-    private events: EvaluationEvent[] = [];
+    private _events: EvaluationEvent[] = [];
 
     /** List of evaluation events. */
-    private ratings: EvaluationRating[] = [];
-
-
-    private _k : number;
+    private _ratings: EvaluationRating[] = [];
 
     /**
+     * Getter for begin date.
      *
-     * @param _name
-     * @param _k
+     * @return {Date}
      */
-    constructor(scenario: EvaluationScenario) {
-        this._scenario = scenario;
-        this._k = scenario.k;
+    get begin(): Date {
+        return this._begin;
+    }
+
+    /**
+     * Getter for end date.
+     *
+     * @return {Date}
+     */
+    get end(): Date {
+        return this._end;
     }
 
     /**
@@ -43,7 +51,7 @@ export class Evaluation {
      *
      * @return {EvaluationScenario}
      */
-    get scenario(): EvaluationScenario {
+    get scenario(): string {
         return this._scenario;
     }
 
@@ -54,6 +62,24 @@ export class Evaluation {
      */
     get state(): EvaluationState {
         return this._state;
+    }
+
+    /**
+     * Getter for EvaluationEvents
+     *
+     * @return {EvaluationEvent[]}
+     */
+    get events(): EvaluationEvent[] {
+        return this._events;
+    }
+
+    /**
+     * Getter for EvaluationRating
+     *
+     * @return {EvaluationRating[]}
+     */
+    get ratings(): EvaluationRating[] {
+        return this._ratings;
     }
 
     /**
@@ -71,9 +97,9 @@ export class Evaluation {
      * @return New state of the Evaluation object.
      */
     public start(): EvaluationState {
-        if (this._state == EvaluationState.NotStarted) {
+        if (this._state == EvaluationState.NotStarted || this._state == EvaluationState.Aborted) {
             this._state = EvaluationState.RunningQueries;
-            this.begin = new Date();
+            this._begin = new Date();
         }
         return this.state;
     }
@@ -86,7 +112,7 @@ export class Evaluation {
     public accept(results: MediaObjectScoreContainer[]): EvaluationState {
         if (this._state == EvaluationState.RunningQueries) {
             results.forEach((value : MediaObjectScoreContainer, index : number) => {
-                this.ratings.push(new EvaluationRating(value.mediaObject.objectId, index, value.score));
+                this._ratings.push(new EvaluationRating(value.mediaObject.objectId, index, value.score));
             });
             this._state = EvaluationState.RankingResults;
         }
@@ -94,14 +120,14 @@ export class Evaluation {
     }
 
     /**
-     * Finishes the evaluation. Sets the stop timestamp and changes the state to Finished.
+     * Finishes the evaluation. Sets the complete timestamp and changes the state to Finished.
      *
      * @return New state of the Evaluation object.
      */
-    public stop(): EvaluationState {
+    public complete(): EvaluationState {
         if (this._state == EvaluationState.RankingResults) {
             this._state = EvaluationState.Finished;
-            this.end = new Date();
+            this._end = new Date();
         }
         return this.state;
     }
@@ -112,9 +138,14 @@ export class Evaluation {
      * @return New state of the Evaluation object.
      */
     public abort(): EvaluationState {
-        this._state = EvaluationState.Aborted;
-        this.end = new Date();
-        return this.state;
+        if (this._state != EvaluationState.Aborted && this._state != EvaluationState.NotStarted) {
+            this._state = EvaluationState.Aborted;
+            this._begin = null;
+            this._end = null;
+            this._events = [];
+            this._ratings = [];
+            return this.state;
+        }
     }
 
     /**
@@ -124,7 +155,7 @@ export class Evaluation {
      */
     public addEvent(event: EvaluationEvent) {
         if (this.state == EvaluationState.RunningQueries) {
-            this.events.push(event);
+            this._events.push(event);
         }
     }
 
@@ -136,9 +167,9 @@ export class Evaluation {
         if (this.state == EvaluationState.NotStarted) {
             return "00:00:00";
         } else if (this.state == EvaluationState.Finished || this.state == EvaluationState.Aborted) {
-            return TimeFormatterUtil.toTimer(this.end.getTime() - this.begin.getTime())
+            return TimeFormatterUtil.toTimer(this._end.getTime() - this._begin.getTime())
         } else {
-            return TimeFormatterUtil.toTimer(new Date().getTime() - this.begin.getTime())
+            return TimeFormatterUtil.toTimer(new Date().getTime() - this._begin.getTime())
         }
     }
 
@@ -149,7 +180,7 @@ export class Evaluation {
      */
     public rate(index: number, rating: number) {
         if (this.state != EvaluationState.RankingResults) return;
-        if (index >= this.ratings.length) {
+        if (index >= this._ratings.length) {
             console.log("Provided index " + index + " is out of bounds.");
             return;
         }
@@ -157,7 +188,7 @@ export class Evaluation {
             console.log("Provided rang '" + rating + "' is invalid (0-3).");
             return;
         }
-        this.ratings[index].rating = rating;
+        this._ratings[index].rating = rating;
     }
 
     /**
@@ -167,11 +198,11 @@ export class Evaluation {
      * @returns {number} Rating of the item or NEGATIVE_INFINITY if index is out of bounds.
      */
     public getRating(index: number) : number {
-        if (index >= this.ratings.length) {
+        if (index >= this._ratings.length) {
             console.log("Provided index " + index + " is out of bounds.");
             return Number.NEGATIVE_INFINITY;
         }
-        return this.ratings[index].rating;
+        return this._ratings[index].rating;
     }
 
 
@@ -190,8 +221,8 @@ export class Evaluation {
         let precision = 0;
         let normalisedK = k;
         for (let i=0;i<k;i++) {
-            if (this.ratings[i]) {
-                if (this.ratings[i].rating > 1) {
+            if (this._ratings[i]) {
+                if (this._ratings[i].rating > 1) {
                     precision += 1;
                 }
             } else {
@@ -209,28 +240,72 @@ export class Evaluation {
      */
     public discountedCumulativeGain() {
         let dcg = 0;
-        this.ratings.forEach(function(key, value) {
+        this._ratings.forEach(function(key, value) {
             dcg += key.rating/(Math.log(2+value));
         });
         return dcg;
     }
 
     /**
-     * Returns a compact JSON representation of the evaluation.
+     * Creates and returns a compact object representation of the EvaluationSet (no
+     * type). This representation can be used for serialisation.
+     *
+     * @param evaluation Evaluation that should be serliasied.
+     * @return {{scenario: string, begin: Date, end: Date, k: number, events: EvaluationEvent[], ratings: EvaluationRating[], state: EvaluationState, dcg: (()=>number), pAtK: number}}
      */
-    public toObject() : any {
-        return {
-            scenario: this._scenario.id,
-            begin : this.begin,
-            end: this.end,
-            events: this.events,
-            ratings: this.ratings,
-            complete: (this.state == EvaluationState.Finished),
-            dcg: this.discountedCumulativeGain,
-            pAt5: this.precisionAtK(5),
-            pAt10: this.precisionAtK(10),
-            pAt15: this.precisionAtK(15),
-            pAt20: this.precisionAtK(20)
+    public static serialise(evaluation: Evaluation) : any {
+        let object = {
+            scenario: evaluation._scenario,
+            begin : evaluation._begin,
+            end: evaluation._end,
+            k: evaluation._k,
+            events: evaluation._events,
+            ratings: [],
+            state: evaluation.state.valueOf(),
+            dcg: evaluation.discountedCumulativeGain,
+            pAtK: evaluation.precisionAtK(evaluation._k)
         };
+
+        /* Serialise ratings and push them into the array. */
+        for (let rating of evaluation._ratings) {
+            object.ratings.push(EvaluationRating.serialise(rating));
+        }
+
+        return object;
+    }
+
+    /**
+     *
+     * @param object
+     */
+    public static deserialise(object: any) : Evaluation {
+        let evaluation = new Evaluation();
+        evaluation._begin = object["begin"];
+        evaluation._end = object["end"];
+        evaluation._state = <EvaluationState>object["state"];
+        evaluation._k = object["k"];
+        evaluation._events = object["events"];
+        evaluation._ratings = [];
+
+        /* De-serialise ratings and push them into the array. */
+        let i = 0;
+        for (let rating of object["ratings"]) {
+            evaluation._ratings.push(EvaluationRating.deserialise(rating));
+            if (i > evaluation._k + 10) break;
+            i++;
+        }
+
+        return evaluation;
+    }
+
+    /**
+     *
+     * @param scenario
+     */
+    public static fromScenario(scenario: EvaluationScenario): Evaluation {
+        let evaluation = new Evaluation();
+        evaluation._scenario = scenario.id;
+        evaluation._k = scenario.k;
+        return evaluation;
     }
 }
