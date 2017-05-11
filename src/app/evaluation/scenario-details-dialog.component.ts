@@ -10,7 +10,7 @@ import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario
         <hr class="fade"/>
         <md-dialog-content>
             <h5>Task description</h5>
-            <dd>{{scenario.description}}</dd>
+            <p [innerHTML]="scenario.description"></p>
             <div *ngIf="scenario.illustrations.length > 0">
                 <h5>Illustrations</h5>
                 <img *ngFor="let illustration of scenario.illustrations" src="{{illustration.url}}"  mdTooltip="{{illustration.description}}" [style.width]="'200px'"/>
