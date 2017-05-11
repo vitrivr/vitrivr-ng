@@ -6,16 +6,14 @@ import {ResolverService} from "../core/basics/resolver.service";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {Subscription} from "rxjs";
 import {MdSnackBar, MdDialog, MdDialogConfig} from "@angular/material";
-import {StorageService} from "../core/basics/storage.service";
 import {EvaluationTemplate} from "../shared/model/evaluation/evaluation-template";
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {Http} from "@angular/http";
 import {EvaluationSet} from "../shared/model/evaluation/evaluation-set";
 import {ScenarioDetailsDialogComponent} from "./scenario-details-dialog.component";
 import {GalleryComponent} from "../gallery/gallery.component";
 import {EvaluationService} from "../core/evaluation/evaluation.service";
-import {Observable} from "rxjs/Observable";
-
+import {Location} from "@angular/common";
+import {ConfigService} from "../core/basics/config.service";
 
 @Component({
     moduleId: module.id,
@@ -45,6 +43,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         _queryService : QueryService,
         _resolver: ResolverService,
         _router: Router,
+        private _location: Location,
         private _evaluation: EvaluationService,
         private _route: ActivatedRoute,
         private _snackBar: MdSnackBar,
@@ -91,7 +90,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (this.canBeStarted()) {
             this._evaluationset.current.start();
             this._evaluation.saveEvaluation(this._evaluationset);
-            this._snackBar.open('Evaluation started. Happy searching!', null, {duration: 2000});
+            this._snackBar.open('Evaluation started. Happy searching!', null, {duration: ConfigService.SNACKBAR_DURATION});
         }
     }
 
@@ -102,7 +101,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (this.canBeAborted()) {
             this._evaluationset.current.abort();
             this._evaluation.saveEvaluation(this._evaluationset);
-            this._snackBar.open('Scenario aborted. You can restart it any time.', null, {duration: 2000});
+            this._snackBar.open('Scenario aborted. You can restart it any time.', null, {duration: ConfigService.SNACKBAR_DURATION});
         }
     }
 
@@ -113,9 +112,9 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (this.canBeCompleted() && this._evaluationset.current.state == EvaluationState.RankingResults) {
             this._evaluationset.current.complete();
             if (!this._evaluationset.next()) {
-                this._snackBar.open('Evaluation completed. Thank you for participating!', null, {duration: 2000});
+                this._snackBar.open('Evaluation completed. Thank you for participating!', null, {duration: ConfigService.SNACKBAR_DURATION});
             } else {
-                this._snackBar.open('Next scenario is up ahead!', null, {duration: 2000});
+                this._snackBar.open('Next scenario is up ahead!', null, {duration: ConfigService.SNACKBAR_DURATION});
             }
             this._evaluation.saveEvaluation(this._evaluationset);
         }
@@ -128,7 +127,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (this.canBeAccepted()) {
             if (this._evaluationset.current.accept(this.mediaobjects) == EvaluationState.RankingResults) {
                 this._evaluation.saveEvaluation(this._evaluationset);
-                this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: 2000});
+                this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: ConfigService.SNACKBAR_DURATION});
             }
         }
     }
@@ -336,41 +335,31 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * to load the specified evaluation template.
      */
     private onParamsAvailable(params: Params) {
-        let template = atob(params['template']);
-        let participant = params['participant'];
+        let participant = params['participant'] ? atob(params['participant']) : null;
+        let template = params['template'] ? atob(params['template']) : null;
+        let name =  params['name'] ? atob(params['name']) : null;
         if (template && participant) {
             if (!this.loadRunningEvaluation(participant)) {
-                this.startNewEvaluation(template,participant);
-                this._snackBar.open('Evaluation loaded successfully. Thank you for participating!', null, {duration: 2000});
-            } else {
-                this._snackBar.open('Evaluation resumed. Welcome back!', null, {duration: 2000});
+                this.startNewEvaluation(template,participant,name);
+            }
+        } else if (participant) {
+            if (!this.loadRunningEvaluation(participant)) {
+                this._snackBar.open("Could not find an ongoing evaluation for the provided ID '" + participant + "'.", null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                    this._location.back();
+                });
             }
         } else {
-            this.onMissingInformation();
+            this._snackBar.open('Could not load the evaluation module because some information is missing.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                this._location.back();
+            });
         }
     }
 
     /**
-     * This method is called whenever an error occurs during the loading
-     * phase of an EvaluationTemplate i.e. if no URL was specified, the specified
-     * URL is not reachable or does not point to a valid template.
-     */
-    private onEvaluationTemplateError() {
-        this._snackBar.open('Could not load the specified evaluation template!', null, {duration: 2000});
-    }
-
-    /**
-     * This method is called whenever either the pariticpant or the URL of the evaluation-template
-     * is missing.
-     */
-    private onMissingInformation() {
-        this._snackBar.open('Could not load the evaluation module because some information is missing.', null, {duration: 2000});
-    }
-
-    /**
+     * Tries to resume a running evaluation given a participant ID.
      *
-     * @param participant
-     * @return {boolean}
+     * @param participant Participant ID for the running evaluation.
+     * @return {boolean} true if a running evaluation could be loaded from local storage, false otherwise.
      */
     private loadRunningEvaluation(participant: string): boolean {
         let set = this._evaluation.loadEvaluation(participant);
@@ -379,10 +368,13 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
             this._evaluation.loadEvaluationTemplate(this._evaluationset.template).first().subscribe(
                 template => {
                     this._template = template;
+                    this._snackBar.open("Evaluation resumed successfully. Welcome back '" + this._evaluationset.name + "'!", null, {duration: ConfigService.SNACKBAR_DURATION});
                 },
                 error => {
                     console.log(error);
-                    this.onEvaluationTemplateError();
+                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                        this._location.back();
+                    });
                 }
             );
             return true;
@@ -392,21 +384,25 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     }
 
     /**
-     * Tries to load an evaluation template (JSON-file) from the specified
-     * URL location.
+     * Tries to load an evaluation template (JSON-file) from the specified URL location and start
+     * a new evaluation based on that template.
      *
      * @param url URL from which to load the template.
      * @param participant ID of the participant.
+     * @param name Optional name of the participant.
      */
-    private startNewEvaluation(url: string, participant: string) {
+    private startNewEvaluation(url: string, participant: string, name?:string) {
         this._evaluation.loadEvaluationTemplate(url).first().subscribe(
             template => {
                 this._template = template;
-                this._evaluationset = EvaluationSet.fromTemplate(participant, template);
+                this._evaluationset = EvaluationSet.fromTemplate(participant, template, name);
+                this._snackBar.open('Evaluation loaded successfully. Thank you for participating!', null, {duration: ConfigService.SNACKBAR_DURATION});
             },
             error => {
                 console.log(error);
-                this.onEvaluationTemplateError();
+                this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                     this._location.back();
+                });
             }
         );
     }

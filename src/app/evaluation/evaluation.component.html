@@ -7,7 +7,7 @@
         <div>
             <md-chip-list>
                 <md-chip (click)="onScenarioClick()"><strong>Scenario:</strong> {{scenarioDescriptor()}}</md-chip>
-                <md-chip color="{{stateColor()}}"><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
+                <md-chip [attr.color]="stateColor()"><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
             </md-chip-list>
         </div>
 
@@ -49,7 +49,7 @@
 
                 <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediaObject.mediatype, mediaobject.representativeSegment.mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'"/>
 
-                <md-grid-tile-footer *ngIf="inFocus(mediaobject) || objectCanBeRated(mediaobject)">
+                <md-grid-tile-footer *ngIf="inFocus(mediaobject)">
                     <div style="display:flex; justify-content:space-between;">
                         <div *ngIf="objectCanBeRated(mediaobject)" style="display:flex; justify-content:flex-start;">
                             <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 0)"><md-icon [style.color]="colorForButton(mediaobject, 0)">star_rate</md-icon></button></div>
@@ -58,7 +58,7 @@
                             <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 3)"><md-icon [style.color]="colorForButton(mediaobject, 3)">star_rate</md-icon></button></div>
                         </div>
 
-                        <div *ngIf="!inFocus(mediaobject)"><button md-icon-button (click)="onMltButtonClicked(mediaobject.representativeSegment)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button></div>
+                        <div *ngIf="!objectCanBeRated(mediaobject)"><button md-icon-button (click)="onMltButtonClicked(mediaobject.representativeSegment)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button></div>
                         <div><button md-icon-button (click)="onDetailsButtonClicked(mediaobject.mediaObject)" mdTooltip="Show details"><md-icon>remove_red_eye</md-icon></button></div>
                     </div>
                 </md-grid-tile-footer>
