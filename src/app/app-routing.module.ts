@@ -14,7 +14,8 @@ const appRoutes: Routes = [
         component: ObjectdetailsComponent
     },
     { path: 'evaluation', component: EvaluationSelectionComponent },
-    { path: 'evaluation/:template/:participant', component: EvaluationComponent },
+    { path: 'evaluation/:participant/:template/:name', component: EvaluationComponent },
+    { path: 'evaluation/:participant', component: EvaluationComponent },
     { path: 'gallery', component: GalleryComponent },
     { path: '',  redirectTo: '/gallery', pathMatch: 'full' }
 ];
