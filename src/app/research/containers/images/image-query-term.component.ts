@@ -25,7 +25,7 @@ import {Subscription} from "rxjs";
     `
 })
 
-export class ImageQueryTermComponent implements OnInit, OnDestroy {
+export class ImageQueryTermComponent implements OnInit {
 
     /** Component used to display a preview of the selected AND/OR sketched image. */
     @ViewChild('previewimg') private previewimg: any;
@@ -39,9 +39,6 @@ export class ImageQueryTermComponent implements OnInit, OnDestroy {
     /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
     public mode3D : boolean = false;
 
-    /** */
-    private dialogAfterOpenSubscription : Subscription;
-
     /**
      * Default constructor.
      *
@@ -53,7 +50,7 @@ export class ImageQueryTermComponent implements OnInit, OnDestroy {
      * Called when component is initialized; subscribes to MDDialog afterOpen subscription.
      */
     public ngOnInit() {
-        this.dialogAfterOpenSubscription = this.dialog.afterOpen.subscribe(dialogRef => {
+        this.dialog.afterOpen.first().subscribe(dialogRef => {
             let component = <SketchDialogComponent> dialogRef.componentInstance;
 
             /* Transfer current image if mode hasn't changed. */
@@ -61,13 +58,6 @@ export class ImageQueryTermComponent implements OnInit, OnDestroy {
                 component.sketchpad.setImageBase64(this.previewimg.nativeElement.src);
             }
         });
-    }
-
-    /**
-     * Called when component is destroyed; un-subscribes from MDDialog afterOpen subscription.
-     */
-    public ngOnDestroy() {
-        this.dialogAfterOpenSubscription.unsubscribe();
     }
 
     /**
