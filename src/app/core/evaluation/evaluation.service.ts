@@ -1,49 +1,49 @@
 import {EvaluationSet} from "../../shared/model/evaluation/evaluation-set";
-import {Inject, Injectable} from "@angular/core";
-import {StorageService} from "../basics/storage.service";
+import {Injectable} from "@angular/core";
 import {Http} from "@angular/http";
 import {EvaluationTemplate} from "../../shared/model/evaluation/evaluation-template";
 import {Observable} from "rxjs/Observable";
+import Dexie from 'dexie';
 
 @Injectable()
-export class EvaluationService {
-    /** Storage key used to persistently store evaluation data. */
-    public static EVALUATION_STORAGE_KEY = "vitrivr_ng_evaluation";
+export class EvaluationService extends Dexie {
+    /** Table used to store evaluation data. */
+    private evaluations: Dexie.Table<any, string>;
 
     /**
      * Default constructor.
      */
-    constructor(@Inject(StorageService) private _storage : StorageService, private _http: Http) {}
+    constructor(private _http: Http) {
+        super("vitrivng");
+        this.version(1).stores({
+            evaluations: 'id,name,template,evaluations,position'
+        });
+    }
 
     /**
      * Saves the current state of the Evaluation in the local store.
      */
-    public saveEvaluation(evaluationset: EvaluationSet): boolean {
+    public saveEvaluation(evaluationset: EvaluationSet): Observable<number> {
         /** Reads the objects from the store OR creates a new one. */
-        let object = {};
-        if (this._storage.has(EvaluationService.EVALUATION_STORAGE_KEY)) {
-            object = this._storage.readObjectForKey(EvaluationService.EVALUATION_STORAGE_KEY)
-        }
-        object[evaluationset.id] = EvaluationSet.serialise(evaluationset);
-        return this._storage.writeObjectForKey(EvaluationService.EVALUATION_STORAGE_KEY, object);
+        return Observable.fromPromise(this.evaluations.put(EvaluationSet.serialise(evaluationset)));
     }
 
     /**
      * Tries to load an evaluation for the provided participant. On succes, the method returns the
      * loaded EvaluationSet. If loading the evaluation set for the participant fails, the evaluation set
      *
-     * @param participant
+     * @param participantId
      * @return {any}
      */
-    public loadEvaluation(participant: string): EvaluationSet {
+    public loadEvaluation(participantId: string): Observable<EvaluationSet> {
         /* Check if the Evaluation Storage entry exists at all. If not, return null. */
-        if (!this._storage.has(EvaluationService.EVALUATION_STORAGE_KEY)) return null;
-        let object = this._storage.readObjectForKey(EvaluationService.EVALUATION_STORAGE_KEY);
-
-        /* Check if there is an entry for the participant. If not, return null. */
-        if (!object[participant]) return null;
-
-        return EvaluationSet.deserialise(object[participant]);
+        return Observable.fromPromise(this.evaluations.get(participantId)).map((result) => {
+            if (result) {
+                return EvaluationSet.deserialise(result);
+            } else {
+                Observable.throw(new Error("Could not find an the evaluation for participant '" + participantId + "'."));
+            }
+        });
     }
 
     /**
@@ -52,17 +52,21 @@ export class EvaluationService {
      * @param participant
      * @return {any}
      */
-    public evaluationData(): Blob {
-        let data = this._storage.readPrimitiveForKey(EvaluationService.EVALUATION_STORAGE_KEY);
-        let blob = new Blob([data, {type: "application/json"}]);
-        return blob;
+    public evaluationData(): Observable<Blob> {
+        return Observable.fromPromise(this.evaluations.toArray()).map((result) => {
+            if (result) {
+                return new Blob([JSON.stringify(result), {type: "application/json"}]);
+            } else {
+                return new Blob(["{}", {type: "application/json"}]);
+            }
+        });
     }
 
     /**
      * Clears all the evaluation data.
      */
-    public clear() {
-        this._storage.remove(EvaluationService.EVALUATION_STORAGE_KEY);
+    public clear() : Promise<void> {
+        return this.evaluations.clear()
     }
 
     /**

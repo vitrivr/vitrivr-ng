@@ -14,6 +14,7 @@ import {GalleryComponent} from "../gallery/gallery.component";
 import {EvaluationService} from "../core/evaluation/evaluation.service";
 import {Location} from "@angular/common";
 import {ConfigService} from "../core/basics/config.service";
+import {Observable} from "rxjs/Observable";
 
 @Component({
     moduleId: module.id,
@@ -89,7 +90,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     public onEvaluationStartButtonClick() {
         if (this.canBeStarted()) {
             this._evaluationset.current.start();
-            this._evaluation.saveEvaluation(this._evaluationset);
+            this.saveEvaluation();
             this._snackBar.open('Evaluation started. Happy searching!', null, {duration: ConfigService.SNACKBAR_DURATION});
         }
     }
@@ -100,7 +101,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     public onEvaluationAbortButtonClick() {
         if (this.canBeAborted()) {
             this._evaluationset.current.abort();
-            this._evaluation.saveEvaluation(this._evaluationset);
+            this.saveEvaluation();
             this._snackBar.open('Scenario aborted. You can restart it any time.', null, {duration: ConfigService.SNACKBAR_DURATION});
         }
     }
@@ -116,7 +117,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
             } else {
                 this._snackBar.open('Next scenario is up ahead!', null, {duration: ConfigService.SNACKBAR_DURATION});
             }
-            this._evaluation.saveEvaluation(this._evaluationset);
+            this.saveEvaluation();
         }
     }
 
@@ -126,7 +127,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     public onResultsAcceptButtonClick() {
         if (this.canBeAccepted()) {
             if (this._evaluationset.current.accept(this.mediaobjects) == EvaluationState.RankingResults) {
-                this._evaluation.saveEvaluation(this._evaluationset);
+                this.saveEvaluation();
                 this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: ConfigService.SNACKBAR_DURATION});
             }
         }
@@ -136,8 +137,12 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * Invoked whenever the 'Download results' button is clicked.
      */
     public onDownloadButtonClick() {
-        let url = window.URL.createObjectURL(this._evaluation.evaluationData());
-        window.open(url);
+        this._evaluation.evaluationData().subscribe(
+            (data) => {
+                let url = window.URL.createObjectURL(data);
+                window.open(url);
+            }
+        );
     }
 
     /**
@@ -151,7 +156,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         let objectindex = this.mediaobjects.indexOf(object);
         if (objectindex > -1) {
             this._evaluationset.current.rate(objectindex, rating);
-            this._evaluation.saveEvaluation(this._evaluationset);
+            this.saveEvaluation();
         }
     }
 
@@ -306,6 +311,19 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     }
 
     /**
+     * Tries to save the recent changes to the evaluation using the evaluation service.
+     */
+    private saveEvaluation() {
+        this._evaluation.saveEvaluation(this._evaluationset).first().subscribe(
+            () => {},
+            (error) => {
+                console.log(error);
+                this._snackBar.open('Could not persist the recent changes to the evaluation. Proceed with caution...', null, {duration: ConfigService.SNACKBAR_DURATION});
+            }
+        );
+    }
+
+    /**
      *
      * @param msg
      */
@@ -339,15 +357,32 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         let template = params['template'] ? atob(params['template']) : null;
         let name =  params['name'] ? atob(params['name']) : null;
         if (template && participant) {
-            if (!this.loadRunningEvaluation(participant)) {
-                this.startNewEvaluation(template,participant,name);
-            }
+            this.loadRunningEvaluation(participant).catch(
+                (error, caught: Observable<void>) => {
+                    return this.startNewEvaluation(template, participant, name)
+            }).subscribe(
+                () => {
+                    this._snackBar.open("Evaluation started successfully. Welcome '" + this._evaluationset.name + "'! Thank you for participating.", null, {duration: ConfigService.SNACKBAR_DURATION});
+                },
+                (error) => {
+                    console.log(error);
+                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                        this._location.back();
+                    });
+                }
+            );
         } else if (participant) {
-            if (!this.loadRunningEvaluation(participant)) {
-                this._snackBar.open("Could not find an ongoing evaluation for the provided ID '" + participant + "'.", null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
-                    this._location.back();
-                });
-            }
+            this.loadRunningEvaluation(participant).subscribe(
+                () => {
+                    this._snackBar.open("Evaluation resumed successfully. Welcome back'" + this._evaluationset.name + "'!", null, {duration: ConfigService.SNACKBAR_DURATION});
+                },
+                (error) => {
+                    console.log(error);
+                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                        this._location.back();
+                    });
+                }
+            );
         } else {
             this._snackBar.open('Could not load the evaluation module because some information is missing.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
                 this._location.back();
@@ -361,26 +396,21 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * @param participant Participant ID for the running evaluation.
      * @return {boolean} true if a running evaluation could be loaded from local storage, false otherwise.
      */
-    private loadRunningEvaluation(participant: string): boolean {
-        let set = this._evaluation.loadEvaluation(participant);
-        if (set != null) {
-            this._evaluationset = set;
-            this._evaluation.loadEvaluationTemplate(this._evaluationset.template).first().subscribe(
-                template => {
-                    this._template = template;
-                    this._snackBar.open("Evaluation resumed successfully. Welcome back '" + this._evaluationset.name + "'!", null, {duration: ConfigService.SNACKBAR_DURATION});
-                },
-                error => {
-                    console.log(error);
-                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
-                        this._location.back();
-                    });
-                }
-            );
-            return true;
-        } else {
-            return false;
-        }
+    private loadRunningEvaluation(participant: string) : Observable<void> {
+        return this._evaluation.loadEvaluation(participant).first().flatMap((evaluation) => {
+            if (evaluation != null) {
+                return Observable.zip(Observable.of(evaluation), this._evaluation.loadEvaluationTemplate(evaluation.template), (evaluation, template) => {
+                    if (template != null) {
+                        this._evaluationset = evaluation;
+                        this._template = template;
+                    } else {
+                        Observable.throw("Failed to load the evaluation template from '" + evaluation.template + "'.");
+                    }
+                });
+            } else {
+                Observable.throw("Failed to load evaluation for the specified participant ID '" + participant + "'.");
+            }
+        });
     }
 
     /**
@@ -391,19 +421,14 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * @param participant ID of the participant.
      * @param name Optional name of the participant.
      */
-    private startNewEvaluation(url: string, participant: string, name?:string) {
-        this._evaluation.loadEvaluationTemplate(url).first().subscribe(
-            template => {
+    private startNewEvaluation(url: string, participant: string, name?:string): Observable<void> {
+        return this._evaluation.loadEvaluationTemplate(url).first().map((template) => {
+            if (template != null) {
                 this._template = template;
                 this._evaluationset = EvaluationSet.fromTemplate(participant, template, name);
-                this._snackBar.open('Evaluation loaded successfully. Thank you for participating!', null, {duration: ConfigService.SNACKBAR_DURATION});
-            },
-            error => {
-                console.log(error);
-                this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
-                     this._location.back();
-                });
+            } else {
+                Observable.throw("Failed to load the evaluation template from '" + template + "'.");
             }
-        );
+        });
     }
 }
