@@ -140,10 +140,12 @@ export class EvaluationSet {
      */
     public static serialise(set: EvaluationSet) : any {
         let object = {
-            id: set.id,
+            id: set._id,
             template : set._template,
             position : set._position,
-            evaluations: []};
+            name: set._name,
+            evaluations: []
+        };
         for (let evaluation of set._evaluations) {
             object.evaluations.push(Evaluation.serialise(evaluation));
         }
@@ -161,6 +163,7 @@ export class EvaluationSet {
         let set = new EvaluationSet();
         set._id = object["id"];
         set._template = object["template"];
+        set._name = object["name"];
         set._evaluations = [];
         for (let evaluation of object["evaluations"]) {
             set._evaluations.push(Evaluation.deserialise(evaluation));
