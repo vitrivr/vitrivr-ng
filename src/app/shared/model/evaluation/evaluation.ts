@@ -253,7 +253,7 @@ export class Evaluation {
     }
 
     /**
-     * Creates and returns a compact object representation of the EvaluationSet (no
+     * Creates and returns a compact object representation of the Evaluation (no
      * type). This representation can be used for serialisation.
      *
      * @param evaluation Evaluation that should be serialised.
@@ -265,7 +265,7 @@ export class Evaluation {
             begin : evaluation._begin,
             end: evaluation._end,
             k: evaluation._k,
-            events: evaluation._events,
+            events: [],
             ratings: [],
             state: evaluation.state.valueOf(),
             dcg: evaluation.discountedCumulativeGain(),
@@ -277,12 +277,17 @@ export class Evaluation {
             object.ratings.push(EvaluationRating.serialise(rating));
         }
 
+        /* Serialise events and push them into the array. */
+        for (let event of evaluation._events) {
+            object.events.push(EvaluationEvent.serialise(event));
+        }
+
         return object;
     }
 
     /**
      * Deserialises an Evaluation from a plain JavaScript object. The field-names in the object must
-     * correspond to the field names of the EvaluationSet, without the _ prefix.
+     * correspond to the field names of the Evaluation, without the _ prefix.
      *
      * @param object
      * @return {Evaluation}
@@ -293,15 +298,17 @@ export class Evaluation {
         evaluation._end = object["end"];
         evaluation._state = <EvaluationState>object["state"];
         evaluation._k = object["k"];
-        evaluation._events = object["events"];
         evaluation._ratings = [];
+        evaluation._events = [];
 
         /* De-serialise ratings and push them into the array. */
-        let i = 0;
         for (let rating of object["ratings"]) {
             evaluation._ratings.push(EvaluationRating.deserialise(rating));
-            if (i > evaluation._k + 10) break;
-            i++;
+        }
+
+        /* De-serialise events and push them into the array. */
+        for (let event of object["events"]) {
+            evaluation._events.push(EvaluationEvent.deserialise(event));
         }
 
         return evaluation;
