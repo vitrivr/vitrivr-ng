@@ -72,12 +72,14 @@ export class EvaluationService {
      * @param url URL to load the template from.
      */
     public loadEvaluationTemplate(url: string): Observable<EvaluationTemplate> {
-        return this._http.get(url).map((response) => {
-            if (response.ok) {
-                return EvaluationTemplate.fromJson(response.json(), response.url);
-            } else {
-                throw new Error("Could not load the EvaluationTemplate from the provided URL.");
+        return this._http.get(url).map(
+            response => {
+                if (response.ok) {
+                    return EvaluationTemplate.fromJson(response.json(), response.url);
+                } else {
+                    Observable.throw(new Error("Could not load the EvaluationTemplate due to a HTTP error (Status: " + response.status + ")"));
+                }
             }
-        });
+        );
     }
 }
