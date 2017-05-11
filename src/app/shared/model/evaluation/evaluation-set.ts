@@ -9,6 +9,9 @@ export class EvaluationSet {
     /** URL of the evaluation template that was used to create the set. */
     private _template: string;
 
+    /** Name of the participant. */
+    private _name: string;
+
     /** List of evaluations (derived from the scenarios). */
     private _evaluations: Evaluation[] = [];
 
@@ -34,6 +37,15 @@ export class EvaluationSet {
      */
     get template(): string {
         return this._template;
+    }
+
+    /**
+     * Getter for name.
+     * s
+     * @return {string}
+     */
+    get name(): string {
+        return this._name;
     }
 
     /**
@@ -97,7 +109,6 @@ export class EvaluationSet {
         }
     }
 
-
     /**
      * Returns true if evaluation set was completed (i.e. all evaluations
      * were finished) and false otherwise.
@@ -125,7 +136,7 @@ export class EvaluationSet {
      * type). This representation can be used for serialisation.
      *
      * @param set EvaluationSet that should be serialised
-     * @return {{id: string, template: string, evaluations: Array}}
+     * @return {{segmentId: string, template: string, evaluations: Array}}
      */
     public static serialise(set: EvaluationSet) : any {
         let object = {
@@ -162,10 +173,11 @@ export class EvaluationSet {
     /**
      * Constructs and returns a new EvaluationSet from an EvaluationTemplate.
      *
-     * @param id ID of the new EvaluationSet.
+     * @param id ID of the new EvaluationSet. That ID should identify the participant.
      * @param template The EvaluationTemplate that should be used.
+     * @param name Optional name of the participant
      */
-    public static fromTemplate(id : string, template: EvaluationTemplate) : EvaluationSet {
+    public static fromTemplate(id : string, template: EvaluationTemplate, name?: string) : EvaluationSet {
         let set = new EvaluationSet();
         set._id = id;
         set._template = template.uri;
@@ -174,6 +186,7 @@ export class EvaluationSet {
         }
         set._position = 0;
         set._current = set._evaluations[0];
+        set._name = name ? name : "anonymous";
         return set
     }
 }

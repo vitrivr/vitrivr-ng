@@ -5,6 +5,9 @@ import {MediaObjectScoreContainer} from "../features/scores/media-object-score-c
 import {TimeFormatterUtil} from "../../util/TimeFormatterUtil";
 import {EvaluationScenario} from "./evaluation-scenario";
 
+/**
+ * Represents a single evaluation scenario.
+ */
 export class Evaluation {
 
     /** Date/time of the begin of the current evaluation. */
@@ -105,14 +108,17 @@ export class Evaluation {
     }
 
     /**
-     * Accepts the provided resultset as resultset and makes the way clear for the next phase.
+     * Accepts the provided result set as result set and makes the way clear for the next phase. To save space,
+     * only k + 10 items are selected from the result set.
      *
      * @return New state of the Evaluation object.
      */
     public accept(results: MediaObjectScoreContainer[]): EvaluationState {
         if (this._state == EvaluationState.RunningQueries) {
             results.forEach((value : MediaObjectScoreContainer, index : number) => {
-                this._ratings.push(new EvaluationRating(value.mediaObject.objectId, index, value.score));
+                if (index < this._k + 10) {
+                    this._ratings.push(new EvaluationRating(value.mediaObject.objectId, value.representativeSegment.segmentId, index, value.score));
+                }
             });
             this._state = EvaluationState.RankingResults;
         }
@@ -250,8 +256,8 @@ export class Evaluation {
      * Creates and returns a compact object representation of the EvaluationSet (no
      * type). This representation can be used for serialisation.
      *
-     * @param evaluation Evaluation that should be serliasied.
-     * @return {{scenario: string, begin: Date, end: Date, k: number, events: EvaluationEvent[], ratings: EvaluationRating[], state: EvaluationState, dcg: (()=>number), pAtK: number}}
+     * @param evaluation Evaluation that should be serialised.
+     * @return {{scenario: string, begin: Date, end: Date, k: number, events: EvaluationEvent[], ratings: Array, state: number, dcg: number, pAtK: number}}
      */
     public static serialise(evaluation: Evaluation) : any {
         let object = {
@@ -262,7 +268,7 @@ export class Evaluation {
             events: evaluation._events,
             ratings: [],
             state: evaluation.state.valueOf(),
-            dcg: evaluation.discountedCumulativeGain,
+            dcg: evaluation.discountedCumulativeGain(),
             pAtK: evaluation.precisionAtK(evaluation._k)
         };
 
@@ -275,8 +281,11 @@ export class Evaluation {
     }
 
     /**
+     * Deserialises an Evaluation from a plain JavaScript object. The field-names in the object must
+     * correspond to the field names of the EvaluationSet, without the _ prefix.
      *
      * @param object
+     * @return {Evaluation}
      */
     public static deserialise(object: any) : Evaluation {
         let evaluation = new Evaluation();
