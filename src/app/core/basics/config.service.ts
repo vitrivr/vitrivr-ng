@@ -9,6 +9,9 @@ export class ConfigService {
     /** Version of the Cineast API. */
     private static VERSION = "v1";
 
+    /** Default display duration for Snackbar messages. */
+    public static SNACKBAR_DURATION = 2500;
+
     /**
      * Contains API specific configuration like hostname, port and protocols
      * used for communication.
