@@ -804,7 +804,26 @@ div.weight-distribution {
   text-align: left;
   text-decoration: none; }
 
-/* */
+/* Default style for definition lists. */
+dl {
+  padding: 0.5em; }
+
+dt {
+  float: left;
+  clear: left;
+  width: 100px;
+  text-align: right;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.38); }
+
+dt::after {
+  content: ":"; }
+
+dd {
+  margin: 0 0 0 110px;
+  padding: 0 0 0.5em 0; }
+
+/** HR with a fadout towr*/
 hr.fade {
   border: 0;
   height: 1px;
@@ -813,6 +832,6 @@ hr.fade {
 /** Default evaluation card. */
 .evaluation-card {
   width: 400px;
-  margin: 10% auto; }
+  margin: 5% auto; }
 
 /*# sourceMappingURL=styles.css.map */

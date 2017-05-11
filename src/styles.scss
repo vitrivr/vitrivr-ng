@@ -200,7 +200,30 @@ div.weight-distribution {
   text-decoration: none;
 }
 
-/* */
+/* Default style for definition lists. */
+dl {
+  padding: 0.5em;
+}
+
+dt {
+  float: left;
+  clear: left;
+  width: 100px;
+  text-align: right;
+  font-style: italic;
+  color: rgba(0,0,0,0.38);
+}
+
+dt::after {
+  content: ":";
+}
+
+dd {
+  margin: 0 0 0 110px;
+  padding: 0 0 0.5em 0;
+}
+
+/** HR with a fadout towards the edges. */
 hr.fade {
   border: 0;
   height: 1px;

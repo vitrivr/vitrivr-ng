@@ -6,7 +6,8 @@ import {QueryService} from "../core/queries/query.service";
 import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
-import {Subscription} from "rxjs";
+import {Location} from "@angular/common";
+import {MdSnackBar} from "@angular/material";
 
 @Component({
     moduleId: module.id,
@@ -15,7 +16,7 @@ import {Subscription} from "rxjs";
 })
 
 
-export class ObjectdetailsComponent implements OnInit, OnDestroy{
+export class ObjectdetailsComponent implements OnInit {
     /** */
     @ViewChild('audioplayer')
     private audioplayer: any;
@@ -24,38 +25,32 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy{
     @ViewChild('videoplayer')
     private videoplayer: any;
 
-    /** */
-    private objectId: string;
+    /** ID of the media object that is currently examined. */
+    private _objectId: string;
 
-    /** */
+    /** ID of the media object that is currently examined. */
     private _mediaobject: MediaObject;
 
-    /** */
+    /** List of MediaMetadata items for the current multimedia object. */
     private _metadata: MediaMetadata[] = [];
 
-    /** */
+    /** List of SegmentScoreContainrs items for the current multimedia object. */
     private _segments: SegmentScoreContainer[] = [];
-
-    /** Reference to the Subscription for Router. */
-    private routeSubscription : Subscription;
-
-    /** Reference to the Subscription for MetadataLookupService. */
-    private metadataLookupSubscription : Subscription;
 
     /**
      *
      * @param _route
-     * @param _router
+     * @param _location
      * @param _query
      * @param _metadataLookup
      * @param _resolver
      */
     constructor(private _route: ActivatedRoute,
-                private _router: Router,
+                private _location: Location,
                 private _query : QueryService,
                 private _metadataLookup: MetadataLookupService,
-                private _resolver: ResolverService) {
-
+                private _resolver: ResolverService,
+                private _snackBar: MdSnackBar) {
     }
 
     /**
@@ -65,23 +60,7 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy{
     public ngOnInit() {
         /* Subscribes to changes of the Router class. Whenever the parameter becomes available,
          * the onParamsAvailable method is invoked. */
-        this.routeSubscription = this._route.params.subscribe((params: Params) => this.onParamsAvailable(params));
-
-        /* Subscribes to the MetadataLookupService; whenever a result is returned, that result
-         * is assigned to the local metadata field. */
-        this.metadataLookupSubscription = this._metadataLookup.observable().subscribe((msg) => {
-            this._metadata = msg.content
-        });
-    }
-
-    /**
-     * Unsubscribes from all active subscriptions.
-     */
-    public ngOnDestroy() {
-        this.metadataLookupSubscription.unsubscribe();
-        this.routeSubscription.unsubscribe();
-        this.metadataLookupSubscription = null;
-        this.routeSubscription = null;
+        this._route.params.first().subscribe((params: Params) => this.onParamsAvailable(params));
     }
 
     /**
@@ -90,10 +69,13 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy{
      * @param params Parameters.
      */
     private onParamsAvailable(params: Params) {
-        this.objectId = params['objectId'];
-        if (this.objectId && this._query.has(this.objectId)) {
-            this._metadataLookup.lookup(this.objectId);
+        this._objectId = params['objectId'];
+        if (this._objectId && this._query.has(this._objectId)) {
             this.refresh();
+        } else {
+            this._snackBar.open("The specified objectId '" + this._objectId + "' not found in the query results. Returning to gallery...", null, {duration: 3000}).afterDismissed().first().subscribe(() => {
+                this._location.back()
+            });
         }
     }
 
@@ -102,7 +84,7 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy{
      *
      * @param start
      */
-    private onSegmentClick(start: number) {
+    public onSegmentClick(start: number) {
         if (this.audioplayer !== undefined) {
             this.audioplayer.nativeElement.currentTime = start;
             this.audioplayer.nativeElement.play();
@@ -113,21 +95,43 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy{
     }
 
     /**
-     *
+     * Triggered whenever someone clicks the 'Back' button. Returns to the last page,
+     * i.e. usually the gallery.
      */
-    private refresh() {
-        this._mediaobject = this._query.get(this.objectId).mediaObject;
-        this._segments = [];
-        this._query.get(this.objectId).segmentScores.forEach((value, key) => {
-            this._segments.push(value);
-        });
-        this._segments.sort((a, b) => {
-            return b.score-a.score;
-        });
+    public onBackClick() {
+        this._location.back()
     }
 
     /**
-     * Getter for mediaobject.
+     * Refreshes the view by loading all necessary information.
+     */
+    private refresh() {
+        /* Fetch the media-object from the QueryService. */
+        this._mediaobject = this._query.get(this._objectId).mediaObject;
+        this._segments = [];
+        this._query.get(this._objectId).segmentScores.forEach((value, key) => {
+            this._segments.push(value);
+        });
+        this._segments.sort((a, b) => SegmentScoreContainer.compareAsc(a,b));
+
+        /* Lookup metadata information for the provided object. */
+        this._metadataLookup.observable().first().subscribe((msg) => {
+            this._metadata = msg.content
+        });
+        this._metadataLookup.lookup(this._objectId);
+    }
+
+    /**
+     * Getter for object id.
+     *
+     * @return {string}
+     */
+    get objectId(): string {
+        return this._objectId;
+    }
+
+    /**
+     * Getter for media object.
      *
      * @returns {MediaObject}
      */
