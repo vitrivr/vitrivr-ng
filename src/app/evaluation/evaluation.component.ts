@@ -29,9 +29,6 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     /** Reference to the current evaluation object. */
     private _template: EvaluationTemplate;
 
-    /** Reference to the subscription to the QueryService. */
-    private queryServiceSubscription : Subscription;
-
     /**
      * Constructor; injects the required services for evaluation.
      *
@@ -58,7 +55,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     public ngOnInit() {
         this.queryServiceSubscription = this._queryService.observable
             .filter(msg => (["UPDATED", "STARTED", "ENDED", "FEATURE"].indexOf(msg) > -1))
-            .subscribe((msg) => this.processQueryStateChange(msg));
+            .subscribe((msg) => this.onQueryStateChange(msg));
 
         /*
          * Subscribes to changes of the Router class. Whenever the parameter becomes available,
@@ -311,6 +308,34 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     }
 
     /**
+     * Invoked whenever the QueryService reports that the results were updated. Causes
+     * the gallery to be re-rendered.
+     *
+     * @param msg QueryChange message
+     */
+    protected onQueryStateChange(msg: QueryChange) {
+        let event = null;
+        switch (msg) {
+            case "STARTED":
+                if (this._evaluationset && this.canBeStarted()) this._evaluationset.current.start();
+                event = new EvaluationEvent(new Date(), "STARTED", this._queryService.queryId, null);
+                break;
+            case "FEATURE":
+                event = new EvaluationEvent(new Date(), "FEATURE_AVAILABLE", this._queryService.queryId, this._queryService.features[this._queryService.features.length-1].readableName);
+                break;
+            case "ENDED":
+                event = new EvaluationEvent(new Date(), "ENDED", this._queryService.queryId, null);
+                break;
+            case "UPDATED":
+                break;
+        }
+        if (event && this._evaluationset && this._evaluationset.current.state == EvaluationState.RunningQueries) this._evaluationset.current.addEvent(event);
+
+        /* Call super. */
+        super.onQueryStateChange(msg);
+    }
+
+    /**
      * Tries to save the recent changes to the evaluation using the evaluation service.
      */
     private saveEvaluation() {
@@ -321,31 +346,6 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                 this._snackBar.open('Could not persist the recent changes to the evaluation. Proceed with caution...', null, {duration: ConfigService.SNACKBAR_DURATION});
             }
         );
-    }
-
-    /**
-     *
-     * @param msg
-     */
-    private processQueryStateChange(msg: QueryChange) {
-        if (this._evaluationset && this._evaluationset.current.state == EvaluationState.RunningQueries) {
-            let event = null;
-            switch (msg) {
-                case "STARTED":
-                    event = new EvaluationEvent(new Date(), "STARTED", this._queryService.queryId, null);
-                    break;
-                case "FEATURE":
-                    event = new EvaluationEvent(new Date(), "FEATURE_AVAILABLE", this._queryService.queryId, this._queryService.features[this._queryService.features.length-1].readableName);
-                    break;
-                case "ENDED":
-                    event = new EvaluationEvent(new Date(), "ENDED", this._queryService.queryId, null);
-                    break;
-                case "UPDATED":
-                    this.updateGallery();
-                    break;
-            }
-            if (event) this._evaluationset.current.addEvent(event);
-        }
     }
 
     /**
