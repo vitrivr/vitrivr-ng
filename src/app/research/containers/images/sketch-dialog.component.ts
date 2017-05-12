@@ -17,21 +17,27 @@ export class SketchDialogComponent implements OnInit {
     @ViewChild('sketch')
     private _sketchpad: SketchCanvas;
 
+    /** */
+    private data?: string;
+
     /** Default color (black). */
     public color : string = "#000000";
 
     /**
+     * Constructor; Ingest the data by from the caller.
      *
      * @param dialogRef
      */
     constructor(private dialogRef: MdDialogRef<SketchDialogComponent>) {
+        this.data = dialogRef.config.data;
     }
 
-
     /**
-     * Invoked after initialization. applies the binary mode, if specified.
+     * Invoked after initialization. Applies the injected image data (if specified).
      */
     ngOnInit(): void {
+        if(this.data) this._sketchpad.setImageBase64(this.data);
+        this.data = null;
     }
 
     /**

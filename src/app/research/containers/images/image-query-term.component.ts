@@ -25,7 +25,7 @@ import {Subscription} from "rxjs";
     `
 })
 
-export class ImageQueryTermComponent implements OnInit {
+export class ImageQueryTermComponent {
 
     /** Component used to display a preview of the selected AND/OR sketched image. */
     @ViewChild('previewimg') private previewimg: any;
@@ -45,20 +45,6 @@ export class ImageQueryTermComponent implements OnInit {
      * @param dialog
      */
     constructor(private dialog: MdDialog) {}
-
-    /**
-     * Called when component is initialized; subscribes to MDDialog afterOpen subscription.
-     */
-    public ngOnInit() {
-        this.dialog.afterOpen.first().subscribe(dialogRef => {
-            let component = <SketchDialogComponent> dialogRef.componentInstance;
-
-            /* Transfer current image if mode hasn't changed. */
-            if (!this.mode3D) {
-                component.sketchpad.setImageBase64(this.previewimg.nativeElement.src);
-            }
-        });
-    }
 
     /**
      * Triggered whenever either the slider for the findSimilar settings is used.
@@ -93,9 +79,9 @@ export class ImageQueryTermComponent implements OnInit {
         /* Initialize the correct dialog-component. */
         let dialogRef = null;
         if (this.mode3D) {
-            dialogRef = this.dialog.open(BinarySketchDialogComponent)
+            dialogRef = this.dialog.open(BinarySketchDialogComponent, {})
         } else {
-            dialogRef = this.dialog.open(SketchDialogComponent)
+            dialogRef = this.dialog.open(SketchDialogComponent, {data : this.previewimg.nativeElement.src})
         }
 
         /* Register the onClose callback. */
