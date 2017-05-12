@@ -58,7 +58,7 @@ export class AudioQueryTermComponent {
      */
     public onViewerClicked() {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent);
-        let subscription = dialogRef.afterClosed().subscribe(result => {
+        let subscription = dialogRef.afterClosed().first().subscribe(result => {
             if (result) {
                 result.then((data: Blob) => {
                     this.player.nativeElement.src = URL.createObjectURL(data);
