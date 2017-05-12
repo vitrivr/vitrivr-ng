@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
-import {QueryService} from "../core/queries/query.service";
+import {QueryChange, QueryService} from "../core/queries/query.service";
 import {Router} from "@angular/router";
 import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
@@ -32,7 +32,7 @@ export class GalleryComponent {
     constructor(protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {
         _queryService.observable
             .filter(msg => (msg == "UPDATED"))
-            .subscribe((msg) => this.onQueryStateChange());
+            .subscribe((msg) => this.onQueryStateChange(msg));
 
         if (_queryService.size() > 0) {
             this.updateGallery();
@@ -69,14 +69,6 @@ export class GalleryComponent {
     }
 
     /**
-     * Invoked whenever the QueryService reports that the results were updated. Causes
-     * the gallery to be re-rendered.
-     */
-    public onQueryStateChange() {
-        this.updateGallery();
-    }
-
-    /**
      * Triggered whenever a user clicks on the object details button. Triggers a
      * transition to the ObjectdetailsComponent.
      *
@@ -95,6 +87,16 @@ export class GalleryComponent {
      */
     public onMltButtonClicked(segment: SegmentScoreContainer) {
        this._queryService.findMoreLikeThis(segment.segmentId);
+    }
+    
+    /**
+     * Invoked whenever the QueryService reports that the results were updated. Causes
+     * the gallery to be re-rendered.
+     *
+     * @param msg QueryChange message
+     */
+    protected onQueryStateChange(msg: QueryChange) {
+        this.updateGallery();
     }
 
     /**
