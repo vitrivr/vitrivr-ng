@@ -296,6 +296,7 @@ export class Evaluation {
         let evaluation = new Evaluation();
         evaluation._begin = object["begin"];
         evaluation._end = object["end"];
+        evaluation._scenario = object["scenario"];
         evaluation._state = <EvaluationState>object["state"];
         evaluation._k = object["k"];
         evaluation._ratings = [];
