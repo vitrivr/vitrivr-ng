@@ -8,7 +8,7 @@ export class ImageQueryTerm implements QueryTermInterface {
     public data : string;
 
     /** The active categories for the findSimilar-term. */
-    public categories : string[] = ['globalcolor', 'localcolor'];
+    public categories : string[] = ['globalcolor', 'localcolor', 'quantized', 'edge'];
 
 
     /** Type of findSimilar-term. Defaults to 'IMAGE'. */
@@ -22,16 +22,16 @@ export class ImageQueryTerm implements QueryTermInterface {
     public setting(setting : number) {
         switch (setting) {
             case 0:
-                this.categories = ['globalcolor', 'quantized'];
-                break;
-            case 1:
                 this.categories = ['globalcolor', 'localcolor'];
                 break;
+            case 1:
+                this.categories = ['globalcolor', 'localcolor', 'quantized'];
+                break;
             case 2:
-                this.categories = ['globalcolor', 'localcolor', 'edge'];
+                this.categories = ['globalcolor', 'localcolor', 'quantized', 'edge'];
                 break;
             case 3:
-                this.categories = ['globalcolor', 'localcolor', 'localfeatures', 'edge'];
+                this.categories = ['quantized', 'localcolor', 'localfeatures', 'edge'];
                 break;
             case 4:
                 this.categories = ['localcolor', 'localfeatures', 'edge'];
@@ -40,7 +40,7 @@ export class ImageQueryTerm implements QueryTermInterface {
                 this.categories = ['lightfield'];
                 break;
             default:
-                this.categories = ['globalcolor', 'localcolor'];
+                this.categories = ['globalcolor', 'localcolor', 'quantized', 'edge'];
                 break;
         }
     }
