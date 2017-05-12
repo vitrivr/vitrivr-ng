@@ -353,7 +353,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * to load the specified evaluation template.
      */
     private onParamsAvailable(params: Params) {
-        let participant = params['participant'] ? atob(params['participant']) : null;
+        let participant = params['participant'];
         let template = params['template'] ? atob(params['template']) : null;
         let name =  params['name'] ? atob(params['name']) : null;
         if (template && participant) {
@@ -398,18 +398,14 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     private loadRunningEvaluation(participant: string) : Observable<void> {
         return this._evaluation.loadEvaluation(participant).first().flatMap((evaluation) => {
-            if (evaluation != null) {
-                return Observable.zip(Observable.of(evaluation), this._evaluation.loadEvaluationTemplate(evaluation.template), (evaluation, template) => {
-                    if (template != null) {
-                        this._evaluationset = evaluation;
-                        this._template = template;
-                    } else {
-                        Observable.throw("Failed to load the evaluation template from '" + evaluation.template + "'.");
-                    }
-                });
-            } else {
-                Observable.throw("Failed to load evaluation for the specified participant ID '" + participant + "'.");
-            }
+            return Observable.zip(Observable.of(evaluation), this._evaluation.loadEvaluationTemplate(evaluation.template), (evaluation, template) => {
+                if (template != null) {
+                    this._evaluationset = evaluation;
+                    this._template = template;
+                } else {
+                    Observable.throw("Failed to load the evaluation template from '" + evaluation.template + "'.");
+                }
+            });
         });
     }
 

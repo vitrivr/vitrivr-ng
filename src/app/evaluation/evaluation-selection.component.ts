@@ -89,7 +89,7 @@ export class EvaluationSelectionComponent {
      */
     public onStartClick() {
         if (this.urlFieldValue && this.nameFieldValue && this.urlFieldValue.length > 0 &&  this.nameFieldValue.length > 0) {
-            this._router.navigate(['/evaluation/' + btoa(this.randomId) + '/' + btoa(this.urlFieldValue) + '/' + btoa(this.nameFieldValue)]);
+            this._router.navigate(['/evaluation/' + this.randomId + '/' + btoa(this.urlFieldValue) + '/' + btoa(this.nameFieldValue)]);
         } else {
             this.snackBar.open('Please specify a valid URL and your name.', null, {duration: 3000});
         }
@@ -103,7 +103,7 @@ export class EvaluationSelectionComponent {
             this.snackBar.open('Please enter a valid evaluation ID.', null, {duration: 3000});
             return;
         }
-        this._router.navigate(['/evaluation/' + btoa(this.enteredId)]);
+        this._router.navigate(['/evaluation/' + this.enteredId]);
     }
 
     /**
