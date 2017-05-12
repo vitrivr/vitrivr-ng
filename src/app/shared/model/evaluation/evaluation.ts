@@ -239,7 +239,7 @@ export class Evaluation {
     }
 
     /**
-     * Calculates the and returns the DCG value for the
+     * Calculates the and returns the DCG (Discounted Cummulative Gain) value for the
      * current Evaluation
      *
      * @return {number}
@@ -247,10 +247,49 @@ export class Evaluation {
     public discountedCumulativeGain() {
         let dcg = 0;
         this._ratings.forEach(function(key, value) {
-            dcg += key.rating/(Math.log(2+value));
+            dcg += key.rating/(Math.log(2+key.rank));
         });
         return dcg;
     }
+
+
+    /**
+     * Calculates and returns the iDCG (Ideal Discounted Cummulative Gain) value for the
+     * current Evaluation.
+     *
+     * @return {number}
+     */
+    public idealDiscountedCummulativeGain() {
+        let array: EvaluationRating[] = [];
+        let idcg = 0;
+
+        /* Extract ratings from map. */
+        this.ratings.forEach((key, value) => {
+            array.push(key);
+        });
+
+        /* Sort ratings by rank (ASC). */
+        array.sort((a,b) => {
+            return a.rank-b.rank;
+        });
+
+        /* Calculate IDCG. */
+        array.forEach((value, index) => {
+            idcg += value.rating/(Math.log(2+value.rank));
+        });
+
+        return idcg;
+    }
+
+    /**
+     * Calculates and returns the nDCG value for the current Evaluation.
+     *
+     * @return {number}
+     */
+    public normalicedDiscountedCummulativeGain() {
+        return this.discountedCumulativeGain() / this.idealDiscountedCummulativeGain();
+    }
+
 
     /**
      * Creates and returns a compact object representation of the Evaluation (no
@@ -269,6 +308,8 @@ export class Evaluation {
             ratings: [],
             state: evaluation.state.valueOf(),
             dcg: evaluation.discountedCumulativeGain(),
+            idcg: evaluation.idealDiscountedCummulativeGain(),
+            ndcg: evaluation.normalicedDiscountedCummulativeGain(),
             pAtK: evaluation.precisionAtK(evaluation._k)
         };
 
