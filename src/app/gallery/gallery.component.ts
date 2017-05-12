@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {QueryChange, QueryService} from "../core/queries/query.service";
 import {Router} from "@angular/router";
@@ -14,13 +14,15 @@ import {SegmentScoreContainer} from "../shared/model/features/scores/segment-sco
 })
 
 
-export class GalleryComponent {
-
+export class GalleryComponent implements OnInit, OnDestroy {
     /** List of MediaObjectScoreContainers currently displayed by the gallery. */
     protected _mediaobjects : MediaObjectScoreContainer[] = [];
 
     /** Reference to the MediaObjectScoreContainer that is currently in focus. */
     protected _focus: MediaObjectScoreContainer;
+
+    /** */
+    protected queryServiceSubscription;
 
     /**
      * Default constructor.
@@ -29,14 +31,27 @@ export class GalleryComponent {
      * @param _resolver
      * @param _router
      */
-    constructor(protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {
-        _queryService.observable
+    constructor(protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {}
+
+    /**
+     * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
+     */
+    public ngOnInit(): void {
+        this.queryServiceSubscription = this._queryService.observable
             .filter(msg => (msg == "UPDATED"))
             .subscribe((msg) => this.onQueryStateChange(msg));
 
-        if (_queryService.size() > 0) {
+        if (this._queryService.size() > 0) {
             this.updateGallery();
         }
+    }
+
+    /**
+     * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
+     */
+    public ngOnDestroy() {
+        this.queryServiceSubscription.unsubscribe();
+        this.queryServiceSubscription = null;
     }
 
     /**
@@ -46,7 +61,6 @@ export class GalleryComponent {
     get mediaobjects(): MediaObjectScoreContainer[] {
         return this._mediaobjects;
     }
-
 
     /**
      * Sets the focus to the provided MediaObjectScoreContainer.
@@ -88,7 +102,7 @@ export class GalleryComponent {
     public onMltButtonClicked(segment: SegmentScoreContainer) {
        this._queryService.findMoreLikeThis(segment.segmentId);
     }
-    
+
     /**
      * Invoked whenever the QueryService reports that the results were updated. Causes
      * the gallery to be re-rendered.
