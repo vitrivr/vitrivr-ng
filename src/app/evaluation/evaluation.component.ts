@@ -4,7 +4,6 @@ import {EvaluationEvent} from "../shared/model/evaluation/evaluation-event";
 import {EvaluationState} from "../shared/model/evaluation/evaluation-state";
 import {ResolverService} from "../core/basics/resolver.service";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
-import {Subscription} from "rxjs";
 import {MdSnackBar, MdDialog, MdDialogConfig} from "@angular/material";
 import {EvaluationTemplate} from "../shared/model/evaluation/evaluation-template";
 import {ActivatedRoute, Params, Router} from "@angular/router";
@@ -70,6 +69,15 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     public ngOnDestroy() {
         this.queryServiceSubscription.unsubscribe();
         this.queryServiceSubscription = null;
+    }
+
+    /**
+     * Getter for evaluation set.
+     *
+     * @return {EvaluationSet}
+     */
+    get evaluationset(): EvaluationSet {
+        return this._evaluationset;
     }
 
     /**
@@ -292,6 +300,16 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     public canBeRated(): boolean {
         if (this._evaluationset == null) return false;
         return this._evaluationset.current.state == EvaluationState.RankingResults && this.mediaobjects.length > 0;
+    }
+
+    /**
+     * Returns true, if the evaluation history should be displayed, and false otherwise.
+     *
+     * @return {boolean}
+     */
+    public displayHistory(): boolean{
+        if (!this._evaluationset || !this._evaluationset.current) return false;
+        return this._evaluationset.current.state == EvaluationState.Finished;
     }
 
     /**
