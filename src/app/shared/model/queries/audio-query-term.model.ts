@@ -6,7 +6,7 @@ export class AudioQueryTerm implements QueryTermInterface {
     public data: string;
 
     /** Array with the active feature categories. */
-    public categories : string[] = ['audiobassline', 'audiomelody', 'audiofingerprint'];
+    public categories : string[] = ['audiofingerprint', 'audiomatching'];
 
     /** Type of findSimilar-term. Defaults to 'Audio'. */
     public readonly type: QueryTermType = "AUDIO";
@@ -22,19 +22,19 @@ export class AudioQueryTerm implements QueryTermInterface {
                 this.categories = ['audiofingerprint'];
                 break;
             case 1:
-                this.categories = ['audiobassline', 'audiomelody', 'audiofingerprint'];
+                this.categories = ['audiofingerprint', 'audiomatching'];
                 break;
             case 2:
-                this.categories = ['audiobassline', 'audiomelody', 'hpcpaverage'];
+                this.categories = ['audiomatching'];
                 break;
             case 3:
-                this.categories = ['audiobassline', 'audiomelody', 'pitchsequence'];
+                this.categories = ['audiomelody', 'audiomelody', 'pitchsequence'];
                 break;
             case 4:
                 this.categories = ['pitchsequence'];
                 break;
             default:
-                this.categories = ['audiobassline', 'audiomelody', 'audiofingerprint'];
+                this.categories = ['audiofingerprint', 'audiomatching'];
                 break;
         }
     }
