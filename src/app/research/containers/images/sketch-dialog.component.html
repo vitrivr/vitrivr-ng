@@ -1,34 +1,36 @@
-<md-toolbar color="primary">
-    <md-icon [(colorPicker)]="color"  [cpPosition]="'bottom'" [style.color]="color" [cpPositionOffset]="'50%'" [cpPositionRelativeToArrow]="true" (colorPickerChange)="onColorChange($event)">palette</md-icon>
-    <span class="spacer-small"></span>
+<md-dialog-content>
+    <md-toolbar color="primary">
+        <md-icon mdTooltip="Pencil size">line_weight</md-icon>
+        <span class="spacer-tiny"></span>
+        <md-slider min="1" max="100" step="1" value="1" [style.min-width]="'100px'" (change)="onLineSizeChange($event)" tickInterval="auto"></md-slider>
 
-    <md-icon>line_weight</md-icon>
-    <span class="spacer-tiny"></span>
-    <md-slider min="1" max="100" step="1" value="1" [style.min-width]="'100px'" (change)="onLineSizeChange($event)" tickInterval="auto"></md-slider>
-    <span class="spacer-flex"></span>
+        <span class="spacer-flex"></span>
 
-    <button md-icon-button (click)="dialogRef.close(sketchpad.getImageBase64())">
-        <md-icon>save</md-icon>
-    </button>
-
-    <button md-icon-button [mdMenuTriggerFor]="toolbarMenu">
-        <md-icon>more_vert</md-icon>
-    </button>
-
-    <md-menu #toolbarMenu="mdMenu">
-        <button md-menu-item (click)="onLoadImage()">
+        <button md-icon-button (click)="onLoadImage()"  mdTooltip="Load image">
             <md-icon>file_upload</md-icon>
-            <span>Load</span>
         </button>
-        <button md-menu-item (click)="onFillCanvasClicked()">
+
+        <button md-icon-button (click)="onFillCanvasClicked()" mdTooltip="Fill canvas">
             <md-icon>format_color_fill</md-icon>
-            <span>Fill canvas</span>
         </button>
-        <button md-menu-item (click)="onClearCanvasClicked()">
+
+        <button md-icon-button (click)="onClearCanvasClicked()" mdTooltip="Clear canvas">
             <md-icon>clear</md-icon>
-            <span>Clear canvas</span>
         </button>
-    </md-menu>
-</md-toolbar>
-<sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
-<input #imageloader type="file" hidden>
+
+        <span class="spacer-flex"></span>
+
+        <button md-icon-button (click)="dialogRef.close(sketchpad.getImageBase64())">
+            <md-icon>save</md-icon>
+        </button>
+    </md-toolbar>
+
+    <div [style.display]="'flex'">
+        <sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
+        <input #imageloader type="file" hidden>
+        
+        <span class="spacer-tiny"></span>
+
+        <span [(colorPicker)]="color" (colorPickerChange)="onColorChange($event)" [cpToggle]="true" [cpDialogDisplay]="'inline'"></span>
+    </div>
+</md-dialog-content>

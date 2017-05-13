@@ -1,5 +1,5 @@
-import {Component, ViewChild, HostListener, OnInit} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
+import {Component, ViewChild, HostListener, OnInit, Inject} from '@angular/core';
+import {MdDialogRef, MD_DIALOG_DATA} from '@angular/material';
 import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.component";
 
 @Component({
@@ -17,27 +17,22 @@ export class SketchDialogComponent implements OnInit {
     @ViewChild('sketch')
     private _sketchpad: SketchCanvas;
 
-    /** */
-    private data?: string;
-
     /** Default color (black). */
     public color : string = "#000000";
 
     /**
-     * Constructor; Ingest the data by from the caller.
      *
      * @param dialogRef
+     * @param _data
      */
-    constructor(private dialogRef: MdDialogRef<SketchDialogComponent>) {
-        this.data = dialogRef.config.data;
-    }
+    constructor(private dialogRef: MdDialogRef<SketchDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : string) {}
 
     /**
      * Invoked after initialization. Applies the injected image data (if specified).
      */
     ngOnInit(): void {
-        if(this.data) this._sketchpad.setImageBase64(this.data);
-        this.data = null;
+        if(this._data) this._sketchpad.setImageBase64(this._data);
+        this._data = null;
     }
 
     /**

@@ -81,7 +81,7 @@ export class ImageQueryTermComponent {
         if (this.mode3D) {
             dialogRef = this.dialog.open(BinarySketchDialogComponent, {})
         } else {
-            dialogRef = this.dialog.open(SketchDialogComponent, {data : this.previewimg.nativeElement.src})
+            dialogRef = this.dialog.open(SketchDialogComponent, {data : this.previewimg.nativeElement.src, height:'450px'})
         }
 
         /* Register the onClose callback. */
