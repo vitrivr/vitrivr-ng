@@ -4,29 +4,16 @@ import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario
 
 @Component({
     moduleId: module.id,
-    selector: 'evaluation',
+    selector: 'scenario-dialog',
     template: `        
         <h2 md-dialog-title>Scenario: {{scenario.name}} (ID: {{scenario.id}})</h2>
         <hr class="fade"/>
         <md-dialog-content>
-            <h5>Task description</h5>
-            <p [innerHTML]="scenario.description"></p>
-            <div *ngIf="scenario.illustrations.length > 0">
-                <h5>Illustrations</h5>
-                <img *ngFor="let illustration of scenario.illustrations" src="{{illustration.url}}"  mdTooltip="{{illustration.description}}" [style.width]="'200px'"/>
-            </div>
-            
-            <div *ngIf="scenario.material.length > 0">
-                <h5>Helper material (Download)</h5>
-                <ul>
-                    <li *ngFor="let material of scenario.material"><a href="{{material.url}}" mdTooltip="{{material.description}}" download>{{material.name}}</a></li>
-                </ul>
-            </div>
+            <scenario-details [scenario]="scenario"></scenario-details>
         </md-dialog-content>
      `
 })
 export class ScenarioDetailsDialogComponent {
-
     /** EvaluationScenario that is being displayed. */
     private _scenario : EvaluationScenario;
 

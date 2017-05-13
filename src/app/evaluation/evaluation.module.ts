@@ -8,10 +8,11 @@ import {EvaluationSelectionComponent} from "./evaluation-selection.component";
 import {ScenarioDetailsDialogComponent} from "./scenario-details-dialog.component";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {EvaluationHistory} from "./evaluation-history.component";
+import {ScenarioDetailsComponent} from "./scenario-details.component";
 
 @NgModule({
     imports:      [ BrowserModule, FormsModule, ReactiveFormsModule, MaterialModule, AppRoutingModule, FlexLayoutModule ],
-    declarations: [ EvaluationComponent, EvaluationSelectionComponent, EvaluationHistory, ScenarioDetailsDialogComponent ],
+    declarations: [ EvaluationComponent, EvaluationSelectionComponent, EvaluationHistory, ScenarioDetailsComponent, ScenarioDetailsDialogComponent ],
     exports: [ EvaluationComponent, EvaluationSelectionComponent ],
     entryComponents: [ScenarioDetailsDialogComponent ]
 })
