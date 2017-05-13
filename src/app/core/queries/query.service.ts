@@ -24,7 +24,7 @@ import {MediaType} from "../../shared/model/media/media-type.model";
  *  UPDATED     - New information concerning the running query is available OR post-execution refinements were performed.
  *  FEATURE     - A new feature has become available.
  */
-export type QueryChange = "STARTED" | "ENDED" | "UPDATED" | "FEATURE";
+export type QueryChange = "STARTED" | "ENDED" | "UPDATED" | "FEATURE" | "CLEAR";
 
 /**
  * This service orchestrates similarity queries using the Cineast API (WebSocket). The service is responsible for
@@ -245,6 +245,18 @@ export class QueryService {
     }
 
     /**
+     * Clears the QueryService and removes all results.
+     */
+    public clear() {
+        this.results.clear();
+        this._mediatypes.clear();
+        this.segment_to_object_map.clear();
+        this._features.length = 0;
+        this._running = false;
+        this._stateSubject.next("CLEAR");
+    }
+
+    /**
      * This is where the magic happens: Subscribes to messages from the underlying WebSocket and orchestrates the
      * assembly of the individual pieces of QueryResults.
      *
@@ -284,11 +296,8 @@ export class QueryService {
      * @param id ID of the new research. Used to associate responses.
      */
     private startNewQuery(id : string) {
-        /* Clears the helper data structures. */
-        this.results.clear();
-        this._mediatypes.clear();
-        this.segment_to_object_map.clear();
-        this._features.length = 0;
+        /* Clears the QueryService. */
+        this.clear();
 
         /* Start the actual query. */
         this._queryId = id;
