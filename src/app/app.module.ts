@@ -1,6 +1,5 @@
 import 'hammerjs';
 
-import {MaterialModule} from '@angular/material';
 import {NgModule}      from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from '@angular/platform-browser';
@@ -15,6 +14,7 @@ import {FeaturesModule} from "./refinement/refinement.module";
 import {ObjectdetailsModule} from "./objectdetails/objectdetails.module";
 import {AppRoutingModule} from "./app-routing.module";
 import {EvaluationModule} from "./evaluation/evaluation.module";
+import {MaterialModule} from "./material.module";
 
 
 
@@ -22,9 +22,9 @@ import {EvaluationModule} from "./evaluation/evaluation.module";
   imports: [
       CoreModule,
       BrowserModule,
+      MaterialModule,
       BrowserAnimationsModule,
       FormsModule,
-      MaterialModule,
       AppRoutingModule,
       GalleryModule,
       EvaluationModule,

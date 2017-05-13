@@ -2,10 +2,9 @@ import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { SketchCanvas } from "./sketch-canvas.component";
 import { FormsModule } from "@angular/forms";
-import { MaterialModule, MdButtonModule } from "@angular/material";
 
 @NgModule({
-    imports:      [ BrowserModule, FormsModule,  MaterialModule.forRoot(), MdButtonModule ],
+    imports:      [ BrowserModule, FormsModule ],
     declarations: [ SketchCanvas ],
     exports: [ SketchCanvas ]
 })

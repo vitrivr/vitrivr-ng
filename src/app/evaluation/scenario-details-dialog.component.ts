@@ -1,5 +1,5 @@
-import {Component} from "@angular/core";
-import {MdDialogRef} from "@angular/material";
+import {Component, Inject} from "@angular/core";
+import {MdDialogRef, MD_DIALOG_DATA} from "@angular/material";
 import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario";
 
 @Component({
@@ -14,15 +14,12 @@ import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario
      `
 })
 export class ScenarioDetailsDialogComponent {
-    /** EvaluationScenario that is being displayed. */
-    private _scenario : EvaluationScenario;
-
     /**
      *
      * @param _dialogRef
+     * @param _scenario
      */
-    constructor(public readonly _dialogRef: MdDialogRef<ScenarioDetailsDialogComponent>) {
-        this._scenario = _dialogRef.config.data;
+    constructor(public readonly _dialogRef: MdDialogRef<ScenarioDetailsDialogComponent>, @Inject(MD_DIALOG_DATA) private _scenario : EvaluationScenario) {
     }
 
     /**
