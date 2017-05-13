@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import{Component, OnDestroy, OnInit} from "@angular/core";
 import {QueryService, QueryChange} from "../core/queries/query.service";
 import {EvaluationEvent} from "../shared/model/evaluation/evaluation-event";
 import {EvaluationState} from "../shared/model/evaluation/evaluation-state";
@@ -14,6 +14,10 @@ import {EvaluationService} from "../core/evaluation/evaluation.service";
 import {Location} from "@angular/common";
 import {ConfigService} from "../core/basics/config.service";
 import {Observable} from "rxjs/Observable";
+import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario";
+
+
+type DisplayType = "NONE" | "SCENARIO" | "GALLERY" | "HISTORY";
 
 @Component({
     moduleId: module.id,
@@ -21,6 +25,8 @@ import {Observable} from "rxjs/Observable";
     templateUrl: 'evaluation.component.html',
     styleUrls: ['evaluation.component.css']
 })
+
+
 export class EvaluationComponent extends GalleryComponent implements OnInit, OnDestroy {
     /** Reference to the current evaluation object. */
     private _evaluationset: EvaluationSet;
@@ -90,6 +96,19 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     }
 
     /**
+     * Getter for the currently active scenario.
+     *
+     * @return {any}
+     */
+    get currentScenario() : EvaluationScenario {
+        if (this._evaluationset && this._template) {
+            return this._template.evaluationScenario(this._evaluationset.position);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Invoked whenever the 'Start Scenario' button is clicked.
      */
     public onEvaluationStartButtonClick() {
@@ -121,6 +140,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                 this._snackBar.open('Evaluation completed. Thank you for participating!', null, {duration: ConfigService.SNACKBAR_DURATION});
             } else {
                 this._snackBar.open('Next scenario is up ahead!', null, {duration: ConfigService.SNACKBAR_DURATION});
+                this.queryService.clear();
             }
             this.saveEvaluation();
         }
@@ -172,7 +192,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (!this._evaluationset) return;
         let config = new MdDialogConfig();
         config.width='500px';
-        config.data = this._template.evaluationScenario(this._evaluationset.position);
+        config.data = this.currentScenario;
         this._dialog.open(ScenarioDetailsDialogComponent, config);
     }
 
@@ -307,9 +327,17 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      *
      * @return {boolean}
      */
-    public displayHistory(): boolean{
-        if (!this._evaluationset || !this._evaluationset.current) return false;
-        return this._evaluationset.current.state == EvaluationState.Finished;
+    public display(): DisplayType {
+        if (!this._evaluationset || !this._evaluationset.current) return "NONE";
+        switch (this._evaluationset.current.state) {
+            case EvaluationState.Finished:
+                return "HISTORY";
+            case EvaluationState.NotStarted:
+            case EvaluationState.Aborted:
+                return "SCENARIO";
+            default:
+                return "GALLERY";
+        }
     }
 
     /**
