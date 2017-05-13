@@ -6,7 +6,7 @@ import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-ty
     selector: 'query-container',
     template:`
         <md-card style="margin:10px;padding:10px;">
-            <md-card-header>
+            <md-card-header style="margin-bottom:15px;">
                  <button (click)="onToggleButtonClicked('IMAGE')" class="icon-button">
                     <md-icon [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">panorama</md-icon>
                  </button>
