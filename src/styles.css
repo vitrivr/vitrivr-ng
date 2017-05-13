@@ -723,6 +723,16 @@ h4 {
 h4.inverse {
   color: rgba(255, 255, 255, 0.87); }
 
+.background-prompt {
+  font-size: 28px;
+  color: #BBCCCC;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%); }
+
 .flex-container {
   display: flex; }
 
@@ -823,7 +833,7 @@ dd {
   margin: 0 0 0 110px;
   padding: 0 0 0.5em 0; }
 
-/** HR with a fadout towr*/
+/** HR with a fadout towards the edges. */
 hr.fade {
   border: 0;
   height: 1px;
