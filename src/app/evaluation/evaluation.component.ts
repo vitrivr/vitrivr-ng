@@ -59,7 +59,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     public ngOnInit() {
         this.queryServiceSubscription = this._queryService.observable
-            .filter(msg => (["UPDATED", "STARTED", "ENDED", "FEATURE"].indexOf(msg) > -1))
+            .filter(msg => (["UPDATED", "STARTED", "ENDED", "FEATURE", "CLEAR"].indexOf(msg) > -1))
             .subscribe((msg) => this.onQueryStateChange(msg));
 
         /*
@@ -67,6 +67,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
          * the onParamsAvailable method is invoked.
          */
         this._route.params.first().subscribe((params: Params) => this.onParamsAvailable(params));
+
+        if (this._queryService.size() > 0) {
+            this.updateGallery();
+        }
     }
 
     /**
