@@ -15,11 +15,15 @@ import {SegmentScoreContainer} from "../shared/model/features/scores/segment-sco
 
 
 export class GalleryComponent implements OnInit, OnDestroy {
+
     /** List of MediaObjectScoreContainers currently displayed by the gallery. */
     protected _mediaobjects : MediaObjectScoreContainer[] = [];
 
     /** Reference to the MediaObjectScoreContainer that is currently in focus. */
     protected _focus: MediaObjectScoreContainer;
+
+    /* Indicator whether the progress bar should be visible. */
+    private _loading : boolean = false;
 
     /** */
     protected queryServiceSubscription;
@@ -38,7 +42,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
      */
     public ngOnInit(): void {
         this.queryServiceSubscription = this._queryService.observable
-            .filter(msg => (msg == "UPDATED"))
+            .filter(msg => ["STARTED", "ENDED", "UPDATED"].indexOf(msg) > -1)
             .subscribe((msg) => this.onQueryStateChange(msg));
 
         if (this._queryService.size() > 0) {
@@ -60,6 +64,15 @@ export class GalleryComponent implements OnInit, OnDestroy {
      */
     get mediaobjects(): MediaObjectScoreContainer[] {
         return this._mediaobjects;
+    }
+
+    /**
+     * Getter for loading.
+     *
+     * @return {boolean}
+     */
+    get loading(): boolean {
+        return this._loading;
     }
 
     /**
@@ -110,6 +123,11 @@ export class GalleryComponent implements OnInit, OnDestroy {
      * @param msg QueryChange message
      */
     protected onQueryStateChange(msg: QueryChange) {
+        if (msg == "STARTED") {
+            this._loading = true;
+        } else if (msg == "ENDED") {
+            this._loading = false;
+        }
         this.updateGallery();
     }
 

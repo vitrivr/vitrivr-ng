@@ -1,6 +1,8 @@
 <div style="padding:10px;">
 
-    <p class="background-prompt" *ngIf="mediaobjects.length == 0">No results available. Please start a search...</p>
+    <p class="background-prompt" *ngIf="mediaobjects.length == 0 && !loading">No results available. Please start a search...</p>
+
+    <p class="background-prompt" *ngIf="loading"><md-spinner></md-spinner></p>
 
     <md-grid-list cols="4" gutterSize="15px" rowHeight="1:1">
         <md-grid-tile *ngFor="let mediaobject of mediaobjects" [attr.class]="'card-single'" (mouseover)="setFocus(mediaobject)">
