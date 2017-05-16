@@ -34,7 +34,7 @@ export class RefinementComponent {
      */
     constructor(private _queryService : QueryService) {
         this._queryService.observable
-            .filter(msg => (["FEATURE", "UPDATE"].indexOf(msg) > -1))
+            .filter(msg => (["FEATURE", "UPDATE", "CLEAR"].indexOf(msg) > -1))
             .subscribe((msg) => this.onQueryStateChange());
     }
 
