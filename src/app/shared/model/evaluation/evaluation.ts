@@ -246,8 +246,8 @@ export class Evaluation {
      */
     public discountedCumulativeGain() {
         let dcg = 0;
-        this._ratings.forEach(function(key, value) {
-            dcg += key.rating/(Math.log(2+key.rank));
+        this._ratings.forEach(function(value, index) {
+            dcg +=  (Math.log(2) * value.rating)/Math.log(2+index);
         });
         return dcg;
     }
@@ -264,18 +264,18 @@ export class Evaluation {
         let idcg = 0;
 
         /* Extract ratings from map. */
-        this.ratings.forEach((key, value) => {
-            array.push(key);
+        this.ratings.forEach((value, index) => {
+            array.push(value);
         });
 
-        /* Sort ratings by rank (ASC). */
+        /* Sort ratings by rating (ideal) (ASC). */
         array.sort((a,b) => {
-            return a.rank-b.rank;
+            return b.rating-a.rating;
         });
 
         /* Calculate IDCG. */
         array.forEach((value, index) => {
-            idcg += value.rating/(Math.log(2+value.rank));
+            idcg += (Math.log(2) * value.rating)/Math.log(2+index);
         });
 
         return idcg;
