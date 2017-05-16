@@ -55,9 +55,9 @@ export class EvaluationService extends Dexie {
     public evaluationData(): Observable<Blob> {
         return Observable.fromPromise(this.evaluations.toArray()).map((result) => {
             if (result) {
-                return new Blob([JSON.stringify(result), {type: "application/json"}]);
+                return new Blob([JSON.stringify(result, null, 2)], {type : 'application/json'});
             } else {
-                return new Blob(["{}", {type: "application/json"}]);
+                return new Blob(["{}"], {type: "application/json"});
             }
         });
     }
