@@ -37,11 +37,15 @@ import {Evaluation} from "../shared/model/evaluation/evaluation";
     `
 })
 export class EvaluationHistory {
-
     @Input("evaluation")
-    private evaluation: Evaluation;
+    private _evaluation: Evaluation;
 
-
-
-
+    /**
+     * Getter for evaluation.
+     *
+     * @return {Evaluation}
+     */
+    get evaluation() {
+        return this._evaluation;
+    }
 }
