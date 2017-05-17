@@ -22,6 +22,10 @@
         <api-status><md-icon>av timer</md-icon></api-status>
     </md-toolbar>
 
+    <div>
+        <md-progress-bar mode="query" [attr.color]="'accent'" *ngIf="loading"></md-progress-bar>
+    </div>
+
     <md-sidenav-container #sidenavcontainer fullscreen style="margin-top:75px;">
         <md-sidenav #querysidenav mode="side" opened="true" align="start" class="vitrivr-sidenav left">
             <research></research>
