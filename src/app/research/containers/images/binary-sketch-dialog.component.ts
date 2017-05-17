@@ -22,9 +22,9 @@ export class BinarySketchDialogComponent implements AfterViewInit {
 
     /**
      *
-     * @param dialogRef
+     * @param _dialogRef
      */
-    constructor(private dialogRef: MdDialogRef<BinarySketchDialogComponent>) {
+    constructor(private _dialogRef: MdDialogRef<BinarySketchDialogComponent>) {
     }
 
 
@@ -48,10 +48,10 @@ export class BinarySketchDialogComponent implements AfterViewInit {
     };
 
     /**
-     * Getter for SketchCanvas
+     * Closes the dialog.
      */
-    get sketchpad() : SketchCanvas {
-        return this._sketchpad;
+    public close() {
+        this._dialogRef.close(this._sketchpad.getImageBase64())
     }
 
     /**

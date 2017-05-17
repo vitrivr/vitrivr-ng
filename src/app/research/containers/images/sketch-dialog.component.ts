@@ -22,10 +22,10 @@ export class SketchDialogComponent implements OnInit {
 
     /**
      *
-     * @param dialogRef
+     * @param _dialogRef
      * @param _data
      */
-    constructor(private dialogRef: MdDialogRef<SketchDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : string) {}
+    constructor(private _dialogRef: MdDialogRef<SketchDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : string) {}
 
     /**
      * Invoked after initialization. Applies the injected image data (if specified).
@@ -48,10 +48,10 @@ export class SketchDialogComponent implements OnInit {
     };
 
     /**
-     * Getter for SketchCanvas
+     * Closes the dialog.
      */
-    get sketchpad() : SketchCanvas {
-        return this._sketchpad;
+    public close() {
+        this._dialogRef.close(this._sketchpad.getImageBase64());
     }
 
     /**

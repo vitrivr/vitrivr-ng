@@ -13,7 +13,7 @@
     <md-slider min="1" max="100" step="1" value="1" [style.min-width]="'100px'" (change)="onLineSizeChange($event)" tickInterval="auto"></md-slider>
     <span class="spacer-flex"></span>
 
-    <button md-icon-button (click)="dialogRef.close(sketchpad.getImageBase64())">
+    <button md-icon-button (click)="close()">
         <md-icon>save</md-icon>
     </button>
 
