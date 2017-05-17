@@ -4,9 +4,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {ImageQueryTermComponent} from "./image-query-term.component";
 import {SketchDialogComponent} from "./sketch-dialog.component";
 import {SketchModule} from "../../../shared/components/sketch/sketch.module";
-import {ColorPickerModule} from "angular2-color-picker";
 import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
 import {MaterialModule} from "../../../material.module";
+import {ColorPickerModule} from "ngx-color-picker";
 
 @NgModule({
     imports:      [ MaterialModule, BrowserModule, FormsModule, SketchModule, ColorPickerModule],
