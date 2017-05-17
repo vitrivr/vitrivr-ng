@@ -18,6 +18,14 @@ div.filename {
     text-overflow: ellipsis;
 }
 
+div.filename-rateable {
+    font-style: italic;
+    max-width:80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 div.score {
     max-width:80px;
     font-size:11px;

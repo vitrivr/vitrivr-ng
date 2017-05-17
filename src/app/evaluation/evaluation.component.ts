@@ -358,6 +358,19 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     }
 
     /**
+     * Returns true if the provided MediaObject has already been rated and false otherwise.
+     *
+     * Used to make UI related decisions.
+     *
+     * @param mediaobject MediaObject that should be checked.
+     */
+    public objectHasBeenRated(mediaobject: MediaObjectScoreContainer) {
+        if (this.canBeRated() == false) return false;
+        let index = this.mediaobjects.indexOf(mediaobject);
+        return this._evaluationset.current.ratings[index] && this._evaluationset.current.ratings[index].rating > -1;
+    }
+
+    /**
      * Invoked whenever the QueryService reports that the results were updated. Causes
      * the gallery to be re-rendered.
      *
