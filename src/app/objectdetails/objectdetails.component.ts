@@ -73,7 +73,7 @@ export class ObjectdetailsComponent implements OnInit {
         if (this._objectId && this._query.has(this._objectId)) {
             this.refresh();
         } else {
-            this._snackBar.open("The specified objectId '" + this._objectId + "' not found in the query results. Returning to gallery...", null, {duration: 3000}).afterDismissed().first().subscribe(() => {
+            this._snackBar.open("The specified objectId '" + this._objectId + "' not found in the query results. Returning...", null, {duration: 3000}).afterDismissed().first().subscribe(() => {
                 this._location.back()
             });
         }
