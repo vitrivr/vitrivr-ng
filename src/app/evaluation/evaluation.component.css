@@ -1,6 +1,6 @@
 .tile {
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
     margin-bottom: 25px;
     box-shadow: 0.15em 0.15em 0.05em 0 rgba(0, 0, 0, 0.4); /* The top layer shadow */
     position: relative;
@@ -11,7 +11,7 @@
     left: 0;
     right: 0;
     height: 50px;
-    padding: 5px;
+    padding: 10px;
     position: absolute;
     z-index: 100;
     background-color: black;
@@ -25,7 +25,7 @@
 }
 
 .tile .tile-footer {
-    top: 250px;
+    top: 200px;
     left: 0;
     right: 0;
     height: 50px;
@@ -36,7 +36,6 @@
     opacity: 0.65;
     color: white;
 }
-
 
 div.filename {
     max-width:80%;
