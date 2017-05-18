@@ -69,8 +69,13 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         navigator.getUserMedia = ( navigator.getUserMedia || navigator.mediaDevices.getUserMedia);
         navigator.mediaDevices.getUserMedia({audio: true, video: false})
-            .then((stream: MediaStream) => this.onStreamAvailable(stream));
+            .then(
+                (stream: MediaStream) => this.onStreamAvailable(stream),
+                (error) => this.onStreamError(error)
+            );
         this.audiocontext = new AudioContext();
+        this.setupAudioNodes();
+
     }
 
     /**
@@ -91,11 +96,21 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      */
     public record(): void {
         if (this.audiocontext == undefined) return;
+        if (this.stream == undefined) return;
         if (!this.recording && !this.playing) {
             this.recordingBuffer = null;
             this.wireRecording();
             this.recording = true;
         }
+    }
+
+    /**
+     * Returns true if recording is available and false otherwise.
+     * 
+     * @return {boolean}
+     */
+    public recordingAvailable() : boolean {
+        return this.source != null;
     }
 
     /**
@@ -244,7 +259,8 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      */
     private onStreamAvailable(stream: MediaStream) {
         this.stream = stream;
-        this.setupAudioNodes();
+        this.source = this.audiocontext.createMediaStreamSource(this.stream);
+        this.wireIdle();
         this.visualize();
     }
 
@@ -263,9 +279,11 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      */
     private wireRecording() {
         this.unwire();
-        this.source.connect(this.analyser);
-        this.analyser.connect(this.processor);
-        this.processor.connect(this.audiocontext.destination);
+        if (this.source) {
+            this.source.connect(this.analyser);
+            this.analyser.connect(this.processor);
+            this.processor.connect(this.audiocontext.destination);
+        }
     }
 
     /**
@@ -275,8 +293,10 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      */
     private wirePlayback() {
         this.unwire();
-        this.bufferSource.connect(this.analyser);
-        this.analyser.connect(this.audiocontext.destination);
+        if (this.bufferSource) {
+            this.bufferSource.connect(this.analyser);
+            this.analyser.connect(this.audiocontext.destination);
+        }
     }
 
     /**
@@ -286,7 +306,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      */
     private wireIdle() {
         this.unwire();
-        this.source.connect(this.analyser);
+        if (this.source) this.source.connect(this.analyser);
     }
 
     /**
@@ -309,7 +329,6 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      */
     private setupAudioNodes(): void {
         if (this.audiocontext != undefined) {
-            this.source = this.audiocontext.createMediaStreamSource(this.stream);
             this.analyser = this.audiocontext.createAnalyser();
             this.processor = this.audiocontext.createScriptProcessor();
             this.processor.onaudioprocess = (event) => this.process(event.inputBuffer);

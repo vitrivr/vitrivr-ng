@@ -19,7 +19,7 @@ import {WaveAudioUtil} from "../../../shared/util/WaveAudioUtil";
 export class AudioRecorderDialogComponent {
     /** Audio-recorder component. */
     @ViewChild('recorder')
-    private recorder: AudioRecorderComponent;
+    private _recorder: AudioRecorderComponent;
 
     /** Hidden input for image upload. */
     @ViewChild('audioloader')
@@ -43,21 +43,21 @@ export class AudioRecorderDialogComponent {
      */
     constructor(private dialogRef: MdDialogRef<AudioRecorderDialogComponent>) {
         this.timer = Observable.timer(0, 500).timestamp().subscribe((x) => {
-            if (this.recorder.isPlaying() && this.status != "Playing") {
+            if (this._recorder.isPlaying() && this.status != "Playing") {
                 this.start = x.timestamp;
                 this.status = "Playing";
-            } else if (this.recorder.isRecording() && this.status != "Recording") {
+            } else if (this._recorder.isRecording() && this.status != "Recording") {
                 this.start = x.timestamp;
                 this.status = "Recording";
-            } else if (!this.recorder.isPlaying() && !this.recorder.isRecording() && this.status != "Idle") {
+            } else if (!this._recorder.isPlaying() && !this._recorder.isRecording() && this.status != "Idle") {
                 this.start = 0;
                 this.status = "Idle";
             } else if (this.status == "Recording") {
                 this._statustext = "Recording: " + TimeFormatterUtil.toTimer(x.timestamp - this.start);
             } else if (this.status == "Playing") {
-                this._statustext = "Playing: " + TimeFormatterUtil.toTimer(x.timestamp - this.start) + " / " + TimeFormatterUtil.toTimer(this.recorder.duration() * 1000);
+                this._statustext = "Playing: " + TimeFormatterUtil.toTimer(x.timestamp - this.start) + " / " + TimeFormatterUtil.toTimer(this._recorder.duration() * 1000);
             } else if (this.status == "Idle") {
-                if (this.recorder.length() > 0) {
+                if (this._recorder.length() > 0) {
                     this._statustext = "Idle (Audio available)";
                 } else {
                     this._statustext = "Idle (No audio)";
@@ -74,26 +74,35 @@ export class AudioRecorderDialogComponent {
      */
     @HostListener('change', ['$event'])
     onChange(event: any) {
-        if (this.recorder.isPlaying() || this.recorder.isRecording()) this.recorder.stop();
+        if (this._recorder.isPlaying() || this._recorder.isRecording()) this._recorder.stop();
         let reader = new FileReader();
         reader.addEventListener("load", () => {
-            this.recorder.loadAudio(reader.result);
+            this._recorder.loadAudio(reader.result);
         });
         reader.readAsArrayBuffer(event.target.files[0]);
     };
+
+    /**
+     * Getter for AudioRecorderComponent.
+     *
+     * @return {AudioRecorderComponent}
+     */
+    get recorder(): AudioRecorderComponent {
+        return this._recorder;
+    }
 
     /**
      * Triggered whenever the record-button is pressed. Either starts recording or
      * stops it (if recorder is already recording).
      */
     public onRecordButtonPressed() {
-        if (this.recorder.isRecording()) {
-            this.recorder.stop();
-        } else if (this.recorder.isPlaying()) {
-            this.recorder.stop();
-            this.recorder.record()
+        if (this._recorder.isRecording()) {
+            this._recorder.stop();
+        } else if (this._recorder.isPlaying()) {
+            this._recorder.stop();
+            this._recorder.record()
         } else {
-            this.recorder.record();
+            this._recorder.record();
         }
     }
 
@@ -102,13 +111,13 @@ export class AudioRecorderDialogComponent {
      * stops it (if recorder is already playing something).
      */
     public onPlayButtonPressed() {
-        if (this.recorder.isPlaying()) {
-            this.recorder.stop();
-        } else if (this.recorder.isRecording()) {
-            this.recorder.stop();
-            this.recorder.play();
+        if (this._recorder.isPlaying()) {
+            this._recorder.stop();
+        } else if (this._recorder.isRecording()) {
+            this._recorder.stop();
+            this._recorder.play();
         } else {
-            this.recorder.play();
+            this._recorder.play();
         }
     }
 
@@ -125,8 +134,8 @@ export class AudioRecorderDialogComponent {
      * in the audio recorder into 22050Hz Mono WAV and returns it to the caller.
      */
     public onSaveButtonPressed() {
-        if (this.recorder.data()) {
-            this.dialogRef.close(WaveAudioUtil.toWav(this.recorder.data(), 1, 22050));
+        if (this._recorder.data()) {
+            this.dialogRef.close(WaveAudioUtil.toWav(this._recorder.data(), 1, 22050));
         } else {
             this.dialogRef.close();
         }

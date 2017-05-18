@@ -1,5 +1,5 @@
 <md-toolbar color="primary">
-    <button md-icon-button (click)="onRecordButtonPressed()"><md-icon [attr.class]="recorder.isRecording() ? 'material-icons rec-active' : 'material-icons'">fiber_manual_record</md-icon></button>
+    <button md-icon-button (click)="onRecordButtonPressed()" *ngIf="recorder.recordingAvailable()"><md-icon [attr.class]="recorder.isRecording() ? 'material-icons rec-active' : 'material-icons'">fiber_manual_record</md-icon></button>
     <button md-icon-button (click)="onPlayButtonPressed()"><md-icon [attr.class]="recorder.isPlaying() ? 'material-icons play-active' : 'material-icons'">play_arrow</md-icon></button>
 
     <span class="spacer-tiny"></span>
