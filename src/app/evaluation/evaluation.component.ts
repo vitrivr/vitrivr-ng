@@ -381,7 +381,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         let event = null;
         switch (msg) {
             case "STARTED":
-                if (this._evaluationset && this.canBeStarted()) this._evaluationset.current.start();
+                if (this._evaluationset && this.canBeStarted()) {
+                    this._evaluationset.current.start();
+                    this.saveEvaluation();
+                }
                 event = new EvaluationEvent(new Date(), "STARTED", this._queryService.queryId, null);
                 break;
             case "FEATURE":
