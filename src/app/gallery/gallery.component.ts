@@ -43,7 +43,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
      */
     public ngOnInit(): void {
         this.queryServiceSubscription = this._queryService.observable
-            .filter(msg => ["STARTED", "ENDED", "UPDATED"].indexOf(msg) > -1)
+            .filter(msg => ["STARTED", "ENDED", "UPDATED", "CLEAR"].indexOf(msg) > -1)
             .subscribe((msg) => this.onQueryStateChange(msg));
 
         if (this._queryService.size() > 0) {
@@ -124,7 +124,8 @@ export class GalleryComponent implements OnInit, OnDestroy {
      * @param msg QueryChange message
      */
     protected onQueryStateChange(msg: QueryChange) {
-        this._loading = !(msg == "ENDED");
+        if (msg == 'STARTED') this._loading = true;
+        if (msg == 'ENDED') this._loading = false;
         this.updateGallery();
         this._cdr.markForCheck();
     }
