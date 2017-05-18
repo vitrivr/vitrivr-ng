@@ -1,5 +1,12 @@
 <div style="text-align:center;">
-    <button md-raised-button style="width:100%" (click)="search()" [color]="'accent'"><md-icon>search</md-icon>Search</button>
+
+    <div [style.margin-bottom]="'15px'">
+        <button md-raised-button style="width:100%" (click)="onSearchClicked()" [color]="'accent'"><md-icon>search</md-icon>Search</button>
+    </div>
+
+    <div  [style.margin-bottom]="'15px'">
+        <button md-raised-button style="width:100%" (click)="onClearAllClicked()" [color]="'warn'"><md-icon>clear</md-icon>Clear all</button>
+    </div>
 
     <query-container *ngFor="let container of containers" [containerModel]=container [inList]="containers"></query-container>
 
