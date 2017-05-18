@@ -1,14 +1,12 @@
 <md-dialog-content>
     <md-toolbar color="primary">
-        <md-icon mdTooltip="Pencil size">line_weight</md-icon>
+        <md-icon mdTooltip="Pencil size">border_color</md-icon>
         <span class="spacer-tiny"></span>
         <md-slider min="1" max="100" step="1" value="1" [style.min-width]="'100px'" (change)="onLineSizeChange($event)" tickInterval="auto"></md-slider>
 
         <span class="spacer-flex"></span>
 
-        <button md-icon-button (click)="onLoadImage()"  mdTooltip="Load image">
-            <md-icon>file_upload</md-icon>
-        </button>
+
 
         <button md-icon-button (click)="onFillCanvasClicked()" mdTooltip="Fill canvas">
             <md-icon>format_color_fill</md-icon>
@@ -19,6 +17,10 @@
         </button>
 
         <span class="spacer-flex"></span>
+
+        <button md-icon-button (click)="onLoadImage()"  mdTooltip="Load image">
+            <md-icon>file_upload</md-icon>
+        </button>
 
         <button md-icon-button (click)="close()">
             <md-icon>save</md-icon>

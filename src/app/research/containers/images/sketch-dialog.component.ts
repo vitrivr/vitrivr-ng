@@ -30,7 +30,7 @@ export class SketchDialogComponent implements OnInit {
     /**
      * Invoked after initialization. Applies the injected image data (if specified).
      */
-    ngOnInit(): void {
+    public ngOnInit(): void {
         if(this._data) this._sketchpad.setImageBase64(this._data);
         this._data = null;
     }
@@ -42,17 +42,10 @@ export class SketchDialogComponent implements OnInit {
      * @param event
      */
     @HostListener('change', ['$event'])
-    onChange(event: any) {
+    public onChange(event: any) {
         let URL = window.URL;
         this._sketchpad.setImageBase64(URL.createObjectURL(event.target.files[0]))
     };
-
-    /**
-     * Closes the dialog.
-     */
-    public close() {
-        this._dialogRef.close(this._sketchpad.getImageBase64());
-    }
 
     /**
      * Triggered when a color value is selected.
@@ -98,5 +91,12 @@ export class SketchDialogComponent implements OnInit {
      */
     public onLoadImage() {
         this.imageloader.nativeElement.click();
+    }
+
+    /**
+     * Closes the dialog.
+     */
+    public close() {
+        this._dialogRef.close(this._sketchpad.getImageBase64());
     }
 }
