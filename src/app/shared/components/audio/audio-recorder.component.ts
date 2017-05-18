@@ -83,12 +83,22 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      * the media-stream.
      */
     public ngOnDestroy() {
+        /* Stop playback. */
         this.stop();
-        this.stream.getTracks().forEach((track) => {
-            track.stop()
-        });
-        if (this.audiocontext) this.audiocontext.close();
-        this.audiocontext = null;
+
+        /* Invalidate the stream. */
+        if (this.stream) {
+            this.stream.getTracks().forEach((track) => {
+                track.stop()
+            });
+            this.stream = null;
+        }
+
+        /* Close the audio context. */
+        if (this.audiocontext){
+            this.audiocontext.close();
+            this.audiocontext = null;
+        }
     }
 
     /**
@@ -106,7 +116,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
 
     /**
      * Returns true if recording is available and false otherwise.
-     * 
+     *
      * @return {boolean}
      */
     public recordingAvailable() : boolean {
