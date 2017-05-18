@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {QueryChange, QueryService} from "../core/queries/query.service";
 import {Router} from "@angular/router";
@@ -10,7 +10,8 @@ import {SegmentScoreContainer} from "../shared/model/features/scores/segment-sco
     moduleId: module.id,
     selector: 'gallery',
     templateUrl: 'gallery.component.html',
-    styleUrls: ['gallery.component.css']
+    styleUrls: ['gallery.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 
@@ -35,7 +36,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
      * @param _resolver
      * @param _router
      */
-    constructor(protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {}
+    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
@@ -101,7 +102,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
      *
      * @param object MediaObject for which details should be displayed.
      */
-    public onDetailsButtonClicked(object: MediaObject) {
+    public onDetailsButtonClicked(object: MediaObjectScoreContainer) {
         this._router.navigate(['/mediaobject/' + object.objectId]);
     }
 
@@ -123,12 +124,9 @@ export class GalleryComponent implements OnInit, OnDestroy {
      * @param msg QueryChange message
      */
     protected onQueryStateChange(msg: QueryChange) {
-        if (msg == "STARTED") {
-            this._loading = true;
-        } else if (msg == "ENDED") {
-            this._loading = false;
-        }
+        this._loading = !(msg == "ENDED");
         this.updateGallery();
+        this._cdr.markForCheck();
     }
 
     /**

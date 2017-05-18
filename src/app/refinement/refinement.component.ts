@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {MdCheckboxChange, MdSliderChange} from "@angular/material";
 import {QueryService} from "../core/queries/query.service";
 import {Feature} from "../shared/model/features/feature.model";
@@ -8,7 +8,8 @@ import {MediaType} from "../shared/model/media/media-type.model";
     moduleId: module.id,
     selector: 'refinement',
     templateUrl: './refinement.component.html',
-    styleUrls: ['./refinement.component.css']
+    styleUrls: ['./refinement.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 /**
@@ -32,7 +33,7 @@ export class RefinementComponent {
      *
      * @param _queryService Reference to the QueryService instance.
      */
-    constructor(private _queryService : QueryService) {
+    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService) {
         this._queryService.observable
             .filter(msg => (["FEATURE", "UPDATE", "CLEAR"].indexOf(msg) > -1))
             .subscribe((msg) => this.onQueryStateChange());
@@ -51,6 +52,9 @@ export class RefinementComponent {
         this._queryService.mediatypes.forEach((value,key) => {
             if (this._mediatypes.indexOf(key) == -1) this._mediatypes.push(key);
         });
+
+        /* Mark for check. */
+        this._cdr.markForCheck();
     }
 
     /**
@@ -63,6 +67,7 @@ export class RefinementComponent {
     public onValueChanged(feature: Feature, event: MdSliderChange) {
         feature.weight = event.value;
         this._queryService.rerank();
+        this._cdr.markForCheck();
     }
 
     /**
@@ -88,7 +93,7 @@ export class RefinementComponent {
     }
 
     /**
-     * Getter for mediatypes array.
+     * Getter for media types array.
      *
      * @return {MediaType[]}
      */

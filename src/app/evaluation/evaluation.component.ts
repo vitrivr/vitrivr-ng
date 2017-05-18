@@ -1,4 +1,4 @@
-import{Component, OnDestroy, OnInit} from "@angular/core";
+import{ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {QueryService, QueryChange} from "../core/queries/query.service";
 import {EvaluationEvent} from "../shared/model/evaluation/evaluation-event";
 import {EvaluationState} from "../shared/model/evaluation/evaluation-state";
@@ -43,6 +43,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * @param snackBar
      */
     constructor(
+        _cdr: ChangeDetectorRef,
         _queryService : QueryService,
         _resolver: ResolverService,
         _router: Router,
@@ -51,7 +52,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         private _route: ActivatedRoute,
         private _snackBar: MdSnackBar,
         private _dialog: MdDialog) {
-        super(_queryService, _resolver, _router);
+        super(_cdr,_queryService,_resolver,_router);
     }
 
     /**
