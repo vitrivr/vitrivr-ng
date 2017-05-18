@@ -4,9 +4,10 @@ import {BrowserModule} from '@angular/platform-browser';
 import {GalleryComponent} from "./gallery.component";
 import {AppRoutingModule} from "../app-routing.module";
 import {MaterialModule} from "../material.module";
+import {FlexLayoutModule} from "@angular/flex-layout";
 
 @NgModule({
-    imports:      [ MaterialModule, BrowserModule, FormsModule, AppRoutingModule ],
+    imports:      [ MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule ],
     declarations: [ GalleryComponent ],
     exports: [ GalleryComponent ]
 })
