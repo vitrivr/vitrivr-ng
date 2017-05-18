@@ -115,9 +115,10 @@ export class Evaluation {
      */
     public accept(results: MediaObjectScoreContainer[]): EvaluationState {
         if (this._state == EvaluationState.RunningQueries) {
+            this._ratings = [];
             results.forEach((value : MediaObjectScoreContainer, index : number) => {
                 if (index < this._k + 10) {
-                    this._ratings.push(new EvaluationRating(value.mediaObject.objectId, value.representativeSegment.segmentId, index, value.score));
+                    this._ratings.push(new EvaluationRating(value.objectId, value.representativeSegment.segmentId, index, value.score));
                 }
             });
             this._state = EvaluationState.RankingResults;

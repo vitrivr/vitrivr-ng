@@ -7,5 +7,5 @@ export interface MediaObject {
     objectId : string,
     mediatype: MediaType,
     name : string,
-    path : string,
+    path : string
 }

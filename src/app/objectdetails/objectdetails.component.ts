@@ -8,6 +8,7 @@ import {ResolverService} from "../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 import {Location} from "@angular/common";
 import {MdSnackBar} from "@angular/material";
+import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 
 @Component({
     moduleId: module.id,
@@ -29,7 +30,7 @@ export class ObjectdetailsComponent implements OnInit {
     private _objectId: string;
 
     /** ID of the media object that is currently examined. */
-    private _mediaobject: MediaObject;
+    private _mediaobject: MediaObjectScoreContainer;
 
     /** List of MediaMetadata items for the current multimedia object. */
     private _metadata: MediaMetadata[] = [];
@@ -107,7 +108,7 @@ export class ObjectdetailsComponent implements OnInit {
      */
     private refresh() {
         /* Fetch the media-object from the QueryService. */
-        this._mediaobject = this._query.get(this._objectId).mediaObject;
+        this._mediaobject = this._query.get(this._objectId);
         this._segments = [];
         this._query.get(this._objectId).segmentScores.forEach((value, key) => {
             this._segments.push(value);

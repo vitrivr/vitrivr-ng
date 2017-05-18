@@ -161,9 +161,9 @@ export class QueryService {
      */
     public forEach(callback: (value: MediaObjectScoreContainer, key: string) => any, filtered: boolean = true) {
         this.results.forEach((value, key) => {
-            if (filtered && value.show() && this._mediatypes.get(value.mediaObject.mediatype)) {
+            if (filtered && value.show && this._mediatypes.get(value.mediatype)) {
                 callback(value, key);
-            } else if (!filtered && value.show()) {
+            } else if (!filtered && value.show) {
                 callback(value, key);
             }
         });
@@ -320,7 +320,7 @@ export class QueryService {
                 if (!this._mediatypes.has(object.mediatype)) this._mediatypes.set(object.mediatype, true);
 
                 /* Complete the resultset. */
-                if (!this.results.has(object.objectId)) this.results.set(object.objectId, new MediaObjectScoreContainer());
+                if (!this.results.has(object.objectId)) this.results.set(object.objectId, new MediaObjectScoreContainer(object.objectId));
                 this.results.get(object.objectId).mediaObject = object;
             }
         }
@@ -339,7 +339,7 @@ export class QueryService {
      */
     private processSegmentMessage(seg: SegmentQueryResult) {
         for (let segment of seg.content) {
-            if (!this.results.has(segment.objectId)) this.results.set(segment.objectId, new MediaObjectScoreContainer());
+            if (!this.results.has(segment.objectId)) this.results.set(segment.objectId, new MediaObjectScoreContainer(segment.objectId));
             this.results.get(segment.objectId).addMediaSegment(segment);
             this.segment_to_object_map.set(segment.segmentId, segment.objectId);
         }
@@ -364,7 +364,7 @@ export class QueryService {
         for (let similarity of sim.content) {
             let objectId = this.segment_to_object_map.get(similarity.key);
             if (objectId != undefined) {
-                if (!this.results.has(objectId)) this.results.set(objectId, new MediaObjectScoreContainer());
+                if (!this.results.has(objectId)) this.results.set(objectId, new MediaObjectScoreContainer(objectId));
                 this.results.get(objectId).addSimilarity(feature, similarity);
             }
         }
