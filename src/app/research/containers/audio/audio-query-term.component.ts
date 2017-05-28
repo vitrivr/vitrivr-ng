@@ -9,7 +9,7 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
     template:`
 
         <div style="display:flex; align-items: center; justify-content: center;">
-            <audio #player controls style="width:150px"></audio> <button md-icon-button (click)="onViewerClicked()"><md-icon>more_horiz</md-icon></button>
+            <audio #player controls style="width:150px"></audio> <button md-icon-button (click)="onViewerClicked()" mdTooltip="Click to change audio clip..."><md-icon>more_horiz</md-icon></button>
         </div>
         <div style="display:flex; align-items: center; justify-content: center;">
             <md-icon class="muted" mdTooltip="Audio fingerprinting">fingerprint</md-icon>

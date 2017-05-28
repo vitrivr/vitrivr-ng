@@ -8,7 +8,7 @@ import {Subscription} from "rxjs";
 @Component({
     selector: 'qt-image',
     template:`
-        <img #previewimg style="width:150px; height:150px; border:solid 1px;" (click)="onViewerClicked()"/>
+        <img #previewimg style="width:150px; height:150px; border:solid 1px;" (click)="onViewerClicked()" mdTooltip="Click to change image..."/>
         
         <div style="display:flex; align-items: center; justify-content: center;">
             <md-slide-toggle [(ngModel)]="mode3D" (change)="onModeToggled($event)">3D sketch mode</md-slide-toggle>

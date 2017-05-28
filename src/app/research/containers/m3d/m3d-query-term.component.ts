@@ -10,7 +10,7 @@ import Mesh = THREE.Mesh;
 @Component({
     selector: 'qt-m3d',
     template:`
-        <m3d-loader #preview  [width]="150" [height]="150" [interaction]="false" (click)="onViewerClicked()"></m3d-loader>
+        <m3d-loader #preview  [width]="150" [height]="150" [interaction]="false" (click)="onViewerClicked()" mdTooltip="Click to change 3D model..."></m3d-loader>
         <div style="display:flex; align-items: center; justify-content: center;">
             <md-icon class="muted" mdTooltip="Low resolution">looks_1</md-icon>
             <div class="toolbar-spacer-small"></div>
