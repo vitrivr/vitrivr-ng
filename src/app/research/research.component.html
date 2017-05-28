@@ -10,5 +10,5 @@
 
     <query-container *ngFor="let container of containers" [containerModel]=container [inList]="containers"></query-container>
 
-    <button md-fab (click)="addQueryTermContainer()"><md-icon>add</md-icon></button>
+    <button md-fab (click)="addQueryTermContainer()" mdTooltip="Add query container"><md-icon>add</md-icon></button>
 </div>
