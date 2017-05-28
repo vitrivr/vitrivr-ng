@@ -1,6 +1,7 @@
-<h3>Weights & Filters</h3>
+<h3>Query refinement</h3>
 
 <div *ngIf="features.length > 0">
+    <h4>Weights</h4>
     <div *ngFor="let feature of features" class="slider-group" [style.color]="feature.color">
         <span class="label constrained">{{feature.name}}</span>
         <md-slider min="0" max="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></md-slider>
