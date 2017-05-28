@@ -25,10 +25,10 @@ export class AudioQueryTerm implements QueryTermInterface {
                 this.categories = ['audiofingerprint', 'audiomatching'];
                 break;
             case 2:
-                this.categories = ['audiomatching'];
+                this.categories = ['audiomatching', 'hpcpaverage'];
                 break;
             case 3:
-                this.categories = ['audiomelody', 'audiomelody', 'pitchsequence'];
+                this.categories = ['audiomelody', 'pitchsequence'];
                 break;
             case 4:
                 this.categories = ['pitchsequence'];
