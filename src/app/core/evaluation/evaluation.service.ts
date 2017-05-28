@@ -4,6 +4,7 @@ import {Http} from "@angular/http";
 import {EvaluationTemplate} from "../../shared/model/evaluation/evaluation-template";
 import {Observable} from "rxjs/Observable";
 import Dexie from 'dexie';
+import * as JSZip from 'jszip';
 
 @Injectable()
 export class EvaluationService extends Dexie {
@@ -52,13 +53,14 @@ export class EvaluationService extends Dexie {
      * @param participant
      * @return {any}
      */
-    public evaluationData(): Observable<Blob> {
-        return Observable.fromPromise(this.evaluations.toArray()).map((result) => {
-            if (result) {
-                return new Blob([JSON.stringify(result, null, 2)], {type : 'application/json'});
-            } else {
-                return new Blob(["{}"], {type: "application/json"});
+    public evaluationData(): Observable<JSZip> {
+        return Observable.fromPromise(this.evaluations.toArray()).map((results: any[]) => {
+            let zip = new JSZip();
+            let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
+            for (let result of results) {
+                zip.file(result["id"] + ".json", JSON.stringify(result, null, 2), options)
             }
+            return zip
         });
     }
 

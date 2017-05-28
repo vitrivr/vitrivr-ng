@@ -167,12 +167,16 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * Invoked whenever the 'Download results' button is clicked.
      */
     public onDownloadButtonClick() {
-        this._evaluation.evaluationData().subscribe(
-            (data) => {
-                let url = window.URL.createObjectURL(data);
-                window.open(url);
-            }
-        );
+        this._evaluation.evaluationData().subscribe((zip) => {
+            zip.generateAsync({type:"blob"}).then(
+                (result) => {
+                    window.open(window.URL.createObjectURL(result));
+                 },
+                (error) => {
+                    console.log(error)
+                    this._snackBar.open("Failed to create downloadable results (JSZip error)." , null, {duration: ConfigService.SNACKBAR_DURATION});
+                }
+        )});
     }
 
     /**
