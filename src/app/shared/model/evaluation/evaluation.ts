@@ -4,6 +4,7 @@ import {EvaluationState} from "./evaluation-state";
 import {MediaObjectScoreContainer} from "../features/scores/media-object-score-container.model";
 import {TimeFormatterUtil} from "../../util/timer-formatter.util";
 import {EvaluationScenario} from "./evaluation-scenario";
+import {Feature} from "../features/feature.model";
 
 /**
  * Represents a single evaluation scenario.
@@ -24,6 +25,9 @@ export class Evaluation {
 
     /** ID of the EvaluationScenario */
     private _scenario: string;
+
+    /** Weights of the individual feature categories {category : weight}. */
+    private _per_category_weights : {[key:string]:number};
 
     /** List of evaluation events. */
     private _events: EvaluationEvent[] = [];
@@ -113,12 +117,23 @@ export class Evaluation {
      *
      * @return New state of the Evaluation object.
      */
-    public accept(results: MediaObjectScoreContainer[]): EvaluationState {
+    public accept(features: Feature[], results: MediaObjectScoreContainer[]): EvaluationState {
         if (this._state == EvaluationState.RunningQueries) {
+            /* Store per-category weights. */
+            this._per_category_weights = {};
+            features.forEach((v,i) => {
+                this._per_category_weights[v.name] = v.weight;
+            });
+
+            /* Store ratings and accompanying information. */
             this._ratings = [];
-            results.forEach((value : MediaObjectScoreContainer, index : number) => {
+            results.forEach((v1 : MediaObjectScoreContainer, index : number) => {
                 if (index < this._k + 10) {
-                    this._ratings.push(new EvaluationRating(value.objectId, value.representativeSegment.segmentId, index, value.score));
+                    let per_category_relevance: {[key:string]:number} = {};
+                    v1.representativeSegment.scores.forEach((v2, k2) => {
+                        per_category_relevance[k2.name] = v2;
+                    });
+                    this._ratings.push(new EvaluationRating(v1.objectId, v1.representativeSegment.segmentId, index, v1.score, per_category_relevance));
                 }
             });
             this._state = EvaluationState.RankingResults;
@@ -306,6 +321,7 @@ export class Evaluation {
             end: evaluation._end,
             k: evaluation._k,
             events: [],
+            per_category_weights : evaluation._per_category_weights,
             ratings: [],
             state: evaluation.state.valueOf(),
             dcg: evaluation.discountedCumulativeGain(),
@@ -341,6 +357,7 @@ export class Evaluation {
         evaluation._scenario = object["scenario"];
         evaluation._state = <EvaluationState>object["state"];
         evaluation._k = object["k"];
+        evaluation._per_category_weights = object["per_category_weights"];
         evaluation._ratings = [];
         evaluation._events = [];
 

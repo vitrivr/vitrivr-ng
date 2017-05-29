@@ -156,7 +156,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     public onResultsAcceptButtonClick() {
         if (this.canBeAccepted()) {
-            if (this._evaluationset.current.accept(this.mediaobjects) == EvaluationState.RankingResults) {
+            if (this._evaluationset.current.accept(this._queryService.features, this.mediaobjects) == EvaluationState.RankingResults) {
                 this.saveEvaluation();
                 this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: ConfigService.SNACKBAR_DURATION});
             }

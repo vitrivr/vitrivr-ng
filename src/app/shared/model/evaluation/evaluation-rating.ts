@@ -14,6 +14,9 @@ export class EvaluationRating {
     /** The relevance of the item as determined by Cineast. */
     private _relevance: number;
 
+    /** The relevance per feature category. */
+    private _per_category_relevance: {[key:string]:number;};
+
     /** User rating between 0 and 3. Defaults to -1, which is equal to not rated. */
     private _rating = -1;
 
@@ -25,11 +28,12 @@ export class EvaluationRating {
      * @param rank
      * @param relevance
      */
-    constructor(objectId : String, segmentId: String, rank: number, relevance: number) {
+    constructor(objectId : String, segmentId: String, rank: number, relevance: number, per_category_relevance: { [key:string]:number; }) {
         this._objectId = objectId;
         this._segmentId = segmentId;
         this._rank = rank;
         this._relevance = relevance;
+        this._per_category_relevance = per_category_relevance;
     }
 
     /**
@@ -100,6 +104,7 @@ export class EvaluationRating {
             segmentId : rating._segmentId,
             rank : rating._rank,
             relevance : rating._relevance,
+            per_category_relevance: rating._per_category_relevance,
             rating : rating._rating
         };
     }
@@ -112,7 +117,7 @@ export class EvaluationRating {
      * @return {EvaluationRating}
      */
     public static deserialise(object: any) : EvaluationRating {
-        let rating = new EvaluationRating(object["objectId"],object["segmentId"], object["rank"], object["relevance"]);
+        let rating = new EvaluationRating(object["objectId"],object["segmentId"], object["rank"], object["relevance"], object["per_category_relevance"]);
         rating._rating = object["rating"];
         return rating;
     }
