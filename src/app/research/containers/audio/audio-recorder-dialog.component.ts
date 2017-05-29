@@ -3,8 +3,8 @@ import {MdDialogRef} from '@angular/material';
 import {AudioRecorderComponent} from "../../../shared/components/audio/audio-recorder.component";
 import {Observable} from "rxjs/Observable";
 import {Subscription} from "rxjs/Subscription";
-import {TimeFormatterUtil} from "../../../shared/util/TimeFormatterUtil";
-import {WaveAudioUtil} from "../../../shared/util/WaveAudioUtil";
+import {TimeFormatterUtil} from "../../../shared/util/timer-formatter.util";
+import {WaveAudioUtil} from "../../../shared/util/wave-audio.util";
 
 
 @Component({

@@ -2,7 +2,7 @@ import {EvaluationEvent} from "./evaluation-event";
 import {EvaluationRating} from "./evaluation-rating";
 import {EvaluationState} from "./evaluation-state";
 import {MediaObjectScoreContainer} from "../features/scores/media-object-score-container.model";
-import {TimeFormatterUtil} from "../../util/TimeFormatterUtil";
+import {TimeFormatterUtil} from "../../util/timer-formatter.util";
 import {EvaluationScenario} from "./evaluation-scenario";
 
 /**
