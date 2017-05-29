@@ -24,7 +24,7 @@ export class EvaluationService extends Dexie {
     /**
      * Saves the current state of the Evaluation in the local store.
      */
-    public saveEvaluation(evaluationset: EvaluationSet): Observable<number> {
+    public saveEvaluation(evaluationset: EvaluationSet): Observable<string> {
         /** Reads the objects from the store OR creates a new one. */
         return Observable.fromPromise(this.evaluations.put(EvaluationSet.serialise(evaluationset)));
     }
