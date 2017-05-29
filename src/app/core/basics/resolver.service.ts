@@ -48,9 +48,9 @@ export class ResolverService {
     public pathToThumbnail(mediatype: MediaType, objectId: string, segmentId: string) {
         let suffix = this.suffices.get(mediatype);
         if (this._config.host_thumbnails.endsWith("/")) {
-            return this._config.host_thumbnails + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix;
+            return encodeURI(this._config.host_thumbnails + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
         } else {
-            return this._config.host_thumbnails + "/" + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix;
+            return encodeURI(this._config.host_thumbnails + "/" + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
         }
     }
 
@@ -72,9 +72,9 @@ export class ResolverService {
      */
     public pathToObject(object: MediaObject) {
         if (this._config.host_object.endsWith("/")) {
-            return this._config.host_object + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path;
+            return encodeURI(this._config.host_object + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path);
         } else {
-            return this._config.host_object + "/" + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path;
+            return encodeURI(this._config.host_object + "/" + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path);
         }
     }
 }
