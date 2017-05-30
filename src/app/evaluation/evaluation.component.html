@@ -1,43 +1,41 @@
-<div style="padding:10px;">
-    <div style="display:flex;">
+<div class="bar">
+    <div class="spacer-small"></div>
 
+    <div>
+        <md-chip-list>
+            <md-chip (click)="onScenarioClick()" mdTooltip="Click to bring up description..."><strong>Scenario:</strong> {{scenarioDescriptor()}}</md-chip>
+            <md-chip [attr.color]="stateColor()"><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
+        </md-chip-list>
+    </div>
 
-        <div class="spacer-small"></div>
+    <div class="spacer-flex"></div>
 
-        <div>
-            <md-chip-list>
-                <md-chip (click)="onScenarioClick()" mdTooltip="Click to bring up description..."><strong>Scenario:</strong> {{scenarioDescriptor()}}</md-chip>
-                <md-chip [attr.color]="stateColor()"><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
-            </md-chip-list>
-        </div>
+    <div>
+        <button md-icon-button (click)="evaluationset.previous()" mdTooltip="Previous scenario"><md-icon>keyboard_arrow_left</md-icon></button>
+        <button md-icon-button (click)="evaluationset.next()" mdTooltip="Next Scenario"><md-icon>keyboard_arrow_right</md-icon></button>
+    </div>
 
-        <div class="spacer-flex"></div>
+    <div class="spacer-small"></div>
 
-        <div>
-            <button md-icon-button (click)="evaluationset.previous()" mdTooltip="Previous scenario"><md-icon>keyboard_arrow_left</md-icon></button>
-            <button md-icon-button (click)="evaluationset.next()" mdTooltip="Next Scenario"><md-icon>keyboard_arrow_right</md-icon></button>
-        </div>
+    <div>
+        <button md-icon-button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()" mdTooltip="Start scenario"><md-icon>flag</md-icon></button>
+        <button md-icon-button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()" mdTooltip="Accept result set"><md-icon>thumb_up</md-icon></button>
+        <button md-icon-button (click)="onEvaluationCompleteButtonClick()" [disabled]="!canBeCompleted()" mdTooltip="Complete scenario"><md-icon>done</md-icon></button>
+        <button md-icon-button (click)="onEvaluationAbortButtonClick()" [disabled]="!canBeAborted()" mdTooltip="Abort/Restart scenario"><md-icon>cancel</md-icon></button>
+    </div>
 
-        <div class="spacer-small"></div>
+    <div class="spacer-small"></div>
 
-        <div>
-            <button md-icon-button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()" mdTooltip="Start scenario"><md-icon>flag</md-icon></button>
-            <button md-icon-button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()" mdTooltip="Accept result set"><md-icon>thumb_up</md-icon></button>
-            <button md-icon-button (click)="onEvaluationCompleteButtonClick()" [disabled]="!canBeCompleted()" mdTooltip="Complete scenario"><md-icon>done</md-icon></button>
-            <button md-icon-button (click)="onEvaluationAbortButtonClick()" [disabled]="!canBeAborted()" mdTooltip="Abort/Restart scenario"><md-icon>cancel</md-icon></button>
-        </div>
-
-        <div class="spacer-small"></div>
-
-        <div>
-            <button md-icon-button (click)="onDownloadButtonClick()" mdTooltip="Download all results"><md-icon>cloud_download</md-icon></button>
-        </div>
+    <div>
+        <button md-icon-button (click)="onDownloadButtonClick()" mdTooltip="Download all results"><md-icon>cloud_download</md-icon></button>
     </div>
 
     <hr class="fade"/>
+</div>
 
+<div style="padding:10px;">
     <!-- Before an evaluatin was started, display the scenario description. -->
-    <div  *ngIf="display() == 'SCENARIO'">
+    <div *ngIf="display() == 'SCENARIO'">
         <md-card class="evaluation-card">
             <md-card-header>
                 <md-card-title>Scenario: {{currentScenario.name}} (ID: {{currentScenario.id}})</md-card-title>
