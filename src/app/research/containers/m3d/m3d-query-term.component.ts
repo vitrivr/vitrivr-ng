@@ -9,19 +9,8 @@ import Mesh = THREE.Mesh;
 
 @Component({
     selector: 'qt-m3d',
-    template:`
-        <m3d-loader #preview  [width]="150" [height]="150" [interaction]="false" (click)="onViewerClicked()" mdTooltip="Click to change 3D model..."></m3d-loader>
-        <div style="display:flex; align-items: center; justify-content: center;">
-            <md-icon class="muted" mdTooltip="Low resolution">looks_1</md-icon>
-            <div class="toolbar-spacer-small"></div>
-            <md-slider min="0" max="2" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></md-slider>
-            <div class="toolbar-spacer-small"></div>
-            <md-icon class="muted" mdTooltip="High resolution">looks_3</md-icon>
-        </div>
-        <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>
-    `
+    templateUrl: 'm3d-query-term.component.html'
 })
-
 export class M3DQueryTermComponent {
     @ViewChild('preview')
     private preview: M3DLoaderComponent;
@@ -54,7 +43,17 @@ export class M3DQueryTermComponent {
      * selection dialog to be opened.
      */
     public onViewerClicked() {
-        let dialogRef = this.dialog.open(M3DLoaderDialogComponent);
+        this.openM3DDialog(this.preview.getMesh());
+    }
+
+    /**
+     * Opens the M3DLoaderDialogComponent and registers a callback that loads the saved
+     * result of the dialog into preview image canvas.
+     *
+     * @param data Optional data that should be handed to the component.
+     */
+    private openM3DDialog(data? : any) {
+        let dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data : data});
         let subscription = dialogRef.afterClosed().subscribe((result : Mesh) => {
             if (result) {
                 this.preview.setMesh(result);
