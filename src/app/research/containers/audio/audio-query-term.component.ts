@@ -6,24 +6,9 @@ import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.mod
 
 @Component({
     selector: 'qt-audio',
-    template:`
-
-        <div style="display:flex; align-items: center; justify-content: center;">
-            <audio #player controls style="width:150px"></audio> <button md-icon-button (click)="onViewerClicked()" mdTooltip="Click to change audio clip..."><md-icon>more_horiz</md-icon></button>
-        </div>
-        <div style="display:flex; align-items: center; justify-content: center;">
-            <md-icon class="muted" mdTooltip="Audio fingerprinting">fingerprint</md-icon>
-            <div class="toolbar-spacer-small"></div>
-            <md-slider min="0" max="4" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></md-slider>
-            <div class="toolbar-spacer-small"></div>
-            <md-icon class="muted" mdTooltip="Query-by-Humming">record_voice_over</md-icon>
-        </div>
-        <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>
-        `
-
-
+    templateUrl: 'audio-query-term.component.html',
+    styleUrls: ['audio-query-term.component.css']
 })
-
 export class AudioQueryTermComponent {
     /** Component used to display a preview of the recorded/selected audio. */
     @ViewChild('player') private player: any;
@@ -57,7 +42,67 @@ export class AudioQueryTermComponent {
      * Shows the audio-recorder dialog.
      */
     public onViewerClicked() {
-        let dialogRef = this.dialog.open(AudioRecorderDialogComponent);
+        this.openAudioRecorderDialog();
+    }
+
+    /**
+     * Fired whenever something is dragged and enters the audio player.
+     *
+     * @param event
+     */
+    public onAudioDragEnter(event: any) {
+        event.preventDefault();
+        event.target.classList.add('ondrag');
+    }
+
+    /**
+     * Fired whenever something is dragged over the audio player.
+     *
+     * @param event
+     */
+    public onAudioDragOver(event: any) {
+        event.preventDefault();
+    }
+
+    /**
+     * Fired whenever something is dragged and exits the audio player.
+     *
+     * @param event
+     */
+    public onAudioDragExit(event: any) {
+        event.preventDefault();
+        event.target.classList.remove("ondrag");
+    }
+
+    /**
+     * Fired when object is dropped over the audio player. If the object is a file, that
+     * object is treated as audio and handed to the SketchDialogComponent.
+     *
+     * @param event Drop event
+     */
+    public onAudioDropped(event: any) {
+        /* Prevent propagation. */
+        event.preventDefault();
+        event.stopPropagation();
+
+        /* Remove the ondrag class (change of border-style). */
+        event.target.classList.remove("ondrag");
+
+        /** */
+        if (event.dataTransfer.files.length > 0) {
+            let file = event.dataTransfer.files.item(0);
+            this.openAudioRecorderDialog(file);
+        }
+    }
+
+    /**
+     * Opens the AudioRecorderDialogComponent and registers a callback that loads the saved
+     * result of the dialog into the audio player.
+     *
+     * @param data Optional data that should be handed to the component.
+     */
+    private openAudioRecorderDialog(data?: any) {
+        let dialogRef = this.dialog.open(AudioRecorderDialogComponent, {data : data});
         let subscription = dialogRef.afterClosed().first().subscribe(result => {
             if (result) {
                 result.then((data: Blob) => {

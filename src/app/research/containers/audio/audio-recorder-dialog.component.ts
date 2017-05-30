@@ -1,5 +1,5 @@
-import {Component, ViewChild, HostListener} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
+import {Component, ViewChild, HostListener, Inject} from '@angular/core';
+import {MD_DIALOG_DATA, MdDialogRef} from '@angular/material';
 import {AudioRecorderComponent} from "../../../shared/components/audio/audio-recorder.component";
 import {Observable} from "rxjs/Observable";
 import {Subscription} from "rxjs/Subscription";
@@ -37,11 +37,13 @@ export class AudioRecorderDialogComponent {
     /** Text representing the current status of the audio-recorder. */
     private _statustext : String;
 
+
     /**
      *
      * @param dialogRef
+     * @param _data Data that is passed to the AudioRecorderDialogComponent.
      */
-    constructor(private dialogRef: MdDialogRef<AudioRecorderDialogComponent>) {
+    constructor(private dialogRef: MdDialogRef<AudioRecorderDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : any) {
         this.timer = Observable.timer(0, 500).timestamp().subscribe((x) => {
             if (this._recorder.isPlaying() && this.status != "Playing") {
                 this.start = x.timestamp;
@@ -64,6 +66,18 @@ export class AudioRecorderDialogComponent {
                 }
             }
         });
+
+
+    }
+
+    /**
+     * Invoked after initialization. Loads the injected audio data (if specified).
+     */
+    public ngOnInit(): void {
+        if (this._data && this._data instanceof File) {
+            this._recorder.loadAudioFromFile(this._data);
+        }
+        this._data = null;
     }
 
     /**
