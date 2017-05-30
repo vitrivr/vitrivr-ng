@@ -44,6 +44,8 @@ export class AudioRecorderDialogComponent {
      * @param _data Data that is passed to the AudioRecorderDialogComponent.
      */
     constructor(private dialogRef: MdDialogRef<AudioRecorderDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : any) {
+
+        /* TODO: This is crap (what did I think o_O)! AudioRecorderComponent should emmit status changes instead that AudioRecorderDialog can subscribe to. */
         this.timer = Observable.timer(0, 500).timestamp().subscribe((x) => {
             if (this._recorder.isPlaying() && this.status != "Playing") {
                 this.start = x.timestamp;
