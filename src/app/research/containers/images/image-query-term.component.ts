@@ -1,28 +1,13 @@
-import {Component, ViewChild, Input, OnDestroy, OnInit} from "@angular/core";
+import {Component, ViewChild, Input} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
-import {MdDialog, MdDialogRef} from '@angular/material';
+import {MdDialog} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
 import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
-import {Subscription} from "rxjs";
 
 @Component({
     selector: 'qt-image',
-    template:`
-        <img #previewimg style="width:150px; height:150px; border:solid 1px;" (click)="onViewerClicked()" mdTooltip="Click to change image..."/>
-        
-        <div style="display:flex; align-items: center; justify-content: center;">
-            <md-slide-toggle [(ngModel)]="mode3D" (change)="onModeToggled($event)">3D sketch mode</md-slide-toggle>
-        </div>
-        
-        <div style="display:flex; align-items: center; justify-content: center;" *ngIf="!mode3D">
-            <md-icon class="muted" mdTooltip="Rough sketch">brush</md-icon>
-            <div class="toolbar-spacer-small"></div>
-            <md-slider min="0" max="4" step="1" value="2" [(ngModel)]="sliderSetting" (change)="onSettingsChanged($event)"></md-slider>
-            <div class="toolbar-spacer-small"></div>
-            <md-icon class="muted"  mdTooltip="Example image">insert_photo</md-icon>
-        </div>
-        <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>
-    `
+    templateUrl: 'image-query-term.component.html',
+    styleUrls: ['image-query-term.component.css']
 })
 
 export class ImageQueryTermComponent {
@@ -91,5 +76,65 @@ export class ImageQueryTermComponent {
                 this.imageTerm.data = result;
             }
         });
+    }
+
+    /**
+     * Fired whenever something is dragged over the canvas.
+     * @param event
+     */
+    public onViewerDragEnter(event: any) {
+        event.preventDefault();
+
+        /* If Mode3D is active; return (no drag & drop support). */
+        if (this.mode3D) return;
+
+        /* Add the ondrag class (change of border-style). */
+        event.target.classList.add('ondrag');
+    }
+
+    /**
+     *
+     * @param event
+     */
+    public onViewerDragOver(event: any) {
+        event.preventDefault();
+    }
+
+    /**
+     *
+     * @param event
+     */
+    public onViewerDragExit(event: any) {
+        event.preventDefault();
+
+        /* If Mode3D is active; return (no drag & drop support). */
+        if (this.mode3D) return;
+
+        /* Remove the ondrag class (change of border-style). */
+        event.target.classList.remove("ondrag");
+    }
+
+    /**
+     * Handles the case in which an object is dropped over the preview-image. If the object is a file, that
+     * object is treated as image and handed to the SketchDialogComponent.
+     *
+     * @param event Drop event
+     */
+    public onViewerDropped(event: any) {
+        /* Prevent propagation. */
+        event.preventDefault();
+        event.stopPropagation();
+
+        /* If Mode3D is active; return (no drag & drop support). */
+        if (this.mode3D) return;
+
+        /* Remove the ondrag class (change of border-style). */
+        event.target.classList.remove("ondrag");
+
+        /** */
+        if (event.dataTransfer.files.length > 0) {
+            let file = URL.createObjectURL(event.dataTransfer.files.item(0));
+            this.dialog.open(SketchDialogComponent, {data : file, height : '450px'})
+        }
     }
 }
