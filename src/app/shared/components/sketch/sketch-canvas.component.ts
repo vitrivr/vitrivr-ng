@@ -2,8 +2,7 @@ import {Component, ViewChild, HostListener, Input, AfterViewInit, ElementRef} fr
 
 @Component({
     selector: 'sketch-canvas',
-    template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px;" (mousedown)="onMousedown($event)" (mouseup)="onMouseup($event)" (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)"></canvas>`
-
+    template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px;" (mousedown)="onMousedown($event)" (mouseup)="onMouseup($event)" (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (click)="onViewerClicked()" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
 })
 
 export class SketchCanvas implements AfterViewInit  {
@@ -64,6 +63,32 @@ export class SketchCanvas implements AfterViewInit  {
         }
     };
 
+    /**
+     * Fired whenever something is dragged over the canvas.
+     *
+     * @param event
+     */
+    public onCanvasDragOver(event: any) {
+        event.preventDefault();
+    }
+
+    /**
+     * Handles the case in which an object is dropped over the sketch canvas. If the object is a file, that
+     * object is treated as image and loaded.
+     *
+     * @param event Drop event
+     */
+    public onCanvasDropped(event: any) {
+        /* Prevent propagation. */
+        event.preventDefault();
+        event.stopPropagation();
+
+        /* Extract file (if available) and display it. */
+        if (event.dataTransfer.files.length > 0) {
+            this.setImageBase64(URL.createObjectURL(event.dataTransfer.files.item(0)));
+        }
+    }
+
     @HostListener('window:resize', ['$event'])
     onResize(event : any) {
         event.target.innerWidth;
@@ -77,6 +102,7 @@ export class SketchCanvas implements AfterViewInit  {
     }
 
     /**
+     * Getter for the rendered image data.
      *
      * @returns {ImageData}
      */
@@ -85,6 +111,7 @@ export class SketchCanvas implements AfterViewInit  {
     }
 
     /**
+     * Getter for the base 64 encoded, rendered image data.
      *
      * @returns {string}
      */
