@@ -4,7 +4,7 @@ import {Component, ViewChild, OnInit, OnDestroy, Input} from "@angular/core";
     selector: 'record-audio',
     template:`
     <div>
-        <canvas #visualize width='{{width}}' height='{{height}}'></canvas>
+        <canvas #visualize width='{{width}}' height='{{height}}' (drop)="onRecorderDropped($event)" (dragover)="onRecorderDragOver($event)"></canvas>
     </div>`
 })
 
@@ -253,9 +253,9 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
      * Tries to decode binary data from an array buffer and load it as
      * AudioStream. The loaded audio will be treated like recorded audio.
      *
-     * @param data
+     * @param data ArrayBuffer containing the data.
      */
-    public loadAudio(data: ArrayBuffer) {
+    public loadAudioFromBuffer(data: ArrayBuffer) {
         if (this.audiocontext !== undefined && !this.recording) {
             this.audiocontext.decodeAudioData(data, (buffer) => {
                 this.recordingBuffer = buffer;
@@ -264,8 +264,24 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Tries to decode binary data from an array buffer and load it as
+     * AudioStream. The loaded audio will be treated like recorded audio.
      *
-     * @param stream
+     * @param file File that should be loaded.
+     */
+    public loadAudioFromFile(file: File) {
+        if (this.isPlaying() || this.isRecording()) this.stop();
+        let reader = new FileReader();
+        reader.addEventListener("load", () => {
+            this.loadAudioFromBuffer(reader.result);
+        });
+        reader.readAsArrayBuffer(file);
+    }
+
+    /**
+     * Called, when a stream becomes available.
+     *
+     * @param stream The MediaStream that became available.
      */
     private onStreamAvailable(stream: MediaStream) {
         this.stream = stream;
@@ -275,11 +291,40 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Called, when obtaining a stream fails with an error.
      *
      * @param error
      */
     private onStreamError(error: any) {
         console.log(error);
+        this.wireIdle();
+        this.visualize();
+    }
+
+    /**
+     * Fired whenever something is dragged over the recorder.
+     *
+     * @param event
+     */
+    public onRecorderDragOver(event: any) {
+        event.preventDefault();
+    }
+
+    /**
+     * Handles the case in which an object is dropped over the recorder. If the object is a file, that
+     * object is treated as audio and loaded.
+     *
+     * @param event Drop event
+     */
+    public onRecorderDropped(event: any) {
+        /* Prevent propagation. */
+        event.preventDefault();
+        event.stopPropagation();
+
+        /* Extract file (if available) and display it. */
+        if (event.dataTransfer.files.length > 0) {
+            this.loadAudioFromFile(event.dataTransfer.files.item(0));
+        }
     }
 
     /**

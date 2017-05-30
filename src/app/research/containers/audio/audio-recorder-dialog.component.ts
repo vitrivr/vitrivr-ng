@@ -73,13 +73,8 @@ export class AudioRecorderDialogComponent {
      * @param event
      */
     @HostListener('change', ['$event'])
-    onChange(event: any) {
-        if (this._recorder.isPlaying() || this._recorder.isRecording()) this._recorder.stop();
-        let reader = new FileReader();
-        reader.addEventListener("load", () => {
-            this._recorder.loadAudio(reader.result);
-        });
-        reader.readAsArrayBuffer(event.target.files[0]);
+    public onChange(event: any) {
+        this._recorder.loadAudioFromFile(event.target.files[0]);
     };
 
     /**
