@@ -57,25 +57,11 @@ export class ImageQueryTermComponent {
     }
 
     /**
-     * Triggered whenever someone click on the image, which indicates that it should
-     * be edited.
+     * Triggered whenever someone click on the image, which indicates that
+     * it should be edited; opens the SketchDialogComponent
      */
     public onViewerClicked() {
-        /* Initialize the correct dialog-component. */
-        let dialogRef = null;
-        if (this.mode3D) {
-            dialogRef = this.dialog.open(BinarySketchDialogComponent, {})
-        } else {
-            dialogRef = this.dialog.open(SketchDialogComponent, {data : this.previewimg.nativeElement.src, height:'450px'})
-        }
-
-        /* Register the onClose callback. */
-        dialogRef.afterClosed().first().subscribe(result => {
-            if (result) {
-                this.previewimg.nativeElement.src = result;
-                this.imageTerm.data = result;
-            }
-        });
+        this.openSketchDialog(this.previewimg.nativeElement.src);
     }
 
     /**
@@ -131,10 +117,34 @@ export class ImageQueryTermComponent {
         /* Remove the ondrag class (change of border-style). */
         event.target.classList.remove("ondrag");
 
-        /** */
+        /* */
         if (event.dataTransfer.files.length > 0) {
             let file = URL.createObjectURL(event.dataTransfer.files.item(0));
-            this.dialog.open(SketchDialogComponent, {data : file, height : '450px'})
+            this.openSketchDialog(file);
         }
+    }
+
+    /**
+     * Opens the SketchDialogComponent and registers a callback that loads the saved
+     * result of the dialog into preview image canvas.
+     *
+     * @param data Optional data that should be handed to the component.
+     */
+    private openSketchDialog(data? : any) {
+        /* Initialize the correct dialog-component. */
+        let dialogRef = null;
+        if (this.mode3D) {
+            dialogRef = this.dialog.open(BinarySketchDialogComponent, {})
+        } else {
+            dialogRef = this.dialog.open(SketchDialogComponent, {data : data, height:'450px'})
+        }
+
+        /* Register the onClose callback. */
+        dialogRef.afterClosed().first().subscribe(result => {
+            if (result) {
+                this.previewimg.nativeElement.src = result;
+                this.imageTerm.data = result;
+            }
+        });
     }
 }

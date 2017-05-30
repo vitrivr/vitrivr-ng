@@ -25,13 +25,15 @@ export class SketchDialogComponent implements OnInit {
      * @param _dialogRef
      * @param _data
      */
-    constructor(private _dialogRef: MdDialogRef<SketchDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : string) {}
+    constructor(private _dialogRef: MdDialogRef<SketchDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : any) {}
 
     /**
-     * Invoked after initialization. Applies the injected image data (if specified).
+     * Invoked after initialization. Loads the injected image data (if specified).
      */
     public ngOnInit(): void {
-        if(this._data) this._sketchpad.setImageBase64(this._data);
+        if(this._data && typeof this._data === 'string')  {
+            this._sketchpad.setImageBase64(<string>this._data);
+        }
         this._data = null;
     }
 
