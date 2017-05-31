@@ -1,6 +1,6 @@
 export type EventType = "STARTED" | "ENDED" | "FEATURE_AVAILABLE";
 export class EvaluationEvent {
-    constructor(public readonly time: Date, public readonly type: EventType, public readonly queryId : string, public readonly context: string) {}
+    constructor(public readonly queryId : string, public readonly time: Date, public readonly type: EventType, public readonly context: string) {}
 
     /**
      * Creates and returns a compact object representation of the EvaluationEvent (no
