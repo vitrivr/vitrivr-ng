@@ -65,7 +65,8 @@ export class ImageQueryTermComponent {
     }
 
     /**
-     * Fired whenever something is dragged over the canvas.
+     * Fired whenever something is dragged and enters the preview image.
+     *
      * @param event
      */
     public onViewerDragEnter(event: any) {
@@ -79,6 +80,7 @@ export class ImageQueryTermComponent {
     }
 
     /**
+     * Fired whenever something is dragged over the preview image.
      *
      * @param event
      */
@@ -87,6 +89,7 @@ export class ImageQueryTermComponent {
     }
 
     /**
+     * Fired whenever something is dragged and exits the preview image.
      *
      * @param event
      */
@@ -117,12 +120,23 @@ export class ImageQueryTermComponent {
         /* Remove the ondrag class (change of border-style). */
         event.target.classList.remove("ondrag");
 
-        /* */
+        /* If the DataTransfer object of the event contains a file: apply the first one. */
         if (event.dataTransfer.files.length > 0) {
-            let file = URL.createObjectURL(event.dataTransfer.files.item(0));
-            this.openSketchDialog(file);
+            this.applyImageData(URL.createObjectURL(event.dataTransfer.files.item(0)));
         }
     }
+
+    /**
+     * Applies image data and updates the ImageQueryTerm's data attribute as well as
+     * the preview image.
+     *
+     * @param data Data that should be added (must be base64 encoded).
+     */
+    private applyImageData(data : string) {
+        this.previewimg.nativeElement.src = data;
+        this.imageTerm.data = data;
+    }
+
 
     /**
      * Opens the SketchDialogComponent and registers a callback that loads the saved
@@ -141,10 +155,7 @@ export class ImageQueryTermComponent {
 
         /* Register the onClose callback. */
         dialogRef.afterClosed().first().subscribe(result => {
-            if (result) {
-                this.previewimg.nativeElement.src = result;
-                this.imageTerm.data = result;
-            }
+            if (result) this.applyImageData(result);
         });
     }
 }
