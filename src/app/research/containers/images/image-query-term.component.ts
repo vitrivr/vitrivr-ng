@@ -122,7 +122,11 @@ export class ImageQueryTermComponent {
 
         /* If the DataTransfer object of the event contains a file: apply the first one. */
         if (event.dataTransfer.files.length > 0) {
-            this.applyImageData(URL.createObjectURL(event.dataTransfer.files.item(0)));
+            let reader = new FileReader();
+            reader.addEventListener("load", () => {
+                this.applyImageData(reader.result);
+            });
+            reader.readAsDataURL(event.dataTransfer.files.item(0));
         }
     }
 
