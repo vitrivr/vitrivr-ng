@@ -389,18 +389,23 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                     this._evaluationset.current.start();
                     this.saveEvaluation();
                 }
-                event = new EvaluationEvent(new Date(), "STARTED", this._queryService.queryId, null);
+                event = new EvaluationEvent(this._queryService.queryId, new Date(), "STARTED",  null);
                 break;
             case "FEATURE":
-                event = new EvaluationEvent(new Date(), "FEATURE_AVAILABLE", this._queryService.queryId, this._queryService.features[this._queryService.features.length-1].readableName);
+                event = new EvaluationEvent(this._queryService.queryId, new Date(), "FEATURE_AVAILABLE", this._queryService.features[this._queryService.features.length-1].readableName);
                 break;
             case "ENDED":
-                event = new EvaluationEvent(new Date(), "ENDED", this._queryService.queryId, null);
+                event = new EvaluationEvent(this._queryService.queryId, new Date(), "ENDED",  null);
                 break;
             case "UPDATED":
                 break;
         }
-        if (event && this._evaluationset && this._evaluationset.current.state == EvaluationState.RunningQueries) this._evaluationset.current.addEvent(event);
+
+        /* Add evaluation event. */
+        if (event && this._evaluationset && this._evaluationset.current.state == EvaluationState.RunningQueries) {
+            this._evaluationset.current.addEvent(event);
+            this.saveEvaluation();
+        }
 
         /* Call super. */
         super.onQueryStateChange(msg);
