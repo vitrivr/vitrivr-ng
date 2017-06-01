@@ -5,7 +5,7 @@
     <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><md-spinner></md-spinner></p>
 
     <div class="gallery" xLayout="row" fxLayoutWrap fxLayoutGap="15px" fxLayoutAlign="space-between start">
-        <div  *ngFor="let mediaobject of mediaobjects" fxFlex="250px" class="tile" (mouseover)="setFocus(mediaobject)">
+        <div  *ngFor="let mediaobject of mediaobjects" fxFlex="250px" class="tile" (mouseenter)="setFocus(mediaobject)" (mouseleave)="setFocus(null)">
             <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                 <div class="filename">{{mediaobject.name}}</div>
                 <div class="score">
@@ -15,8 +15,6 @@
             </div>
 
             <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, mediaobject.representativeSegment.mediaSegment)}}" (click)="onDetailsButtonClicked(mediaobject)"/>
-
-
 
             <div class="tile-footer" *ngIf="inFocus(mediaobject)" fxLayout="row-reverse">
                 <div><button md-icon-button (click)="onMltButtonClicked(mediaobject.representativeSegment)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button></div>
