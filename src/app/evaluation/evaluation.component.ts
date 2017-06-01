@@ -23,7 +23,7 @@ type DisplayType = "NONE" | "SCENARIO" | "GALLERY" | "HISTORY";
     moduleId: module.id,
     selector: 'evaluation',
     templateUrl: 'evaluation.component.html',
-    styleUrls: ['evaluation.component.css']
+    styleUrls: [ 'evaluation.component.css' ]
 })
 
 
@@ -166,7 +166,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     /**
      * Invoked whenever the 'Download results' button is clicked.
      */
-    public onDownloadButtonClick() {
+    public onDownloadButtonClick(event) {
         this._evaluation.evaluationData().subscribe((zip) => {
             zip.generateAsync({type:"blob"}).then(
                 (result) => {
