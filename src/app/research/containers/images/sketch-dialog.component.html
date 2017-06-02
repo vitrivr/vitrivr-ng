@@ -6,8 +6,6 @@
 
         <span class="spacer-flex"></span>
 
-
-
         <button md-icon-button (click)="onFillCanvasClicked()" mdTooltip="Fill canvas">
             <md-icon>format_color_fill</md-icon>
         </button>
@@ -27,12 +25,12 @@
         </button>
     </md-toolbar>
 
-    <div [style.display]="'flex'">
+    <div style="display: flex; margin-top: 5px;">
         <sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
         <input #imageloader type="file" hidden>
         
         <span class="spacer-tiny"></span>
 
-        <span [(colorPicker)]="color" (colorPickerChange)="onColorChange($event)" [cpToggle]="true" [cpDialogDisplay]="'inline'"></span>
+        <span [(colorPicker)]="color" (colorPickerChange)="onColorChange($event)" [cpToggle]="true" [cpDialogDisplay]="'inline'" [cpAlphaChannel]="'disabled'"></span>
     </div>
 </md-dialog-content>
