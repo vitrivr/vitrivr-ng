@@ -60,7 +60,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     public ngOnInit() {
         this.queryServiceSubscription = this._queryService.observable
-            .filter(msg => (["UPDATED", "STARTED", "ENDED", "FEATURE", "CLEAR"].indexOf(msg) > -1))
+            .filter(msg => (["UPDATED", "STARTED", "ERROR", "ENDED", "FEATURE", "CLEAR"].indexOf(msg) > -1))
             .subscribe((msg) => this.onQueryStateChange(msg));
 
         /*
@@ -173,7 +173,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                     window.open(window.URL.createObjectURL(result));
                  },
                 (error) => {
-                    console.log(error)
+                    console.log(error);
                     this._snackBar.open("Failed to create downloadable results (JSZip error)." , null, {duration: ConfigService.SNACKBAR_DURATION});
                 }
         )});

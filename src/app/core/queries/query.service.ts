@@ -14,6 +14,7 @@ import {DefaultWeightFunction} from "../../shared/model/features/weighting/defau
 import {Subject} from "rxjs/Subject";
 import {MoreLikeThisQuery} from "../../shared/model/messages/more-like-this-query.model";
 import {MediaType} from "../../shared/model/media/media-type.model";
+import {QueryError} from "../../shared/model/messages/interfaces/query-error.interface";
 
 
 /**
@@ -24,7 +25,7 @@ import {MediaType} from "../../shared/model/media/media-type.model";
  *  UPDATED     - New information concerning the running query is available OR post-execution refinements were performed.
  *  FEATURE     - A new feature has become available.
  */
-export type QueryChange = "STARTED" | "ENDED" | "UPDATED" | "FEATURE" | "CLEAR";
+export type QueryChange = "STARTED" | "ENDED" | "ERROR" | "UPDATED" | "FEATURE" | "CLEAR";
 
 /**
  * This service orchestrates similarity queries using the Cineast API (WebSocket). The service is responsible for
@@ -73,7 +74,7 @@ export class QueryService {
      */
     constructor(private _api : CineastAPI) {
         _api.observable()
-            .filter(msg => ["QR_START","QR_END","QR_SIMILARITY","QR_OBJECT", "QR_SEGMENT"].indexOf(msg[0]) > -1)
+            .filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT", "QR_SEGMENT"].indexOf(msg[0]) > -1)
             .subscribe((msg) => this.onApiMessage(msg[1]));
         console.log("QueryService is up and running!");
     }
@@ -281,6 +282,9 @@ export class QueryService {
                 let sim = <SimilarityQueryResult>parsed;
                 if (sim.queryId == this._queryId) this.processSimilarityMessage(sim);
                 break;
+            case "QR_ERROR":
+                this.errorOccurred(<QueryError>parsed);
+                break;
             case "QR_END":
                 this.finalizeQuery();
                 break;
@@ -401,6 +405,18 @@ export class QueryService {
         this.segment_to_object_map.clear();
         this._running = false;
         this._stateSubject.next("ENDED" as QueryChange);
+    }
+
+    /**
+     * Finalizes a running RunningQueries and does some cleanup after an error was reported by Cineast.
+     *
+     * This method triggers an observable change in the QueryService class.
+     */
+    private errorOccurred(message: QueryError) {
+        this.segment_to_object_map.clear();
+        this._running = false;
+        this._stateSubject.next("ERROR" as QueryChange);
+        console.log("QueryService received error: " + message.message);
     }
 }
 
