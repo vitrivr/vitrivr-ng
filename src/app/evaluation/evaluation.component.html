@@ -4,7 +4,7 @@
 
         <div>
             <md-chip-list>
-                <md-chip (click)="onScenarioClick($event)" mdTooltip="Click to bring up description..."><strong>Scenario:</strong> {{scenarioDescriptor()}}</md-chip>
+                <md-chip (click)="onScenarioClick()" mdTooltip="Click to bring up description..."><strong>Scenario:</strong> {{scenarioDescriptor()}}</md-chip>
                 <md-chip [attr.color]="stateColor()"><strong>Status:</strong> {{stateDescriptor()}}</md-chip>
             </md-chip-list>
         </div>

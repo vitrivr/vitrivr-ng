@@ -166,7 +166,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     /**
      * Invoked whenever the 'Download results' button is clicked.
      */
-    public onDownloadButtonClick(event) {
+    public onDownloadButtonClick() {
         this._evaluation.evaluationData().subscribe((zip) => {
             zip.generateAsync({type:"blob"}).then(
                 (result) => {
