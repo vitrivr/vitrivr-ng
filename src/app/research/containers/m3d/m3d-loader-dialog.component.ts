@@ -22,8 +22,7 @@ export class M3DLoaderDialogComponent {
      *
      * @param dialogRef
      */
-    constructor(private dialogRef: MdDialogRef<M3DLoaderDialogComponent>) {
-    }
+    constructor(private dialogRef: MdDialogRef<M3DLoaderDialogComponent>) {}
 
     /**
      * Change listener for the input field (File chooser). Handles the

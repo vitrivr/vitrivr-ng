@@ -1,7 +1,6 @@
 import {QueryTermInterface} from "./interfaces/query-term.interface";
 import {QueryTermType} from "./interfaces/query-term-type.interface";
 
-
 export class ImageQueryTerm implements QueryTermInterface {
 
     /** Base64 encoded image data. */
@@ -9,7 +8,6 @@ export class ImageQueryTerm implements QueryTermInterface {
 
     /** The active categories for the findSimilar-term. */
     public categories : string[] = ['globalcolor', 'localcolor', 'quantized', 'edge'];
-
 
     /** Type of findSimilar-term. Defaults to 'IMAGE'. */
     public readonly type: QueryTermType = "IMAGE";
@@ -35,9 +33,6 @@ export class ImageQueryTerm implements QueryTermInterface {
                 break;
             case 4:
                 this.categories = ['localcolor', 'localfeatures', 'edge'];
-                break;
-            case 100:
-                this.categories = ['lightfield'];
                 break;
             default:
                 this.categories = ['globalcolor', 'localcolor', 'quantized', 'edge'];

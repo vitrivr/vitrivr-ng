@@ -12,7 +12,11 @@ export class M3DQueryTerm implements QueryTermInterface {
     /** Type of findSimilar-term. Defaults to 'MODEL'. */
     public readonly type: QueryTermType = "MODEL3D";
 
-    /** */
+    /**
+     * Updates the feature-categories for this M3DQueryTerm based on a linear, numerical setting.
+     *
+     * @param setting Linear, numerical setting value.
+     */
     setting(setting: number): void {
         switch (setting) {
             case 0:
@@ -22,7 +26,10 @@ export class M3DQueryTerm implements QueryTermInterface {
                 this.categories = ['sphericalharmonicsdefault'];
                 break;
             case 2:
-                this.categories = ['sphericalharmonicshigh'];
+                this.categories = ['sphericalharmonicshigh', 'lightfield'];
+                break;
+            case 100:
+                this.categories = ['lightfield'];
                 break;
             default:
                 break;

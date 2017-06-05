@@ -6,28 +6,55 @@ import {M3DLoaderDialogComponent} from "./m3d-loader-dialog.component";
 import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.component";
 
 import Mesh = THREE.Mesh;
+import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
+import {QueryTermInterface} from "../../../shared/model/queries/interfaces/query-term.interface";
+import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
 
 @Component({
     selector: 'qt-m3d',
-    templateUrl: 'm3d-query-term.component.html'
+    templateUrl: 'm3d-query-term.component.html',
+    styleUrls: ['m3d-query-term.component.css']
 })
 export class M3DQueryTermComponent {
-    @ViewChild('preview')
+    /** Component used to display a preview of the selected 3D model. */
+    @ViewChild('previewmodel')
     private preview: M3DLoaderComponent;
 
+    /** Component used to display a preview of the sketched image (binary). */
+    @ViewChild('previewimg')
+    private previewimg: any;
+
     /** The M3DQueryTerm object associated with this M3DQueryTermComponent. That object holds all the query-settings. */
-    @Input() m3dTerm: M3DQueryTerm;
+    @Input()
+    private m3dTerm: QueryTermInterface;
 
     /** Value of the slider. */
     public sliderSetting : number;
+
+    /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
+    public sketch : boolean = false;
 
     /**
      * Default constructor.
      *
      * @param dialog
-     * @param _renderer
      */
     constructor(private dialog: MdDialog) {}
+
+    /**
+     * Triggered whenever the Mode 3D Slide toggle is used to switch between
+     * 3D-sketch mode and normal mode.
+     *
+     * @param event
+     */
+    public onModeToggled(event: any) {
+        if (this.sketch) {
+            this.sliderSetting = 100;
+        } else {
+            this.sliderSetting = 1;
+        }
+        this.m3dTerm.setting(this.sliderSetting);
+    }
 
     /**
      * This method is invoked whenever the slider value changes.
@@ -42,8 +69,16 @@ export class M3DQueryTermComponent {
      * Triggered whenever the m3d-loader component is clicked by the user. Causes the
      * selection dialog to be opened.
      */
-    public onViewerClicked() {
+    public onModelViewerClicked() {
         this.openM3DDialog(this.preview.getMesh());
+    }
+
+    /**
+     * Triggered whenever the preview image is clicked by the user. Causes the
+     * sketch dialog to be opened.
+     */
+    public onImageViewerClicked() {
+        this.openSketchDialog(this.previewimg.nativeElement.src);
     }
 
     /**
@@ -54,13 +89,26 @@ export class M3DQueryTermComponent {
      */
     private openM3DDialog(data? : any) {
         let dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data : data});
-        let subscription = dialogRef.afterClosed().subscribe((result : Mesh) => {
+        dialogRef.afterClosed().first().subscribe((result : Mesh) => {
             if (result) {
                 this.preview.setMesh(result);
                 this.preview.render();
                 this.m3dTerm.data =  "data:application/3d-json;base64," + btoa(JSON.stringify(result.geometry.toJSON().data));
             }
-            subscription.unsubscribe();
+        });
+    }
+
+    /**
+     * Opens the M3DLoaderDialogComponent and registers a callback that loads the saved
+     * result of the dialog into preview image canvas.
+     */
+    private openSketchDialog(data? : any) {
+        let dialogRef = this.dialog.open(BinarySketchDialogComponent, {data : data});
+        dialogRef.afterClosed().first().subscribe(result => {
+            if (result) {
+                this.previewimg.nativeElement.src = result;
+                this.m3dTerm.data = result;
+            }
         });
     }
 }

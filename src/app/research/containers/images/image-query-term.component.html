@@ -1,9 +1,5 @@
 <img #previewimg class="previewimg" width="150" (click)="onViewerClicked()" (drop)="onViewerDropped($event)" (dragenter)="onViewerDragEnter($event)" (dragover)="onViewerDragOver($event)" (dragleave)="onViewerDragExit($event)"  mdTooltip="Click to change image..."/>
 
-<div style="display:flex; align-items: center; justify-content: center;">
-    <md-slide-toggle [(ngModel)]="mode3D" (change)="onModeToggled($event)">3D sketch mode</md-slide-toggle>
-</div>
-
 <div style="display:flex; align-items: center; justify-content: center;" *ngIf="!mode3D">
     <md-icon class="muted" mdTooltip="Rough sketch">brush</md-icon>
     <div class="toolbar-spacer-small"></div>

@@ -2,27 +2,23 @@ import {Component, ViewChild, Input} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
 import {MdDialog} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
-import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
-
 @Component({
     selector: 'qt-image',
     templateUrl: 'image-query-term.component.html',
     styleUrls: ['image-query-term.component.css']
 })
-
 export class ImageQueryTermComponent {
 
     /** Component used to display a preview of the selected AND/OR sketched image. */
-    @ViewChild('previewimg') private previewimg: any;
+    @ViewChild('previewimg')
+    private previewimg: any;
 
     /** The ImageQueryTerm object associated with this ImageQueryTermComponent. That object holds all the settings. */
-    @Input() imageTerm: ImageQueryTerm;
+    @Input()
+    private imageTerm: ImageQueryTerm;
 
     /** Slider to adjust the query-term settings; i.e. to select the refinement used for image-queries. */
     public sliderSetting : number = 2;
-
-    /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
-    public mode3D : boolean = false;
 
     /**
      * Default constructor.
@@ -42,21 +38,6 @@ export class ImageQueryTermComponent {
     }
 
     /**
-     * Triggered whenever the Mode 3D Slide toggle is used to switch between
-     * 3D-sketch mode and normal mode.
-     *
-     * @param event
-     */
-    public onModeToggled(event: any) {
-        if (this.mode3D) {
-            this.sliderSetting = 100;
-        } else {
-            this.sliderSetting = 2;
-        }
-        this.imageTerm.setting(this.sliderSetting);
-    }
-
-    /**
      * Triggered whenever someone click on the image, which indicates that
      * it should be edited; opens the SketchDialogComponent
      */
@@ -71,11 +52,6 @@ export class ImageQueryTermComponent {
      */
     public onViewerDragEnter(event: any) {
         event.preventDefault();
-
-        /* If Mode3D is active; return (no drag & drop support). */
-        if (this.mode3D) return;
-
-        /* Add the ondrag class (change of border-style). */
         event.target.classList.add('ondrag');
     }
 
@@ -95,11 +71,6 @@ export class ImageQueryTermComponent {
      */
     public onViewerDragExit(event: any) {
         event.preventDefault();
-
-        /* If Mode3D is active; return (no drag & drop support). */
-        if (this.mode3D) return;
-
-        /* Remove the ondrag class (change of border-style). */
         event.target.classList.remove("ondrag");
     }
 
@@ -113,9 +84,6 @@ export class ImageQueryTermComponent {
         /* Prevent propagation. */
         event.preventDefault();
         event.stopPropagation();
-
-        /* If Mode3D is active; return (no drag & drop support). */
-        if (this.mode3D) return;
 
         /* Remove the ondrag class (change of border-style). */
         event.target.classList.remove("ondrag");
@@ -141,7 +109,6 @@ export class ImageQueryTermComponent {
         this.imageTerm.data = data;
     }
 
-
     /**
      * Opens the SketchDialogComponent and registers a callback that loads the saved
      * result of the dialog into preview image canvas.
@@ -150,12 +117,7 @@ export class ImageQueryTermComponent {
      */
     private openSketchDialog(data? : any) {
         /* Initialize the correct dialog-component. */
-        let dialogRef = null;
-        if (this.mode3D) {
-            dialogRef = this.dialog.open(BinarySketchDialogComponent, {})
-        } else {
-            dialogRef = this.dialog.open(SketchDialogComponent, {data : data, height:'450px'})
-        }
+        let dialogRef = this.dialog.open(SketchDialogComponent, {data : data, height:'450px'});
 
         /* Register the onClose callback. */
         dialogRef.afterClosed().first().subscribe(result => {
