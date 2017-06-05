@@ -13,4 +13,11 @@ export class MotionQueryTermComponent {
     /** Component used to display a preview of the selected AND/OR sketched image. */
     @ViewChild('previewimg')
     private previewimg: any;
+
+    /**
+     * Triggered whenever someone click on the image, which indicates that it should
+     * be edited; opens the MotionSketchDialogComponent
+     */
+    public onViewerClicked() {
+    }
 }
