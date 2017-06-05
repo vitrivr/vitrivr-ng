@@ -18,6 +18,12 @@ import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-ty
                  <button (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" mdTooltip="Toggle 3D query term">
                     <md-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</md-icon>
                  </button>
+                <!-- 
+                    <div class="spacer-small"></div>
+                    <button (click)="onToggleButtonClicked('MOTION')" class="icon-button" mdTooltip="Toggle motion query term">
+                        <md-icon [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">swap_calls</md-icon>
+                    </button>
+                -->
                  <div class="spacer-flex"></div>
                  <button class="icon-button" (click)="onRemoveButtonClicked()" mdTooltip="Remove query container"><md-icon>close</md-icon></button>
             </md-card-header>
@@ -25,6 +31,7 @@ import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-ty
                 <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
                 <qt-audio *ngIf="containerModel.hasTerm('AUDIO')" [audioTerm]="containerModel.getTerm('AUDIO')"></qt-audio>
                 <qt-m3d *ngIf="containerModel.hasTerm('MODEL3D')" [m3dTerm]="containerModel.getTerm('MODEL3D')"></qt-m3d>
+                <qt-motion *ngIf="containerModel.hasTerm('MOTION')" [motionTerm]="containerModel.getTerm('MOTION')"></qt-motion>
             </md-card-content>
         </md-card>
     `

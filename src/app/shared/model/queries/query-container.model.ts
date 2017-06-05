@@ -4,7 +4,7 @@ import {ImageQueryTerm} from "./image-query-term.model";
 import {AudioQueryTerm} from "./audio-query-term.model";
 import {M3DQueryTerm} from "./m3d-query-term.model";
 import {QueryTermType} from "./interfaces/query-term-type.interface";
-
+import {MotionQueryTerm} from "./motion-query-term.model";
 
 export class QueryContainer implements QueryContainerInterface {
     /**
@@ -34,6 +34,9 @@ export class QueryContainer implements QueryContainerInterface {
                 break;
             case "MODEL3D":
                 this._terms.set(type, new M3DQueryTerm());
+                break;
+            case "MOTION":
+                this._terms.set(type, new MotionQueryTerm());
                 break;
             default:
                 return false;

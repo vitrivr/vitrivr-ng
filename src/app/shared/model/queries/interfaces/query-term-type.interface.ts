@@ -4,5 +4,5 @@
  * - QueryTermInterface implementation
  * - QueryTermComponent implementation (see /app/research/components/)
  */
-export type QueryTermType = "IMAGE" | "AUDIO" | "MOTION" | "MODEL3D";
-export let QueryTermTypes : QueryTermType[] = ["IMAGE", "AUDIO", "MOTION", "MODEL3D"];
+export type QueryTermType = "IMAGE" | "AUDIO" | "MOTION" | "MODEL3D" | "MOTION";
+export let QueryTermTypes : QueryTermType[] = ["IMAGE", "AUDIO", "MOTION", "MODEL3D", "MOTION"];
