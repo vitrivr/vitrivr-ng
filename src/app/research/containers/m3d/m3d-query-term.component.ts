@@ -74,6 +74,36 @@ export class M3DQueryTermComponent {
     }
 
     /**
+     * Fired whenever something is dragged and enters the preview image.
+     *
+     * @param event
+     */
+    public onModelViewerDragEnter(event: any) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    /**
+     * Fired whenever something is dragged over the preview image.
+     *
+     * @param event
+     */
+    public onModelViewerDragOver(event: any) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    /**
+     * Fired whenever something is dragged and exits the preview image.
+     *
+     * @param event
+     */
+    public onModelViewerDragExit(event: any) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    /**
      * Handles the case in which an object is dropped over the preview-image. If the object is a file, that
      * object is treated as image and handed to the SketchDialogComponent.
      *
