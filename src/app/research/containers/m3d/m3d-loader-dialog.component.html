@@ -16,4 +16,4 @@
 
 <m3d-loader #m3dloader [width]="300" [height]="300" [interaction]="true"></m3d-loader>
 
-<input #fileloader type="file" hidden>
+<input #fileloader type="file" (change)="onFileAvailable($event)" hidden>

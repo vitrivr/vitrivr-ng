@@ -27,7 +27,7 @@
 
     <div style="display: flex; margin-top: 5px;">
         <sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
-        <input #imageloader type="file" hidden>
+        <input #imageloader type="file" (change)="onFileAvailable($event)" hidden>
         
         <span class="spacer-tiny"></span>
 

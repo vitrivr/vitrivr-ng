@@ -16,4 +16,4 @@
 </md-toolbar>
 
 <record-audio #recorder></record-audio>
-<input #audioloader type="file" hidden>
+<input #audioloader type="file" (change)="onFileAvailable($event)" hidden>

@@ -88,9 +88,9 @@ export class AudioRecorderDialogComponent {
      *
      * @param event
      */
-    @HostListener('change', ['$event'])
-    public onChange(event: any) {
+    public onFileAvailable(event: any) {
         this._recorder.loadAudioFromFile(event.target.files[0]);
+        this.audioloader.nativeElement.value = null;
     };
 
     /**

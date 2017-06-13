@@ -43,10 +43,9 @@ export class SketchDialogComponent implements OnInit {
      *
      * @param event
      */
-    @HostListener('change', ['$event'])
-    public onChange(event: any) {
-        let URL = window.URL;
-        this._sketchpad.setImageBase64(URL.createObjectURL(event.target.files[0]))
+    public onFileAvailable(event: any) {
+        this._sketchpad.setImageBase64(window.URL.createObjectURL(event.target.files[0]));
+        this.imageloader.nativeElement.value = null;
     };
 
     /**
