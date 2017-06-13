@@ -74,7 +74,7 @@ export class QueryService {
      */
     constructor(private _api : CineastAPI) {
         _api.observable()
-            .filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT", "QR_SEGMENT"].indexOf(msg[0]) > -1)
+            .filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg[0]) > -1)
             .subscribe((msg) => this.onApiMessage(msg[1]));
         console.log("QueryService is up and running!");
     }
@@ -319,14 +319,9 @@ export class QueryService {
      */
     private processObjectMessage(obj: ObjectQueryResult) {
         for (let object of obj.content) {
-            if (object) {
-                /* Check if object's mediatype is already known to the service. Otherwise, add it. */
-                if (!this._mediatypes.has(object.mediatype)) this._mediatypes.set(object.mediatype, true);
-
-                /* Complete the resultset. */
-                if (!this.results.has(object.objectId)) this.results.set(object.objectId, new MediaObjectScoreContainer(object.objectId));
-                this.results.get(object.objectId).mediaObject = object;
-            }
+            if (!this._mediatypes.has(object.mediatype)) this._mediatypes.set(object.mediatype, true);
+            if (!this.results.has(object.objectId)) this.results.set(object.objectId, new MediaObjectScoreContainer(object.objectId));
+            this.results.get(object.objectId).mediaObject = object;
         }
 
         /* Inform Observers about changes. */
