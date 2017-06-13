@@ -30,7 +30,7 @@ export class M3DLoaderDialogComponent {
      *
      * @param event
      */
-    private onFileAvailable(event: any) {
+    public onFileAvailable(event: any) {
         this.loader.loadMeshFromFile(event.target.files[0])
         this.fileloader.nativeElement.value = null;
     };

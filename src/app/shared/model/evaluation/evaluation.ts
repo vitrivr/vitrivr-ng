@@ -255,7 +255,7 @@ export class Evaluation {
     }
 
     /**
-     * Calculates the and returns the DCG (Discounted Cummulative Gain) value for the
+     * Calculates the and returns the DCG (Discounted Cumulative Gain) value for the
      * current Evaluation
      *
      * @return {number}
