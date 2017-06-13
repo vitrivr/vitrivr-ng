@@ -26,8 +26,8 @@ export class GalleryComponent implements OnInit, OnDestroy {
     /* Indicator whether the progress bar should be visible. */
     private _loading : boolean = false;
 
-    /** */
-    protected queryServiceSubscription;
+    /** Local reference to the subscription to the QueryService. */
+    protected _queryServiceSubscription;
 
     /**
      * Default constructor.
@@ -42,7 +42,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
      */
     public ngOnInit(): void {
-        this.queryServiceSubscription = this._queryService.observable
+        this._queryServiceSubscription = this._queryService.observable
             .filter(msg => ["STARTED", "ENDED", "ERROR", "UPDATED", "CLEAR"].indexOf(msg) > -1)
             .subscribe((msg) => this.onQueryStateChange(msg));
 
@@ -55,8 +55,8 @@ export class GalleryComponent implements OnInit, OnDestroy {
      * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
      */
     public ngOnDestroy() {
-        this.queryServiceSubscription.unsubscribe();
-        this.queryServiceSubscription = null;
+        this._queryServiceSubscription.unsubscribe();
+        this._queryServiceSubscription = null;
     }
 
     /**

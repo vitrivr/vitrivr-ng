@@ -55,7 +55,7 @@ export class ObjectdetailsComponent implements OnInit {
     }
 
     /**
-     * Invoked once when the component is initialized. Subscribes to the different services
+     * Lifecycle hook (onInit): Invoked once when the component is initialized. Subscribes to the different services
      * and installs appropriate callback methods.
      */
     public ngOnInit() {

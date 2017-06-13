@@ -59,7 +59,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
      */
     public ngOnInit() {
-        this.queryServiceSubscription = this._queryService.observable
+        this._queryServiceSubscription = this._queryService.observable
             .filter(msg => (["UPDATED", "STARTED", "ERROR", "ENDED", "FEATURE", "CLEAR"].indexOf(msg) > -1))
             .subscribe((msg) => this.onQueryStateChange(msg));
 
@@ -72,14 +72,6 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (this._queryService.size() > 0) {
             this.updateGallery();
         }
-    }
-
-    /**
-     * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
-     */
-    public ngOnDestroy() {
-        this.queryServiceSubscription.unsubscribe();
-        this.queryServiceSubscription = null;
     }
 
     /**
