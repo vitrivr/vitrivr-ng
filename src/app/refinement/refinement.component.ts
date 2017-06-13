@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy} from '@angular/core';
 import {MdCheckboxChange, MdSliderChange} from "@angular/material";
 import {QueryService} from "../core/queries/query.service";
 import {Feature} from "../shared/model/features/feature.model";
@@ -20,12 +20,16 @@ import {MediaType} from "../shared/model/media/media-type.model";
  *
  * The component allows the user to changes these settings and update the QueryService accordingly.
  */
-export class RefinementComponent {
+export class RefinementComponent implements OnInit, OnDestroy {
+
     /** List of available MediaTypes as reported by the QueryService. */
     private _mediatypes: MediaType[] = [];
 
     /** List of features as reported by the QueryService. */
     private _features: Feature[] = [];
+
+    /** Local reference to the subscription to the QueryService. */
+    protected _queryServiceSubscription;
 
     /**
      * Constructor: Registers with the QueryService to be updated about changes
@@ -34,9 +38,24 @@ export class RefinementComponent {
      * @param _queryService Reference to the QueryService instance.
      */
     constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService) {
-        this._queryService.observable
+
+    }
+
+    /**
+     * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
+     */
+    public ngOnInit(): void {
+        this._queryServiceSubscription = this._queryService.observable
             .filter(msg => (["FEATURE", "UPDATE", "CLEAR"].indexOf(msg) > -1))
             .subscribe((msg) => this.onQueryStateChange());
+    }
+
+    /**
+     * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
+     */
+    public ngOnDestroy(): void {
+        this._queryServiceSubscription.unsubscribe();
+        this._queryServiceSubscription = null;
     }
 
     /**
