@@ -8,7 +8,7 @@ import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.comp
 import Mesh = THREE.Mesh;
 import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
 import {QueryTermInterface} from "../../../shared/model/queries/interfaces/query-term.interface";
-import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
+import {Model3DFileLoader} from "../../../shared/util/m3d-file-loader.util";
 
 @Component({
     selector: 'qt-m3d',
@@ -71,6 +71,26 @@ export class M3DQueryTermComponent {
      */
     public onModelViewerClicked() {
         this.openM3DDialog(this.preview.getMesh());
+    }
+
+    /**
+     * Handles the case in which an object is dropped over the preview-image. If the object is a file, that
+     * object is treated as image and handed to the SketchDialogComponent.
+     *
+     * @param event Drop event
+     */
+    public onModelViewerDropped(event: any) {
+        /* Prevent propagation. */
+        event.preventDefault();
+        event.stopPropagation();
+
+        /* If the DataTransfer object of the event contains a file: apply the first one. */
+        if (event.dataTransfer.files.length > 0) {
+            Model3DFileLoader.loadFromFile(event.dataTransfer.files.item(0), (mesh : Mesh) => {
+                this.preview.setMesh(mesh);
+                this.m3dTerm.data = "data:application/3d-json;base64," + btoa(JSON.stringify(mesh.geometry.toJSON().data));
+            });
+        }
     }
 
     /**

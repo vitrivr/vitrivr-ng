@@ -14,7 +14,7 @@ import PerspectiveCamera = THREE.PerspectiveCamera;
 @Component({
     selector: 'm3d-loader',
     template:`
-    <div #visualize (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></div>`
+    <div #visualize></div>`
 })
 
 /**
@@ -108,32 +108,6 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
         if (this.interaction) {
             this.controls.removeEventListener('change', null);
             this.controls = null;
-        }
-    }
-
-    /**
-     * Fired whenever something is dragged over the canvas.
-     *
-     * @param event
-     */
-    public onCanvasDragOver(event: any) {
-        event.preventDefault();
-    }
-
-    /**
-     * Handles the case in which an object is dropped over the preview-image. If the object is a file, that
-     * object is treated as 3D model and loaded.
-     *
-     * @param event Drop event
-     */
-    public onCanvasDropped(event: any) {
-        /* Prevent propagation. */
-        event.preventDefault();
-        event.stopPropagation();
-
-        /* Extract file (if available) and display it. */
-        if (event.dataTransfer.files.length > 0) {
-            this.loadMeshFromFile(event.dataTransfer.files.item(0));
         }
     }
 

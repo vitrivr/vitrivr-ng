@@ -1,5 +1,5 @@
 <!-- If sketch-mode is inactive: Display 3D model preview. -->
-<m3d-loader #previewmodel *ngIf="!sketch" [width]="150" [height]="150" [interaction]="false" (click)="onModelViewerClicked()" mdTooltip="Click to change 3D model..."></m3d-loader>
+<m3d-loader #previewmodel *ngIf="!sketch" [width]="150" [height]="150" [interaction]="false" (click)="onModelViewerClicked()" (drop)="onModelViewerDropped($event)" (dragenter)="onModelViewerDragEnter($event)" (dragover)="onModelViewerDragOver($event)" (dragleave)="onModelViewerDragExit($event)" mdTooltip="Click to change 3D model..."></m3d-loader>
 
 <!-- If sketch-mode is active: Display preview-image. -->
 <img #previewimg  *ngIf="sketch" class="previewimg" width="150" (click)="onImageViewerClicked()"  mdTooltip="Click to open sketch pad..."/>
