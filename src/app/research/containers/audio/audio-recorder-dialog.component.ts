@@ -1,4 +1,4 @@
-import {Component, ViewChild, HostListener, Inject} from '@angular/core';
+import {Component, ViewChild, Inject, OnInit, OnDestroy} from '@angular/core';
 import {MD_DIALOG_DATA, MdDialogRef} from '@angular/material';
 import {AudioRecorderComponent} from "../../../shared/components/audio/audio-recorder.component";
 import {Observable} from "rxjs/Observable";
@@ -16,7 +16,7 @@ import {WaveAudioUtil} from "../../../shared/util/wave-audio.util";
         '.rec-active {  color: #980000; text-shadow: 0 0 6px #B00000 ; }'
     ]
 })
-export class AudioRecorderDialogComponent {
+export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
     /** Audio-recorder component. */
     @ViewChild('recorder')
     private _recorder: AudioRecorderComponent;
@@ -32,21 +32,28 @@ export class AudioRecorderDialogComponent {
     private start: number;
 
     /** A time used to keep track of state changes in the audio-recorder. */
-    private timer: Subscription;
+    private _timer: Subscription;
 
     /** Text representing the current status of the audio-recorder. */
     private _statustext : String;
-
 
     /**
      *
      * @param dialogRef
      * @param _data Data that is passed to the AudioRecorderDialogComponent.
      */
-    constructor(private dialogRef: MdDialogRef<AudioRecorderDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : any) {
+    constructor(private dialogRef: MdDialogRef<AudioRecorderDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : any) {}
 
-        /* TODO: This is crap (what did I think o_O)! AudioRecorderComponent should emmit status changes instead that AudioRecorderDialog can subscribe to. */
-        this.timer = Observable.timer(0, 500).timestamp().subscribe((x) => {
+    /**
+     * Lifecycle Hook (onInit): Loads the injected audio data (if specified) and creates
+     * the timer observable.
+     */
+    public ngOnInit(): void {
+        if (this._data && this._data instanceof File) {
+            this._recorder.loadAudioFromFile(this._data);
+        }
+        this._data = null;
+        this._timer = Observable.timer(0, 500).timestamp().subscribe((x) => {
             if (this._recorder.isPlaying() && this.status != "Playing") {
                 this.start = x.timestamp;
                 this.status = "Playing";
@@ -68,18 +75,13 @@ export class AudioRecorderDialogComponent {
                 }
             }
         });
-
-
     }
 
     /**
-     * Invoked after initialization. Loads the injected audio data (if specified).
+     * Lifecycle Hook (onDestroy): Unsubscribes from the timer observable.
      */
-    public ngOnInit(): void {
-        if (this._data && this._data instanceof File) {
-            this._recorder.loadAudioFromFile(this._data);
-        }
-        this._data = null;
+    public ngOnDestroy(): void {
+        this._timer.unsubscribe();
     }
 
     /**
