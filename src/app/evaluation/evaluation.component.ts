@@ -167,7 +167,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * Invoked whenever the 'Download results' button is clicked.
      */
     public onDownloadButtonClick() {
-        this._evaluation.evaluationData().subscribe((zip) => {
+        this._evaluation.evaluationData().first().subscribe((zip) => {
             zip.generateAsync({type:"blob"}).then(
                 (result) => {
                     window.open(window.URL.createObjectURL(result));
@@ -436,7 +436,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
             this.loadRunningEvaluation(participant).catch(
                 (error, caught: Observable<void>) => {
                     return this.startNewEvaluation(template, participant, name)
-            }).subscribe(
+            }).first().subscribe(
                 () => {
                     this._snackBar.open("Evaluation started successfully. Welcome '" + this._evaluationset.name + "'! Thank you for participating.", null, {duration: ConfigService.SNACKBAR_DURATION});
                 },
@@ -448,7 +448,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                 }
             );
         } else if (participant) {
-            this.loadRunningEvaluation(participant).subscribe(
+            this.loadRunningEvaluation(participant).first().subscribe(
                 () => {
                     this._snackBar.open("Evaluation resumed successfully. Welcome back'" + this._evaluationset.name + "'!", null, {duration: ConfigService.SNACKBAR_DURATION});
                 },
