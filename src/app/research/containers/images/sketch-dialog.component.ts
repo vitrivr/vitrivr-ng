@@ -1,14 +1,18 @@
-import {Component, ViewChild, HostListener, OnInit, Inject} from '@angular/core';
+import {Component, ViewChild, OnInit, Inject, AfterViewInit} from '@angular/core';
 import {MdDialogRef, MD_DIALOG_DATA} from '@angular/material';
 import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.component";
 
 @Component({
     moduleId: module.id,
     selector: 'sketchpad',
-    templateUrl: 'sketch-dialog.component.html'
+    templateUrl: 'sketch-dialog.component.html',
+    styleUrls: ['sketch-dialog.component.css']
 })
 
-export class SketchDialogComponent implements OnInit {
+export class SketchDialogComponent implements OnInit, AfterViewInit {
+    /** Default linesize when opening the dialog. */
+    public static readonly DEFAULT_LINESIZE = 10.0;
+
     /** Hidden input for image upload. */
     @ViewChild('imageloader')
     private imageloader: any;
@@ -17,8 +21,11 @@ export class SketchDialogComponent implements OnInit {
     @ViewChild('sketch')
     private _sketchpad: SketchCanvas;
 
-    /** Default color (black). */
+    /** Current color (default: black). */
     public color : string = "#000000";
+
+    /** Current linesize (default: DEFAULT_LINESIZE). */
+    public linesize: number = SketchDialogComponent.DEFAULT_LINESIZE;
 
     /**
      *
@@ -28,13 +35,21 @@ export class SketchDialogComponent implements OnInit {
     constructor(private _dialogRef: MdDialogRef<SketchDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : any) {}
 
     /**
-     * Invoked after initialization. Loads the injected image data (if specified).
+     * Lifecycle Hook (onInit): Loads the injected image data (if specified).
      */
     public ngOnInit(): void {
         if(this._data && typeof this._data === 'string')  {
             this._sketchpad.setImageBase64(<string>this._data);
+            this._data = null;
         }
-        this._data = null;
+    }
+
+    /**
+     * Lifecycle Hook (afterViewIniti): Sets the default linesize and colour.
+     */
+    public ngAfterViewInit(): void {
+        this._sketchpad.setLineSize(this.linesize);
+        this._sketchpad.setActiveColor(this.color);
     }
 
     /**
@@ -53,18 +68,15 @@ export class SketchDialogComponent implements OnInit {
      *
      * @param color
      */
-    public onColorChange(color: any) {
-        this.color = color;
+    public onColorChange() {
         this._sketchpad.setActiveColor(this.color);
     }
 
     /**
      * Triggered when the slider-value for the line-size changes.
-     *
-     * @param size
      */
-    public onLineSizeChange(size : any) {
-        this._sketchpad.setLineSize(size.value);
+    public onLineSizeChange() {
+        this._sketchpad.setLineSize(this.linesize);
     }
 
     /**

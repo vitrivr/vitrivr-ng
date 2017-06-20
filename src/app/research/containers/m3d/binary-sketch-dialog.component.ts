@@ -9,6 +9,9 @@ import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.comp
 })
 
 export class BinarySketchDialogComponent implements AfterViewInit {
+    /** Default linesize when opening the dialog. */
+    public static readonly DEFAULT_LINESIZE = 10.0;
+
     /** Hidden input for image upload. */
     @ViewChild('imageloader')
     private imageloader: any;
@@ -18,7 +21,10 @@ export class BinarySketchDialogComponent implements AfterViewInit {
     private _sketchpad: SketchCanvas;
 
     /** Default color (black) . */
-    public color : string = "#000000";
+    public color : string = "#FFFFFF";
+
+    /** Current linesize (default: DEFAULT_LINESIZE). */
+    public linesize: number = BinarySketchDialogComponent.DEFAULT_LINESIZE;
 
     /**
      *
@@ -33,25 +39,14 @@ export class BinarySketchDialogComponent implements AfterViewInit {
     public ngAfterViewInit(): void {
         if(this._data && typeof this._data === 'string')  {
             this._sketchpad.setImageBase64(<string>this._data);
+            this._data = null;
         } else {
             this._sketchpad.setActiveColor("#000000");
             this._sketchpad.fillCanvas();
             this._sketchpad.setActiveColor("#FFFFFF");
         }
-        this._data = null;
+        this._sketchpad.setLineSize(this.linesize);
     }
-
-    /**
-     * Change listener for the input field (File chooser). Handles the
-     * image upload.
-     *
-     * @param event
-     */
-    @HostListener('change', ['$event'])
-    onChange(event: any) {
-        let URL = window.URL;
-        this._sketchpad.setImageBase64(URL.createObjectURL(event.target.files[0]))
-    };
 
     /**
      * Closes the dialog.
@@ -75,8 +70,8 @@ export class BinarySketchDialogComponent implements AfterViewInit {
      *
      * @param size
      */
-    public onLineSizeChange(size : any) {
-        this._sketchpad.setLineSize(size.value);
+    public onLineSizeChange() {
+        this._sketchpad.setLineSize(this.linesize);
     }
 
     /**
