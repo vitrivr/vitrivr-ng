@@ -82,15 +82,27 @@ export class ObjectdetailsComponent implements OnInit {
 
 
     /**
+     * Event Handler: Whenever a segment is dragged, that segment is converted to JSON and added to the dataTransfer
+     * object of the drag event.
      *
-     * @param start
+     * @param event Drag event
+     * @param segment SegmentScoreContainer that is being dragged.
      */
-    public onSegmentClick(start: number) {
+    public onSegmentDrag(event, segment: SegmentScoreContainer) {
+        event.dataTransfer.setData("application/vitrivr-mediasegment", JSON.stringify(segment.mediaSegment));
+    }
+
+    /**
+     * Event Handler: Whenever a segment is clicked, playback starts from the clicked segment.
+     *
+     * @param segment SegmentScoreContainer that is being clicked.
+     */
+    public onSegmentClick(segment: SegmentScoreContainer) {
         if (this.audioplayer !== undefined) {
-            this.audioplayer.nativeElement.currentTime = start;
+            this.audioplayer.nativeElement.currentTime = segment.starttime;
             this.audioplayer.nativeElement.play();
         } else if (this.videoplayer !== undefined) {
-            this.videoplayer.nativeElement.currentTime = start;
+            this.videoplayer.nativeElement.currentTime = segment.starttime;
             this.videoplayer.nativeElement.play();
         }
     }

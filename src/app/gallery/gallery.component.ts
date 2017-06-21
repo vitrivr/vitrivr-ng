@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {QueryChange, QueryService} from "../core/queries/query.service";
 import {Router} from "@angular/router";
-import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 
@@ -74,6 +73,18 @@ export class GalleryComponent implements OnInit, OnDestroy {
      */
     get loading(): boolean {
         return this._loading;
+    }
+
+    /**
+     * Whenever a tile is dragged, the most representative segment and the media object that tile represents is converted to JSON and
+     * added to the dataTransfer object of the drag event.
+     *
+     * @param event Drag event
+     * @param object MediaObjectScoreContainer that is being dragged.
+     */
+    public onTileDrag(event, object: MediaObjectScoreContainer) {
+        event.dataTransfer.setData("application/vitrivr-mediasegment", JSON.stringify(object.representativeSegment.mediaSegment));
+        event.dataTransfer.setData("application/vitrivr-mediaobject", JSON.stringify(object.mediaObject));
     }
 
     /**

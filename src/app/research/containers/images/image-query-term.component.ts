@@ -2,6 +2,10 @@ import {Component, ViewChild, Input} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
 import {MdDialog} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
+import {MediaSegment} from "../../../shared/model/media/media-segment.model";
+import {ResolverService} from "../../../core/basics/resolver.service";
+import {Http} from "@angular/http";
+
 @Component({
     selector: 'qt-image',
     templateUrl: 'image-query-term.component.html',
@@ -25,7 +29,7 @@ export class ImageQueryTermComponent {
      *
      * @param dialog
      */
-    constructor(private dialog: MdDialog) {}
+    constructor(private _dialog: MdDialog, private _resolver: ResolverService, private _http: Http) {}
 
     /**
      * Triggered whenever either the slider for the findSimilar settings is used.
@@ -88,13 +92,27 @@ export class ImageQueryTermComponent {
         /* Remove the ondrag class (change of border-style). */
         event.target.classList.remove("ondrag");
 
-        /* If the DataTransfer object of the event contains a file: apply the first one. */
+        /* Prepare file reader (just in case). */
+        let reader = new FileReader();
+        reader.addEventListener("load", () => {
+            this.applyImageData(reader.result);
+        });
+
+        /**
+         * Handle dropped object... cases
+         */
         if (event.dataTransfer.files.length > 0) {
-            let reader = new FileReader();
-            reader.addEventListener("load", () => {
-                this.applyImageData(reader.result);
-            });
+
+            /* Case 1: Object is a file. */
             reader.readAsDataURL(event.dataTransfer.files.item(0));
+        } else if (event.dataTransfer.getData("application/vitrivr-mediasegment")) {
+
+            /* Case: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
+            let segment: MediaSegment = <MediaSegment>JSON.parse(event.dataTransfer.getData("application/vitrivr-mediasegment"));
+            let url = this._resolver.pathToThumbnailForSegment("IMAGE", segment);
+            this._http.get(url, {responseType: 3}).first().subscribe(data => {
+                reader.readAsDataURL(data.blob());
+            });
         }
     }
 
@@ -117,7 +135,7 @@ export class ImageQueryTermComponent {
      */
     private openSketchDialog(data? : any) {
         /* Initialize the correct dialog-component. */
-        let dialogRef = this.dialog.open(SketchDialogComponent, {data : data, height:'450px'});
+        let dialogRef = this._dialog.open(SketchDialogComponent, {data : data, height:'450px'});
 
         /* Register the onClose callback. */
         dialogRef.afterClosed().first().subscribe(result => {
