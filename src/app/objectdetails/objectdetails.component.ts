@@ -13,11 +13,12 @@ import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-o
 @Component({
     moduleId: module.id,
     selector: 'objectdetails',
-    templateUrl: 'objectdetails.component.html'
+    templateUrl: 'objectdetails.component.html',
+    styleUrls: ['objectdetails.component.css']
 })
 
 
-export class ObjectdetailsComponent implements OnInit {
+export class ObjectdetailsComponent implements OnInit, OnDestroy {
     /** */
     @ViewChild('audioplayer')
     private audioplayer: any;
@@ -38,6 +39,9 @@ export class ObjectdetailsComponent implements OnInit {
     /** List of SegmentScoreContainrs items for the current multimedia object. */
     private _segments: SegmentScoreContainer[] = [];
 
+    /** */
+    private _queryServiceSubscription;
+
     /**
      *
      * @param _route
@@ -55,13 +59,23 @@ export class ObjectdetailsComponent implements OnInit {
     }
 
     /**
-     * Lifecycle hook (onInit): Invoked once when the component is initialized. Subscribes to the different services
-     * and installs appropriate callback methods.
+     * Lifecycle hook (onInit): Subscribes to the QueryService observable and the route observable.
      */
     public ngOnInit() {
         /* Subscribes to changes of the Router class. Whenever the parameter becomes available,
          * the onParamsAvailable method is invoked. */
         this._route.params.first().subscribe((params: Params) => this.onParamsAvailable(params));
+        this._queryServiceSubscription = this._query.observable.filter(msg => msg === "STARTED").subscribe(() => {
+            this._location.back();
+        });
+    }
+
+    /**
+     * Lifecycle hook (onDestroy): Unsubscribes from the QueryService subscription.
+     */
+    public ngOnDestroy() {
+        this._queryServiceSubscription.unsubscribe();
+        this._queryServiceSubscription = null;
     }
 
     /**
@@ -93,11 +107,11 @@ export class ObjectdetailsComponent implements OnInit {
     }
 
     /**
-     * Event Handler: Whenever a segment is clicked, playback starts from the clicked segment.
+     * Triggered whenever someone clicks the 'Play' button. Playback starts from the clicked segment.
      *
      * @param segment SegmentScoreContainer that is being clicked.
      */
-    public onSegmentClick(segment: SegmentScoreContainer) {
+    public onPlayClick(segment: SegmentScoreContainer) {
         if (this.audioplayer !== undefined) {
             this.audioplayer.nativeElement.currentTime = segment.starttime;
             this.audioplayer.nativeElement.play();
@@ -105,6 +119,16 @@ export class ObjectdetailsComponent implements OnInit {
             this.videoplayer.nativeElement.currentTime = segment.starttime;
             this.videoplayer.nativeElement.play();
         }
+    }
+
+    /**
+     * Triggered whenever someone clicks the 'More-Like-This' button. The segment the click belongs to is then used to perform
+     * a More-Like-This query.
+     *
+     * @param segment SegmentScoreContainer that is being clicked.
+     */
+    public onMltClick(segment: SegmentScoreContainer) {
+        this._query.findMoreLikeThis(segment.segmentId);
     }
 
     /**
