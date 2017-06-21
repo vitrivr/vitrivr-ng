@@ -59,7 +59,7 @@
         <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><md-spinner></md-spinner></p>
 
         <div class="gallery" xLayout="row" fxLayoutWrap fxLayoutGap="15px" fxLayoutAlign="space-between start">
-            <div  *ngFor="let mediaobject of mediaobjects" fxFlex="250px" class="tile" (mouseenter)="setFocus(mediaobject)" (mouseleave)="setFocus(null)">
+            <div  *ngFor="let mediaobject of mediaobjects" fxFlex="250px" class="tile" draggable="true" (mouseenter)="setFocus(mediaobject)" (mouseleave)="setFocus(null)" (dragstart)="onTileDrag($event, mediaobject)">
                 <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                     <div class="filename" [attr.class]="objectCanBeRated(mediaobject) ? 'filename-rateable' : 'filename'">{{mediaobject.name}}</div>
                     <div class="score">
