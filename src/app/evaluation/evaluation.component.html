@@ -75,10 +75,10 @@
 
                 <div class="tile-footer" *ngIf="inFocus(mediaobject)" fxLayout fxLayoutAlign="space-between start">
                     <div *ngIf="objectCanBeRated(mediaobject)"  fxLayout fxLayoutAlign="start start">
-                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 0)"><md-icon [style.color]="colorForButton(mediaobject, 0)">star_rate</md-icon></button></div>
-                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 1)"><md-icon [style.color]="colorForButton(mediaobject, 1)">star_rate</md-icon></button></div>
-                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 2)"><md-icon [style.color]="colorForButton(mediaobject, 2)">star_rate</md-icon></button></div>
-                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 3)"><md-icon [style.color]="colorForButton(mediaobject, 3)">star_rate</md-icon></button></div>
+                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 0)" mdTooltip="Not relevant"><md-icon [style.color]="colorForButton(mediaobject, 0)">star_rate</md-icon></button></div>
+                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 1)" mdTooltip="Slightly relevant"><md-icon [style.color]="colorForButton(mediaobject, 1)">star_rate</md-icon></button></div>
+                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 2)" mdTooltip="Very relevant"><md-icon [style.color]="colorForButton(mediaobject, 2)">star_rate</md-icon></button></div>
+                        <div><button md-icon-button (click)="onRateButtonClick(mediaobject, 3)" mdTooltip="Highly relevant"><md-icon [style.color]="colorForButton(mediaobject, 3)">star_rate</md-icon></button></div>
                     </div>
 
                     <div *ngIf="!canBeRated()"><button md-icon-button (click)="onMltButtonClicked(mediaobject.representativeSegment)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button></div>
