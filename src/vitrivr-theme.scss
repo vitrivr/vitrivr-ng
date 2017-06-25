@@ -1,4 +1,7 @@
 @import '../node_modules/@angular/material/theming';
+@import 'roboto-font';
+@import 'material-icons';
+
 // Plus imports for other components in your app.
 
 // Include the base styles for Angular Material core. We include this here so that you only
@@ -17,7 +20,258 @@ $vitrivr-app-warn:    mat-palette($mat-red);
 // Create the theme object (a Sass map containing all of the palettes).
 $vitrivr-app-theme:   mat-light-theme($vitrivr-app-primary, $vitrivr-app-accent, $vitrivr-app-warn);
 
+$font-stack: 'Roboto', Arial, sans-serif;
+
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include angular-material-theme($vitrivr-app-theme);
+
+/* General color definitions. */
+$color-muted: #BABABA;
+.md-primary-50 {
+  color: nth(nth($vitrivr-app-primary, 1), 2);
+}
+
+.md-primary-100 {
+  color: nth(nth($vitrivr-app-primary, 2), 2);
+}
+
+.md-primary-150 {
+  color: nth(nth($vitrivr-app-primary, 3), 2);
+}
+
+.md-primary-200 {
+  color: nth(nth($vitrivr-app-primary, 4), 2);
+}
+
+.md-primary-250 {
+  color: nth(nth($vitrivr-app-primary, 5), 2);
+}
+
+.md-accent-50 {
+  color: nth(nth($vitrivr-app-accent, 1), 2);
+}
+
+.md-accent-100 {
+  color: nth(nth($vitrivr-app-accent, 2), 2);
+}
+
+.md-accent-150 {
+  color: nth(nth($vitrivr-app-accent, 3), 2);
+}
+
+.md-accent-200 {
+  color: nth(nth($vitrivr-app-accent, 4), 2);
+}
+
+.md-accent-250 {
+  color: nth(nth($vitrivr-app-accent, 5), 2);
+}
+
+/* */
+
+body {
+  font-family: $font-stack;
+  font-size: 12px;
+}
+
+h1 {
+  font-family: $font-stack;
+  font-size: 34px;
+}
+
+h2.inverse {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+h2 {
+  font-family: $font-stack;
+  font-size: 28px;
+}
+
+h2.inverse {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+
+h3 {
+  font-family: $font-stack;
+  font-size: 22px;
+  font-weight:bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+h3.inverse {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+h4 {
+  font-family: $font-stack;
+  font-size: 16px;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+h4.inverse {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+.background-prompt {
+  font-size: 28px;
+  color: #BBBBBB;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%)
+}
+
+
+
+.flex-container {
+  display: flex;
+}
+
+.flex-container.row {
+  flex-direction: row;
+}
+
+.flex-container.column {
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.text-muted {
+  font-style: italic;
+  color: $color-muted;
+}
+
+.muted {
+  color: $color-muted
+}
+
+span.label {
+  font-family: $font-stack;
+  font-size:12px;
+  font-weight: bold;
+}
+
+
+.flexbar {
+  display:flex;
+  justify-content: space-between;
+  margin: 2px 8px;
+}
+
+div.weight-distribution {
+  display:flex;
+  min-width: 200px;
+}
+
+.slider-group {
+  display:flex; align-items: center; justify-content: space-between;
+}
+
+/* Defines general appearance of app: toolbar and sidenavs. */
+
+.vitrivr-sidenav {
+  padding: 10px;
+  min-width: 100px;
+}
+
+.vitrivr-sidenav.left {
+  margin-right:10px;
+}
+
+.vitrivr-sidenav.right {
+  margin-left:10px;
+}
+
+.vitrivr-toolbar-menu {
+  padding: 0 14px 0 14px;
+  color: white;
+}
+
+/* Defines some spacer classes that can be used in flexboxes etc. */
+
+.spacer-medium {
+  padding: 0 15px;
+}
+
+.spacer-small {
+  padding: 0 10px;
+}
+
+.spacer-tiny {
+  padding: 0 5px;
+}
+
+.spacer-flex  {
+  flex: 1 1 auto;
+}
+
+/* Simple button only consisting of an icon. */
+.icon-button {
+  box-shadow: none;
+  user-select: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: none;
+  font-weight: normal;
+  height: auto;
+  line-height: inherit;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  text-decoration: none;
+}
+
+/* Default style for definition lists. */
+dl {
+  padding: 0.5em;
+}
+
+dt {
+  float: left;
+  clear: left;
+  width: 100px;
+  text-align: right;
+  font-style: italic;
+  color: rgba(0,0,0,0.38);
+}
+
+dt::after {
+  content: ":";
+}
+
+dd {
+  margin: 0 0 0 110px;
+  padding: 0 0 0.5em 0;
+}
+
+/** HR with a fadout towards the edges. */
+hr.fade {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
+/** Default evaluation card. */
+.evaluation-card {
+  width: 400px;
+  margin: 5% auto
+}
+
+.color-picker {
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+}
