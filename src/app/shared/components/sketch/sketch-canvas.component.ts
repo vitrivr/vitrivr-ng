@@ -1,11 +1,11 @@
-import {Component, ViewChild, HostListener, Input, AfterViewInit, ElementRef} from '@angular/core';
+import {Component, ViewChild, HostListener, Input, AfterViewInit, ElementRef, OnInit} from '@angular/core';
 
 @Component({
     selector: 'sketch-canvas',
     template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px;" (mousedown)="onMousedown($event)" (mouseup)="onMouseup($event)" (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
 })
 
-export class SketchCanvas implements AfterViewInit  {
+export class SketchCanvas implements OnInit  {
     @ViewChild('sketch') private canvas: ElementRef;
 
     @Input() width: number = 400;
@@ -16,10 +16,12 @@ export class SketchCanvas implements AfterViewInit  {
     private last: Point = null;
     private current: Point = null;
 
-    public ngAfterViewInit() {
+    /**
+     * Lifecycle Hook (onInit): Initialises the drawing context.
+     */
+    public ngOnInit() {
         let canvas = this.canvas.nativeElement;
         this.context = canvas.getContext("2d");
-        this.context.lineJoin = "round"
     }
 
     /**
@@ -168,6 +170,7 @@ export class SketchCanvas implements AfterViewInit  {
     public static drawCircle(ctx: CanvasRenderingContext2D, p: Point) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, ctx.lineWidth / 2, 0, 2 * Math.PI);
+        ctx.lineJoin = "round";
         ctx.closePath();
         ctx.fill();
     }
@@ -182,6 +185,7 @@ export class SketchCanvas implements AfterViewInit  {
         ctx.beginPath();
         ctx.moveTo(from.x, from.y);
         ctx.lineTo(to.x, to.y);
+        ctx.lineJoin = "round";
         ctx.closePath();
         ctx.stroke();
     }
