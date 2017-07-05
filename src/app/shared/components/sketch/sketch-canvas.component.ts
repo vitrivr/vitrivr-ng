@@ -1,8 +1,9 @@
 import {Component, ViewChild, HostListener, Input, AfterViewInit, ElementRef, OnInit} from '@angular/core';
+import {Point} from "./model/point.model";
 
 @Component({
     selector: 'sketch-canvas',
-    template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px;" (mousedown)="onMousedown($event)" (mouseup)="onMouseup($event)" (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
+    template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px;" (mousedown)="onMousedown($event)" (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
 })
 
 export class SketchCanvas implements OnInit  {
@@ -31,7 +32,7 @@ export class SketchCanvas implements OnInit  {
     public onMousedown(event: MouseEvent) {
         this.paint = true;
         this.current = new Point(event.offsetX, event.offsetY);
-        SketchCanvas.drawCircle(this.context, this.current);
+        Point.drawCircle(this.context, this.current);
         this.last = this.current;
     };
 
@@ -59,7 +60,7 @@ export class SketchCanvas implements OnInit  {
         if(this.paint && event.target == this.canvas.nativeElement) {
             this.current = new Point(event.offsetX, event.offsetY);
             if (this.last !== null) {
-                SketchCanvas.drawLine(this.context, this.last, this.current);
+                Point.drawLine(this.context, this.last, this.current);
             }
             this.last = this.current;
         }
@@ -160,38 +161,5 @@ export class SketchCanvas implements OnInit  {
         this.context.beginPath();
         this.context.rect(0, 0, this.context.canvas.width, this.context.canvas.height);
         this.context.fill();
-    }
-
-    /**
-     *
-     * @param ctx
-     * @param p
-     */
-    public static drawCircle(ctx: CanvasRenderingContext2D, p: Point) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, ctx.lineWidth / 2, 0, 2 * Math.PI);
-        ctx.lineJoin = "round";
-        ctx.closePath();
-        ctx.fill();
-    }
-
-    /**
-     *
-     * @param ctx
-     * @param from
-     * @param to
-     */
-    public static drawLine(ctx: CanvasRenderingContext2D, from: Point, to: Point) {
-        ctx.beginPath();
-        ctx.moveTo(from.x, from.y);
-        ctx.lineTo(to.x, to.y);
-        ctx.lineJoin = "round";
-        ctx.closePath();
-        ctx.stroke();
-    }
-}
-
-export class Point {
-    constructor(readonly x: number, readonly  y: number) {
     }
 }
