@@ -1,5 +1,5 @@
-import {MotionArrow} from "./motion-arrow.model";
+import {MotionPath} from "./motion-path.model";
 export interface MotionData {
-    image: string;
-    data: MotionArrow[];
+    foreground: MotionPath[];
+    background: MotionPath[];
 }

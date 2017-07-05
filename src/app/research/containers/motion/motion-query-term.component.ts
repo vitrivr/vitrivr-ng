@@ -31,10 +31,10 @@ export class MotionQueryTermComponent {
     public onViewerClicked() {
         /* Initialize the correct dialog-component. */
         let dialogRef = this._dialog.open(MotionSketchDialogComponent, {height:'450px'});
-        dialogRef.afterClosed().first().subscribe((result: MotionData) => {
+        dialogRef.afterClosed().first().subscribe((result: [string, MotionData]) => {
             if (result) {
-                this.previewimg.nativeElement.src = result.image;
-                this.motionTerm.data = JSON.stringify(result.data);
+                this.previewimg.nativeElement.src = result[0];
+                this.motionTerm.data = "data:application/json;base64," + btoa(JSON.stringify(result[1]));
             }
         });
     }

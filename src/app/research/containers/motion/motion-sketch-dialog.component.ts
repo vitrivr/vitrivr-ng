@@ -3,6 +3,8 @@ import {MdDialogRef} from '@angular/material';
 import {TrackingSketchCanvasComponent} from "../../../shared/components/sketch/tracking-sketch-canvas.component";
 import {MotionData} from "./model/motion-data.model";
 import {MotionArrowFactory} from "./model/motion-arrow-factory.model";
+import {MotionArrow} from "./model/motion-arrow.model";
+import {MotionPath} from "./model/motion-path.model";
 @Component({
     moduleId: module.id,
     selector: 'motion-sketchpad',
@@ -56,8 +58,17 @@ export class MotionSketchDialogComponent implements AfterViewInit {
      *  Triggered whenever someone clicks the 'Save' button; Closes the dialog.
      */
     public onSaveClicked() {
-        let data = <MotionData>{image: this._sketchpad.getImageBase64(), data: this._sketchpad.drawables};
-        this._dialogRef.close(data);
+        let motion = <MotionData>{foreground: [], background: []};
+        for (let drawable of this._sketchpad.drawables) {
+            if (drawable instanceof MotionArrow) {
+                if (drawable.type == "FOREGROUND") {
+                    motion.foreground.push(<MotionPath>{path: drawable.points, type: "FOREGROUND"});
+                } else if (drawable.type == "BACKGROUND") {
+                    motion.background.push(<MotionPath>{path: drawable.points, type: "BACKGROUND"});
+                }
+            }
+        }
+        this._dialogRef.close([this._sketchpad.getImageBase64(), motion]);
     }
 
     /**
