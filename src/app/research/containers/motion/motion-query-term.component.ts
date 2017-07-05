@@ -1,5 +1,8 @@
 import {Component, Input, ViewChild} from "@angular/core";
 import {MotionQueryTerm} from "../../../shared/model/queries/motion-query-term.model";
+import {MotionSketchDialogComponent} from "./motion-sketch-dialog.component";
+import {MdDialog} from "@angular/material";
+import {MotionData} from "./model/motion-data.model";
 @Component({
     selector: 'qt-motion',
     templateUrl: 'motion-query-term.component.html',
@@ -15,9 +18,24 @@ export class MotionQueryTermComponent {
     private previewimg: any;
 
     /**
+     * Default constructor.
+     *
+     * @param _dialog
+     */
+    constructor(private _dialog: MdDialog) {}
+
+    /**
      * Triggered whenever someone click on the image, which indicates that it should
      * be edited; opens the MotionSketchDialogComponent
      */
     public onViewerClicked() {
+        /* Initialize the correct dialog-component. */
+        let dialogRef = this._dialog.open(MotionSketchDialogComponent, {height:'450px'});
+        dialogRef.afterClosed().first().subscribe((result: MotionData) => {
+            if (result) {
+                this.previewimg.nativeElement.src = result.image;
+                this.motionTerm.data = JSON.stringify(result.data);
+            }
+        });
     }
 }

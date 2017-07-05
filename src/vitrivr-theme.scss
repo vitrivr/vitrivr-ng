@@ -275,3 +275,8 @@ hr.fade {
   top: 0 !important;
   left: 0 !important;
 }
+
+/** The default highlighted colour for buttons. */
+.highlighted {
+  color: nth(nth($vitrivr-app-accent, 5), 2) !important;
+}

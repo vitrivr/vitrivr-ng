@@ -1012,4 +1012,8 @@ hr.fade {
   top: 0 !important;
   left: 0 !important; }
 
+/** The default highlighted colour for buttons. */
+.highlighted {
+  color: #66bb6a !important; }
+
 /*# sourceMappingURL=vitrivr-theme.css.map */

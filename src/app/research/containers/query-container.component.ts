@@ -7,25 +7,23 @@ import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-ty
     template:`
         <md-card style="margin:10px;padding:10px;">
             <md-card-header style="margin-bottom:15px;">
-                 <button (click)="onToggleButtonClicked('IMAGE')" class="icon-button" mdTooltip="Toggle image query term">
-                    <md-icon [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">panorama</md-icon>
-                 </button>
-                 <div class="spacer-small"></div>
-                 <button (click)="onToggleButtonClicked('AUDIO')" class="icon-button" mdTooltip="Toggle audio query term">
-                    <md-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</md-icon>
-                 </button>
-                 <div class="spacer-small"></div>
-                 <button (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" mdTooltip="Toggle 3D query term">
-                    <md-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</md-icon>
-                 </button>
-                <!-- 
-                    <div class="spacer-small"></div>
-                    <button (click)="onToggleButtonClicked('MOTION')" class="icon-button" mdTooltip="Toggle motion query term">
-                        <md-icon [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">swap_calls</md-icon>
-                    </button>
-                -->
-                 <div class="spacer-flex"></div>
-                 <button class="icon-button" (click)="onRemoveButtonClicked()" mdTooltip="Remove query container"><md-icon>close</md-icon></button>
+                <button (click)="onToggleButtonClicked('IMAGE')" class="icon-button" mdTooltip="Toggle image query term">
+                <md-icon [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">panorama</md-icon>
+                </button>
+                <div class="spacer-small"></div>
+                <button (click)="onToggleButtonClicked('AUDIO')" class="icon-button" mdTooltip="Toggle audio query term">
+                <md-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</md-icon>
+                </button>
+                <div class="spacer-small"></div>
+                <button (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" mdTooltip="Toggle 3D query term">
+                <md-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</md-icon>
+                </button>
+                <div class="spacer-small"></div>
+                <button (click)="onToggleButtonClicked('MOTION')" class="icon-button" mdTooltip="Toggle motion query term">
+                <md-icon [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">directions_run</md-icon>
+                </button>
+                <div class="spacer-flex"></div>
+                <button class="icon-button" (click)="onRemoveButtonClicked()" mdTooltip="Remove query container"><md-icon>close</md-icon></button>
             </md-card-header>
             <md-card-content>
                 <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
