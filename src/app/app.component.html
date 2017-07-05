@@ -12,9 +12,9 @@
 
         <span class="spacer-medium"></span>
 
-        <a md-icon-button routerLink="/evaluation" routerLinkActive="active" mdTooltip="Navigate to evaluation module"><md-icon>assessment</md-icon></a>
+        <a *ngIf="config.evaluation.active" md-icon-button routerLink="/evaluation" routerLinkActive="active" mdTooltip="Navigate to evaluation module"><md-icon>assessment</md-icon></a>
 
-        <span class="spacer-medium"></span>
+        <span *ngIf="config.evaluation.active" class="spacer-medium"></span>
 
         <button md-icon-button  (click)="featuressidenav.toggle()" mdTooltip="Toggle query refinement sidebar"><md-icon>storage</md-icon></button>
 

@@ -4,23 +4,26 @@ import {Inject} from "@angular/core";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {MessageType} from "../../shared/model/messages/message-type.model";
 import {Subject} from "rxjs/Subject";
+import {Observable} from "rxjs/Observable";
 
 
 export class CineastAPI extends AbstractWebsocketService {
     /**
      * Subject a Observer of the API can subscribe to.
      */
-    private messages : Subject<[MessageType, string]>;
+    private messages : Subject<[MessageType, string]> = new Subject();
 
     /**
      * Default constructor.
      */
-    constructor(@Inject(ConfigService) _config : ConfigService) {
-        super(_config.endpoint_ws, true);
-        this.messages = new Subject();
-        console.log("Cineast API Service is up and running!");
+    constructor(@Inject(ConfigService) _configService : ConfigService) {
+        super(true);
+        _configService.observable.subscribe((config) => {
+            if (config.endpoint_ws != null) {
+                this.connect(config.endpoint_ws);
+            }
+        });
     }
-
 
     /**
      * This method can be used by the caller to get an Observer for messages received by the local
@@ -30,10 +33,9 @@ export class CineastAPI extends AbstractWebsocketService {
      *
      * @returns {Observable<[MessageType, string]>}
      */
-    public observable() {
+    public observable(): Observable<[MessageType, string]> {
         return this.messages.asObservable();
     }
-
 
     /**
      * This is where the magic happens: Subscribes to messages from the underlying WebSocket and orchestrates the

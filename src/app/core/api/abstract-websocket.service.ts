@@ -2,36 +2,47 @@ import {Injectable} from "@angular/core";
 import {Subject, Observer, Observable} from 'rxjs/Rx';
 
 /**
- * Custom type used to indicate the status of the WebSocket connection.
+ * Custom type used to indicate the status of the WebSocket status.
  */
 export type WebSocketStatus = "DISCONNECTED" | "WAITING" | "ERROR" ;
 
 @Injectable()
 export abstract class AbstractWebsocketService {
     /* WebSocket used by the AbstractWebsocketService implementation. */
-    protected _socket : Subject<any> = null;
+    private _socket : Subject<any> = null;
 
-    /* Indication of the connection status. */
-    protected connection : WebSocketStatus = "DISCONNECTED";
+    /* Indication of the status status. */
+    private _status : WebSocketStatus = "DISCONNECTED";
+
+    /* URL of the endpoint. */
+    protected _url: string;
 
     /**
      * Default constructor.
      *
-     * @param _url The endpoint to which a WebSocket connection should be established.
-     * @param reestablish If true, the socket will try to re-establish connection after an error or a close.
+     * @param reestablish If true, the socket will try to re-establish status after an error or a close.
      */
-    constructor (private _url: string, private reestablish : boolean = true) {
-        this.createSocket();
-    }
+    constructor (private reestablish : boolean = true) {}
 
     /**
+     * Connects the AbstractWebsocketService to an endpoint.
+     *
+     * @param url The URL of the WebSocket endpoint.
      *
      * @returns {any}
      */
-    protected createSocket() {
-        /* Create Socket: Once connection was established, change status to 'WAITING'. */
+    public connect(url?: string) {
+        /* IF a socket is open; disconnect it. */
+        this.disconnect();
+
+        /* Assign URL (if set). */
+        if (url) this._url = url;
+
+        /* Create Socket: Once status was established, change status to 'WAITING'. */
         let socket = new WebSocket(this._url);
-        socket.onopen = function () {this.connection = "WAITING";}.bind(this);
+        socket.onopen = () => {
+            this._status = "WAITING";
+        };
 
         let observable = Observable.create(
             (observer: Observer<MessageEvent>) => {
@@ -63,8 +74,32 @@ export abstract class AbstractWebsocketService {
             }
         );
 
-        /* Log the successful connection of the socket. */
+        /* Log the successful status of the socket. */
         console.log("Socket connected to: " + this._url);
+    }
+
+    /**
+     * Disconnects the AbstractWebsocketService from an endpoint.
+     *
+     * @return {boolean}
+     */
+    public disconnect(): boolean {
+        if (!this._socket) return false;
+
+        /* Disconnect the current socket. */
+        this._socket.complete();
+        this._socket = null;
+        this._status = "DISCONNECTED";
+        console.log("Socket disconnected from: " + this._url);
+    }
+
+    /**
+     * Getter for WebSocket status.
+     *
+     * @return {WebSocketStatus}
+     */
+    get status(): WebSocketStatus {
+        return this._status;
     }
 
     /**
@@ -92,7 +127,7 @@ export abstract class AbstractWebsocketService {
      * @param str String to write to the stream.
      */
     protected sendstr(str: string) : boolean {
-        if (this.connection == "WAITING") {
+        if (this._status == "WAITING") {
             this._socket.next(str);
             return true;
         } else {
@@ -101,16 +136,14 @@ export abstract class AbstractWebsocketService {
     }
 
     /**
-     * Dispatches a new timer that will wait for 30seconds and try
-     * to re-establish the connection.
+     * Dispatches a new timer that will wait for 30seconds and try to re-establish the status.
      */
     protected dispatchTimer() : void {
-        console.log("Dispatching timer to re-establish connection in 30s...");
-        let timer = Observable.timer(30000);
-        timer.first().subscribe(function() {
-            console.log("Re-establishing connection.");
-            this.createSocket();
-        }.bind(this));
+        console.log("Dispatching timer to re-establish status in 30s...");
+        Observable.timer(30000).first().subscribe(() => {
+            console.log("Re-establishing status.");
+            this.connect();
+        });
     }
 
 
@@ -123,14 +156,13 @@ export abstract class AbstractWebsocketService {
     protected abstract onSocketMessage(message : String) : void;
 
     /**
-     * This method is invoked whenever the WebSocket reports a connection error.
+     * This method is invoked whenever the WebSocket reports a status error.
      *
      * @param error
      */
     protected onSocketError(error : any) {
         console.log("Error occurred with socket to '" + this._url + "':" + error);
-        this.connection = "ERROR";
-        this._socket.unsubscribe();
+        this._status = "ERROR";
         this._socket = null;
         if (this.reestablish) this.dispatchTimer();
     };
@@ -140,8 +172,7 @@ export abstract class AbstractWebsocketService {
      */
     protected onSocketClose() : void {
         console.log("Socket to '" + this._url + "' was closed.");
-        this.connection = "DISCONNECTED";
-        this._socket.unsubscribe();
+        this._status = "DISCONNECTED";
         this._socket = null;
         if (this.reestablish) this.dispatchTimer();
     }

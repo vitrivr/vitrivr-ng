@@ -3,6 +3,7 @@ import {ConfigService} from "./config.service";
 import {MediaObject} from "../../shared/model/media/media-object.model";
 import {MediaSegment} from "../../shared/model/media/media-segment.model";
 import {MediaType, MediaTypes} from "../../shared/model/media/media-type.model";
+import {Config} from "./config.model";
 
 /**
  * This class can be used to resolve paths / URL's to media-objects (original file)
@@ -19,23 +20,29 @@ export class ResolverService {
     /** A map containing the definition of file-suffices for thumbnails per mediatype */
     private suffices : Map<MediaType, string> = new Map();
 
+    /** Current application configuration. */
+    private config: Config;
+
     /**
      * Default constructor; Initializes the map of suffixes per media-type based on
      * the configuration.
      *
      * @param _config ConfigService reference; injected.
      */
-    constructor(private _config: ConfigService) {
-        let def = _config.suffix_default;
-        let suffices = _config.suffix;
-        for (let type of MediaTypes) {
-            let suffix: string = suffices[type];
-            if (typeof suffix == "string") {
-                this.suffices.set(type, (suffix.charAt(0) == "." ? "" : ".") + suffix);
-            } else {
-                this.suffices.set(type, (def.charAt(0) == "." ? "" : ".") + def);
+    constructor(private _configService: ConfigService) {
+        _configService.observable.subscribe((config) => {
+           this.config = config;
+            let def = config.suffix_default;
+            let suffices = config.suffix;
+            for (let type of MediaTypes) {
+                let suffix: string = suffices[type];
+                if (typeof suffix == "string") {
+                    this.suffices.set(type, (suffix.charAt(0) == "." ? "" : ".") + suffix);
+                } else {
+                    this.suffices.set(type, (def.charAt(0) == "." ? "" : ".") + def);
+                }
             }
-        }
+        });
     }
 
     /**
@@ -47,10 +54,10 @@ export class ResolverService {
      */
     public pathToThumbnail(mediatype: MediaType, objectId: string, segmentId: string) {
         let suffix = this.suffices.get(mediatype);
-        if (this._config.host_thumbnails.endsWith("/")) {
-            return encodeURI(this._config.host_thumbnails + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
+        if (this.config.host_thumbnails.endsWith("/")) {
+            return encodeURI(this.config.host_thumbnails + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
         } else {
-            return encodeURI(this._config.host_thumbnails + "/" + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
+            return encodeURI(this.config.host_thumbnails + "/" + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
         }
     }
 
@@ -71,10 +78,10 @@ export class ResolverService {
      * @param object The MediaObject for which to return the path.
      */
     public pathToObject(object: MediaObject) {
-        if (this._config.host_object.endsWith("/")) {
-            return encodeURI(this._config.host_object + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path);
+        if (this.config.host_object.endsWith("/")) {
+            return encodeURI(this.config.host_object + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path);
         } else {
-            return encodeURI(this._config.host_object + "/" + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path);
+            return encodeURI(this.config.host_object + "/" + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path);
         }
     }
 }

@@ -1,8 +1,9 @@
-import {Component} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
 import {MdSnackBar} from "@angular/material";
 import {ConfigService} from "../core/basics/config.service";
 import {UUIDGenerator} from "../shared/util/uuid-generator.util";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
     moduleId: module.id,
@@ -57,7 +58,8 @@ import {UUIDGenerator} from "../shared/util/uuid-generator.util";
         </md-card>
     `
 })
-export class EvaluationSelectionComponent {
+export class EvaluationSelectionComponent implements OnInit, OnDestroy {
+
     /** Model for the URL field. Contains the URL to the evaluation template. */
     public urlFieldValue : string;
 
@@ -68,20 +70,41 @@ export class EvaluationSelectionComponent {
     public enteredId: string;
 
     /** List of evaluation templates loaded from the config. */
-    public readonly templates = [];
+    public templates = [];
 
     /** Evaluation ID generated when loading this component. This ID will be used to identify a participant. */
     public readonly randomId;
 
+    /** Reference to the ConfigService subscription. */
+    private _configServiceSubscription: Subscription;
+
     /**
      *
-     * @param _config
+     * @param _configService
      * @param _router
      * @param snackBar
      */
-    constructor(_config: ConfigService, private _router: Router, private snackBar: MdSnackBar) {
-        this.templates = _config.evaluationTemplates;
+    constructor(private _configService: ConfigService, private _router: Router, private snackBar: MdSnackBar) {
         this.randomId = UUIDGenerator.suid();
+    }
+
+    /**
+     * Lifecycle Hook (onInit): Subscribes to the ConfigService.
+     */
+    public ngOnInit(): void {
+        this._configServiceSubscription = this._configService.observable.subscribe((config) => {
+            if (config.evaluationOn == true) {
+                this.templates = config.evaluationTemplates;
+            }
+        });
+    }
+
+    /**
+     * Lifecycle Hook (onDestroy): Unsubscribes from the ConfigService.
+     */
+    public ngOnDestroy(): void {
+        this._configServiceSubscription.unsubscribe();
+        this._configServiceSubscription = null;
     }
 
     /**
@@ -91,7 +114,7 @@ export class EvaluationSelectionComponent {
         if (this.urlFieldValue && this.nameFieldValue && this.urlFieldValue.length > 0 &&  this.nameFieldValue.length > 0) {
             this._router.navigate(['/evaluation/' + this.randomId + '/' + btoa(this.urlFieldValue) + '/' + btoa(this.nameFieldValue)]);
         } else {
-            this.snackBar.open('Please specify a valid URL and your name.', null, {duration: 3000});
+            this.snackBar.open('Please specify a valid template and your name.', null, {duration: 3000});
         }
     }
 

@@ -58,8 +58,8 @@ export class QueryService {
      */
     private _mediatypes: Map<MediaType,boolean> = new Map();
 
-    /** BehaviorSubject that allows Observers to subscribe to changes emitted from the QueryService. */
-    private _stateSubject : Subject<QueryChange> = new Subject();
+    /** Subject that allows Observers to subscribe to changes emitted from the QueryService. */
+    private _subject : Subject<QueryChange> = new Subject();
 
     /**
      * Reference to the WeightFunction that's being used with the current instance of QueryService. WeightFunctions are used
@@ -179,7 +179,7 @@ export class QueryService {
         this.results.forEach((value) => {
             value.update(this._features, this.weightFunction);
         });
-        this._stateSubject.next("UPDATED");
+        this._subject.next("UPDATED");
     }
 
     /**
@@ -195,7 +195,7 @@ export class QueryService {
     public toggleMediatype(type: MediaType, active: boolean) {
         if (this._mediatypes.has(type) && this._mediatypes.get(type) != active) {
             this._mediatypes.set(type, active);
-            this._stateSubject.next("UPDATED");
+            this._subject.next("UPDATED");
         }
     }
 
@@ -224,7 +224,7 @@ export class QueryService {
      * @returns {Observable<QueryChange>}
      */
     get observable() : Observable<QueryChange>{
-        return this._stateSubject.asObservable();
+        return this._subject.asObservable();
     }
 
     /**
@@ -254,7 +254,7 @@ export class QueryService {
         this.segment_to_object_map.clear();
         this._features.length = 0;
         this._running = false;
-        this._stateSubject.next("CLEAR");
+        this._subject.next("CLEAR");
     }
 
     /**
@@ -306,7 +306,7 @@ export class QueryService {
         /* Start the actual query. */
         this._queryId = id;
         this._running = true;
-        this._stateSubject.next("STARTED" as QueryChange);
+        this._subject.next("STARTED" as QueryChange);
     }
 
     /**
@@ -325,7 +325,7 @@ export class QueryService {
         }
 
         /* Inform Observers about changes. */
-        this._stateSubject.next("UPDATED" as QueryChange);
+        this._subject.next("UPDATED" as QueryChange);
     }
 
     /**
@@ -344,7 +344,7 @@ export class QueryService {
         }
 
         /* Inform Observers about changes. */
-        this._stateSubject.next("UPDATED" as QueryChange);
+        this._subject.next("UPDATED" as QueryChange);
     }
 
     /**
@@ -387,7 +387,7 @@ export class QueryService {
         }
         let feature = new Feature(category, category, 100);
         this._features.push(feature);
-        this._stateSubject.next("FEATURE");
+        this._subject.next("FEATURE");
         return feature;
     }
 
@@ -399,7 +399,7 @@ export class QueryService {
     private finalizeQuery() {
         this.segment_to_object_map.clear();
         this._running = false;
-        this._stateSubject.next("ENDED" as QueryChange);
+        this._subject.next("ENDED" as QueryChange);
     }
 
     /**
@@ -410,7 +410,7 @@ export class QueryService {
     private errorOccurred(message: QueryError) {
         this.segment_to_object_map.clear();
         this._running = false;
-        this._stateSubject.next("ERROR" as QueryChange);
+        this._subject.next("ERROR" as QueryChange);
         console.log("QueryService received error: " + message.message);
     }
 }
