@@ -3,7 +3,6 @@ import TrackballControls from 'three-trackballcontrols'
 
 import {Component, OnInit, OnDestroy, Input, ViewChild} from "@angular/core";
 import {Model3DFileLoader} from "../../util/m3d-file-loader.util";
-import {Http} from "@angular/http";
 
 import Scene = THREE.Scene;
 import Mesh = THREE.Mesh;
@@ -13,8 +12,7 @@ import PerspectiveCamera = THREE.PerspectiveCamera;
 
 @Component({
     selector: 'm3d-loader',
-    template:`
-    <div #visualize></div>`
+    template:`<div #visualize></div>`
 })
 
 /**
@@ -64,21 +62,16 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
     protected mesh: Mesh;
 
 
-    constructor(private http: Http) {
-    }
+    constructor() {}
 
     /**
-     * This method can be used to initialize the rendering context.
-     *
-     * @param container HTML element that will contain the canvas on which the rendered content is going to be displayed.
-     * @param width Width of the rendering context.
-     * @param height Height of the rendering context.
+     * Lifecycle Hook (onInit): This method can be used to initialize the rendering context.
      */
     public ngOnInit(): void {
         this.scene = new THREE.Scene();
         this.manager = new THREE.LoadingManager();
         this.manager.onProgress = (item, loaded, total) => {
-            console.log(item, loaded, total );
+            console.log(item, loaded, total);
         };
 
         this.initCamera();
@@ -90,11 +83,12 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
         if (this.src != null) this.loadMeshFromPath(this.src);
 
         /* Start animation of render control. */
+        this.render();
         this.animate();
     }
 
     /**
-     * Makes sure that the renderer is properly disposed.
+     * Lifecycle Hook (onDestroy):* Makes sure that the renderer is properly disposed.
      */
     public ngOnDestroy(): void {
         if (this.mesh) this.scene.remove(this.mesh);
