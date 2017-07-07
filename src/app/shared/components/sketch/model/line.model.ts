@@ -54,7 +54,7 @@ export class Line implements Drawable {
     public append(p: Point) : boolean {
         if (this.points.length > 0) {
             let last = this._points[this._points.length - 1];
-            if (last.distance(p) < 10) return false;
+            if (this._threshold > 0 && last.distance(p) < this._threshold) return false;
         }
         this._points.push(p);
         return true;
@@ -75,13 +75,20 @@ export class Line implements Drawable {
      */
     public draw(ctx: CanvasRenderingContext2D) {
         ctx.strokeStyle = this.color;
+        ctx.lineWidth = this._linesize;
+        ctx.lineJoin = "round";
+
         if (this.points.length > 1) {
             let first = this.points[0];
             let second = this.points[1];
             for (let i = 0; i<this.points.length-1; i++) {
                 first = this.points[i];
                 second = this.points[i+1];
-                Point.drawLine(ctx, first, second);
+                ctx.beginPath();
+                ctx.moveTo(first.x, first.y);
+                ctx.lineTo(second.x, second.y);
+                ctx.closePath();
+                ctx.stroke();
             }
         }
     }

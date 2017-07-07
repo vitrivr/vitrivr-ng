@@ -39,6 +39,6 @@ export class MotionArrowFactory implements DrawableFactory<MotionArrow> {
         } else if (this._type == "BACKGROUND") {
             color = "#008000";
         }
-        return new MotionArrow(new Point(x,y), color, 5, 10, false, true, this._type);
+        return new MotionArrow(new Point(x,y), color, 5, 4, false, true, this._type);
     }
 }

@@ -12,8 +12,8 @@ export class MotionArrow extends Arrow {
      * @param _startArrowhead
      * @param _endArrowhead
      */
-    constructor(p: Point, _color: string = "#000000", _linesize: number = 5, _threshold: number = 5, _startArrowhead = false, _endArrowhead = true, private _type: MotionType) {
-        super(p, _color, _linesize, _threshold);
+    constructor(p: Point, _color: string = "#000000", _linesize: number = 5, _threshold: number = 4, _startArrowhead = false, _endArrowhead = true, private _type: MotionType) {
+        super(p, _color, _linesize, _threshold, _startArrowhead, _endArrowhead);
         this.append(p);
     }
 
