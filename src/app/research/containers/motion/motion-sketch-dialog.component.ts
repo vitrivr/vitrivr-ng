@@ -5,6 +5,8 @@ import {MotionData} from "./model/motion-data.model";
 import {MotionArrowFactory} from "./model/motion-arrow-factory.model";
 import {MotionArrow} from "./model/motion-arrow.model";
 import {MotionPath} from "./model/motion-path.model";
+import {Points} from "three";
+import {Point} from "../../../shared/components/sketch/model/point.model";
 @Component({
     moduleId: module.id,
     selector: 'motion-sketchpad',
@@ -27,7 +29,7 @@ export class MotionSketchDialogComponent implements AfterViewInit {
     }
 
     /**
-     * Lifecycle Hook (afterViewIniti): Sets the default linesize and colour.
+     * Lifecycle Hook (afterViewInit): Sets the default linesize and colour.
      */
     public ngAfterViewInit(): void {
         this._sketchpad.factory = this._factory;
@@ -61,10 +63,14 @@ export class MotionSketchDialogComponent implements AfterViewInit {
         let motion = <MotionData>{foreground: [], background: []};
         for (let drawable of this._sketchpad.drawables) {
             if (drawable instanceof MotionArrow) {
+                let normalised : Point[] = [];
+                for (let p of drawable.points) {
+                    normalised.push(new Point(p.x/this._sketchpad.width, p.y/this._sketchpad.height))
+                }
                 if (drawable.type == "FOREGROUND") {
-                    motion.foreground.push(<MotionPath>{path: drawable.points, type: "FOREGROUND"});
+                    motion.foreground.push(<MotionPath>{path: normalised, type: "FOREGROUND"});
                 } else if (drawable.type == "BACKGROUND") {
-                    motion.background.push(<MotionPath>{path: drawable.points, type: "BACKGROUND"});
+                    motion.background.push(<MotionPath>{path: normalised, type: "BACKGROUND"});
                 }
             }
         }
