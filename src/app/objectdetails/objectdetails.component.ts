@@ -7,8 +7,9 @@ import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 import {Location} from "@angular/common";
-import {MdSnackBar} from "@angular/material";
+import {MdDialog, MdSnackBar} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
+import {ImagecropComponent} from "./imagecrop.component";
 
 @Component({
     moduleId: module.id,
@@ -26,6 +27,10 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy {
     /** */
     @ViewChild('videoplayer')
     private videoplayer: any;
+
+    /* */
+    @ViewChild('imageviewer')
+    private imageviewer: any;
 
     /** ID of the media object that is currently examined. */
     private _objectId: string;
@@ -55,7 +60,8 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy {
                 private _query : QueryService,
                 private _metadataLookup: MetadataLookupService,
                 private _resolver: ResolverService,
-                private _snackBar: MdSnackBar) {
+                private _snackBar: MdSnackBar,
+                private _dialog: MdDialog) {
     }
 
     /**
@@ -137,6 +143,16 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy {
      */
     public onBackClick() {
         this._location.back()
+    }
+
+    /**
+     *
+     */
+    public onImageViewerClicked() {
+        let dialogRef = this._dialog.open(ImagecropComponent, {data : "http://10.34.58.10/vitrivr/thumbnails/video/v_0000063/v_0000063_1.png"});
+        dialogRef.afterClosed().first().subscribe((result) => {
+            console.log(result);
+        });
     }
 
     /**
