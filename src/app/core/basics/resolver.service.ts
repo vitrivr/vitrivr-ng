@@ -11,11 +11,6 @@ import {Config} from "./config.model";
  */
 @Injectable()
 export class ResolverService {
-    /** Name of the sub-folder that holds the segment thumbnails. */
-    private static THUMBNAILS_FOLDER_NAME : string = "thumbnails";
-
-    /** Name of the sub-folder that holds the actual media objects. */
-    private static OBJECTS_FOLDER_NAME : string = "objects";
 
     /** A map containing the definition of file-suffices for thumbnails per mediatype */
     private suffices : Map<MediaType, string> = new Map();
@@ -55,9 +50,9 @@ export class ResolverService {
     public pathToThumbnail(mediatype: MediaType, objectId: string, segmentId: string) {
         let suffix = this.suffices.get(mediatype);
         if (this.config.host_thumbnails.endsWith("/")) {
-            return encodeURI(this.config.host_thumbnails + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
+            return encodeURI(this.config.host_thumbnails  + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
         } else {
-            return encodeURI(this.config.host_thumbnails + "/" + ResolverService.THUMBNAILS_FOLDER_NAME + "/" + mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
+            return encodeURI(this.config.host_thumbnails + "/" +  mediatype.toLowerCase() + "/" + objectId + "/" + segmentId + suffix);
         }
     }
 
@@ -79,9 +74,9 @@ export class ResolverService {
      */
     public pathToObject(object: MediaObject) {
         if (this.config.host_object.endsWith("/")) {
-            return encodeURI(this.config.host_object + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path);
+            return encodeURI(this.config.host_object + object.mediatype.toLowerCase() + "/" + object.path);
         } else {
-            return encodeURI(this.config.host_object + "/" + ResolverService.OBJECTS_FOLDER_NAME + "/" + object.mediatype.toLowerCase() + "/" + object.path);
+            return encodeURI(this.config.host_object + "/" + object.mediatype.toLowerCase() + "/" + object.path);
         }
     }
 }
