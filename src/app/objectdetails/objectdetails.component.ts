@@ -149,9 +149,10 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy {
      *
      */
     public onImageViewerClicked() {
-        let dialogRef = this._dialog.open(ImagecropComponent, {data : "http://10.34.58.10/vitrivr/thumbnails/video/v_0000063/v_0000063_1.png"});
+        let imagePath = this._resolver.pathToThumbnail(this._mediaobject.mediatype, this._mediaobject.objectId, this._mediaobject.objectId + "_1"); //this._resolver.pathToObject(this._mediaobject)
+        let dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
         dialogRef.afterClosed().first().subscribe((result) => {
-            console.log(result);
+
         });
     }
 

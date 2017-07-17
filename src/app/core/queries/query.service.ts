@@ -16,6 +16,8 @@ import {MoreLikeThisQuery} from "../../shared/model/messages/more-like-this-quer
 import {MediaType} from "../../shared/model/media/media-type.model";
 import {QueryError} from "../../shared/model/messages/interfaces/query-error.interface";
 
+import {QueryContainer} from "../../shared/model/queries/query-container.model";
+import {ImageQueryTerm} from "../../shared/model/queries/image-query-term.model";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -94,6 +96,19 @@ export class QueryService {
         } else {
             return false;
         }
+    }
+
+    public findByDataUrl(dataUrl: string) : boolean {
+
+      let qq = new QueryContainer();
+      qq.addTerm("IMAGE");
+      qq.getTerm("IMAGE").data = dataUrl;
+      qq.getTerm("IMAGE").setting(3)
+
+      let query = new SimilarityQuery(
+        [qq]
+      );
+      return this.findSimilar(query);
     }
 
     /**
@@ -414,7 +429,3 @@ export class QueryService {
         console.log("QueryService received error: " + message.message);
     }
 }
-
-
-
-
