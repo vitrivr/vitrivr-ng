@@ -46,7 +46,7 @@ export class Config {
      *
      * @type {{}}
      */
-    private evaluation = {
+    public evaluation = {
         active: true,
         templates: []
     };
