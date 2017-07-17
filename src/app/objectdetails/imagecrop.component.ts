@@ -24,13 +24,16 @@ export class ImagecropComponent implements OnInit {
      */
     constructor(@Inject(MD_DIALOG_DATA) private _src : string, private _ref: MdDialogRef<ImagecropComponent>, private _http: Http) {
         this._cropperSettings = new CropperSettings();
-        this._cropperSettings.width = 100;
-        this._cropperSettings.height = 100;
-        this._cropperSettings.croppedWidth =100;
-        this._cropperSettings.croppedHeight = 100;
+        
         this._cropperSettings.canvasWidth = 400;
         this._cropperSettings.canvasHeight = 300;
         this._cropperSettings.noFileInput = true;
+        this._cropperSettings.preserveSize = true;
+        this._cropperSettings.keepAspect = false;
+
+        this._cropperSettings.minWithRelativeToResolution = false;
+        this._cropperSettings.minWidth = 25;
+        this._cropperSettings.minHeight = 25;
 
         this._data = {
 
