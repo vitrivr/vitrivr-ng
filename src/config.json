@@ -8,7 +8,7 @@
   },
   "resources": {
     "host_thumbnails" : "http://10.34.58.10/vitrivr/thumbnails/",
-    "host_object": "http://10.34.58.10/vitrivr/objects",
+    "host_object": "http://10.34.58.10/vitrivr/thumbnails",
     "suffix_default":".jpg",
     "suffix": {
       "IMAGE": "png",
@@ -16,10 +16,16 @@
     }
   },
   "evaluation": {
-    "active":true,
+    "active":false,
     "templates":[
       {"name":"Testset A", "url":"http://10.34.58.10/vitrivr/testset/evaluation_a.json"},
       {"name":"Testset B", "url":"http://10.34.58.10/vitrivr/testset/evaluation_b.json"}
     ]
+  },
+  "queryContainerTypes":{
+    "image": true,
+    "audio": true,
+    "model3d": true,
+    "motion": true
   }
 }

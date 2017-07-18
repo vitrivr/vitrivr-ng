@@ -1,25 +1,28 @@
 import {Component, Input} from "@angular/core";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
 import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-type.interface";
+import {ConfigService} from "../../core/basics/config.service";
+import {Config} from "../../core/basics/config.model";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
     selector: 'query-container',
     template:`
         <md-card style="margin:10px;padding:10px;">
             <md-card-header style="margin-bottom:15px;">
-                <button (click)="onToggleButtonClicked('IMAGE')" class="icon-button" mdTooltip="Toggle image query term">
+                <button *ngIf="this._config.queryContainerTypes.image" (click)="onToggleButtonClicked('IMAGE')" class="icon-button" mdTooltip="Toggle image query term">
                 <md-icon [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">panorama</md-icon>
                 </button>
-                <div class="spacer-small"></div>
-                <button (click)="onToggleButtonClicked('AUDIO')" class="icon-button" mdTooltip="Toggle audio query term">
+                <div *ngIf="this._config.queryContainerTypes.image" class="spacer-small"></div>
+                <button *ngIf="this._config.queryContainerTypes.audio" (click)="onToggleButtonClicked('AUDIO')" class="icon-button" mdTooltip="Toggle audio query term">
                 <md-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</md-icon>
                 </button>
-                <div class="spacer-small"></div>
-                <button (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" mdTooltip="Toggle 3D query term">
+                <div *ngIf="this._config.queryContainerTypes.audio" class="spacer-small"></div>
+                <button  *ngIf="this._config.queryContainerTypes.model3d" (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" mdTooltip="Toggle 3D query term">
                 <md-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</md-icon>
                 </button>
-                <div class="spacer-small"></div>
-                <button (click)="onToggleButtonClicked('MOTION')" class="icon-button" mdTooltip="Toggle motion query term">
+                <div *ngIf="this._config.queryContainerTypes.model3d" class="spacer-small"></div>
+                <button *ngIf="this._config.queryContainerTypes.motion" (click)="onToggleButtonClicked('MOTION')" class="icon-button" mdTooltip="Toggle motion query term">
                 <md-icon [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">directions_run</md-icon>
                 </button>
                 <div class="spacer-flex"></div>
@@ -41,6 +44,20 @@ export class QueryContainerComponent {
 
     /* A reference to the lists of QueryContainers (to enable remvoing the container). */
     @Input() inList : QueryContainerInterface[];
+
+
+    private _config: Config;
+    private _configServiceSubscription: Subscription;
+
+
+    constructor(private _configService: ConfigService) {}
+
+    public ngOnInit(): void {
+
+        this._configServiceSubscription = this._configService.observable.subscribe((config) => {
+            this._config = config;
+        })
+    }
 
     /**
      * Triggered, when a user clicks the remove-button (top-right corner). Removes
