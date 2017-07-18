@@ -24,8 +24,8 @@
   },
   "queryContainerTypes":{
     "image": true,
-    "audio": true,
-    "model3d": true,
-    "motion": true
+    "audio": false,
+    "model3d": false,
+    "motion": false
   }
 }

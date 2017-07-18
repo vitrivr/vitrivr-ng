@@ -3,6 +3,7 @@ import {ImageCropperComponent, CropperSettings} from 'ng2-img-cropper';
 import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
 import {Http} from "@angular/http";
 import {QueryService} from "../core/queries/query.service";
+import {MaterialModule} from "../material.module";
 
 @Component({
     moduleId: module.id,
@@ -18,6 +19,8 @@ export class ImagecropComponent implements OnInit {
 
     @ViewChild("cropper")
     private cropper: ImageCropperComponent;
+
+    public isLoaded: boolean = false;
 
     /**
      *
@@ -48,8 +51,13 @@ export class ImagecropComponent implements OnInit {
         let reader = new FileReader();
         reader.addEventListener("load", () => {
             let image = new Image();
+
+            image.onload = () => {
+              this.cropper.setImage(image);
+              this.isLoaded = true;
+            };
+
             image.src = reader.result;
-            this.cropper.setImage(image);
         });
         this._http.get(this._src, {responseType: 3}).first().subscribe(data => {
             reader.readAsDataURL(data.blob());
