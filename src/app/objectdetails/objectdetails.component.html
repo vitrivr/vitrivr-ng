@@ -10,7 +10,7 @@
             <div [style.max-height]="'400px'">
                 <video #videoplayer *ngIf="mediaobject.mediatype == 'VIDEO'" src="{{_resolver.pathToObject(mediaobject)}}" controls [style.width]="'400px'"></video>
                 <audio #audioplayer *ngIf="mediaobject.mediatype == 'AUDIO'" src="{{_resolver.pathToObject(mediaobject)}}" controls [style.width]="'400px'"width="400"></audio>
-                <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'" src="{{_resolver.pathToObject(mediaobject)}}"/>
+                <img style="max-height: 400px" #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'" src="{{_resolver.pathToObject(mediaobject)}}"/>
                 <m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'" src="{{_resolver.pathToObject(mediaobject)}}" [width]="200" [height]="200" [interaction]="true"> </m3d-loader>
             </div>
 
