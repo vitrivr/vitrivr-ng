@@ -2,6 +2,6 @@ import {MoreLikeThisQueryMessage} from "./interfaces/more-like-this-query.interf
 import {MessageType} from "./message-type.model";
 
 export class MoreLikeThisQuery implements MoreLikeThisQueryMessage {
-    public readonly messagetype: MessageType = "Q_MLT";
+    public readonly messageType: MessageType = "Q_MLT";
     public constructor(public readonly segmentId: string, public readonly categories: string[]) {}
 }

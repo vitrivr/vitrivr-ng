@@ -45,8 +45,8 @@ export class CineastAPI extends AbstractWebsocketService {
      */
     onSocketMessage(message: string): void {
         let msg : Message = <Message>JSON.parse(message);
-        if (msg.messagetype != undefined) {
-            let pair : [MessageType, string] = [msg.messagetype, message];
+        if (msg.messageType != undefined) {
+            let pair : [MessageType, string] = [msg.messageType, message];
             this.messages.next(pair);
         } else {
             console.log("Received message does not seem to be a valid Cineast API message.");

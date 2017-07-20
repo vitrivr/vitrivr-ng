@@ -55,7 +55,7 @@ export class PingComponent implements OnInit, OnDestroy {
             }
             this._timerSubscription = Observable.timer(0, config.ping_interval).subscribe(() => {
                 this.last = Date.now();
-                this._api.send({messagetype:'PING'});
+                this._api.send({messageType:'PING'});
             })
         })
     }
