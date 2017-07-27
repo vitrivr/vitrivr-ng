@@ -3,7 +3,7 @@ import {Point} from "./model/point.model";
 
 @Component({
     selector: 'sketch-canvas',
-    template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px;" (mousedown)="onMousedown($event)" (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
+    template:`<canvas #sketch width='{{width}}' height='{{height}}' style="border: solid 1px; background-image: url(\'assets/images/transparent.png\')" (mousedown)="onMousedown($event)" (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
 })
 
 export class SketchCanvas implements OnInit  {
