@@ -280,7 +280,7 @@ export class QueryService {
      */
     private onApiMessage(message: string): void {
         let parsed = <Message>JSON.parse(message);
-        switch (parsed.messagetype) {
+        switch (parsed.messageType) {
             case "QR_START":
                 let qs = <QueryStart>parsed;
                 this.startNewQuery(qs.queryId);
