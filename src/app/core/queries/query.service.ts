@@ -17,7 +17,6 @@ import {MediaType} from "../../shared/model/media/media-type.model";
 import {QueryError} from "../../shared/model/messages/interfaces/query-error.interface";
 
 import {QueryContainer} from "../../shared/model/queries/query-container.model";
-import {ImageQueryTerm} from "../../shared/model/queries/image-query-term.model";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -103,7 +102,7 @@ export class QueryService {
       let qq = new QueryContainer();
       qq.addTerm("IMAGE");
       qq.getTerm("IMAGE").data = dataUrl;
-      qq.getTerm("IMAGE").setting(3)
+      qq.getTerm("IMAGE").setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
 
       let query = new SimilarityQuery(
         [qq]

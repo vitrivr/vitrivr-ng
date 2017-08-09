@@ -20,10 +20,25 @@ export interface QueryTermInterface {
     type: QueryTermType
 
     /**
-     * Updates the categories based on a numeric value. How this is being done is specific
-     * to the implementation.
+     * Adds a named query category to the QueryTerm. The implementation must make sure, that
+     * the category is unique.
      *
-     * @param setting
+     * @param {string} category
      */
-    setting(setting : number) : void;
+    pushCategory(category: string);
+
+    /**
+     * Removes a named query category to the QueryTerm. The implementation must make sure, that
+     * the category is unique.
+     *
+     * @param {string} category
+     */
+    removeCategory(category: string);
+
+    /**
+     * Replaces all the existing categories by the provided categories.
+     *
+     * @param {string} categories
+     */
+    setCategories(categories: string[]);
 }

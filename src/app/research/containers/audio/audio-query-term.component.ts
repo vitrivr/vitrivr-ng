@@ -27,12 +27,32 @@ export class AudioQueryTermComponent {
     constructor(private dialog: MdDialog) {}
 
     /**
-     * This method is invoked whenever the slider value changes.
+     * This method is invoked whenever the slider value changes. Updates the feature categories for this AudioQueryTerm based
+     * on a linear, numerical scale.
      *
      * @param event
      */
     public onSliderChanged(event:any) {
-        this.audioTerm.setting(this.sliderSetting);
+        switch (this.sliderSetting) {
+            case 0:
+                this.audioTerm.setCategories(['audiofingerprint']);
+                break;
+            case 1:
+                this.audioTerm.setCategories(['audiofingerprint', 'audiomatching']);
+                break;
+            case 2:
+                this.audioTerm.setCategories(['audiomatching', 'hpcpaverage']);
+                break;
+            case 3:
+                this.audioTerm.setCategories(['audiomelody', 'pitchsequence']);
+                break;
+            case 4:
+                this.audioTerm.setCategories(['pitchsequence']);
+                break;
+            default:
+                this.audioTerm.setCategories(['audiofingerprint', 'audiomatching']);
+                break;
+        }
     }
 
     /**
