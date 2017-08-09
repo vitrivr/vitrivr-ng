@@ -36,6 +36,14 @@ export interface QueryTermInterface {
     removeCategory(category: string);
 
     /**
+     * Returns true if QueryTerm contains specified category and false otherwise.
+     *
+     * @param {string} category Category that should be checked,
+     * @return {boolean} True if category is contained, else false.
+     */
+    hasCategory(category: string): boolean;
+
+    /**
      * Replaces all the existing categories by the provided categories.
      *
      * @param {string} categories

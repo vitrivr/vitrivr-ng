@@ -5,6 +5,6 @@ export class TextQueryTerm extends AbstractQueryTerm {
      * Default constructor.
      */
     constructor() {
-        super("TEXT",  ['text']);
+        super("TEXT", []);
     }
 }

@@ -72,6 +72,16 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
     }
 
     /**
+     * Returns true if QueryTerm contains specified category and false otherwise.
+     *
+     * @param {string} category Category that should be checked,
+     * @return {boolean} True if category is contained, else false.
+     */
+    public hasCategory(category: string): boolean {
+        return (this._categories.indexOf(category) > -1);
+    }
+
+    /**
      * Removes a named query category to the QueryTerm. The implementation must make sure, that
      * the category is unique.
      *
