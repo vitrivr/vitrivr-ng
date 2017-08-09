@@ -9,9 +9,21 @@ import {M3DQueryTermModule} from "./m3d/m3d-query-term.module";
 import {MaterialModule} from "../../material.module";
 import {MotionQueryTerm} from "../../shared/model/queries/motion-query-term.model";
 import {MotionQueryTermModule} from "./motion/motion-query-term.module";
+import {TextQueryTermModule} from "./text/text-query-term.module";
+import {FlexLayoutModule} from "@angular/flex-layout";
 
 @NgModule({
-    imports:      [ MaterialModule, BrowserModule, FormsModule, ImageQueryTermModule, AudioQueryTermModule, M3DQueryTermModule, MotionQueryTermModule ],
+    imports: [
+        MaterialModule,
+        FlexLayoutModule,
+        BrowserModule,
+        FormsModule,
+        ImageQueryTermModule,
+        AudioQueryTermModule,
+        M3DQueryTermModule,
+        MotionQueryTermModule,
+        TextQueryTermModule
+    ],
     declarations: [ QueryContainerComponent ],
     exports:      [ QueryContainerComponent ]
 })
