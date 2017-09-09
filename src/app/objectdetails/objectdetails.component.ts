@@ -10,6 +10,7 @@ import {Location} from "@angular/common";
 import {MdDialog, MdSnackBar} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {ImagecropComponent} from "./imagecrop.component";
+import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
 
 @Component({
     moduleId: module.id,
@@ -19,7 +20,7 @@ import {ImagecropComponent} from "./imagecrop.component";
 })
 
 
-export class ObjectdetailsComponent implements OnInit, OnDestroy {
+export class ObjectdetailsComponent implements OnInit {
     /** */
     @ViewChild('audioplayer')
     private audioplayer: any;
@@ -45,7 +46,7 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy {
     private _segments: SegmentScoreContainer[] = [];
 
     /** */
-    private _queryServiceSubscription;
+    private _results : ResultsContainer;
 
     /**
      *
@@ -55,33 +56,23 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy {
      * @param _metadataLookup
      * @param _resolver
      */
-    constructor(private _route: ActivatedRoute,
+    constructor(private _query : QueryService,
+                private _route: ActivatedRoute,
                 private _location: Location,
-                private _query : QueryService,
                 private _metadataLookup: MetadataLookupService,
                 private _resolver: ResolverService,
                 private _snackBar: MdSnackBar,
                 private _dialog: MdDialog) {
+
+        this._results = _query.results;
     }
 
     /**
-     * Lifecycle hook (onInit): Subscribes to the QueryService observable and the route observable.
+     * Lifecycle hook (onInit): Subscribes to changes of the Router class. Whenever the parameter becomes available,
+     * the onParamsAvailable method is invoked.
      */
     public ngOnInit() {
-        /* Subscribes to changes of the Router class. Whenever the parameter becomes available,
-         * the onParamsAvailable method is invoked. */
         this._route.params.first().subscribe((params: Params) => this.onParamsAvailable(params));
-        this._queryServiceSubscription = this._query.observable.filter(msg => msg === "STARTED").subscribe(() => {
-            this._location.back();
-        });
-    }
-
-    /**
-     * Lifecycle hook (onDestroy): Unsubscribes from the QueryService subscription.
-     */
-    public ngOnDestroy() {
-        this._queryServiceSubscription.unsubscribe();
-        this._queryServiceSubscription = null;
     }
 
     /**
@@ -91,7 +82,7 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy {
      */
     private onParamsAvailable(params: Params) {
         this._objectId = params['objectId'];
-        if (this._objectId && this._query.has(this._objectId)) {
+        if (this._objectId && this._results.hasObject(this._objectId)) {
             this.refresh();
         } else {
             this._snackBar.open("The specified objectId '" + this._objectId + "' not found in the query results. Returning...", null, {duration: 3000}).afterDismissed().first().subscribe(() => {
@@ -161,9 +152,9 @@ export class ObjectdetailsComponent implements OnInit, OnDestroy {
      */
     private refresh() {
         /* Fetch the media-object from the QueryService. */
-        this._mediaobject = this._query.get(this._objectId);
+        this._mediaobject = this._results.getObject(this._objectId);
         this._segments = [];
-        this._query.get(this._objectId).segmentScores.forEach((value, key) => {
+        this._mediaobject.segmentScores.forEach((value, key) => {
             this._segments.push(value);
         });
         this._segments.sort((a, b) => SegmentScoreContainer.compareAsc(a,b));

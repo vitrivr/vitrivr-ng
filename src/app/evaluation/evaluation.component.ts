@@ -9,7 +9,7 @@ import {EvaluationTemplate} from "../shared/model/evaluation/evaluation-template
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {EvaluationSet} from "../shared/model/evaluation/evaluation-set";
 import {ScenarioDetailsDialogComponent} from "./scenario-details-dialog.component";
-import {GalleryComponent} from "../gallery/gallery.component";
+import {GalleryComponent} from "../results/gallery/gallery.component";
 import {EvaluationService} from "../core/evaluation/evaluation.service";
 import {Location} from "@angular/common";
 import {ConfigService} from "../core/basics/config.service";
@@ -68,10 +68,6 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
          * the onParamsAvailable method is invoked.
          */
         this._route.params.first().subscribe((params: Params) => this.onParamsAvailable(params));
-
-        if (this._queryService.size() > 0) {
-            this.updateGallery();
-        }
     }
 
     /**
@@ -148,7 +144,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     public onResultsAcceptButtonClick() {
         if (this.canBeAccepted()) {
-            if (this._evaluationset.current.accept(this._queryService.features, this.mediaobjects) == EvaluationState.RankingResults) {
+            if (this._evaluationset.current.accept(this._results.features, this.mediaobjects) == EvaluationState.RankingResults) {
                 this.saveEvaluation();
                 this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: ConfigService.SNACKBAR_DURATION});
             }
@@ -381,13 +377,13 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                     this._evaluationset.current.start();
                     this.saveEvaluation();
                 }
-                event = new EvaluationEvent(this._queryService.queryId, new Date(), "STARTED",  null);
+                event = new EvaluationEvent(this._results.queryId, new Date(), "STARTED",  null);
                 break;
             case "FEATURE":
-                event = new EvaluationEvent(this._queryService.queryId, new Date(), "FEATURE_AVAILABLE", this._queryService.features[this._queryService.features.length-1].readableName);
+                event = new EvaluationEvent(this._results.queryId, new Date(), "FEATURE_AVAILABLE", this._results.features[this._results.features.length-1].readableName);
                 break;
             case "ENDED":
-                event = new EvaluationEvent(this._queryService.queryId, new Date(), "ENDED",  null);
+                event = new EvaluationEvent(this._results.queryId, new Date(), "ENDED",  null);
                 break;
             case "UPDATED":
                 break;
