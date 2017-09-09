@@ -1,9 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
-import {QueryChange, QueryService} from "../core/queries/query.service";
+import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
+import {QueryChange, QueryService} from "../../core/queries/query.service";
 import {Router} from "@angular/router";
-import {ResolverService} from "../core/basics/resolver.service";
-import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
+import {ResolverService} from "../../core/basics/resolver.service";
+import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
+import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
+import {AbstractResultsViewComponent} from "../abstract-results-view.component";
 
 @Component({
     moduleId: module.id,
@@ -12,50 +14,73 @@ import {SegmentScoreContainer} from "../shared/model/features/scores/segment-sco
     styleUrls: ['gallery.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-
-
-export class GalleryComponent implements OnInit, OnDestroy {
-
+export class GalleryComponent extends AbstractResultsViewComponent {
     /** List of MediaObjectScoreContainers currently displayed by the gallery. */
     protected _mediaobjects : MediaObjectScoreContainer[] = [];
 
     /** Reference to the MediaObjectScoreContainer that is currently in focus. */
     protected _focus: MediaObjectScoreContainer;
 
-    /* Indicator whether the progress bar should be visible. */
-    private _loading : boolean = false;
+    /* The size of an individual tile in pixels. */
+    private _tilesize : number = 250;
 
-    /** Local reference to the subscription to the QueryService. */
-    protected _queryServiceSubscription;
+    /* The gap between two tile in pixels. */
+    private _tilegap: number = 15;
 
     /**
      * Default constructor.
      *
+     * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
      * @param _queryService
      * @param _resolver
      * @param _router
      */
-    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {}
+    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {
+        super(_cdr, _queryService);
+    }
 
     /**
-     * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
+     * Getter for size of an individual tile in the gallery.
+     *
+     * @return {number}
      */
-    public ngOnInit(): void {
-        this._queryServiceSubscription = this._queryService.observable
-            .filter(msg => ["STARTED", "ENDED", "ERROR", "UPDATED", "CLEAR"].indexOf(msg) > -1)
-            .subscribe((msg) => this.onQueryStateChange(msg));
+    get tilesize(): number {
+        return this._tilesize;
+    }
 
-        if (this._queryService.size() > 0) {
-            this.updateGallery();
+    /**
+     * Adjusts the size of the tile to a new value. That value must be greater than 20. Calling this
+     * method triggers an update of the component tree.
+     *
+     * @param {number} value
+     */
+    set tilesize(value: number) {
+        if (value > 10) {
+            this._tilesize = value;
+            this._cdr.markForCheck();
         }
     }
 
     /**
-     * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
+     * Getter for gap between two individual tiles in pixels.
+     *
+     * @return {number}
      */
-    public ngOnDestroy() {
-        this._queryServiceSubscription.unsubscribe();
-        this._queryServiceSubscription = null;
+    get tilegap(): number {
+        return this._tilegap;
+    }
+
+    /**
+     * Adjusts the size of the gap between tiles. That value must be greater than 2px. Calling this
+     * method triggers an update of the component tree.
+     *
+     * @param {number} value
+     */
+    set tilegap(value: number) {
+        if (value > 2) {
+            this._tilegap = value;
+            this._cdr.markForCheck();
+        }
     }
 
     /**
@@ -64,15 +89,6 @@ export class GalleryComponent implements OnInit, OnDestroy {
      */
     get mediaobjects(): MediaObjectScoreContainer[] {
         return this._mediaobjects;
-    }
-
-    /**
-     * Getter for loading.
-     *
-     * @return {boolean}
-     */
-    get loading(): boolean {
-        return this._loading;
     }
 
     /**
@@ -117,7 +133,6 @@ export class GalleryComponent implements OnInit, OnDestroy {
         this._router.navigate(['/mediaobject/' + object.objectId]);
     }
 
-
     /**
      * Triggered whenever a user clicks on the MLT (= MoreLikeThis) button. Triggers
      * a MLT query with the QueryService.
@@ -129,34 +144,13 @@ export class GalleryComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Invoked whenever the QueryService reports that the results were updated. Causes
-     * the gallery to be re-rendered.
-     *
-     * @param msg QueryChange message
-     */
-    protected onQueryStateChange(msg: QueryChange) {
-        if (msg == 'STARTED') this._loading = true;
-        if (msg == 'ENDED') this._loading = false;
-        if (msg == 'ERROR') this._loading = false;
-
-        this.updateGallery();
-        this._cdr.markForCheck();
-    }
-
-    /**
      * This method is used internally to update the gallery view.
      */
-    protected updateGallery() {
-        let cache : MediaObjectScoreContainer[] = [];
-        this._queryService.forEach(function(value : MediaObjectScoreContainer, key : string) {
-            cache.push(value)
-        }, true);
-        if (cache.length > 1) {
-            cache.sort((a : MediaObjectScoreContainer,b : MediaObjectScoreContainer) => MediaObjectScoreContainer.compareAsc(a,b))
+    protected updateView() {
+        if (this._results) {
+            this._mediaobjects = this._results.objects.sort((a : MediaObjectScoreContainer,b : MediaObjectScoreContainer) => MediaObjectScoreContainer.compareAsc(a,b));
+            this._focus = null;
+            if (this._mediaobjects.length > 0) this._cdr.markForCheck();
         }
-
-        /* Set the list of Mediaobjects and reset the object in focus. */
-        this._mediaobjects = cache;
-        this._focus = null;
     }
 }
