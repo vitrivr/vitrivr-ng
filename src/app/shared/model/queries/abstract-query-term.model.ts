@@ -105,4 +105,15 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
             this._categories.push(category);
         }
     }
+
+    /**
+     * Returns a JSON object representing the current AbstractQueryTerm instance.
+     */
+    public toJson() : any {
+        return {
+            data : this._data,
+            categories : this._categories,
+            type: this._type
+        }
+    }
 }
