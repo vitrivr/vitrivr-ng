@@ -1313,6 +1313,12 @@ div.weight-distribution {
   color: white; }
 
 /* Defines some spacer classes that can be used in flexboxes etc. */
+.spacer-xlarge {
+  padding: 0 40px; }
+
+.spacer-large {
+  padding: 0 25px; }
+
 .spacer-medium {
   padding: 0 15px; }
 

@@ -6,7 +6,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 import {AppComponent}  from './app.component';
-import {GalleryModule} from "./gallery/gallery.module";
+import {GalleryModule} from "./results/gallery/gallery.module";
 import {ResearchModule} from "./research/research.module";
 import {PingComponent} from "./toolbar/ping.component";
 import {CoreModule} from "./core/core.module";

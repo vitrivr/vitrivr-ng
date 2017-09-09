@@ -6,11 +6,19 @@
 
         <button md-icon-button (click)="querysidenav.toggle()" mdTooltip="Toggle query sidebar"><md-icon>search</md-icon></button>
 
+        <span class="spacer-xlarge"></span>
+
+        <a md-icon-button routerLink="/gallery" routerLinkActive="active" mdTooltip="Gallery view"><md-icon>grid_on</md-icon></a>
+
         <span class="spacer-medium"></span>
 
-        <a md-icon-button routerLink="/gallery" routerLinkActive="active" mdTooltip="Navigate to gallery"><md-icon>grid_on</md-icon></a>
+        <a md-icon-button routerLink="/mini-gallery" routerLinkActive="active" mdTooltip="Mini-gallery view"><md-icon>view_comfy</md-icon></a>
 
         <span class="spacer-medium"></span>
+
+        <a md-icon-button routerLink="/list" routerLinkActive="active" mdTooltip="List view"><md-icon>list</md-icon></a>
+
+        <span class="spacer-xlarge"></span>
 
         <a *ngIf="config.evaluation.active" md-icon-button routerLink="/evaluation" routerLinkActive="active" mdTooltip="Navigate to evaluation module"><md-icon>assessment</md-icon></a>
 
