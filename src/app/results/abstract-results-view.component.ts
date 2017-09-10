@@ -3,6 +3,7 @@ import {ResultsContainer} from "../shared/model/features/scores/results-containe
 import {QueryChange, QueryService} from "../core/queries/query.service";
 
 export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy  {
+
     /* Indicator whether the progress bar should be visible. */
     private _loading : boolean = false;
 
@@ -10,7 +11,10 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
     protected _queryServiceSubscription;
 
     /** Local reference to the ResultsContainer holding the query results. May be null. */
-    protected _results : ResultsContainer;
+    private _results : ResultsContainer;
+
+    /** Local reference to the subscription to the ResultsContainer. */
+    private _resultsSubscriptionRef;
 
     /**
      * Default constructor.
@@ -27,16 +31,26 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
         this._queryServiceSubscription = this._queryService.observable
             .filter(msg => ["STARTED", "ENDED", "ERROR", "CLEAR"].indexOf(msg) > -1)
             .subscribe((msg) => this.onQueryStateChange(msg));
-        this._results = this._queryService.results;
+
+
+        /* Apply results if there are existing. */
+        if (this._queryService.results) this.register(this._queryService.results);
+
+        /* Update view. */
         this.updateView();
     }
 
     /**
-     * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
+     * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService and ResultsContainer subscription.
      */
     public ngOnDestroy() {
         this._queryServiceSubscription.unsubscribe();
         this._queryServiceSubscription = null;
+
+        if (this._resultsSubscriptionRef) {
+            this._resultsSubscriptionRef.unsubscribe();
+            this._resultsSubscriptionRef = null;
+        }
     }
 
     /**
@@ -46,6 +60,15 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
      */
     get loading(): boolean {
         return this._loading;
+    }
+
+    /**
+     * Getter for results.
+     *
+     * @return {ResultsContainer}
+     */
+    get results(): ResultsContainer {
+        return this._results;
     }
 
     /**
@@ -71,6 +94,20 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
         }
 
         this.updateView();
+    }
+
+    /**
+     *
+     * @param {ResultsContainer} results
+     */
+    protected register(results: ResultsContainer) {
+        if (!results) throw new Error("The provided results are null or undefined; this is a programmers error!");
+
+        /* Apply results */
+        this._results = results;
+        this._resultsSubscriptionRef = this._results.subscribe(() => {
+            this.updateView();
+        });
     }
 
     /**
