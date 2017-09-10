@@ -150,15 +150,15 @@ export class QueryService {
                 break;
             case "QR_OBJECT":
                 let obj = <ObjectQueryResult>parsed;
-                if (this._results.processObjectMessage(obj)) this._subject.next("UPDATED");
+                if (this._results && this._results.processObjectMessage(obj)) this._subject.next("UPDATED");
                 break;
             case "QR_SEGMENT":
                 let seg = <SegmentQueryResult>parsed;
-                if (this._results.processSegmentMessage(seg)) this._subject.next("UPDATED");
+                if (this._results && this._results.processSegmentMessage(seg)) this._subject.next("UPDATED");
                 break;
             case "QR_SIMILARITY":
                 let sim = <SimilarityQueryResult>parsed;
-                if (this._results.processSimilarityMessage(sim)) this._subject.next("UPDATED");
+                if (this._results && this._results.processSimilarityMessage(sim)) this._subject.next("UPDATED");
                 break;
             case "QR_ERROR":
                 this.errorOccurred(<QueryError>parsed);
@@ -206,12 +206,19 @@ export class QueryService {
     }
 
     /**
-     *
+     * Clears the results and aborts the current query from being executed (Warning: The
+     * abort is not propagated to the Cineast API, which might still be running).
      */
     public clear() {
         /* Complete the ResultsContainer and release it. */
         this._results.complete();
         this._results = null;
+
+        /* If query is still running, stop it. */
+        if (this._running) {
+            this._subject.next("ENDED" as QueryChange);
+            this._running = false;
+        }
 
         /* Publish Event. */
         this._subject.next("CLEAR");
