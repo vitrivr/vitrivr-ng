@@ -116,6 +116,7 @@ export class ResultsContainer extends Subject<boolean> {
     public toggleMediatype(type: MediaType, active: boolean) {
         if (this._mediatypes.has(type) && this._mediatypes.get(type) != active) {
             this._mediatypes.set(type, active);
+            this.next(true);
         }
     }
 
