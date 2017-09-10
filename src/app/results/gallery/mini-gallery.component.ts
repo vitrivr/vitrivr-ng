@@ -5,6 +5,8 @@ import {QueryService} from "../../core/queries/query.service";
 import {ResolverService} from "../../core/basics/resolver.service";
 import {Router} from "@angular/router";
 import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
+import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {FeatureDetailsComponent} from "../feature-details.component";
 
 @Component({
     moduleId: module.id,
@@ -17,7 +19,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
     /** List of MediaObjectScoreContainers currently displayed by the gallery. */
     protected _segments : SegmentScoreContainer[] = [];
 
-    /** Reference to the MediaObjectScoreContainer that is currently in focus. */
+    /** Reference to the SegmentScoreContainer that is currently in focus. */
     private _focus: SegmentScoreContainer;
 
     /**
@@ -28,10 +30,9 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
      * @param _resolver
      * @param _router
      */
-    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {
+    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, private _snackBar: MdSnackBar) {
         super(_cdr, _queryService);
     }
-
 
     /**
      *
@@ -42,30 +43,63 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
     }
 
     /**
+     * Sets the focus to the provided SegmentScoreContainer.
      *
-     * @return {MediaObjectScoreContainer}
+     * @param focus
      */
-    get focus(): SegmentScoreContainer {
-        return this._focus;
+    set focus(focus: SegmentScoreContainer) {
+        this._focus = focus;
     }
 
     /**
-     * Sets the focus to the provided MediaObjectScoreContainer.
+     * Returns true, if the provided SegmentScoreContainer is currently in focus and false otherwise.
      *
-     * @param focus'^^
+     * @param segment SegmentScoreContainer that should be checked.
+     * @return {boolean}
      */
-    set focus(value: SegmentScoreContainer) {
-        this._focus = value;
+    public inFocus(segment: SegmentScoreContainer) {
+        return this._focus == segment;
+    }
+
+    /**
+     * Invoked whenever a user clicks on the object details button. Triggers a transition to the ObjectdetailsComponent.
+     *
+     * @param segment SegmentScoreContainer for which details should be displayed.
+     */
+    public onDetailsButtonClicked(segment: SegmentScoreContainer) {
+        this._router.navigate(['/mediaobject/' + segment.objectId]);
+    }
+
+    /**
+     * Invoked whenever a user clicks on the MLT (= MoreLikeThis) button. Triggers a MLT query with the QueryService.
+     *
+     * @param segment SegmentScoreContainer which should be used for MLT.
+     */
+    public onMltButtonClicked(segment: SegmentScoreContainer) {
+        this._queryService.findMoreLikeThis(segment.segmentId);
+    }
+
+    /**
+     * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
+     *
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onInformationButtonClicked(segment: SegmentScoreContainer) {
+        this._snackBar.openFromComponent(FeatureDetailsComponent, <MdSnackBarConfig>{data : segment.scores, duration: 2500});
     }
 
     /**
      * This method is used internally to update the gallery view.
      */
     protected updateView() {
-        if (this._results) {
-            this._segments = this._results.segments.sort((a : SegmentScoreContainer,b : SegmentScoreContainer) => SegmentScoreContainer.compareAsc(a,b));
+        if (this.results) {
+            this._segments = this.results.segments.slice().sort((a,b) => SegmentScoreContainer.compareAsc(a,b));
             this._focus = null;
-            if (this._segments.length > 0) this._cdr.markForCheck();
+        } else {
+            this._segments = [];
         }
+
+        this._cdr.markForCheck();
     }
 }
