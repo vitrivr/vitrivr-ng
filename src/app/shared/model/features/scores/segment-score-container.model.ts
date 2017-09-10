@@ -121,4 +121,16 @@ export class SegmentScoreContainer extends ScoreContainer {
     get objectScoreContainer(): MediaObjectScoreContainer {
         return this._objectScoreContainer;
     }
+
+    /**
+     * Static comparator method. Compares two SegmentScoreContainer so that they are sorted in a ascending
+     * order according to their sequence number.
+     *
+     * @param {SegmentScoreContainer} a First object to compare.
+     * @param {SegmentScoreContainer} b Second object to compare.
+     * @return {number}
+     */
+    public static compareSeqAsc(a : SegmentScoreContainer , b : SegmentScoreContainer) {
+        return b.mediaSegment.start - a.mediaSegment.start
+    }
 }

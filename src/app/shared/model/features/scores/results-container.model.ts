@@ -36,9 +36,10 @@ export class ResultsContainer extends Subject<boolean> {
     private _features: Feature[] = [];
 
     /**
+     * Constructor for ResultsConatiner.
      *
-     * @param {string} queryId
-     * @param {WeightFunction} weightFunction
+     * @param {string} queryId Unique ID of the query. Used to filter messages!
+     * @param {WeightFunction} weightFunction Function that should be used to calculate the scores.
      */
     constructor(public readonly queryId: string, private weightFunction : WeightFunction = new DefaultWeightFunction()) {
         super();
@@ -129,16 +130,14 @@ export class ResultsContainer extends Subject<boolean> {
     public rerank(features?: Feature[], weightFunction?: WeightFunction) {
         if (!features) features = this.features;
         if (!weightFunction) weightFunction = this.weightFunction;
-        this._results_objects.forEach((value) => {
-            value.update(features, weightFunction);
-        });
+        this._results_objects.forEach((value) => { value.update(features, weightFunction); });
 
         /* Publish a change. */
         this.next(true);
     }
 
     /**
-     * Processes a ObjectQueryResult message. Extracts the MediaObject information and adds the
+     * Processes a ObjectQueryResult message. Extracts the MediaObject lines and adds the
      * objects to the list of MediaObjectScoreContainers.
      *
      * @param {ObjectQueryResult} obj ObjectQueryResult message
@@ -163,7 +162,7 @@ export class ResultsContainer extends Subject<boolean> {
     }
 
     /**
-     * Processes a SegmentQueryResult message. Extracts the Segment information and adds the
+     * Processes a SegmentQueryResult message. Extracts the Segment lines and adds the
      * segments to the existing MediaObjectScoreContainers.
      *
      * This method triggers an observable change in the QueryService class.
@@ -176,8 +175,10 @@ export class ResultsContainer extends Subject<boolean> {
         for (let segment of seg.content) {
             let mosc = this.uniqueMediaObjectScoreContainer(segment.objectId);
             let ssc = mosc.addMediaSegment(segment);
-            this._results_segments.push(ssc);
-            this._segmentid_to_objectid_map.set(segment.segmentId, segment.objectId);
+            if (!this._segmentid_to_objectid_map.has(segment.segmentId)) {
+                this._results_segments.push(ssc);
+                this._segmentid_to_objectid_map.set(segment.segmentId, segment.objectId);
+            }
         }
 
         /* Publish a change. */
@@ -203,7 +204,7 @@ export class ResultsContainer extends Subject<boolean> {
         /* Get and (if missing) add a unique feature. */
         let feature = this.uniqueFeature(sim.category);
 
-        /* Updates the Similarity information and re-calculates the scores.  */
+        /* Updates the Similarity lines and re-calculates the scores.  */
         for (let similarity of sim.content) {
             let objectId = this._segmentid_to_objectid_map.get(similarity.key);
             if (objectId != undefined) {

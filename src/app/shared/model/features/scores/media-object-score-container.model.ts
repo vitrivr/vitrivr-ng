@@ -17,10 +17,13 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
     private _segmentScores : Map<string, SegmentScoreContainer> = new Map();
 
+    /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
+    private _segments : SegmentScoreContainer[] = [];
+
     /** Reference to the actual MediaObject this container belongs to. */
     private _mediaObject? : MediaObject;
 
-    /** */
+    /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet. */
     private _cache : Map<string,Array<[Feature,Similarity]>> = new Map();
 
     /**
@@ -130,12 +133,11 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     }
 
     /**
-     * Getter for the list of map for segment-scores.
      *
-     * @returns {Map<string, SegmentScoreContainer>}
+     * @return {SegmentScoreContainer[]}
      */
-    get segmentScores(): Map<string, SegmentScoreContainer> {
-        return this._segmentScores;
+    get segments(): SegmentScoreContainer[] {
+        return this._segments;
     }
 
     /**
@@ -153,15 +155,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @returns {SegmentScoreContainer}
      */
     get representativeSegment() : SegmentScoreContainer {
-
-        /** TODO: Not nice yet! */
-        let representativeSegment : SegmentScoreContainer = null;
-        this._segmentScores.forEach((value, key) => {
-            if (representativeSegment == undefined || representativeSegment.score < value.score) {
-                representativeSegment = value
-            }
-        });
-        return representativeSegment;
+        return this.segments.reduce((a,b) => { return a.score > b.score ? a : b});
     }
 
     /**
@@ -176,6 +170,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
         if (!this._segmentScores.has(segment.segmentId)) {
             let ssc = new SegmentScoreContainer(segment, this);
             this._segmentScores.set(segment.segmentId, ssc);
+            this._segments.push(ssc);
         }
         return this._segmentScores.get(segment.segmentId);
     }
