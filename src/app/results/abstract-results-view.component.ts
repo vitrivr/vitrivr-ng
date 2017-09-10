@@ -33,7 +33,7 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
             .subscribe((msg) => this.onQueryStateChange(msg));
 
 
-        /* Apply results if there are existing. */
+        /* Register ResultsContainer from QueryService if there is an active one. */
         if (this._queryService.results) this.register(this._queryService.results);
 
         /* Update view. */
@@ -47,10 +47,8 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
         this._queryServiceSubscription.unsubscribe();
         this._queryServiceSubscription = null;
 
-        if (this._resultsSubscriptionRef) {
-            this._resultsSubscriptionRef.unsubscribe();
-            this._resultsSubscriptionRef = null;
-        }
+        /* Unregister current ResultsContainer. */
+        this.unregister()
     }
 
     /**
@@ -89,7 +87,7 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
                 this._loading = false;
                 break;
             case 'CLEAR':
-                this._results = null;
+                this.unregister();
                 break;
         }
 
@@ -97,6 +95,7 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
     }
 
     /**
+     * Registers the provided ResultsContainer instance as the one that feeds the current ResultsViewComponent instance.
      *
      * @param {ResultsContainer} results
      */
@@ -108,6 +107,17 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
         this._resultsSubscriptionRef = this._results.subscribe(() => {
             this.updateView();
         });
+    }
+
+    /**
+     * Unregisters the currently active ResultsContainer instance and stops this view from getting data from it.
+     */
+    protected unregister() {
+        if (this._resultsSubscriptionRef) {
+            this._resultsSubscriptionRef.unsubscribe();
+            this._resultsSubscriptionRef = null;
+        }
+        this._results = null;
     }
 
     /**
