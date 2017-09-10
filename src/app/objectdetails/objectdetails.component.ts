@@ -82,7 +82,7 @@ export class ObjectdetailsComponent implements OnInit {
      */
     private onParamsAvailable(params: Params) {
         this._objectId = params['objectId'];
-        if (this._objectId && this._results.hasObject(this._objectId)) {
+        if (this._objectId && this._results && this._results.hasObject(this._objectId)) {
             this.refresh();
         } else {
             this._snackBar.open("The specified objectId '" + this._objectId + "' not found in the query results. Returning...", null, {duration: 3000}).afterDismissed().first().subscribe(() => {
@@ -148,18 +148,14 @@ export class ObjectdetailsComponent implements OnInit {
     }
 
     /**
-     * Refreshes the view by loading all necessary information.
+     * Refreshes the view by loading all necessary lines.
      */
     private refresh() {
         /* Fetch the media-object from the QueryService. */
         this._mediaobject = this._results.getObject(this._objectId);
-        this._segments = [];
-        this._mediaobject.segmentScores.forEach((value, key) => {
-            this._segments.push(value);
-        });
-        this._segments.sort((a, b) => SegmentScoreContainer.compareAsc(a,b));
+        this._segments = this._mediaobject.segments.slice().sort((a, b) => SegmentScoreContainer.compareAsc(a,b));
 
-        /* Lookup metadata information for the provided object. */
+        /* Lookup metadata lines for the provided object. */
         this._metadataLookup.observable().first().subscribe((msg) => {
             this._metadata = msg.content
         });
