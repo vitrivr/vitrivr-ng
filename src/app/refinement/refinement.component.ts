@@ -97,12 +97,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param mediatype
      */
     public isActive(mediatype : MediaType) : boolean {
-        if (this._results) {
-            if (this._results.mediatypes.has(mediatype)) {
-                return this._results.mediatypes.get(mediatype);
-            } else {
-                return false;
-            }
+        if (this._results && this._results.mediatypes.has(mediatype)) {
+            return this._results.mediatypes.get(mediatype);
+        } else {
+            return false;
         }
     }
 
