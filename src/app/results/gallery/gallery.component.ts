@@ -6,6 +6,8 @@ import {ResolverService} from "../../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
 import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
 import {AbstractResultsViewComponent} from "../abstract-results-view.component";
+import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {FeatureDetailsComponent} from "../feature-details.component";
 
 @Component({
     moduleId: module.id,
@@ -34,8 +36,9 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      * @param _queryService
      * @param _resolver
      * @param _router
+     * @param _snackBar
      */
-    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router) {
+    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MdSnackBar) {
         super(_cdr, _queryService);
     }
 
@@ -108,7 +111,7 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      *
      * @param focus
      */
-    public setFocus(focus: MediaObjectScoreContainer) {
+    set focus(focus: MediaObjectScoreContainer) {
         this._focus = focus;
     }
 
@@ -127,7 +130,7 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      * Triggered whenever a user clicks on the object details button. Triggers a
      * transition to the ObjectdetailsComponent.
      *
-     * @param object MediaObject for which details should be displayed.
+     * @param object MediaObjectScoreContainer for which details should be displayed.
      */
     public onDetailsButtonClicked(object: MediaObjectScoreContainer) {
         this._router.navigate(['/mediaobject/' + object.objectId]);
@@ -137,20 +140,41 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      * Triggered whenever a user clicks on the MLT (= MoreLikeThis) button. Triggers
      * a MLT query with the QueryService.
      *
-     * @param segment SegmentScoreContainer which should be used for MLT.
+     * @param object MediaObjectScoreContainer which should be used for MLT.
      */
-    public onMltButtonClicked(segment: SegmentScoreContainer) {
-       this._queryService.findMoreLikeThis(segment.segmentId);
+    public onMltButtonClicked(object: MediaObjectScoreContainer) {
+        if (object.representativeSegment) {
+            this._queryService.findMoreLikeThis(object.representativeSegment.segmentId);
+        } else {
+            throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
+        }
+    }
+
+    /**
+     * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
+     *
+     *
+     * @param {MediaObjectScoreContainer} object
+     */
+    public onInformationButtonClicked(object: MediaObjectScoreContainer) {
+        if (object.representativeSegment) {
+            this._snackBar.openFromComponent(FeatureDetailsComponent, <MdSnackBarConfig>{data: object.representativeSegment.scores, duration: 2500});
+        } else {
+            throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
+        }
     }
 
     /**
      * This method is used internally to update the gallery view.
      */
     protected updateView() {
-        if (this._results) {
-            this._mediaobjects = this._results.objects.sort((a : MediaObjectScoreContainer,b : MediaObjectScoreContainer) => MediaObjectScoreContainer.compareAsc(a,b));
+        if (this.results) {
+            this._mediaobjects = this.results.objects.slice().sort((a,b) => MediaObjectScoreContainer.compareAsc(a,b));
             this._focus = null;
-            if (this._mediaobjects.length > 0) this._cdr.markForCheck();
+        } else {
+            this._mediaobjects = [];
         }
+
+        this._cdr.markForCheck();
     }
 }

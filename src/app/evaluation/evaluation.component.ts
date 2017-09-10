@@ -47,12 +47,12 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         _queryService : QueryService,
         _resolver: ResolverService,
         _router: Router,
+        _snackBar: MdSnackBar,
         private _location: Location,
         private _evaluation: EvaluationService,
         private _route: ActivatedRoute,
-        private _snackBar: MdSnackBar,
         private _dialog: MdDialog) {
-        super(_cdr,_queryService,_resolver,_router);
+        super(_cdr,_queryService,_resolver,_router,_snackBar);
     }
 
     /**
@@ -144,7 +144,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     public onResultsAcceptButtonClick() {
         if (this.canBeAccepted()) {
-            if (this._evaluationset.current.accept(this._results.features, this.mediaobjects) == EvaluationState.RankingResults) {
+            if (this._evaluationset.current.accept(this.results.features, this.mediaobjects) == EvaluationState.RankingResults) {
                 this.saveEvaluation();
                 this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: ConfigService.SNACKBAR_DURATION});
             }
@@ -377,13 +377,13 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                     this._evaluationset.current.start();
                     this.saveEvaluation();
                 }
-                event = new EvaluationEvent(this._results.queryId, new Date(), "STARTED",  null);
+                event = new EvaluationEvent(this.results.queryId, new Date(), "STARTED",  null);
                 break;
             case "FEATURE":
-                event = new EvaluationEvent(this._results.queryId, new Date(), "FEATURE_AVAILABLE", this._results.features[this._results.features.length-1].readableName);
+                event = new EvaluationEvent(this.results.queryId, new Date(), "FEATURE_AVAILABLE", this.results.features[this.results.features.length-1].readableName);
                 break;
             case "ENDED":
-                event = new EvaluationEvent(this._results.queryId, new Date(), "ENDED",  null);
+                event = new EvaluationEvent(this.results.queryId, new Date(), "ENDED",  null);
                 break;
             case "UPDATED":
                 break;
