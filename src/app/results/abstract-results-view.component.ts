@@ -25,6 +25,17 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
     constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService) {}
 
     /**
+     * Calculates and returns a green colour with a varying intensity based on the provided score.
+     *
+     * @param {number} score
+     * @return String that encodes the RGB value.
+     */
+    public colorForScore(score: number): string {
+        let v = Math.round(255.0 - (score * 255.0));
+        return "#" + ((1 << 24) + (v << 16) + (255 << 8) + v).toString(16).slice(1);
+    }
+
+    /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
      */
     public ngOnInit(): void {
