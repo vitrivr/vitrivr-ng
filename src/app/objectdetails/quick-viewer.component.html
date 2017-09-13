@@ -1,0 +1,16 @@
+
+<h1 md-dialog-title>Quick view: {{mediaobject.name}} ({{mediaobject.objectId}})</h1>
+
+<div md-dialog-content>
+    <div [style.max-height]="'600px'">
+        <video #videoplayer *ngIf="mediaobject.mediatype == 'VIDEO'" src="{{_resolver.pathToObject(mediaobject)}}" controls [style.width]="'600px'"></video>
+        <audio #audioplayer *ngIf="mediaobject.mediatype == 'AUDIO'" src="{{_resolver.pathToObject(mediaobject)}}" controls [style.width]="'600px'"></audio>
+        <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'" src="{{_resolver.pathToObject(mediaobject)}}" [style.max-height]="'600px'"/>
+        <m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'" src="{{_resolver.pathToObject(mediaobject)}}" [width]="400" [height]="400" [interaction]="true"> </m3d-loader>
+    </div>
+</div>
+
+<div md-dialog-actions>
+    <button *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'"  md-raised-button (click)="playAtCurrentPosition()"><md-icon>replay</md-icon>&nbsp;Replay at position</button>
+    <button *ngIf="mediaobject.mediatype == 'VIDEO'" md-raised-button><md-icon>send</md-icon>&nbsp;Submit current position</button>
+</div>
