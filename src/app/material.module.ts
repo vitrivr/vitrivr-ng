@@ -5,7 +5,7 @@ import {
     MdSliderModule, MdChipsModule, MdDialogModule, MdCardModule, MdSidenavModule, MdSelectModule, MdTabsModule,
     MdRadioModule, MdIconModule, MdMenuModule, MdInputModule, MdToolbarModule, MdTooltipModule, MdSnackBarModule,
     MdCheckboxModule, MdButtonModule, MdCommonModule, MdGridListModule, MdProgressBarModule, MdRippleModule,
-    PlatformModule, MdProgressSpinnerModule, MdSlideToggleModule, MdIconRegistry
+    MdProgressSpinnerModule, MdSlideToggleModule, MdIconRegistry
 } from "@angular/material";
 import {HttpModule} from "@angular/http";
 
@@ -31,7 +31,6 @@ const MATERIAL_MODULES = [
     MdTabsModule,
     MdToolbarModule,
     MdTooltipModule,
-    PlatformModule,
     MdCommonModule
 ];
 
