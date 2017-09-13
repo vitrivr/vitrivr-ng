@@ -4,10 +4,9 @@
     <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><md-spinner></md-spinner></p>
 
     <div class="list">
-        <div *ngFor="let mediaobject of mediaobjects" class="object" draggable="true" fxLayout="row" fxLayoutWrap fxLayoutGap="4px">
-            <div *ngFor="let segment of mediaobject.segments" class="segment" (mouseenter)="focus = segment" (mouseleave)="focus = null">
-                <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" draggable="false"/>
-
+        <div *ngFor="let mediaobject of mediaobjects | OrderByScorePipe" class="object" draggable="true" fxLayout="row" fxLayoutWrap fxLayoutGap="4px">
+            <div *ngFor="let segment of mediaobject.segments | OrderBySegmentPipe" class="segment" (mouseenter)="focus = segment" (mouseleave)="focus = null" [style.background-color]="colorForScore(segment.score)">
+                <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
                 <div  *ngIf="inFocus(segment)" class="footer" fxLayout="row-reverse">
                     <button md-icon-button (click)="onMltButtonClicked(segment)" class="tile-button" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button>
                     <button md-icon-button (click)="onDetailsButtonClicked(segment)" class="tile-button" mdTooltip="Show details"><md-icon>remove_red_eye</md-icon></button>
