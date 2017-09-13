@@ -57,7 +57,7 @@ export abstract class ScoreContainer {
      * Can be used with Array.prototype.sort();
      */
     public static compareDesc (a : ScoreContainer , b : ScoreContainer) {
-        return  a.score - b._score;
+        return  b._score - a._score;
     }
 
     /**
@@ -67,6 +67,6 @@ export abstract class ScoreContainer {
      * Can be used with Array.prototype.sort();
      */
     public static compareAsc (a : ScoreContainer , b : ScoreContainer) {
-       return b._score - a._score;
+       return a._score - b._score;
     }
 }
