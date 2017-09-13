@@ -169,7 +169,7 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      */
     protected updateView() {
         if (this.results) {
-            this._mediaobjects = this.results.objects.slice().sort((a,b) => MediaObjectScoreContainer.compareAsc(a,b));
+            this._mediaobjects = this.results.objects;
             this._focus = null;
         } else {
             this._mediaobjects = [];

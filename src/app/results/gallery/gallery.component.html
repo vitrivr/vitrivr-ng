@@ -4,7 +4,7 @@
     <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><md-spinner></md-spinner></p>
 
     <div class="gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="{{tilegap + 'px'}}" fxLayoutAlign="space-between start">
-        <div  *ngFor="let mediaobject of mediaobjects" fxFlex="{{tilesize + 'px'}}" [style.width]="tilesize + 'px'" [style.height]="tilesize + 'px'" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject)">
+        <div  *ngFor="let mediaobject of mediaobjects | OrderByScorePipe" fxFlex="{{tilesize + 'px'}}" [style.width]="tilesize + 'px'" [style.height]="tilesize + 'px'" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject)">
             <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                 <div class="filename">{{mediaobject.name}}</div>
                 <div class="score">
