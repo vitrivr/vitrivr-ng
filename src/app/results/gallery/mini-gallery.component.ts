@@ -5,8 +5,9 @@ import {QueryService} from "../../core/queries/query.service";
 import {ResolverService} from "../../core/basics/resolver.service";
 import {Router} from "@angular/router";
 import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
-import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MdDialog, MdSnackBar, MdSnackBarConfig} from "@angular/material";
 import {FeatureDetailsComponent} from "../feature-details.component";
+import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
 
 @Component({
     moduleId: module.id,
@@ -29,8 +30,10 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
      * @param _queryService
      * @param _resolver
      * @param _router
+     * @param _snackBar
+     * @param _dialog
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, private _snackBar: MdSnackBar) {
+    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MdSnackBar, protected _dialog: MdDialog) {
         super(_cdr, _queryService);
     }
 
@@ -90,11 +93,21 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
     }
 
     /**
+     * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onTileClicked(segment: SegmentScoreContainer) {
+        let dialogRef = this._dialog.open(QuickViewerComponent, {data: segment});
+    }
+
+
+    /**
      * This method is used internally to update the gallery view.
      */
     protected updateView() {
         if (this.results) {
-            this._segments = this.results.segments.slice().sort((a,b) => SegmentScoreContainer.compareAsc(a,b));
+            this._segments = this.results.segments;
             this._focus = null;
         } else {
             this._segments = [];
