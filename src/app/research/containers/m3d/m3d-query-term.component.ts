@@ -45,11 +45,6 @@ export class M3DQueryTermComponent {
      * Triggered whenever the Mode 3D Slide toggle is used to switch between 3D-sketch mode and normal mode.
      */
     public onModeToggled() {
-        if (this.sketch) {
-            this.sliderSetting = 100;
-        } else {
-            this.sliderSetting = 1;
-        }
         this.onSliderChanged();
     }
 
@@ -58,21 +53,22 @@ export class M3DQueryTermComponent {
      * based on a linear, numerical scale.
      */
     public onSliderChanged() {
-        switch (this.sliderSetting) {
-            case 0:
-                this.m3dTerm.setCategories(['sphericalharmonicslow']);
-                break;
-            case 1:
-                this.m3dTerm.setCategories(['sphericalharmonicsdefault']);
-                break;
-            case 2:
-                this.m3dTerm.setCategories(['sphericalharmonicshigh', 'lightfield']);
-                break;
-            case 100:
-                this.m3dTerm.setCategories(['lightfield']);
-                break;
-            default:
-                break;
+        if (!this.sketch) {
+            this.m3dTerm.setCategories(['lightfield']);
+        } else {
+            switch (this.sliderSetting) {
+                case 0:
+                    this.m3dTerm.setCategories(['sphericalharmonicslow']);
+                    break;
+                case 1:
+                    this.m3dTerm.setCategories(['sphericalharmonicsdefault']);
+                    break;
+                case 2:
+                    this.m3dTerm.setCategories(['sphericalharmonicshigh', 'lightfield']);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
