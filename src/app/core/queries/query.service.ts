@@ -210,14 +210,16 @@ export class QueryService {
      * abort is not propagated to the Cineast API, which might still be running).
      */
     public clear() {
-        /* Complete the ResultsContainer and release it. */
-        this._results.complete();
-        this._results = null;
-
         /* If query is still running, stop it. */
         if (this._running) {
             this._subject.next("ENDED" as QueryChange);
             this._running = false;
+        }
+
+        /* Complete the ResultsContainer and release it. */
+        if (this._results) {
+            this._results.complete();
+            this._results = null;
         }
 
         /* Publish Event. */
