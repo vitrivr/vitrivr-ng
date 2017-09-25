@@ -43,7 +43,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public ngOnInit(): void {
         this._queryServiceSubscription = this._queryService.observable
-            .filter(msg => {return msg === "STARTED"})
+            .filter(msg => {return ["STARTED", "CLEAR"].indexOf(msg) > -1})
             .subscribe((msg) => this.onQueryStart());
     }
 
@@ -61,9 +61,12 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onQueryStart() {
         this._results = this._queryService.results;
-        this._results.subscribe(() => {
-            this._cdr.markForCheck()
-        });
+        this._cdr.markForCheck();
+        if (this._results) {
+            this._results.subscribe(() => {
+                this._cdr.markForCheck()
+            });
+        }
     }
 
     /**
