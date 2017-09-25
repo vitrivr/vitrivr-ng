@@ -35,7 +35,7 @@
     <md-tab-group>
         <md-tab label="Segments ({{segments.length}})">
             <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
-                <div *ngFor="let segment of segments" fxFlex="150px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
+                <div *ngFor="let segment of segments | OrderByScorePipe" fxFlex="150px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
                     <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                         <p [style.margin]="'0'">{{segment.mediaSegment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
                         <p [style.margin]="'0'" *ngIf="segment.endtime > 0">{{segment.starttime}}-{{segment.endtime}}</p>
@@ -44,7 +44,7 @@
                     <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" width="150px" height="150px">
 
                     <div class="tile-footer" fxLayout="row-reverse">
-                        <button md-icon-button *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" (click)="onPlayClick(segment)" mdTooltip="Strt playback"><md-icon>play_arrow</md-icon></button>
+                        <button md-icon-button *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" (click)="onPlayClick(segment)" mdTooltip="Start playback"><md-icon>play_arrow</md-icon></button>
                         <button md-icon-button (click)="onMltClick(segment)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button>
                     </div>
                 </div>
