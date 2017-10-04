@@ -17,12 +17,11 @@ before_script:
   - sudo apt-get install -q google-chrome-stable
 
 script:
-  - ng test
+  - ng test --single-run
   - ng build
 
 before_deploy:
-  - npm install -g angular-cli
-  - npm install
+  - npm install -g @angular/cli
   - ng build -prod
   - zip ./dist/prod
 
