@@ -20,7 +20,7 @@ script:
 before_deploy:
 - npm install -g @angular/cli
 - ng build -prod
-- zip ./dist/prod
+- zip ./dist
 deploy:
   provider: releases
   api_key:
