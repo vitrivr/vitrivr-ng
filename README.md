@@ -1,5 +1,7 @@
 # Vitrivr NG
 
+[![Build Status](https://travis-ci.org/vitrivr/vitrivr-ng.svg?branch=master)](https://travis-ci.org/vitrivr/vitrivr-ng)
+
 This directory contains the source code distribution of Vitrivr NG (stands for either 'Angular' or 'Next Generation'). It was created using [Angular](https://angular.io/)
 
 Vitrivr NG is a web-based user interface developed to be used with the latest version if [Cineast](https://github.com/vitrivr/cineast). It allows the user to browse in and retrieve from mixed multimedia collections.
@@ -14,7 +16,7 @@ npm install -g @angular/cli
 That's it. Now you should be ready to run Vitrivr NG!
 
 ## Configure
-The configuration of Vitrivr NG can be made through the **src/config.json** file. Most importantly, you have to adjust the `api.host` and `api.port` settings so that they point to a running instance of Cineast. Furthermore, you have to adjust the URLs under `resources.host_thumbnails` and `resources.host_object`. All reference to thumbnails and media objects will be resolved relative to those locations.
+The configuration of Vitrivr NG can be made through the **src/config.json** file. Most importantly, you have to adjust the `api.host` and `api.port` settings so that they point to a running instance of Cineast. Furthermore, you have to adjust the URLs under `resources.host_thumbnails` and `resources.host_object`. All references to thumbnails and media files will be resolved relative to those locations.
 
 ## Development server
 
