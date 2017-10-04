@@ -55,8 +55,9 @@ export class Config {
         image: true,
         audio: true,
         model3d: true,
-        motion: true
-    }
+        motion: true,
+        text: true
+    };
 
     /**
      * Default constructor for configuration object.
