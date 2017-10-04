@@ -28,3 +28,4 @@ deploy:
   file: "./vitrivr-dist.tar"
   on:
     tags: true
+    all_branches: true
