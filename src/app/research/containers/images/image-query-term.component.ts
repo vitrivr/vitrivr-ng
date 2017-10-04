@@ -32,13 +32,32 @@ export class ImageQueryTermComponent {
     constructor(private _dialog: MdDialog, private _resolver: ResolverService, private _http: Http) {}
 
     /**
-     * Triggered whenever either the slider for the findSimilar settings is used.
-     * Adjusts the settings in the ImageQueryTerm.
+     * Triggered whenever either the slider for the category settings is used. Adjusts the feature categories
+     * in the ImageQueryTerm on a linear, numerical scale.
      *
      * @param event
      */
     public onSettingsChanged(event:any) {
-        this.imageTerm.setting(this.sliderSetting);
+        switch (this.sliderSetting) {
+            case 0:
+                this.imageTerm.setCategories(['globalcolor', 'localcolor']);
+                break;
+            case 1:
+                this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized']);
+                break;
+            case 2:
+                this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized', 'edge']);
+                break;
+            case 3:
+                this.imageTerm.setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
+                break;
+            case 4:
+                this.imageTerm.setCategories(['localcolor', 'localfeatures', 'edge']);
+                break;
+            default:
+                this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized', 'edge']);
+                break;
+        }
     }
 
     /**

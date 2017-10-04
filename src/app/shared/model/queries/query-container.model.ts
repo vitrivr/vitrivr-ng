@@ -5,43 +5,47 @@ import {AudioQueryTerm} from "./audio-query-term.model";
 import {M3DQueryTerm} from "./m3d-query-term.model";
 import {QueryTermType} from "./interfaces/query-term-type.interface";
 import {MotionQueryTerm} from "./motion-query-term.model";
+import {TextQueryTerm} from "./text-query-term.model";
 
 export class QueryContainer implements QueryContainerInterface {
     /**
      *
      * @type {Array}
      */
-    private _terms: Map<QueryTermType, QueryTermInterface> = new Map();
+    private terms_map: Map<QueryTermType, QueryTermInterface> = new Map();
 
     /**
      *
      * @type {Array}
      */
-    private terms: QueryTermInterface[] = [];
+    private _terms: QueryTermInterface[] = [];
 
     /**
      *
      * @param type
      */
     public addTerm(type: QueryTermType): boolean {
-        if (this._terms.has(type)) return false;
+        if (this.terms_map.has(type)) return false;
         switch (type) {
             case "IMAGE":
-                this._terms.set(type, new ImageQueryTerm());
+                this.terms_map.set(type, new ImageQueryTerm());
                 break;
             case "AUDIO":
-                this._terms.set(type, new AudioQueryTerm());
+                this.terms_map.set(type, new AudioQueryTerm());
                 break;
             case "MODEL3D":
-                this._terms.set(type, new M3DQueryTerm());
+                this.terms_map.set(type, new M3DQueryTerm());
                 break;
             case "MOTION":
-                this._terms.set(type, new MotionQueryTerm());
+                this.terms_map.set(type, new MotionQueryTerm());
+                break;
+            case "TEXT":
+                this.terms_map.set(type, new TextQueryTerm());
                 break;
             default:
                 return false;
         }
-        this.terms.push(this._terms.get(type));
+        this._terms.push(this.terms_map.get(type));
         return true;
     }
 
@@ -51,9 +55,9 @@ export class QueryContainer implements QueryContainerInterface {
      * @returns {boolean}
      */
     public removeTerm(type: QueryTermType): boolean {
-        if (this._terms.has(type)) {
-            this.terms.splice(this.terms.indexOf(this._terms.get(type)), 1);
-            return this._terms.delete(type)
+        if (this.terms_map.has(type)) {
+            this._terms.splice(this._terms.indexOf(this.terms_map.get(type)), 1);
+            return this.terms_map.delete(type)
         }
     }
 
@@ -63,7 +67,7 @@ export class QueryContainer implements QueryContainerInterface {
      * @returns {boolean}
      */
     public hasTerm(type: QueryTermType): boolean {
-        return this._terms.has(type);
+        return this.terms_map.has(type);
     }
 
     /**
@@ -72,6 +76,13 @@ export class QueryContainer implements QueryContainerInterface {
      * @returns {boolean}
      */
     public getTerm(type: QueryTermType): QueryTermInterface {
-        return this._terms.get(type)
+        return this.terms_map.get(type)
+    }
+
+    /**
+     * Returns a JSON object representing the current QueryTermInterface instance.
+     */
+    public toJson(): any {
+        return {terms : this._terms.map(t => { return t.toJson() })};
     }
 }

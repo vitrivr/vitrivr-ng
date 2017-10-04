@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy} from '@angular/core';
 import {MdCheckboxChange, MdSliderChange} from "@angular/material";
-import {QueryService} from "../core/queries/query.service";
+import {QueryChange, QueryService} from "../core/queries/query.service";
 import {Feature} from "../shared/model/features/feature.model";
 import {MediaType} from "../shared/model/media/media-type.model";
+import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
 
 @Component({
     moduleId: module.id,
@@ -22,11 +23,8 @@ import {MediaType} from "../shared/model/media/media-type.model";
  */
 export class RefinementComponent implements OnInit, OnDestroy {
 
-    /** List of available MediaTypes as reported by the QueryService. */
-    private _mediatypes: MediaType[] = [];
-
-    /** List of features as reported by the QueryService. */
-    private _features: Feature[] = [];
+    /** The container pointing to the currently active results. */
+    private _results :ResultsContainer;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
@@ -35,19 +33,18 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * Constructor: Registers with the QueryService to be updated about changes
      * in the refinement.
      *
+     * @param _cdr Reference to the ChangeDetector (Angular JS)
      * @param _queryService Reference to the QueryService instance.
      */
-    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService) {
-
-    }
+    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
      */
     public ngOnInit(): void {
         this._queryServiceSubscription = this._queryService.observable
-            .filter(msg => (["FEATURE", "UPDATE", "CLEAR"].indexOf(msg) > -1))
-            .subscribe((msg) => this.onQueryStateChange());
+            .filter(msg => {return ["STARTED", "CLEAR"].indexOf(msg) > -1})
+            .subscribe((msg) => this.onQueryStart());
     }
 
     /**
@@ -62,18 +59,26 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * Invoked whenever the QueryService reports that the refinement were changed. Causes the
      * refinement array to be updated and the view to be changed.
      */
-    public onQueryStateChange() {
-        /* Re-assign the refinement array. */
-        this._features = this._queryService.features;
-
-        /* Reset the MediaTypes array. */
-        this._mediatypes = [];
-        this._queryService.mediatypes.forEach((value,key) => {
-            if (this._mediatypes.indexOf(key) == -1) this._mediatypes.push(key);
-        });
-
-        /* Mark for check. */
+    public onQueryStart() {
+        this._results = this._queryService.results;
         this._cdr.markForCheck();
+        if (this._results) {
+            this._results.subscribe(() => {
+                this._cdr.markForCheck()
+            });
+        }
+    }
+
+    /**
+     * Triggered whenever the filter selection changes. Reports the change to the
+     * QueryService, which will update the filter settings accordingly.
+     *
+     * @param event
+     */
+    public onFilterChanged(event: MdCheckboxChange) {
+        if (this._results) {
+            this._results.toggleMediatype(<MediaType>event.source.name, event.source.checked);
+        }
     }
 
     /**
@@ -85,18 +90,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onValueChanged(feature: Feature, event: MdSliderChange) {
         feature.weight = event.value;
-        this._queryService.rerank();
-        this._cdr.markForCheck();
-    }
-
-    /**
-     * Triggered whenever the filter selection changes. Reports the change to the
-     * QueryService, which will update the filter settings accordingly.
-     *
-     * @param event
-     */
-    public onFilterChanged(event: MdCheckboxChange) {
-        this._queryService.toggleMediatype(<MediaType>event.source.name, event.source.checked);
+        if (this._results) {
+            this._results.rerank();
+        }
     }
 
     /**
@@ -104,8 +100,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param mediatype
      */
     public isActive(mediatype : MediaType) : boolean {
-        if (this._queryService.has(mediatype)) {
-            return this._queryService.mediatypes.get(mediatype);
+        if (this._results && this._results.mediatypes.has(mediatype)) {
+            return this._results.mediatypes.get(mediatype);
         } else {
             return false;
         }
@@ -117,7 +113,11 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @return {MediaType[]}
      */
     get mediatypes(): MediaType[] {
-        return this._mediatypes;
+        if (this._results) {
+            return Array.from(this._results.mediatypes.keys());
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -126,6 +126,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @return {Feature[]}
      */
     get features(): Feature[] {
-        return this._features;
-    }
+        if (this._results) {
+            return this._results.features;
+        } else {
+            return [];
+        }
+   }
 }

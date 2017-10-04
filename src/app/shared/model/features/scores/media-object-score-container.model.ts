@@ -17,16 +17,19 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
     private _segmentScores : Map<string, SegmentScoreContainer> = new Map();
 
+    /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
+    private _segments : SegmentScoreContainer[] = [];
+
     /** Reference to the actual MediaObject this container belongs to. */
     private _mediaObject? : MediaObject;
 
-    /** Boolean that indicates whether the current MediaObjectScoreContainer is ready to be displayed. */
-    private _show : boolean;
+    /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet. */
+    private _cache : Map<string,Array<[Feature,Similarity]>> = new Map();
 
     /**
      * Default constructor.
      *
-     * @param _segmentId
+     * @param _objectId
      */
     public constructor(private _objectId : string) {
         super();
@@ -39,10 +42,15 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      *
      * @param segment MediaSegment to add.
      */
-    public addMediaSegment(segment : MediaSegment) {
-        if (!this._segmentScores.has(segment.segmentId)) this._segmentScores.set(segment.segmentId, new SegmentScoreContainer(segment.segmentId));
-        this._segmentScores.get(segment.segmentId).setMediaSegment(segment);
-        this._show = (this._mediaObject && this._segmentScores.size > 0);
+    public addMediaSegment(segment : MediaSegment) : SegmentScoreContainer {
+        let ssc = this.uniqueSegmentScoreContainer(segment);
+        if (this._cache.has(ssc.segmentId)) {
+            this._cache.get(ssc.segmentId).forEach(v => {
+                this.addSimilarity(v[0], v[1])
+            });
+            this._cache.delete(ssc.segmentId)
+        }
+        return ssc;
     }
 
     /**
@@ -51,8 +59,14 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @param similarity
      */
     public addSimilarity(category : Feature, similarity : Similarity) {
-        if (!this._segmentScores.has(similarity.key)) this._segmentScores.set(similarity.key, new SegmentScoreContainer(similarity.key));
-        this._segmentScores.get(similarity.key).addSimilarity(category, similarity);
+        if (this._segmentScores.has(similarity.key)) {
+            this._segmentScores.get(similarity.key).addSimilarity(category, similarity);
+        } else if (this._cache.has(similarity.key)) {
+            this._cache.get(similarity.key).push([category, similarity]);
+        } else {
+            this._cache.set(similarity.key,[]);
+            this._cache.get(similarity.key).push([category, similarity]);
+        }
     }
 
     /**
@@ -72,7 +86,6 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      */
     set mediaObject(value: MediaObject) {
         if (this._objectId == value.objectId) this._mediaObject = value;
-        this._show = (this._mediaObject && this._segmentScores.size > 0);
     }
 
     /**
@@ -116,16 +129,15 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @returns {boolean} true if it can be displayed, false otherwise.
      */
     get show() : boolean {
-        return this._show;
+        return (this._mediaObject && this._segmentScores.size > 0);
     }
 
     /**
-     * Getter for the list of map for segment-scores.
      *
-     * @returns {Map<string, SegmentScoreContainer>}
+     * @return {SegmentScoreContainer[]}
      */
-    get segmentScores(): Map<string, SegmentScoreContainer> {
-        return this._segmentScores;
+    get segments(): SegmentScoreContainer[] {
+        return this._segments;
     }
 
     /**
@@ -143,12 +155,23 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @returns {SegmentScoreContainer}
      */
     get representativeSegment() : SegmentScoreContainer {
-        let representativeSegment : SegmentScoreContainer;
-        this._segmentScores.forEach((value, key) => {
-            if (representativeSegment == undefined || representativeSegment.score < value.score) {
-                representativeSegment = value
-            }
-        });
-        return representativeSegment;
+        return this.segments.reduce((a,b) => { return a.score > b.score ? a : b});
+    }
+
+    /**
+     * Returns a unique SegmentScoreContainer instance for the provided segmentId. That is, if a SegmentScoreContainer
+     * has been created and registered with the MediaObjectScoreContainer for the provided segmentId, that instance is returned.
+     * Otherwise, a new instance is created and registered.
+     *
+     * @param {string} segment MediaSegment for which to create a SegmentScoreContainer.
+     * @return {SegmentScoreContainer}
+     */
+    private uniqueSegmentScoreContainer(segment: MediaSegment): SegmentScoreContainer {
+        if (!this._segmentScores.has(segment.segmentId)) {
+            let ssc = new SegmentScoreContainer(segment, this);
+            this._segmentScores.set(segment.segmentId, ssc);
+            this._segments.push(ssc);
+        }
+        return this._segmentScores.get(segment.segmentId);
     }
 }

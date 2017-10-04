@@ -46,10 +46,17 @@ export class Config {
      *
      * @type {{}}
      */
-    private evaluation = {
+    public evaluation = {
         active: true,
         templates: []
     };
+
+    public queryContainerTypes = {
+        image: true,
+        audio: true,
+        model3d: true,
+        motion: true
+    }
 
     /**
      * Default constructor for configuration object.
@@ -58,10 +65,11 @@ export class Config {
      * @param resources
      * @param evaluation
      */
-    constructor(api?: any, resources?: any, evaluation?: any) {
+    constructor(api?: any, resources?: any, evaluation?: any, queryContainerTypes?: any) {
         if (api) this.api = api;
         if (resources) this.resources = resources;
         if (evaluation) this.evaluation = evaluation;
+        if (queryContainerTypes) this.queryContainerTypes = queryContainerTypes;
     }
 
     /**

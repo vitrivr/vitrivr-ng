@@ -52,31 +52,21 @@ export abstract class ScoreContainer {
 
     /**
      * Static comparator method. Compares two ScoreContainers so that they
-     * are sorted in a descending order. Can be used with Array.prototype.sort();
+     * are sorted in a descending order according to their score.
+     *
+     * Can be used with Array.prototype.sort();
      */
     public static compareDesc (a : ScoreContainer , b : ScoreContainer) {
-        if (a._score < b._score) {
-            return -1;
-        }
-        if (a._score > b._score) {
-            return 1;
-        }
-
-        return 0;
+        return  b._score - a._score;
     }
 
     /**
      * Static comparator method. Compares two ScoreContainers so that they
-     * are sorted in a ascending order. Can be used with Array.prototype.sort();
+     * are sorted in a ascending order according to their score.
+     *
+     * Can be used with Array.prototype.sort();
      */
     public static compareAsc (a : ScoreContainer , b : ScoreContainer) {
-        if (a._score > b._score) {
-            return -1;
-        }
-        if (a._score < b._score) {
-            return 1;
-        }
-
-        return 0;
+       return a._score - b._score;
     }
 }

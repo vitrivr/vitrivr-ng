@@ -1,0 +1,8 @@
+<h1>Imagecrop</h1>
+
+<div>
+    <md-progress-bar mode="query" [attr.color]="'accent'" *ngIf="!isLoaded"></md-progress-bar>
+    <img-cropper #cropper [image]="data" [settings]="cropperSettings"></img-cropper><br>
+
+    <button md-icon-button (click)="onSearchClicked()" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button>
+</div>

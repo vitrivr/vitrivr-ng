@@ -1,0 +1,17 @@
+<div style="padding:10px;">
+    <p class="background-prompt" *ngIf="segments.length == 0 && !loading">No results available. Please start a search...</p>
+
+    <p class="background-prompt" *ngIf="segments.length == 0 && loading"><md-spinner></md-spinner></p>
+
+    <div class="mini-gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="4px" fxLayoutAlign="space-between start">
+        <div class="segment" *ngFor="let segment of segments | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background-color]="colorForScore(segment.score)">
+            <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
+
+            <div  *ngIf="inFocus(segment)" class="segment-footer" fxLayout="row-reverse">
+                <button md-icon-button (click)="onMltButtonClicked(segment)" class="tile-button" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button>
+                <button md-icon-button (click)="onDetailsButtonClicked(segment)" class="tile-button" mdTooltip="Show details"><md-icon>remove_red_eye</md-icon></button>
+                <button md-icon-button (click)="onInformationButtonClicked(segment)" class="tile-button" mdTooltip="Feature information"><md-icon>help</md-icon></button>
+            </div>
+        </div>
+    </div>
+</div>

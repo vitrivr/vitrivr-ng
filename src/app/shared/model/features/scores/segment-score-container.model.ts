@@ -3,6 +3,7 @@ import {WeightFunction} from "../weighting/weight-function.interface";
 import {Feature} from "../feature.model";
 import {Similarity} from "../../media/similarity.model";
 import {MediaSegment} from "../../media/media-segment.model";
+import {MediaObjectScoreContainer} from "./media-object-score-container.model";
 /**
  * The SegmentScoreContainer is a ScoreContainer for MediaSegments. It is associated with
  * a single segment (e.g. a shot of a video) and holds the score for that segment. That
@@ -12,16 +13,19 @@ export class SegmentScoreContainer extends ScoreContainer {
     /** List of scores. Entries should correspond to those in the array categories. */
     private _scores : Map<Feature, number> = new Map();
 
-    /** Reference to the actual MediaSegment this container belongs to. */
-    private _mediaSegment? : MediaSegment;
-
     /**
      * Default constructor.
      *
-     * @param _segmentId
+     * @param {MediaSegment} _mediaSegment Reference to the MediaSegment this container has been created for.
+     * @param {MediaObjectScoreContainer} _object Reference to the MediaObjectScoreContainer that contains this SegmentScoreContainer.
      */
-    public constructor(private _segmentId : string) {
-       super();
+    public constructor(private readonly _mediaSegment: MediaSegment, private readonly _objectScoreContainer: MediaObjectScoreContainer) {
+        super();
+
+        /* Make a logic check: objectId of MediaSegment must match that of the MediaObjectScoreContainer. */
+        if (_mediaSegment.objectId != _objectScoreContainer.objectId) {
+            throw new Error("You cannot associate a MediaObjectScoreContainer with ID '" + _objectScoreContainer.objectId + "' with a segment with objectId '" + _mediaSegment.objectId + "'.");
+        }
     }
 
     /**
@@ -35,21 +39,9 @@ export class SegmentScoreContainer extends ScoreContainer {
      * @param similarity
      */
     public addSimilarity(category : Feature, similarity : Similarity): boolean {
-        if (similarity.key !== this._segmentId) return false;
+        if (similarity.key !== this._mediaSegment.segmentId) return false;
         this.scores.set(category, similarity.value);
         return true;
-    }
-
-    /**
-     * Sets the MediaSegment of the SegmentScoreContainer. The MediaSegment can only be set
-     * once and its segmentId must be equal to the segmentId of the SegmentScoreContainer.
-     *
-     * @param segment MediaSegment to set.
-     * @return true if MediaSegment was set, false otherwise.
-     */
-    public setMediaSegment(segment: MediaSegment) {
-        if (this._mediaSegment || segment.segmentId !== this._segmentId) return false;
-        this._mediaSegment = segment;
     }
 
     /**
@@ -78,7 +70,7 @@ export class SegmentScoreContainer extends ScoreContainer {
      * @returns {string}
      */
     get segmentId() {
-        return this._segmentId;
+        return this.mediaSegment.segmentId;
     }
 
     /**
@@ -99,7 +91,7 @@ export class SegmentScoreContainer extends ScoreContainer {
      */
     get starttime() {
         if (!this._mediaSegment) return 0;
-        return Math.round(this._mediaSegment.startabs*100)/100;
+        return this._mediaSegment.startabs;
     }
 
     /**
@@ -110,7 +102,7 @@ export class SegmentScoreContainer extends ScoreContainer {
      */
     get endtime() {
         if (!this._mediaSegment) return 0;
-        return Math.round(this._mediaSegment.endabs*100)/100;
+        return this._mediaSegment.endabs;
     }
 
     /**
@@ -120,5 +112,13 @@ export class SegmentScoreContainer extends ScoreContainer {
      */
     get mediaSegment(): MediaSegment {
         return this._mediaSegment;
+    }
+
+    /**
+     *
+     * @return {MediaObjectScoreContainer}
+     */
+    get objectScoreContainer(): MediaObjectScoreContainer {
+        return this._objectScoreContainer;
     }
 }

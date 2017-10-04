@@ -20,10 +20,38 @@ export interface QueryTermInterface {
     type: QueryTermType
 
     /**
-     * Updates the categories based on a numeric value. How this is being done is specific
-     * to the implementation.
+     * Adds a named query category to the QueryTerm. The implementation must make sure, that
+     * the category is unique.
      *
-     * @param setting
+     * @param {string} category
      */
-    setting(setting : number) : void;
+    pushCategory(category: string);
+
+    /**
+     * Removes a named query category to the QueryTerm. The implementation must make sure, that
+     * the category is unique.
+     *
+     * @param {string} category
+     */
+    removeCategory(category: string);
+
+    /**
+     * Returns true if QueryTerm contains specified category and false otherwise.
+     *
+     * @param {string} category Category that should be checked,
+     * @return {boolean} True if category is contained, else false.
+     */
+    hasCategory(category: string): boolean;
+
+    /**
+     * Replaces all the existing categories by the provided categories.
+     *
+     * @param {string} categories
+     */
+    setCategories(categories: string[]);
+
+    /**
+     * Returns a JSON object representing the current QueryTermInterface instance.
+     */
+    toJson() : any;
 }

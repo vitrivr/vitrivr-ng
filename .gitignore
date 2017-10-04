@@ -9,6 +9,10 @@ src/app/**/*.map
 # dependencies
 /node_modules
 
+# SASS
+*.scssc
+*.css.map
+
 # IDEs and editors
 /.idea
 .project

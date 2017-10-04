@@ -7,8 +7,8 @@
 
 import {MessageType} from "../message-type.model";
 /**
- * Basic interfaces of every message.interface.ts, which can be identified by its messagetype field.
+ * Basic interfaces of every message.interface.ts, which can be identified by its messageType field.
  */
 export interface Message {
-    messagetype : MessageType
+    messageType : MessageType
 }

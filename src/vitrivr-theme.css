@@ -149,6 +149,280 @@
 .mat-elevation-z24 {
   box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12); }
 
+.mat-h1, .mat-headline, .mat-typography h1 {
+  font: 400 24px/32px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0 0 16px; }
+
+.mat-h2, .mat-title, .mat-typography h2 {
+  font: 500 20px/32px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0 0 16px; }
+
+.mat-h3, .mat-subheading-2, .mat-typography h3 {
+  font: 400 16px/28px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0 0 16px; }
+
+.mat-h4, .mat-subheading-1, .mat-typography h4 {
+  font: 400 15px/24px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0 0 16px; }
+
+.mat-h5, .mat-typography h5 {
+  font-size: 11.62px;
+  font-weight: 400;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  line-height: 20px;
+  margin: 0 0 12px; }
+
+.mat-h6, .mat-typography h6 {
+  font-size: 9.38px;
+  font-weight: 400;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  line-height: 20px;
+  margin: 0 0 12px; }
+
+.mat-body-strong, .mat-body-2 {
+  font: 500 14px/24px Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-body, .mat-body-1, .mat-typography {
+  font: 400 14px/20px Roboto, "Helvetica Neue", sans-serif; }
+  .mat-body p, .mat-body-1 p, .mat-typography p {
+    margin: 0 0 12px; }
+
+.mat-small, .mat-caption {
+  font: 400 12px/20px Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-display-4, .mat-typography .mat-display-4 {
+  font: 300 112px/112px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0 0 56px;
+  letter-spacing: -0.05em; }
+
+.mat-display-3, .mat-typography .mat-display-3 {
+  font: 400 56px/56px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0 0 64px;
+  letter-spacing: -0.02em; }
+
+.mat-display-2, .mat-typography .mat-display-2 {
+  font: 400 45px/48px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0 0 64px;
+  letter-spacing: -0.005em; }
+
+.mat-display-1, .mat-typography .mat-display-1 {
+  font: 400 34px/40px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0 0 64px; }
+
+.mat-button, .mat-raised-button, .mat-icon-button {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  font-weight: 500; }
+
+.mat-button-toggle {
+  font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-card {
+  font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-card-title {
+  font-size: 24px;
+  font-weight: 400; }
+
+.mat-card-subtitle,
+.mat-card-content,
+.mat-card-header .mat-card-title {
+  font-size: 14px; }
+
+.mat-checkbox {
+  font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-checkbox-layout .mat-checkbox-label {
+  line-height: 24px; }
+
+.mat-chip:not(.mat-basic-chip) {
+  font-size: 13px;
+  line-height: 16px; }
+
+.mat-header-cell {
+  font-size: 12px;
+  font-weight: 500; }
+
+.mat-cell {
+  font-size: 14px; }
+
+.mat-calendar {
+  font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-calendar-body {
+  font-size: 13px; }
+
+.mat-calendar-body-label,
+.mat-calendar-period-button {
+  font-size: 14px;
+  font-weight: 500; }
+
+.mat-calendar-table-header th {
+  font-size: 11px;
+  font-weight: 400; }
+
+.mat-dialog-title {
+  font: 500 20px/32px Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-grid-tile-header,
+.mat-grid-tile-footer {
+  font-size: 14px; }
+  .mat-grid-tile-header .mat-line,
+  .mat-grid-tile-footer .mat-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    box-sizing: border-box; }
+    .mat-grid-tile-header .mat-line:nth-child(n+2),
+    .mat-grid-tile-footer .mat-line:nth-child(n+2) {
+      font-size: 12px; }
+
+.mat-input-container {
+  font: 400 inherit/1.125 Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-input-wrapper {
+  padding-bottom: 1.296875em; }
+
+.mat-input-prefix .mat-icon,
+.mat-input-prefix .mat-datepicker-toggle,
+.mat-input-suffix .mat-icon,
+.mat-input-suffix .mat-datepicker-toggle {
+  font-size: 150%; }
+.mat-input-prefix .mat-icon-button,
+.mat-input-suffix .mat-icon-button {
+  height: 1.5em;
+  width: 1.5em; }
+  .mat-input-prefix .mat-icon-button .mat-icon,
+  .mat-input-suffix .mat-icon-button .mat-icon {
+    line-height: 1.5; }
+
+.mat-input-infix {
+  padding: 0.4375em 0;
+  border-top: 0.84375em solid transparent; }
+
+.mat-input-element:-webkit-autofill + .mat-input-placeholder-wrapper .mat-float {
+  transform: translateY(-1.28125em) scale(0.75) perspective(100px) translateZ(0.001px);
+  -ms-transform: translateY(-1.28125em) scale(0.75);
+  width: 133.3333333333%; }
+
+.mat-input-placeholder-wrapper {
+  top: -0.84375em;
+  padding-top: 0.84375em; }
+
+.mat-input-placeholder {
+  top: 1.28125em; }
+  .mat-input-placeholder.mat-float:not(.mat-empty), .mat-focused .mat-input-placeholder.mat-float {
+    transform: translateY(-1.28125em) scale(0.75) perspective(100px) translateZ(0.001px);
+    -ms-transform: translateY(-1.28125em) scale(0.75);
+    width: 133.3333333333%; }
+
+.mat-input-underline {
+  bottom: 1.296875em; }
+
+.mat-input-subscript-wrapper {
+  font-size: 75%;
+  margin-top: 0.6041666667em;
+  top: calc(100% - 1.7291666667em); }
+
+.mat-menu-item {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 16px; }
+
+.mat-paginator {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 12px; }
+
+.mat-paginator-page-size .mat-select-trigger {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 12px; }
+
+.mat-radio-button {
+  font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-select {
+  font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-select-trigger {
+  font-size: 16px; }
+
+.mat-slide-toggle-content {
+  font: 400 14px/20px Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-slider-thumb-label-text {
+  font-size: 12px;
+  font-weight: 500; }
+
+.mat-tab-group {
+  font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-tab-label, .mat-tab-link {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  font-weight: 500; }
+
+.mat-toolbar,
+.mat-toolbar h1,
+.mat-toolbar h2,
+.mat-toolbar h3,
+.mat-toolbar h4,
+.mat-toolbar h5,
+.mat-toolbar h6 {
+  font: 500 20px/32px Roboto, "Helvetica Neue", sans-serif;
+  margin: 0; }
+
+.mat-tooltip {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 10px;
+  padding-top: 6px;
+  padding-bottom: 6px; }
+
+.mat-list-item {
+  font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-list .mat-list-item, .mat-nav-list .mat-list-item {
+  font-size: 16px; }
+  .mat-list .mat-list-item .mat-line, .mat-nav-list .mat-list-item .mat-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    box-sizing: border-box; }
+    .mat-list .mat-list-item .mat-line:nth-child(n+2), .mat-nav-list .mat-list-item .mat-line:nth-child(n+2) {
+      font-size: 14px; }
+.mat-list .mat-subheader, .mat-nav-list .mat-subheader {
+  font: 500 14px/24px Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-list[dense] .mat-list-item, .mat-nav-list[dense] .mat-list-item {
+  font-size: 12px; }
+  .mat-list[dense] .mat-list-item .mat-line, .mat-nav-list[dense] .mat-list-item .mat-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    box-sizing: border-box; }
+    .mat-list[dense] .mat-list-item .mat-line:nth-child(n+2), .mat-nav-list[dense] .mat-list-item .mat-line:nth-child(n+2) {
+      font-size: 12px; }
+.mat-list[dense] .mat-subheader, .mat-nav-list[dense] .mat-subheader {
+  font: 500 12px Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-option {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 16px; }
+
+.mat-optgroup-label {
+  font: 500 14px/24px Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-simple-snackbar {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 14px; }
+
+.mat-simple-snackbar-action {
+  line-height: 1;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 500; }
+
 .mat-ripple {
   overflow: hidden; }
 
@@ -170,8 +444,6 @@
   line-height: 48px;
   height: 48px;
   padding: 0 16px;
-  font-size: 16px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
   text-align: left;
   text-decoration: none;
   position: relative;
@@ -192,6 +464,11 @@
     -ms-user-select: none;
     user-select: none;
     cursor: default; }
+  .mat-optgroup .mat-option:not(.mat-option-multiple) {
+    padding-left: 32px; }
+    [dir='rtl'] .mat-optgroup .mat-option:not(.mat-option-multiple) {
+      padding-left: 16px;
+      padding-right: 32px; }
 
 .mat-option-ripple {
   position: absolute;
@@ -209,6 +486,31 @@
   [dir='rtl'] .mat-option-pseudo-checkbox {
     margin-left: 8px;
     margin-right: 0; }
+
+.mat-optgroup-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 48px;
+  height: 48px;
+  padding: 0 16px;
+  text-align: left;
+  text-decoration: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default; }
+  .mat-optgroup-label[disabled] {
+    cursor: default; }
+  [dir='rtl'] .mat-optgroup-label {
+    text-align: right; }
+  .mat-optgroup-label .mat-icon {
+    margin-right: 16px; }
+    [dir='rtl'] .mat-optgroup-label .mat-icon {
+      margin-left: 16px;
+      margin-right: 0; }
 
 .cdk-visually-hidden {
   border: 0;
@@ -251,6 +553,7 @@
   right: 0;
   z-index: 1000;
   pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
   transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
   opacity: 0; }
   .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
@@ -288,6 +591,12 @@
   .mat-option.mat-option-disabled {
     color: rgba(0, 0, 0, 0.38); }
 
+.mat-optgroup-label {
+  color: rgba(0, 0, 0, 0.54); }
+
+.mat-optgroup-disabled .mat-optgroup-label {
+  color: rgba(0, 0, 0, 0.38); }
+
 .mat-pseudo-checkbox {
   color: rgba(0, 0, 0, 0.54); }
   .mat-pseudo-checkbox::after {
@@ -323,7 +632,7 @@
 .mat-autocomplete-panel {
   background: white;
   color: rgba(0, 0, 0, 0.87); }
-  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active) {
+  .mat-autocomplete-panel .mat-option.mat-selected:not(.mat-active):not(:hover) {
     background: white;
     color: rgba(0, 0, 0, 0.87); }
 
@@ -385,12 +694,6 @@
   background-color: rgba(76, 175, 80, 0.2); }
 .mat-icon-button.mat-warn .mat-ripple-element {
   background-color: rgba(244, 67, 54, 0.2); }
-
-.mat-fab, .mat-mini-fab {
-  background-color: #4caf50;
-  color: white; }
-  .mat-fab .mat-ripple-element, .mat-mini-fab .mat-ripple-element {
-    background-color: rgba(255, 255, 255, 0.2); }
 
 .mat-button-toggle {
   color: rgba(0, 0, 0, 0.38); }
@@ -464,8 +767,21 @@
     background-color: #f44336;
     color: white; }
 
+.mat-table {
+  background: white; }
+
+.mat-row, .mat-header-row {
+  border-bottom-color: rgba(0, 0, 0, 0.12); }
+
+.mat-header-cell {
+  color: rgba(0, 0, 0, 0.54); }
+
+.mat-cell {
+  color: rgba(0, 0, 0, 0.87); }
+
 .mat-datepicker-content {
-  background-color: white; }
+  background-color: white;
+  color: rgba(0, 0, 0, 0.87); }
 
 .mat-calendar-arrow {
   border-top-color: rgba(0, 0, 0, 0.54); }
@@ -509,7 +825,28 @@
   border-color: rgba(0, 0, 0, 0.18); }
 
 .mat-dialog-container {
-  background: white; }
+  background: white;
+  color: rgba(0, 0, 0, 0.87); }
+
+.mat-expansion-panel {
+  background: white;
+  color: black; }
+
+.mat-action-row {
+  border-top-color: rgba(0, 0, 0, 0.12); }
+
+.mat-expansion-panel-header:focus,
+.mat-expansion-panel-header:hover {
+  background: rgba(0, 0, 0, 0.04); }
+
+.mat-expansion-panel-header-title {
+  color: rgba(0, 0, 0, 0.87); }
+
+.mat-expansion-panel-header-description {
+  color: rgba(0, 0, 0, 0.54); }
+
+.mat-expansion-indicator::after {
+  color: rgba(0, 0, 0, 0.54); }
 
 .mat-icon.mat-primary {
   color: #3f51b5; }
@@ -536,17 +873,19 @@ input.mat-input-element:-webkit-autofill + .mat-input-placeholder .mat-placehold
   color: #4caf50; }
 
 .mat-input-underline {
-  border-color: rgba(0, 0, 0, 0.12); }
-  .mat-input-underline .mat-input-ripple {
-    background-color: #3f51b5; }
-    .mat-input-underline .mat-input-ripple.mat-accent {
-      background-color: #4caf50; }
-    .mat-input-underline .mat-input-ripple.mat-warn {
-      background-color: #f44336; }
+  background-color: rgba(0, 0, 0, 0.12); }
 
-.mat-input-invalid .mat-input-placeholder,
-.mat-input-invalid .mat-placeholder-required {
+.mat-input-ripple {
+  background-color: #3f51b5; }
+  .mat-input-ripple.mat-accent {
+    background-color: #4caf50; }
+  .mat-input-ripple.mat-warn {
+    background-color: #f44336; }
+
+.mat-input-invalid .mat-input-placeholder {
   color: #f44336; }
+  .mat-input-invalid .mat-input-placeholder.mat-accent, .mat-input-invalid .mat-input-placeholder.mat-float .mat-placeholder-required {
+    color: #f44336; }
 .mat-input-invalid .mat-input-ripple {
   background-color: #f44336; }
 
@@ -579,6 +918,22 @@ input.mat-input-element:-webkit-autofill + .mat-input-placeholder .mat-placehold
     vertical-align: middle; }
   .mat-menu-item:hover:not([disabled]), .mat-menu-item:focus:not([disabled]) {
     background: rgba(0, 0, 0, 0.04); }
+
+.mat-paginator {
+  background: white; }
+
+.mat-paginator,
+.mat-paginator-page-size .mat-select-trigger {
+  color: rgba(0, 0, 0, 0.54); }
+
+.mat-paginator-increment,
+.mat-paginator-decrement {
+  border-top: 2px solid rgba(0, 0, 0, 0.54);
+  border-right: 2px solid rgba(0, 0, 0, 0.54); }
+
+.mat-icon-button[disabled] .mat-paginator-increment,
+.mat-icon-button[disabled] .mat-paginator-decrement {
+  border-color: rgba(0, 0, 0, 0.38); }
 
 .mat-progress-bar-background {
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%271.1%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20xmlns%3Axlink%3D%27http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%27%20x%3D%270px%27%20y%3D%270px%27%20enable-background%3D%27new%200%200%205%202%27%20xml%3Aspace%3D%27preserve%27%20viewBox%3D%270%200%205%202%27%20preserveAspectRatio%3D%27none%20slice%27%3E%3Ccircle%20cx%3D%271%27%20cy%3D%271%27%20r%3D%271%27%20fill%3D%27%23c5cae9%27%2F%3E%3C%2Fsvg%3E"); }
@@ -613,22 +968,32 @@ input.mat-input-element:-webkit-autofill + .mat-input-placeholder .mat-placehold
 .mat-radio-outer-circle {
   border-color: rgba(0, 0, 0, 0.54); }
 
-.mat-radio-checked .mat-radio-outer-circle {
-  border-color: #4caf50; }
-
 .mat-radio-disabled .mat-radio-outer-circle {
   border-color: rgba(0, 0, 0, 0.38); }
-
-.mat-radio-inner-circle {
-  background-color: #4caf50; }
-
-.mat-radio-ripple .mat-ripple-element {
-  background-color: rgba(76, 175, 80, 0.26); }
 
 .mat-radio-disabled .mat-radio-ripple .mat-ripple-element, .mat-radio-disabled .mat-radio-inner-circle {
   background-color: rgba(0, 0, 0, 0.38); }
 .mat-radio-disabled .mat-radio-label-content {
   color: rgba(0, 0, 0, 0.38); }
+
+.mat-radio-button.mat-primary.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #3f51b5; }
+.mat-radio-button.mat-primary .mat-radio-inner-circle {
+  background-color: #3f51b5; }
+.mat-radio-button.mat-primary .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba(63, 81, 181, 0.26); }
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #4caf50; }
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: #4caf50; }
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba(76, 175, 80, 0.26); }
+.mat-radio-button.mat-warn.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #f44336; }
+.mat-radio-button.mat-warn .mat-radio-inner-circle {
+  background-color: #f44336; }
+.mat-radio-button.mat-warn .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba(244, 67, 54, 0.26); }
 
 .mat-select-trigger,
 .mat-select-arrow {
@@ -948,6 +1313,12 @@ div.weight-distribution {
   color: white; }
 
 /* Defines some spacer classes that can be used in flexboxes etc. */
+.spacer-xlarge {
+  padding: 0 40px; }
+
+.spacer-large {
+  padding: 0 25px; }
+
 .spacer-medium {
   padding: 0 15px; }
 
@@ -1000,7 +1371,7 @@ dd {
 hr.fade {
   border: 0;
   height: 1px;
-  background-image: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.75), transparent); }
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); }
 
 /** Default evaluation card. */
 .evaluation-card {
