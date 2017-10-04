@@ -11,7 +11,7 @@
 <div *ngIf="!sketch" style="display:flex; align-items: center; justify-content: center;">
     <md-icon class="muted" mdTooltip="Low resolution">looks_1</md-icon>
     <div class="toolbar-spacer-small"></div>
-    <md-slider min="0" max="2" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></md-slider>
+    <md-slider min="0" max="2" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged()"></md-slider>
     <div class="toolbar-spacer-small"></div>
     <md-icon class="muted" mdTooltip="High resolution">looks_3</md-icon>
 </div>
