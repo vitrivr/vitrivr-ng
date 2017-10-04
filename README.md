@@ -13,9 +13,12 @@ npm install -g @angular/cli
 
 That's it. Now you should be ready to run Vitrivr NG!
 
+## Configure
+The configuration of Vitrivr NG can be made through the **src/config.json** file. Most importantly, you have to adjust the `api.host` and `api.port` settings so that they point to a running instance of Cineast. Furthermore, you have to adjust the URLs under `resources.host_thumbnails` and `resources.host_object`. All reference to thumbnails and media objects will be resolved relative to those locations.
+
 ## Development server
 
-Run `ng serve` to start a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+From the project folder, run `ng serve` to start a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -28,11 +31,6 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
 
 ## Further help
 
