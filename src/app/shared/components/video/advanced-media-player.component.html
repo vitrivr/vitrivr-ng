@@ -1,4 +1,4 @@
-<vg-player (onPlayerReady)="onPlayerReady($event)">
+<vg-player (onPlayerReady)="onPlayerReady($event)" [style.width]="width + 'px'">
     <vg-controls>
         <vg-play-pause></vg-play-pause>
 
@@ -22,10 +22,10 @@
 
     </vg-controls>
 
-    <video id="videoplayer" *ngIf="mediaobject.mediatype == 'VIDEO'" #media [vgMedia]="media" preload="auto" [style.width]="width + 'px'" width="{{width}}" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
+    <video id="videoplayer" *ngIf="mediaobject.mediatype == 'VIDEO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
     </video>
 
-    <audio id="audioplayer" *ngIf="mediaobject.mediatype == 'AUDIO'" #media [vgMedia]="media" preload="auto" [style.width]="width + 'px'" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
+    <audio id="audioplayer" *ngIf="mediaobject.mediatype == 'AUDIO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
     </audio>
 </vg-player>
 
