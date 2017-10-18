@@ -2,10 +2,8 @@ import {Component, ViewChild, Input} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
 import {MatDialog} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
-import {MediaSegment} from "../../../shared/model/media/media-segment.model";
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {Http} from "@angular/http";
-import {SegmentDragContainer} from "../../../shared/model/internal/media-object-drag-container.model";
 import {MediaSegmentDragContainer} from "../../../shared/model/internal/media-segment-drag-container.model";
 
 @Component({
