@@ -7,7 +7,7 @@
         <div class="segment" *ngFor="let segment of segments | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background-color]="colorForScore(segment.score)">
             <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
 
-            <div  *ngIf="inFocus(segment)" class="segment-footer" fxLayout="row-reverse">
+            <div *ngIf="inFocus(segment)" class="segment-footer" fxLayout="row-reverse">
                 <button mat-icon-button (click)="onMltButtonClicked(segment)" class="tile-button" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button>
                 <button mat-icon-button (click)="onDetailsButtonClicked(segment)" class="tile-button" matTooltip="Show details"><mat-icon>remove_red_eye</mat-icon></button>
                 <button mat-icon-button (click)="onInformationButtonClicked(segment)" class="tile-button" matTooltip="Feature information"><mat-icon>help</mat-icon></button>
