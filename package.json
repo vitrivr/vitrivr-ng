@@ -42,7 +42,7 @@
     "three-trackballcontrols": "^0.0.5",
     "ts-md5": "^1.2.0",
     "typescript": "2.3.4",
-    "videogular2": "^5.5.2",
+    "videogular2": "^5.6.1",
     "zone.js": "^0.8.17"
   },
   "devDependencies": {

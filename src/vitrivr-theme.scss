@@ -288,3 +288,8 @@ hr.fade {
 .highlighted {
   color: nth(nth($vitrivr-app-accent, 5), 2) !important;
 }
+
+/** Fix scrub bar for Videogular2. */
+.scrubBar {
+  position:static !important;
+}

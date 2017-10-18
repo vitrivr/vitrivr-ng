@@ -1,14 +1,15 @@
-import {AfterViewInit, Component, Inject, OnInit, ViewChild} from "@angular/core";
+import {Component, Inject, ViewChild} from "@angular/core";
 import {MAT_DIALOG_DATA} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 import {ResolverService} from "../core/basics/resolver.service";
+
 @Component({
     moduleId: module.id,
     selector: 'quick-viewer',
     templateUrl: 'quick-viewer.component.html'
 })
-export class QuickViewerComponent implements AfterViewInit {
+export class QuickViewerComponent {
 
     /** Reference to the audio player. */
     @ViewChild('audioplayer')
@@ -40,32 +41,6 @@ export class QuickViewerComponent implements AfterViewInit {
             throw new Error("You must either provide a MediaObjectScoreContainer or a SegmentScoreContainer to an instance von QuickViewerComponent!");
         }
     }
-
-    /**
-     * View Lifecycle (after init): Start video / audio playback automatically.
-     */
-    public ngAfterViewInit(): void {
-        this.playAtCurrentPosition()
-    }
-
-    /**
-     * If the current SegmentScoreContainer belongs either to a video or audio file, this
-     * method will start playback of the respective player at the position specified by the
-     * current segment.
-     *
-     * For all the other media types, this method has no effect.
-     */
-    public playAtCurrentPosition() {
-        if (this._segment.objectScoreContainer.mediatype === "AUDIO") {
-            this.audioplayer.nativeElement.currentTime = this._segment.starttime;
-            this.audioplayer.nativeElement.play();
-        } else if (this._segment.objectScoreContainer.mediatype === "VIDEO") {
-            this.videoplayer.nativeElement.currentTime = this._segment.starttime;
-            this.videoplayer.nativeElement.play();
-        }
-    }
-
-    /* TODO: Add support for submission to VBS.*/
 
     /**
      * Getter for SegmentScoreContainer.

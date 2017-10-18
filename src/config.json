@@ -1,14 +1,14 @@
 {
   "api": {
-    "host" : "127.0.0.1",
+    "host" : "10.34.58.44",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
     "ping_interval": 10000
   },
   "resources": {
-    "host_thumbnails" : "http://127.0.0.1/vitrivr/thumbnails/",
-    "host_object": "http://127.0.0.1/vitrivr/data",
+    "host_thumbnails" : "http://10.34.58.44/vitrivr/thumbnails/",
+    "host_object": "http://10.34.58.44/vitrivr/objects/",
     "suffix_default":".jpg",
     "suffix": {
       "IMAGE": "png",
@@ -17,13 +17,16 @@
   },
   "evaluation": {
     "active":false,
-    "templates":[]
+    "templates":[
+      {"name":"Testset A", "url":"http://10.34.58.10/vitrivr/testset/evaluation_a.json"},
+      {"name":"Testset B", "url":"http://10.34.58.10/vitrivr/testset/evaluation_b.json"}
+    ]
   },
   "queryContainerTypes":{
     "image": true,
-    "text" : false,
-    "audio": true,
-    "model3d": true,
-    "motion": true
+    "text" : true,
+    "audio": false,
+    "model3d": false,
+    "motion": false
   }
 }
