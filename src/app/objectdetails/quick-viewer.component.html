@@ -1,6 +1,4 @@
-
-<h1 matDialogTitle>Quick view: {{mediaobject.name}} ({{mediaobject.objectId}})</h1>
-
+<h1 matDialogTitle>{{mediaobject.name}}</h1>
 <div mat-dialog-content>
     <div [style.max-height]="'600px'">
         <advanced-media-player *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" [width]="'600'" [mediaobject]="mediaobject" [focus]="segment" [auto]="true"></advanced-media-player>
