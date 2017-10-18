@@ -1,7 +1,7 @@
 import {Component, Input, ViewChild} from "@angular/core";
 import {MotionQueryTerm} from "../../../shared/model/queries/motion-query-term.model";
 import {MotionSketchDialogComponent} from "./motion-sketch-dialog.component";
-import {MdDialog} from "@angular/material";
+import {MatDialog} from "@angular/material";
 import {MotionData} from "./model/motion-data.model";
 @Component({
     selector: 'qt-motion',
@@ -22,7 +22,7 @@ export class MotionQueryTermComponent {
      *
      * @param _dialog
      */
-    constructor(private _dialog: MdDialog) {}
+    constructor(private _dialog: MatDialog) {}
 
     /**
      * Triggered whenever someone click on the image, which indicates that it should

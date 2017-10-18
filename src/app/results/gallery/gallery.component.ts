@@ -6,7 +6,7 @@ import {ResolverService} from "../../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
 import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
 import {AbstractResultsViewComponent} from "../abstract-results-view.component";
-import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {FeatureDetailsComponent} from "../feature-details.component";
 
 @Component({
@@ -38,7 +38,7 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      * @param _router
      * @param _snackBar
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MdSnackBar) {
+    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MatSnackBar) {
         super(_cdr, _queryService);
     }
 
@@ -158,7 +158,7 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      */
     public onInformationButtonClicked(object: MediaObjectScoreContainer) {
         if (object.representativeSegment) {
-            this._snackBar.openFromComponent(FeatureDetailsComponent, <MdSnackBarConfig>{data: object.representativeSegment.scores, duration: 2500});
+            this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: object.representativeSegment.scores, duration: 2500});
         } else {
             throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
         }

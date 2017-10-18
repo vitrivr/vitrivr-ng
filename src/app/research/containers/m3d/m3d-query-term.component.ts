@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {Component, ViewChild, Input} from "@angular/core";
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {M3DQueryTerm} from "../../../shared/model/queries/m3d-query-term.model";
 import {M3DLoaderDialogComponent} from "./m3d-loader-dialog.component";
 import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.component";
@@ -39,7 +39,7 @@ export class M3DQueryTermComponent {
      *
      * @param dialog
      */
-    constructor(private dialog: MdDialog) {}
+    constructor(private dialog: MatDialog) {}
 
     /**
      * Triggered whenever the Mode 3D Slide toggle is used to switch between 3D-sketch mode and normal mode.

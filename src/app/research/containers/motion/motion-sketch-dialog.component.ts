@@ -1,5 +1,5 @@
 import {Component, ViewChild, AfterViewInit} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 import {TrackingSketchCanvasComponent} from "../../../shared/components/sketch/tracking-sketch-canvas.component";
 import {MotionData} from "./model/motion-data.model";
 import {MotionArrowFactory} from "./model/motion-arrow-factory.model";
@@ -24,7 +24,7 @@ export class MotionSketchDialogComponent implements AfterViewInit {
      *
      * @param _dialogRef
      */
-    constructor(private _dialogRef: MdDialogRef<MotionSketchDialogComponent>) {
+    constructor(private _dialogRef: MatDialogRef<MotionSketchDialogComponent>) {
         this.onToggleFrontClicked();
     }
 

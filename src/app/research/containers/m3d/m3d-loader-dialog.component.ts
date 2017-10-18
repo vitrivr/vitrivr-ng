@@ -1,6 +1,6 @@
 import {Component, ViewChild, HostListener} from "@angular/core";
 import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.component";
-import {MdDialogRef} from "@angular/material";
+import {MatDialogRef} from "@angular/material";
 
 
 @Component({
@@ -22,7 +22,7 @@ export class M3DLoaderDialogComponent {
      *
      * @param dialogRef
      */
-    constructor(private dialogRef: MdDialogRef<M3DLoaderDialogComponent>) {}
+    constructor(private dialogRef: MatDialogRef<M3DLoaderDialogComponent>) {}
 
     /**
      * Change listener for the input field (File chooser). Handles the

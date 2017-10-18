@@ -61,7 +61,7 @@ div.score p {
     margin-bottom: 0.25em;
 }
 
-div.score md-icon {
+div.score mat-icon {
     font-size:8px;
     width:10px;
     height:10px;

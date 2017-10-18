@@ -5,7 +5,7 @@ import {QueryService} from "../../core/queries/query.service";
 import {ResolverService} from "../../core/basics/resolver.service";
 import {Router} from "@angular/router";
 import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
-import {MdDialog, MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {FeatureDetailsComponent} from "../feature-details.component";
 import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
 
@@ -33,7 +33,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
      * @param _snackBar
      * @param _dialog
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MdSnackBar, protected _dialog: MdDialog) {
+    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MatSnackBar, protected _dialog: MatDialog) {
         super(_cdr, _queryService);
     }
 
@@ -89,7 +89,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
      * @param {SegmentScoreContainer} segment
      */
     public onInformationButtonClicked(segment: SegmentScoreContainer) {
-        this._snackBar.openFromComponent(FeatureDetailsComponent, <MdSnackBarConfig>{data : segment.scores, duration: 2500});
+        this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data : segment.scores, duration: 2500});
     }
 
     /**

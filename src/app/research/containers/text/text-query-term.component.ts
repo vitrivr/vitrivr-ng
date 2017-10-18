@@ -1,6 +1,6 @@
 import {Component, Input} from "@angular/core";
 import {TextQueryTerm} from "../../../shared/model/queries/text-query-term.model";
-import {MdCheckboxChange} from "@angular/material";
+import {MatCheckboxChange} from "@angular/material";
 @Component({
     selector: 'qt-text',
     templateUrl: 'text-query-term.component.html',
@@ -27,9 +27,9 @@ export class TextQueryTermComponent {
 
     /**
      *
-     * @param {MdCheckboxChange} event
+     * @param {MatCheckboxChange} event
      */
-    public onCheckboxChange(event: MdCheckboxChange) {
+    public onCheckboxChange(event: MatCheckboxChange) {
         if (event.checked) {
             this.textTerm.pushCategory(event.source.value)
         } else {

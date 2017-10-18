@@ -1,5 +1,5 @@
 import {Component, ViewChild, OnInit, Inject, AfterViewInit} from '@angular/core';
-import {MdDialogRef, MD_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.component";
 
 @Component({
@@ -32,7 +32,7 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
      * @param _dialogRef
      * @param _data
      */
-    constructor(private _dialogRef: MdDialogRef<SketchDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : any) {}
+    constructor(private _dialogRef: MatDialogRef<SketchDialogComponent>, @Inject(MAT_DIALOG_DATA) private _data : any) {}
 
     /**
      * Lifecycle Hook (onInit): Loads the injected image data (if specified).

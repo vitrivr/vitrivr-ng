@@ -1,6 +1,6 @@
 import {Component, ViewChild, Input} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
 import {MediaSegment} from "../../../shared/model/media/media-segment.model";
 import {ResolverService} from "../../../core/basics/resolver.service";
@@ -29,7 +29,7 @@ export class ImageQueryTermComponent {
      *
      * @param dialog
      */
-    constructor(private _dialog: MdDialog, private _resolver: ResolverService, private _http: Http) {}
+    constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: Http) {}
 
     /**
      * Triggered whenever either the slider for the category settings is used. Adjusts the feature categories

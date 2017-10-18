@@ -1,6 +1,6 @@
 <div style="padding:10px;" *ngIf="mediaobject">
     <div [style.display]="'inline-flex'">
-        <button md-icon-button mdTooltip="Go back..." (click)="onBackClick()"><md-icon>keyboard_backspace</md-icon></button>
+        <button mat-icon-button matTooltip="Go back..." (click)="onBackClick()"><mat-icon>keyboard_backspace</mat-icon></button>
         <h2 [style.margin-top]="'5px'">&nbsp;Media object: {{mediaobject.objectId}}</h2>
     </div>
 
@@ -27,13 +27,13 @@
                 <dt>Mediatype</dt>
                 <dd>{{mediaobject.mediatype}}</dd>
                 <dt style="margin-top: 16px" *ngIf="mediaobject.mediatype == 'IMAGE'">Tools</dt>
-                <dd *ngIf="mediaobject.mediatype == 'IMAGE'"><button md-icon-button (click)="onImageViewerClicked()" mdTooltip="Crop Image"><md-icon>crop</md-icon></button></dd>
+                <dd *ngIf="mediaobject.mediatype == 'IMAGE'"><button mat-icon-button (click)="onImageViewerClicked()" matTooltip="Crop Image"><mat-icon>crop</mat-icon></button></dd>
             </dl>
         </div>
     </div>
 
-    <md-tab-group>
-        <md-tab label="Segments ({{segments.length}})">
+    <mat-tab-group>
+        <mat-tab label="Segments ({{segments.length}})">
             <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
                 <div *ngFor="let segment of segments | OrderByScorePipe" fxFlex="150px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
                     <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
@@ -44,22 +44,22 @@
                     <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" width="150px" height="150px">
 
                     <div class="tile-footer" fxLayout="row-reverse">
-                        <button md-icon-button *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" (click)="onPlayClick(segment)" mdTooltip="Start playback"><md-icon>play_arrow</md-icon></button>
-                        <button md-icon-button (click)="onMltClick(segment)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button>
+                        <button mat-icon-button *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" (click)="onPlayClick(segment)" matTooltip="Start playback"><mat-icon>play_arrow</mat-icon></button>
+                        <button mat-icon-button (click)="onMltClick(segment)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button>
                     </div>
                 </div>
             </div>
-        </md-tab>
-        <md-tab label="Metadata ({{metadata.length}})">
-            <md-list>
-                <md-list-item *ngFor="let metadatum of metadata">
-                    <p md-line><strong>({{metadatum.domain}}) {{metadatum.key}}: </strong>{{metadatum.value}}</p>
-                </md-list-item>
-            </md-list>
-        </md-tab>
-    </md-tab-group>
+        </mat-tab>
+        <mat-tab label="Metadata ({{metadata.length}})">
+            <mat-list>
+                <mat-list-item *ngFor="let metadatum of metadata">
+                    <p matLine><strong>({{metadatum.domain}}) {{metadatum.key}}: </strong>{{metadatum.value}}</p>
+                </mat-list-item>
+            </mat-list>
+        </mat-tab>
+    </mat-tab-group>
 </div>
 
 <div style="padding:10px;" *ngIf="!mediaobject">
-    <md-progress-spinner [attr.color]="primary" [mode]="indeterminate"></md-progress-spinner>
+    <mat-progress-spinner [attr.color]="primary" [mode]="indeterminate"></mat-progress-spinner>
 </div>

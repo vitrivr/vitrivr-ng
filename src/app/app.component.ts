@@ -1,12 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {QueryService, QueryChange} from "./core/queries/query.service";
-import {MdSnackBar} from "@angular/material";
+import {MatSnackBar} from "@angular/material";
 import {ConfigService} from "./core/basics/config.service";
 import {Config} from "./core/basics/config.model";
 import {Subscription} from "rxjs/Subscription";
 @Component({
     styles : [`
-        md-sidenav {
+        mat-sidenav {
             width: 300px;
         }
     `],
@@ -34,7 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
      * @param _configService
      * @param _snackBar
      */
-    constructor(private _queryService : QueryService, private _configService: ConfigService, private _snackBar: MdSnackBar) {}
+    constructor(private _queryService : QueryService, private _configService: ConfigService, private _snackBar: MatSnackBar) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.

@@ -10,7 +10,7 @@ import {Subscription} from "rxjs/Subscription";
     selector: 'api-status',
     template:`
         <span >
-            <md-icon style="vertical-align:text-bottom;">{{getIcon()}}</md-icon>&nbsp;{{getLatency() ? '(' + getLatency() + 'ms)' : ''}}
+            <mat-icon style="vertical-align:text-bottom;">{{getIcon()}}</mat-icon>&nbsp;{{getLatency() ? '(' + getLatency() + 'ms)' : ''}}
         </span>
     `
 })

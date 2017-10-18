@@ -2,43 +2,43 @@ import 'hammerjs';
 
 import {NgModule} from "@angular/core";
 import {
-    MdSliderModule, MdChipsModule, MdDialogModule, MdCardModule, MdSidenavModule, MdSelectModule, MdTabsModule,
-    MdRadioModule, MdIconModule, MdMenuModule, MdInputModule, MdToolbarModule, MdTooltipModule, MdSnackBarModule,
-    MdCheckboxModule, MdButtonModule, MdCommonModule, MdGridListModule, MdProgressBarModule, MdRippleModule,
-    MdProgressSpinnerModule, MdSlideToggleModule, MdIconRegistry
+    MatSliderModule, MatChipsModule, MatDialogModule, MatCardModule, MatSidenavModule, MatSelectModule, MatTabsModule,
+    MatRadioModule, MatIconModule, MatMenuModule, MatInputModule, MatToolbarModule, MatTooltipModule, MatSnackBarModule,
+    MatCheckboxModule, MatButtonModule, MatCommonModule, MatGridListModule, MatProgressBarModule, MatRippleModule,
+    MatProgressSpinnerModule, MatSlideToggleModule, MatIconRegistry
 } from "@angular/material";
 import {HttpModule} from "@angular/http";
 
 const MATERIAL_MODULES = [
-    MdButtonModule,
-    MdCardModule,
-    MdChipsModule,
-    MdCheckboxModule,
-    MdDialogModule,
-    MdGridListModule,
-    MdIconModule,
-    MdInputModule,
-    MdMenuModule,
-    MdProgressBarModule,
-    MdProgressSpinnerModule,
-    MdRadioModule,
-    MdRippleModule,
-    MdSelectModule,
-    MdSidenavModule,
-    MdSliderModule,
-    MdSlideToggleModule,
-    MdSnackBarModule,
-    MdTabsModule,
-    MdToolbarModule,
-    MdTooltipModule,
-    MdCommonModule
+    MatButtonModule,
+    MatCardModule,
+    MatChipsModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatGridListModule,
+    MatIconModule,
+    MatInputModule,
+    MatMenuModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatRippleModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSliderModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatCommonModule
 ];
 
 
 @NgModule({
     imports: [ MATERIAL_MODULES, HttpModule ],
     exports: [ MATERIAL_MODULES, HttpModule ],
-    providers: [ MdIconRegistry ]
+    providers: [ MatIconRegistry ]
 })
 export class MaterialModule { }
 

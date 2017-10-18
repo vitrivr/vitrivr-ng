@@ -12,6 +12,6 @@
     height: 60px;
 }
 
-.checkbox-group md-checkbox {
+.checkbox-group mat-checkbox {
     width: 100px;
 }

@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Inject, OnInit, ViewChild} from "@angular/core";
-import {MD_DIALOG_DATA} from "@angular/material";
+import {MAT_DIALOG_DATA} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 import {ResolverService} from "../core/basics/resolver.service";
@@ -31,7 +31,7 @@ export class QuickViewerComponent implements AfterViewInit {
      * @param data The MediaObjectScoreContainer or SegmentScoreContainer that should be displayed.
      * @param _resolver ResolverService reference that is being injected.
      */
-    public constructor(@Inject(MD_DIALOG_DATA) data: any, private _resolver: ResolverService) {
+    public constructor(@Inject(MAT_DIALOG_DATA) data: any, private _resolver: ResolverService) {
         if (data instanceof MediaObjectScoreContainer) {
             this._segment = data.representativeSegment;
         } else if (data instanceof SegmentScoreContainer) {

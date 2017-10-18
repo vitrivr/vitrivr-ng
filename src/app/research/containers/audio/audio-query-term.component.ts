@@ -1,6 +1,6 @@
 import {Component, ViewChild, Input} from "@angular/core";
 
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {AudioRecorderDialogComponent} from "./audio-recorder-dialog.component";
 import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.model";
 
@@ -24,7 +24,7 @@ export class AudioQueryTermComponent {
      *
      * @param dialog
      */
-    constructor(private dialog: MdDialog) {}
+    constructor(private dialog: MatDialog) {}
 
     /**
      * This method is invoked whenever the slider value changes. Updates the feature categories for this AudioQueryTerm based

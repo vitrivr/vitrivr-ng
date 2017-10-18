@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit, ViewChild} from "@angular/core";
 import {ImageCropperComponent, CropperSettings} from 'ng2-img-cropper';
-import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {Http} from "@angular/http";
 import {QueryService} from "../core/queries/query.service";
 import {MaterialModule} from "../material.module";
@@ -26,7 +26,7 @@ export class ImagecropComponent implements OnInit {
      *
      * @param src
      */
-    constructor(@Inject(MD_DIALOG_DATA) private _src : string, private _ref: MdDialogRef<ImagecropComponent>, private _http: Http, private _query : QueryService) {
+    constructor(@Inject(MAT_DIALOG_DATA) private _src : string, private _ref: MatDialogRef<ImagecropComponent>, private _http: Http, private _query : QueryService) {
         this._cropperSettings = new CropperSettings();
 
         this._cropperSettings.canvasWidth = 800;

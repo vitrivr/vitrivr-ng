@@ -1,5 +1,5 @@
 import {Component, Inject} from "@angular/core";
-import {MD_SNACK_BAR_DATA} from "@angular/material";
+import {MAT_SNACK_BAR_DATA} from "@angular/material";
 import {Feature} from "../shared/model/features/feature.model";
 
 @Component({
@@ -19,7 +19,7 @@ export class FeatureDetailsComponent{
      *
      * @param {Map<Feature, number>} data Data containing the features and associated scores.
      */
-    constructor(@Inject(MD_SNACK_BAR_DATA) data: Map<Feature,number>) {
+    constructor(@Inject(MAT_SNACK_BAR_DATA) data: Map<Feature,number>) {
         data.forEach((value, key) => {this._lines.push(key.name + ": " + Math.round(value * 1000) / 1000);})
     }
 

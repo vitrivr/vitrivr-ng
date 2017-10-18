@@ -7,7 +7,7 @@ import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 import {Location} from "@angular/common";
-import {MdDialog, MdSnackBar} from "@angular/material";
+import {MatDialog, MatSnackBar} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {ImagecropComponent} from "./imagecrop.component";
 import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
@@ -61,8 +61,8 @@ export class ObjectdetailsComponent implements OnInit {
                 private _location: Location,
                 private _metadataLookup: MetadataLookupService,
                 private _resolver: ResolverService,
-                private _snackBar: MdSnackBar,
-                private _dialog: MdDialog) {
+                private _snackBar: MatSnackBar,
+                private _dialog: MatDialog) {
 
         this._results = _query.results;
     }

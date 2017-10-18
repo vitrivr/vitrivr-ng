@@ -1,7 +1,7 @@
 <div style="padding:10px;">
     <p class="background-prompt" *ngIf="mediaobjects.length == 0 && !loading">No results available. Please start a search...</p>
 
-    <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><md-spinner></md-spinner></p>
+    <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><mat-spinner></mat-spinner></p>
 
     <div class="gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="{{tilegap + 'px'}}" fxLayoutAlign="space-between start">
         <div class="tile" *ngFor="let mediaobject of mediaobjects | OrderByScorePipe" fxFlex="{{tilesize + 'px'}}" [style.width]="tilesize + 'px'" [style.height]="tilesize + 'px'" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject)">
@@ -9,16 +9,16 @@
                 <div class="filename">{{mediaobject.name}}</div>
                 <div class="score">
                     <p>{{mediaobject.scorePercentage}}&#37;</p>
-                    <p><md-icon>filter_none</md-icon>&nbsp;{{mediaobject.numberOfSegments}}</p>
+                    <p><mat-icon>filter_none</mat-icon>&nbsp;{{mediaobject.numberOfSegments}}</p>
                 </div>
             </div>
 
             <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, mediaobject.representativeSegment.mediaSegment)}}" draggable="false" (click)="onDetailsButtonClicked(mediaobject)"/>
 
             <div  *ngIf="inFocus(mediaobject)" class="tile-footer" fxLayout="row-reverse">
-                <div><button md-icon-button (click)="onMltButtonClicked(mediaobject)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button></div>
-                <div><button md-icon-button (click)="onDetailsButtonClicked(mediaobject)" mdTooltip="Show details"><md-icon>remove_red_eye</md-icon></button></div>
-                <div><button md-icon-button (click)="onInformationButtonClicked(mediaobject)" mdTooltip="Feature information"><md-icon>help</md-icon></button></div>
+                <div><button mat-icon-button (click)="onMltButtonClicked(mediaobject)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button></div>
+                <div><button mat-icon-button (click)="onDetailsButtonClicked(mediaobject)" matTooltip="Show details"><mat-icon>remove_red_eye</mat-icon></button></div>
+                <div><button mat-icon-button (click)="onInformationButtonClicked(mediaobject)" matTooltip="Feature information"><mat-icon>help</mat-icon></button></div>
             </div>
         </div>
     </div>
