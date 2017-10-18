@@ -101,6 +101,17 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
         let dialogRef = this._dialog.open(QuickViewerComponent, {data: segment});
     }
 
+    /**
+     * Whenever a tile is dragged the associated segment and the media object that tile represents is converted to
+     * JSON and added to the dataTransfer object of the drag event.
+     *
+     * @param event Drag event
+     * @param segment SegmentScoreContainer that is being dragged.
+     */
+    public onTileDrag(event, segment: SegmentScoreContainer) {
+        event.dataTransfer.setData("application/vitrivr-mediasegment", JSON.stringify(segment.mediaSegment));
+        event.dataTransfer.setData("application/vitrivr-mediaobject", JSON.stringify(segment.objectScoreContainer.mediaObject));
+    }
 
     /**
      * This method is used internally to update the gallery view.
