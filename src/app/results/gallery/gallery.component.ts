@@ -8,6 +8,9 @@ import {ResultsContainer} from "../../shared/model/features/scores/results-conta
 import {AbstractResultsViewComponent} from "../abstract-results-view.component";
 import {MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {FeatureDetailsComponent} from "../feature-details.component";
+import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segment-drag-container.model";
+import {MediaSegment} from "../../shared/model/media/media-segment.model";
+import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
 
 @Component({
     moduleId: module.id,
@@ -102,8 +105,8 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      * @param object MediaObjectScoreContainer that is being dragged.
      */
     public onTileDrag(event, object: MediaObjectScoreContainer) {
-        event.dataTransfer.setData("application/vitrivr-mediasegment", JSON.stringify(object.representativeSegment.mediaSegment));
-        event.dataTransfer.setData("application/vitrivr-mediaobject", JSON.stringify(object.mediaObject));
+        event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(object.representativeSegment).toJSON());
+        event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
     }
 
     /**

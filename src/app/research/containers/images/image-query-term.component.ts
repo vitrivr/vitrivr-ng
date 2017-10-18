@@ -5,6 +5,8 @@ import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.mod
 import {MediaSegment} from "../../../shared/model/media/media-segment.model";
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {Http} from "@angular/http";
+import {SegmentDragContainer} from "../../../shared/model/internal/media-object-drag-container.model";
+import {MediaSegmentDragContainer} from "../../../shared/model/internal/media-segment-drag-container.model";
 
 @Component({
     selector: 'qt-image',
@@ -126,9 +128,9 @@ export class ImageQueryTermComponent {
             reader.readAsDataURL(event.dataTransfer.files.item(0));
         } else if (event.dataTransfer.getData("application/vitrivr-mediasegment")) {
 
-            /* Case: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
-            let segment: MediaSegment = <MediaSegment>JSON.parse(event.dataTransfer.getData("application/vitrivr-mediasegment"));
-            let url = this._resolver.pathToThumbnailForSegment("IMAGE", segment);
+            /* Case 2: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
+            let drag: MediaSegmentDragContainer = MediaSegmentDragContainer.fromJSON(event.dataTransfer.getData(MediaSegmentDragContainer.FORMAT));
+            let url = this._resolver.pathToThumbnailForSegment(drag.mediatype, drag.segment);
             this._http.get(url, {responseType: 3}).first().subscribe(data => {
                 reader.readAsDataURL(data.blob());
             });

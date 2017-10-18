@@ -11,6 +11,8 @@ import {MatDialog, MatSnackBar} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {ImagecropComponent} from "./imagecrop.component";
 import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
+import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
+import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
 
 @Component({
     moduleId: module.id,
@@ -100,7 +102,8 @@ export class ObjectdetailsComponent implements OnInit {
      * @param segment SegmentScoreContainer that is being dragged.
      */
     public onSegmentDrag(event, segment: SegmentScoreContainer) {
-        event.dataTransfer.setData("application/vitrivr-mediasegment", JSON.stringify(segment.mediaSegment));
+        event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
+        event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(segment.objectScoreContainer).toJSON());
     }
 
     /**
