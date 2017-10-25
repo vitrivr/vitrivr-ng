@@ -92,7 +92,7 @@ export class ListComponent extends AbstractResultsViewComponent{
      * @param {SegmentScoreContainer} segment
      */
     public onInformationButtonClicked(segment: SegmentScoreContainer) {
-        this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data : segment.scores, duration: 2500});
+        this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data : segment, duration: 2500});
     }
 
     /**

@@ -170,7 +170,7 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      */
     public onInformationButtonClicked(object: MediaObjectScoreContainer) {
         if (object.representativeSegment) {
-            this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: object.representativeSegment.scores, duration: 2500});
+            this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: object.representativeSegment, duration: 2500});
         } else {
             throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
         }
