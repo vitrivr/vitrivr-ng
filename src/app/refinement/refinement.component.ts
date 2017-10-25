@@ -77,7 +77,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onFilterChanged(event: MatCheckboxChange) {
         if (this._results) {
-            this._results.toggleMediatype(<MediaType>event.source.name, event.source.checked);
+            Promise.resolve().then(() => this._results.toggleMediatype(<MediaType>event.source.name, event.source.checked));
         }
     }
 
@@ -91,7 +91,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
     public onValueChanged(feature: Feature, event: MatSliderChange) {
         feature.weight = event.value;
         if (this._results) {
-            this._results.rerank();
+            Promise.resolve().then(() => this._results.rerank());
         }
     }
 

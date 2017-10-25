@@ -13,7 +13,7 @@
 <div *ngIf="mediatypes.length > 0">
     <h4>Filters</h4>
     <section class="checkbox-group">
-        <mat-checkbox *ngFor="let type of mediatypes" name="{{type}}" checked="{{isActive(type)}}" labelPosition="before" (change)="onFilterChanged($event)">{{type}}</mat-checkbox>
+        <mat-checkbox *ngFor="let type of mediatypes" [name]="type" [checked]="isActive(type)" labelPosition="before" (change)="onFilterChanged($event)">{{type}}</mat-checkbox>
     </section>
 </div>
 
