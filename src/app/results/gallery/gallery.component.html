@@ -5,8 +5,10 @@
 
     <div class="gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="{{tilegap + 'px'}}" fxLayoutAlign="space-between start">
         <div class="tile" *ngFor="let mediaobject of mediaobjects | OrderByScorePipe" fxFlex="{{tilesize + 'px'}}" [style.width]="tilesize + 'px'" [style.height]="tilesize + 'px'" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject)">
-            <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
-                <div class="filename">{{mediaobject.name}}</div>
+            <div class="tile-header" fxLayout fxLayoutAlign="space-between start" [style.background-color]="colorForSegment(mediaobject.representativeSegment)">
+                <div class="filename">
+                    {{mediaobject.name}}
+                </div>
                 <div class="score">
                     <p>{{mediaobject.scorePercentage}}&#37;</p>
                     <p><mat-icon>filter_none</mat-icon>&nbsp;{{mediaobject.numberOfSegments}}</p>
@@ -15,7 +17,16 @@
 
             <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, mediaobject.representativeSegment.mediaSegment)}}" draggable="false" (click)="onDetailsButtonClicked(mediaobject)"/>
 
-            <div  *ngIf="inFocus(mediaobject)" class="tile-footer" fxLayout="row-reverse">
+            <div *ngIf="inFocus(mediaobject)" class="tile-footer" fxLayout="row-reverse" [style.background-color]="colorForSegment(mediaobject.representativeSegment)">
+
+                <button *ngIf="mediaobject.representativeSegment.marked" mat-icon-button (click)="onStarButtonClicked(mediaobject)" class="tile-button" matTooltip="Unmark">
+                    <mat-icon >star</mat-icon>
+                </button>
+
+                <button *ngIf="!mediaobject.representativeSegment.marked" mat-icon-button (click)="onStarButtonClicked(mediaobject)" class="tile-button" matTooltip="Mark as favourite">
+                    <mat-icon>star_border</mat-icon>
+                </button>
+
                 <div><button mat-icon-button (click)="onMltButtonClicked(mediaobject)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button></div>
                 <div><button mat-icon-button (click)="onDetailsButtonClicked(mediaobject)" matTooltip="Show details"><mat-icon>remove_red_eye</mat-icon></button></div>
                 <div><button mat-icon-button (click)="onInformationButtonClicked(mediaobject)" matTooltip="Feature information"><mat-icon>help</mat-icon></button></div>

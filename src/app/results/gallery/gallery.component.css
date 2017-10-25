@@ -3,11 +3,7 @@
     margin-bottom: 25px;
     box-shadow: 0.15em 0.15em 0.05em 0 rgba(0, 0, 0, 0.4); /* The top layer shadow */
     position: relative;
-    background-color: #424242;
-    background-image: url('../../../assets/images/loading.png');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
+    background: url('../../../assets/images/loading.png') no-repeat center;
 }
 
 .tile .tile-header {
@@ -18,9 +14,8 @@
     padding: 10px;
     position: absolute;
     z-index: 100;
-    background-color: black;
     opacity: 0.65;
-    color: white;
+    color: black;
 }
 
 .tile .tile-body {
@@ -37,9 +32,8 @@
     padding: 5px;
     position: absolute;
     z-index: 100;
-    background-color: black;
     opacity: 0.65;
-    color: white;
+    color: black;
 }
 
 

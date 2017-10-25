@@ -154,6 +154,15 @@ export class GalleryComponent extends AbstractResultsViewComponent {
     }
 
     /**
+     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
+     *
+     * @param {MediaObjectScoreContainer} object
+     */
+    public onStarButtonClicked(object: MediaObjectScoreContainer) {
+        object.representativeSegment.toggleMark();
+    }
+
+    /**
      * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
      *
      *
