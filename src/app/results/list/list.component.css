@@ -10,6 +10,10 @@
     padding: 5px;
 }
 
+.segment.marked {
+    border: 0.5px solid #0101ff;
+}
+
 .segment img {
     width: 100%;
 }

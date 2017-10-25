@@ -5,7 +5,7 @@
 
     <div class="list">
         <div *ngFor="let mediaobject of mediaobjects | OrderByScorePipe" class="object" draggable="true" fxLayout="row" fxLayoutWrap fxLayoutGap="4px">
-            <div *ngFor="let segment of mediaobject.segments | OrderBySegmentPipe" class="segment" (mouseenter)="focus = segment" (mouseleave)="focus = null" [style.background-color]="colorForSegment(segment)">
+            <div *ngFor="let segment of mediaobject.segments | OrderBySegmentPipe" class="{{segment.marked ? 'segment marked' : 'segment'}}" (mouseenter)="focus = segment" (mouseleave)="focus = null" [style.background-color]="colorForSegment(segment)">
                 <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
                 <div *ngIf="inFocus(segment)" class="footer" fxLayout="row-reverse">
                     <button *ngIf="segment.marked" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Unmark">
