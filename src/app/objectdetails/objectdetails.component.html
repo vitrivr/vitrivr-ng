@@ -4,7 +4,6 @@
         <h2 [style.margin-top]="'5px'">&nbsp;Media object: {{mediaobject.objectId}}</h2>
     </div>
 
-
     <div [style.display]="'flex'" [style.justify-content]="'flex-start'">
         <div>
             <div [style.max-height]="'400px'">
@@ -35,13 +34,13 @@
     <mat-tab-group>
         <mat-tab label="Segments ({{segments.length}})">
             <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
-                <div *ngFor="let segment of segments | OrderByScorePipe" fxFlex="150px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
+                <div *ngFor="let segment of segments | OrderByScorePipe" fxFlex="200px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
                     <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                         <p [style.margin]="'0'">{{segment.mediaSegment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
-                        <p [style.margin]="'0'" *ngIf="segment.endtime > 0">{{segment.starttime}}-{{segment.endtime}}</p>
+                        <p [style.margin]="'0'" *ngIf="segment.endtime > 0">{{segment.starttime.toFixed(2)}}-{{segment.endtime.toFixed(2)}}</p>
                     </div>
 
-                    <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" width="150px" height="150px">
+                    <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" width="200px" height="200px">
 
                     <div class="tile-footer" fxLayout="row-reverse">
                         <button mat-icon-button *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" (click)="onPlayClick(segment)" matTooltip="Start playback"><mat-icon>play_arrow</mat-icon></button>
@@ -58,8 +57,4 @@
             </mat-list>
         </mat-tab>
     </mat-tab-group>
-</div>
-
-<div style="padding:10px;" *ngIf="!mediaobject">
-    <mat-progress-spinner [attr.color]="primary" [mode]="indeterminate"></mat-progress-spinner>
 </div>
