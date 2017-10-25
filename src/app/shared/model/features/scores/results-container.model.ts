@@ -7,7 +7,6 @@ import {Feature} from "../feature.model";
 import {ObjectQueryResult} from "../../messages/interfaces/query-result-object.interface";
 import {SegmentQueryResult} from "../../messages/interfaces/query-result-segment.interface";
 import {SimilarityQueryResult} from "../../messages/interfaces/query-result-similarty.interface";
-import {isUndefined} from "util";
 import {Subject} from "rxjs/Subject";
 
 export class ResultsContainer extends Subject<boolean> {
