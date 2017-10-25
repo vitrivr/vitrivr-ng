@@ -16,7 +16,7 @@
     object-fit: contain;
 }
 
-.segment .segment-footer {
+.segment .footer {
     position: absolute;
     top: 75px;
     left: 0;
@@ -30,17 +30,17 @@
 
 /* Styles the button in the tile footer. */
 
-.segment-footer > button {
+.footer > button {
     max-height: 20px !important;
     max-width: 20px !important;
     line-height: 0 !important;
 }
 
-.segment-footer .mat-icon {
+.footer .mat-icon {
     max-height: 18px;
     max-width: 18px;
 }
 
-.segment-footer .material-icons {
+.footer .material-icons {
     font-size: 16px !important;
 }

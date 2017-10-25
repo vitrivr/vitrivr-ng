@@ -7,7 +7,7 @@
         <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of segments | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background-color]="colorForSegment(segment)">
             <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
 
-            <div *ngIf="inFocus(segment)" class="segment-footer" fxLayout="row-reverse">
+            <div *ngIf="inFocus(segment)" class="footer" fxLayout="row-reverse">
 
                 <button *ngIf="segment.mar" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Unmark">
                     <mat-icon >star</mat-icon>
