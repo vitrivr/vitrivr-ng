@@ -96,6 +96,15 @@ export class ListComponent extends AbstractResultsViewComponent{
     }
 
     /**
+     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onStarButtonClicked(segment: SegmentScoreContainer) {
+        segment.toggleMark();
+    }
+
+    /**
      * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
      *
      * @param {SegmentScoreContainer} segment

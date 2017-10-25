@@ -1,6 +1,7 @@
 import {ChangeDetectorRef, OnDestroy, OnInit} from "@angular/core";
 import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
 import {QueryChange, QueryService} from "../core/queries/query.service";
+import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 
 export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy  {
 
@@ -30,9 +31,14 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
      * @param {number} score
      * @return String that encodes the RGB value.
      */
-    public colorForScore(score: number): string {
+    public colorForSegment(segment: SegmentScoreContainer): string {
+        let score = segment.score;
         let v = Math.round(255.0 - (score * 255.0));
-        return "#" + ((1 << 24) + (v << 16) + (255 << 8) + v).toString(16).slice(1);
+        if (segment.marked)  {
+            return "#" + ((1 << 24) + (v << 16) + (v << 8) + 255).toString(16).slice(1);
+        } else {
+            return "#" + ((1 << 24) + (v << 16) + (255 << 8) + v).toString(16).slice(1);
+        }
     }
 
     /**

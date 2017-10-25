@@ -87,11 +87,19 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
     /**
      * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
      *
-     *
      * @param {SegmentScoreContainer} segment
      */
     public onInformationButtonClicked(segment: SegmentScoreContainer) {
         this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data : segment.scores, duration: 2500});
+    }
+
+    /**
+     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onStarButtonClicked(segment: SegmentScoreContainer) {
+       segment.toggleMark();
     }
 
     /**
