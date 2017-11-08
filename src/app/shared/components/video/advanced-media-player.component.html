@@ -18,7 +18,7 @@
 
         <vg-fullscreen></vg-fullscreen>
 
-        <mat-icon *ngIf="mediaobject.mediatype == 'VIDEO'" class="player-button" matTooltip="Submit current position to VBS API.">send</mat-icon>
+        <mat-icon *ngIf="showsubmit" class="player-button" matTooltip="Submit current position to VBS API." (click)="onSubmitPressed()">send</mat-icon>
 
     </vg-controls>
 
