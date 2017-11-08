@@ -33,8 +33,8 @@ export class ConfigService {
         this._http.get('config.json?r=' + UUIDGenerator.suid()).first().subscribe((result) => {
             if (result.status === 200) {
                 let data = result.json();
-                if (data["api"] || data["resources"] || data["evaluation"] || data["queryContainerTypes"]) {
-                    this._configuration = new Config(data["api"], data["resources"], data["evaluation"], data["queryContainerTypes"]);
+                if (data["api"] || data["resources"] || data["evaluation"] || data["queryContainerTypes"]  || data["vbs"]) {
+                    this._configuration = new Config(data["api"], data["resources"], data["evaluation"], data["queryContainerTypes"], data["vbs"]);
                     this.subject.next(this._configuration);
                 }
             }
