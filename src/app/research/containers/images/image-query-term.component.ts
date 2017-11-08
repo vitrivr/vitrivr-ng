@@ -3,7 +3,7 @@ import {SketchDialogComponent} from "./sketch-dialog.component";
 import {MatDialog} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
 import {ResolverService} from "../../../core/basics/resolver.service";
-import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 import {MediaSegmentDragContainer} from "../../../shared/model/internal/media-segment-drag-container.model";
 
 @Component({
@@ -29,7 +29,7 @@ export class ImageQueryTermComponent {
      *
      * @param dialog
      */
-    constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: Http) {}
+    constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {}
 
     /**
      * Triggered whenever either the slider for the category settings is used. Adjusts the feature categories
@@ -129,8 +129,8 @@ export class ImageQueryTermComponent {
             /* Case 2: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
             let drag: MediaSegmentDragContainer = MediaSegmentDragContainer.fromJSON(event.dataTransfer.getData(MediaSegmentDragContainer.FORMAT));
             let url = this._resolver.pathToThumbnailForSegment(drag.mediatype, drag.segment);
-            this._http.get(url, {responseType: 3}).first().subscribe(data => {
-                reader.readAsDataURL(data.blob());
+            this._http.get(url, {responseType: 'blob'}).first().subscribe(data => {
+                reader.readAsDataURL(data);
             });
         }
     }

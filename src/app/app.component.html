@@ -20,9 +20,9 @@
 
         <span class="spacer-xlarge"></span>
 
-        <a *ngIf="config.evaluation.active" mat-icon-button routerLink="/evaluation" routerLinkActive="active" matTooltip="Navigate to evaluation module"><mat-icon>assessment</mat-icon></a>
+        <a *ngIf="config.evaluationOn" mat-icon-button routerLink="/evaluation" routerLinkActive="active" matTooltip="Navigate to evaluation module"><mat-icon>assessment</mat-icon></a>
 
-        <span *ngIf="config.evaluation.active" class="spacer-medium"></span>
+        <span *ngIf="config.evaluationOn" class="spacer-medium"></span>
 
         <button mat-icon-button  (click)="featuressidenav.toggle()" matTooltip="Toggle query refinement sidebar"><mat-icon>storage</mat-icon></button>
 

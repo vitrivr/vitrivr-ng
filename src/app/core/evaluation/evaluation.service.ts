@@ -1,6 +1,6 @@
 import {EvaluationSet} from "../../shared/model/evaluation/evaluation-set";
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 import {EvaluationTemplate} from "../../shared/model/evaluation/evaluation-template";
 import {Observable} from "rxjs/Observable";
 import Dexie from 'dexie';
@@ -14,7 +14,7 @@ export class EvaluationService extends Dexie {
     /**
      * Default constructor.
      */
-    constructor(private _http: Http) {
+    constructor(private _http: HttpClient) {
         super("vitrivng");
         this.version(1).stores({
             evaluations: 'id,name,template,evaluations,position'
@@ -78,10 +78,10 @@ export class EvaluationService extends Dexie {
      * @param url URL to load the template from.
      */
     public loadEvaluationTemplate(url: string): Observable<EvaluationTemplate> {
-        return this._http.get(url).map(
+        return this._http.get(url, {observe: 'response'}).map(
             response => {
                 if (response.ok) {
-                    return EvaluationTemplate.fromJson(response.json(), response.url);
+                    return EvaluationTemplate.fromJson(response.body, response.url);
                 } else {
                     Observable.throw(new Error("Could not load the EvaluationTemplate due to a HTTP error (Status: " + response.status + ")"));
                 }

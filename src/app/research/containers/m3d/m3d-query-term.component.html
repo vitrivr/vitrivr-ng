@@ -5,7 +5,7 @@
 <img #previewimg  *ngIf="sketch" class="previewimg" width="150" (click)="onImageViewerClicked()"  matTooltip="Click to open sketch pad..."/>
 
 <div style="display:flex; align-items: center; justify-content: center;">
-    <mat-slide-toggle [(ngModel)]="sketch" (change)="onModeToggled($event)">2D Sketch</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="sketch" (change)="onModeToggled()">2D Sketch</mat-slide-toggle>
 </div>
 
 <div *ngIf="!sketch" style="display:flex; align-items: center; justify-content: center;">

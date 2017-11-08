@@ -4,7 +4,7 @@ import {SegmentScoreContainer} from "../../model/features/scores/segment-score-c
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {VgAPI} from "videogular2/core";
 import {ConfigService} from "../../../core/basics/config.service";
-import {Http, RequestOptionsArgs} from "@angular/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {MetadataLookupService} from "../../../core/lookup/metadata-lookup.service";
 import {VideoUtil} from "../../util/video.util";
 
@@ -50,7 +50,7 @@ export class AdvancedMediaPlayerComponent {
      * @param {Http} _http Injected service to send XHRHttpRequests
      * @param {MetadataLookupService} _metadata Injected service to access object metadata through the Cineast API.
      */
-    constructor(public readonly _resolver: ResolverService, private readonly _config: ConfigService, private _http: Http, private _metadata: MetadataLookupService) {
+    constructor(public readonly _resolver: ResolverService, private readonly _config: ConfigService, private _http: HttpClient, private _metadata: MetadataLookupService) {
         this._metadata.first().subscribe(s => {
             for (let metadata of s.content) {
                 if (metadata.domain === "technical" && metadata.key === "fps") {
@@ -101,10 +101,9 @@ export class AdvancedMediaPlayerComponent {
 
         /* Ask for user confirmation and submit the values. */
         if (confirm("Are you sure you want to submit the current position (frame: " + frame + ") of video '" + this.mediaobject.objectId + "' to VBS?")) {
-            let options = <RequestOptionsArgs>{params: { video: this.mediaobject.objectId, team : this._config.configuration.vbsTeam, frame: frame}};
-            this._http.get(this._config.configuration.vbsEndpoint, options).first().subscribe((r) => {
+            this._http.get(this._config.configuration.vbsEndpoint, {responseType: 'text', params: new HttpParams().set('video', this.mediaobject.objectId).set('team', String(this._config.configuration.vbsTeam)).set('frame', String(frame))}).first().subscribe((r: string) => {
                 /* TODO: Handle response */
-                console.log(r.toString());
+                console.log(r);
             });
         }
     }

@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Config} from "./config.model";
 import {Observable} from "rxjs/Observable";
@@ -22,7 +22,7 @@ export class ConfigService {
      *
      * @param _http
      */
-    constructor(private _http: Http) {
+    constructor(private _http: HttpClient) {
         this.reload();
     }
 
@@ -30,13 +30,10 @@ export class ConfigService {
      * Reloads the settings file.
      */
     public reload() {
-        this._http.get('config.json?r=' + UUIDGenerator.suid()).first().subscribe((result) => {
-            if (result.status === 200) {
-                let data = result.json();
-                if (data["api"] || data["resources"] || data["evaluation"] || data["queryContainerTypes"]  || data["vbs"]) {
-                    this._configuration = new Config(data["api"], data["resources"], data["evaluation"], data["queryContainerTypes"], data["vbs"]);
-                    this.subject.next(this._configuration);
-                }
+        this._http.get('config.json?r=' + UUIDGenerator.suid()).first().subscribe((result: Object) => {
+            if (result["api"] || result["resources"] || result["evaluation"] || result["queryContainerTypes"]  || result["vbs"]) {
+                this._configuration = new Config(result["api"], result["resources"], result["evaluation"], result["queryContainerTypes"], result["vbs"]);
+                this.subject.next(this._configuration);
             }
         });
     }

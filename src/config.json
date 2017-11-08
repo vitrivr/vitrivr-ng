@@ -6,6 +6,7 @@
     "protocol_ws": "ws",
     "ping_interval": 10000
   },
+
   "resources": {
     "host_thumbnails" : "http://10.34.58.44/vitrivr/thumbnails/",
     "host_object": "http://10.34.58.44/vitrivr/objects/",
@@ -14,6 +15,11 @@
       "IMAGE": "png",
       "VIDEO": "png"
     }
+  },
+  "vbs": {
+    "active":true,
+    "team" : 1,
+    "endpoint": "http://10.34.58.37:12345/submit"
   },
   "evaluation": {
     "active":false,
