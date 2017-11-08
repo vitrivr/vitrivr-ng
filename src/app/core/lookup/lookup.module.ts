@@ -1,8 +1,9 @@
 import {NgModule}      from '@angular/core';
 import {MetadataLookupService} from "./metadata-lookup.service";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
-    imports:      [ ],
+    imports:      [ HttpClientModule ],
     declarations: [ ],
     providers:    [ MetadataLookupService ]
 })
