@@ -5,7 +5,7 @@ import {
     MatSliderModule, MatChipsModule, MatDialogModule, MatCardModule, MatSidenavModule, MatSelectModule, MatTabsModule,
     MatRadioModule, MatIconModule, MatMenuModule, MatInputModule, MatToolbarModule, MatTooltipModule, MatSnackBarModule,
     MatCheckboxModule, MatButtonModule, MatCommonModule, MatGridListModule, MatProgressBarModule, MatRippleModule,
-    MatProgressSpinnerModule, MatSlideToggleModule, MatIconRegistry
+    MatProgressSpinnerModule, MatSlideToggleModule, MatIconRegistry, MatListModule
 } from "@angular/material";
 import {HttpModule} from "@angular/http";
 
@@ -18,6 +18,7 @@ const MATERIAL_MODULES = [
     MatGridListModule,
     MatIconModule,
     MatInputModule,
+    MatListModule,
     MatMenuModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
