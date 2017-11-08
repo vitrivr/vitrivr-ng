@@ -1,12 +1,9 @@
-import {Injectable} from "@angular/core";
 import {Subject, Observer, Observable} from 'rxjs/Rx';
 
 /**
  * Custom type used to indicate the status of the WebSocket status.
  */
 export type WebSocketStatus = "DISCONNECTED" | "WAITING" | "ERROR" ;
-
-@Injectable()
 export abstract class AbstractWebsocketService {
     /* WebSocket used by the AbstractWebsocketService implementation. */
     private _socket : Subject<any> = null;
