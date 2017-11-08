@@ -168,7 +168,7 @@ export class ObjectdetailsComponent implements OnInit {
         this._segments = this._mediaobject.segments.slice().sort((a, b) => SegmentScoreContainer.compareAsc(a,b));
 
         /* Lookup metadata lines for the provided object. */
-        this._metadataLookup.observable().first().subscribe((msg) => {
+        this._metadataLookup.first().subscribe((msg) => {
             this._metadata = msg.content
         });
         this._metadataLookup.lookup(this._objectId);

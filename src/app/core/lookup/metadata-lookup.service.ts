@@ -13,20 +13,15 @@ import {Subject} from "rxjs/Subject";
  * become available).
  */
 @Injectable()
-export class MetadataLookupService {
-
-    /** Subject that allows Observers to subscribe to changes emitted by the MetadataLookupService. */
-    private subject : Subject<MetadataQueryResult> = new Subject();
-
+export class MetadataLookupService extends Subject<MetadataQueryResult> {
     /**
      * Default constructor; Registers for QR_METADATA messages
      *
      * @param _api Reference to the CineastAPI. Gets injected by DI.
      */
     constructor(private _api: CineastAPI) {
-        _api.observable()
-            .filter(msg => ("QR_METADATA" === msg[0]))
-            .subscribe((msg) => this.onApiMessage(msg[1]));
+        super();
+        _api.observable().filter(msg => ("QR_METADATA" === msg[0])).subscribe((msg) => this.onApiMessage(msg[1]));
     }
 
     /**
@@ -39,21 +34,11 @@ export class MetadataLookupService {
     }
 
     /**
-     * Returns an Observable that allows an Observer to be notified about state changes
-     * in the MetadataLookupService (i.e. MetadataQueryResults that become available).
-     *
-     * @returns {Observable<T>}
-     */
-    public observable() : Observable<MetadataQueryResult>{
-        return this.subject.asObservable();
-    }
-
-    /**
      * Callback that gets invoked whenever a message is pushed from the underlying WebSocket.
      *
      * @param message
      */
     private onApiMessage(message: string): void {
-        this.subject.next(<MetadataQueryResult>JSON.parse(message));
+        this.next(<MetadataQueryResult>JSON.parse(message));
     }
 }
