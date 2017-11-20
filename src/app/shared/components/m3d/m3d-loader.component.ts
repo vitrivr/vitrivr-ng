@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import TrackballControls from 'three-trackballcontrols'
+import TrackballControls = require('three-trackballcontrols');
 
 import {Component, OnInit, OnDestroy, Input, ViewChild} from "@angular/core";
 import {Model3DFileLoader} from "../../util/m3d-file-loader.util";

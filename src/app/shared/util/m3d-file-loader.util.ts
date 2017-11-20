@@ -1,14 +1,10 @@
 import * as THREE from 'three';
-import OBJLoaderProto from 'three-obj-loader';
-import STLLoaderProto from 'three-stl-loader';
 
 /* UGLY: Load the model-file loaders. */
-
-let Loaders = THREE;
-OBJLoaderProto(Loaders);
-let OBJLoader = (Loaders as any).OBJLoader;
-let STLLoader = STLLoaderProto(Loaders);
-
+import OBJLoader = require('three-obj-loader')
+import STLLoader = require('three-stl-loader')
+OBJLoader(THREE);
+STLLoader(THREE);
 /* /UGLY */
 
 import LoadingManager = THREE.LoadingManager;
@@ -38,7 +34,7 @@ export class Model3DFileLoader {
      * @param manager LoadingManager to use together with the loader class.
      */
     public static loadOBJFromPath(path: string, callback : Function, manager?: LoadingManager) {
-        let loader = new OBJLoader(manager);
+        let loader = new THREE.OBJLoader(manager);
         loader.load(path, (object: any) => {
             if (object) {
                 let geometry: THREE.Geometry  = new THREE.Geometry();
@@ -80,7 +76,7 @@ export class Model3DFileLoader {
      * @param manager LoadingManager to use together with the loader class.
      */
     public static loadSTLFromPath(path: string, callback: Function, manager?: LoadingManager) {
-        let loader =  new STLLoader(manager);
+        let loader =  new THREE.OBJLoader(manager);
         loader.load(path, (geometry: any) => {
             if (geometry instanceof BufferGeometry) {
                 callback(new THREE.Mesh(new THREE.Geometry().fromBufferGeometry(geometry), new THREE.MeshNormalMaterial()));
