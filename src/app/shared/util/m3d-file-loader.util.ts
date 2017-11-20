@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 /* UGLY: Load the model-file loaders. */
-import OBJLoader = require('three-obj-loader')
-import STLLoader = require('three-stl-loader')
+import * as OBJLoader from 'three-obj-loader';
+import * as STLLoader from 'three-stl-loader';
 OBJLoader(THREE);
 STLLoader(THREE);
 /* /UGLY */
