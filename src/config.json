@@ -1,14 +1,14 @@
 {
   "api": {
-    "host" : "10.34.58.88",
+    "host" : "localhost",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
     "ping_interval": 10000
   },
   "resources": {
-    "host_thumbnails" : "http://10.34.58.10/vitrivr/thumbnails/",
-    "host_object": "http://10.34.58.10/vitrivr/thumbnails",
+    "host_thumbnails" : "http://localhost/vitrivr/thumbnails/",
+    "host_object": "http://localhost/vitrivr/thumbnails",
     "suffix_default":".jpg",
     "suffix": {
       "IMAGE": "png",
@@ -18,8 +18,8 @@
   "evaluation": {
     "active":false,
     "templates":[
-      {"name":"Testset A", "url":"http://10.34.58.10/vitrivr/testset/evaluation_a.json"},
-      {"name":"Testset B", "url":"http://10.34.58.10/vitrivr/testset/evaluation_b.json"}
+      {"name":"Testset A", "url":"http://localhost/vitrivr/testset/evaluation_a.json"},
+      {"name":"Testset B", "url":"http://localhost/vitrivr/testset/evaluation_b.json"}
     ]
   },
   "queryContainerTypes":{
