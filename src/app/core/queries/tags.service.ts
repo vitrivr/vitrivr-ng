@@ -14,7 +14,7 @@ import {observable} from "rxjs/symbol/observable";
 export class TagsService extends CineastRestAPI {
    /**
      * Constructor.
-    * 
+    *
      * @param {ConfigService} _configService
      * @param {HttpClient} _httpClient
      */

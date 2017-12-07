@@ -7,12 +7,13 @@ import {ResolverService} from "./basics/resolver.service";
 import {EvaluationService} from "./evaluation/evaluation.service";
 import {BasicModule} from "./basics/basic.module";
 import {EvaluationModule} from "../evaluation/evaluation.module";
+import {TagsService} from "./queries/tags.service";
 
 @NgModule({
     imports:      [ LookupModule, BasicModule, EvaluationModule ],
     exports:      [ LookupModule, BasicModule, EvaluationModule ],
     declarations: [ ],
-    providers:    [ QueryService, ConfigService, ResolverService, CineastAPI, EvaluationService ]
+    providers:    [ TagsService, QueryService, ConfigService, ResolverService, CineastAPI, EvaluationService ]
 })
 
 export class CoreModule { }
