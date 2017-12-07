@@ -110,7 +110,7 @@ export class FieldGroup {
         this.formControl = new FormControl();
         this.filteredTags = this.formControl.valueChanges.debounceTime(250).pipe(startWith(''), map((tag: string) => {
             if (tag.length >= 3) {
-                return this._tags.filtered(tag)
+                return this._tags.matching(tag)
             } else {
                 return Observable.empty<Tag[]>();
             }
