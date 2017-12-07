@@ -125,7 +125,7 @@ export class Config {
     get endpoint_ws(): string {
         let scheme = this.api.ws_secure ? "wss://" : "ws://";
         if (this.api.host && this.api.port) {
-            return scheme + this.api.host + ":" + this.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/";
+            return scheme + this.api.host + ":" + this.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/websocket";
         } else {
             return null;
         }
