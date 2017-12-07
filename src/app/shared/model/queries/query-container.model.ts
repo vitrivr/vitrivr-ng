@@ -6,6 +6,7 @@ import {M3DQueryTerm} from "./m3d-query-term.model";
 import {QueryTermType} from "./interfaces/query-term-type.interface";
 import {MotionQueryTerm} from "./motion-query-term.model";
 import {TextQueryTerm} from "./text-query-term.model";
+import {TagQueryTerm} from "./tag-query-term.model";
 
 export class QueryContainer implements QueryContainerInterface {
     /**
@@ -41,6 +42,9 @@ export class QueryContainer implements QueryContainerInterface {
                 break;
             case "TEXT":
                 this.terms_map.set(type, new TextQueryTerm());
+                break;
+            case "TAG":
+                this.terms_map.set(type, new TagQueryTerm());
                 break;
             default:
                 return false;
