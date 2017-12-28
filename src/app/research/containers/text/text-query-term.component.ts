@@ -20,8 +20,8 @@ export class TextQueryTermComponent {
      * entry designates the label.
      */
     public readonly categories: [string, string][] = [
-        ['tos', 'Text on Screen'],
-        ['subtitles', 'Subtitles'],
+        ['ocr', 'Text on Screen'],
+        ['asr', 'Subtitles'],
         ['metadata', 'Metadata'],
     ];
 
