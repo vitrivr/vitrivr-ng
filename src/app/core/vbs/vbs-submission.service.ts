@@ -12,35 +12,22 @@ import {Observable} from "rxjs/Observable";
  */
 @Injectable()
 export class VbsSubmissionService {
-    /** URL of the VBS endpoint. */
-    private _vbsEndpoint;
-
-    /** ID of the VBS team. */
-    private _vbsTeam;
-
-    /** ID of the VBS team. */
-    private _vbsOn;
-
     /**
      * Constructor for VbsSubmissionService.
-     * 
+     *
      * @param {MetadataLookupService} _metadata
      * @param {HttpClient} _http
      * @param {ConfigService} _config
      */
-    constructor(private _metadata: MetadataLookupService, private _http: HttpClient, _config: ConfigService) {
-        this._vbsOn = _config.configuration.vbsOn;
-        this._vbsEndpoint = _config.configuration.vbsEndpoint;
-        this._vbsTeam = _config.configuration.vbsTeam;
-    }
+    constructor(private _metadata: MetadataLookupService, private _http: HttpClient, private _config: ConfigService) {}
 
     /**
      * Submits the provided SegmentScoreContainer and to the VBS endpoint. Uses the segment's start timestamp as timepoint.
      *
      * @param {SegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
      */
-    public submitSegment(segment: SegmentScoreContainer) {
-       this.submit(segment, segment.starttime);
+    public submitSegment(segment: SegmentScoreContainer): Observable<string | {}> {
+       return this.submit(segment, segment.starttime);
     }
 
     /**
@@ -49,28 +36,23 @@ export class VbsSubmissionService {
      * @param {SegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
      * @param {number} time Time in seconds which should be submitted. This value will be transformed into a frame number.
      */
-    public submit(segment: SegmentScoreContainer, time: number) {
-        if (!this._vbsOn) throw new Error("VBS service is currently inactive or has not been properly configured.");
-        let observable = this._metadata.lookup(segment.objectId)
+    public submit(segment: SegmentScoreContainer, time: number): Observable<string | {}> {
+        if (!this.isOn) return Observable.throw(new Error("VBS service is inactive or was not properly configured."));
+        return this._metadata.lookup(segment.objectId)
             .flatMap(s => Observable.from(s))
             .filter(m => m.domain === "technical" && m.key === "fps")
             .map(m => m.value)
             .defaultIfEmpty(VideoUtil.bestEffortFPS(segment))
-            .flatMap(s => this._http.get(this._vbsEndpoint, {responseType: 'text', params: new HttpParams().set('video', segment.objectId).set('team', String(this._vbsTeam)).set('frame', String(VbsSubmissionService.timeToFrame(time, s)))}))
-            .catch((e,o) => {
-                console.log("Failed to submit segment to VBS due to error.");
-                return Observable.empty();
-            })
-            .subscribe(s => console.log("Successfully submitted segment to VBS endpoint."));
+            .flatMap(s => this._http.get(this._config.configuration.vbsEndpoint, {responseType: 'text', params: new HttpParams().set('video', segment.objectId).set('team', String(this._config.configuration.vbsTeam)).set('frame', String(VbsSubmissionService.timeToFrame(time, s)))}));
     }
 
     /**
      * Returns true uf VBS mode is active and properly configured (i.e. endpoint and team ID is specified).
      *
-     * @return {any}
+     * @return {boolean}
      */
-    get isOn() {
-        return this._vbsOn && this._vbsEndpoint != null && this._vbsTeam != null;
+    get isOn(): boolean {
+        return this._config.configuration.vbsOn && this._config.configuration.vbsEndpoint != null && this._config.configuration.vbsTeam != null;
     }
 
     /**
