@@ -13,14 +13,14 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^5.1.0",
-    "@angular/cdk": "5.0.0-rc.3",
+    "@angular/cdk": "~5.0.2",
     "@angular/common": "^5.1.0",
     "@angular/compiler": "^5.1.0",
     "@angular/core": "^5.1.0",
     "@angular/flex-layout": "2.0.0-beta.10-4905443",
     "@angular/forms": "^5.1.0",
     "@angular/http": "^5.1.0",
-    "@angular/material": "5.0.0-rc.3",
+    "@angular/material": "~5.0.2",
     "@angular/platform-browser": "^5.1.0",
     "@angular/platform-browser-dynamic": "^5.1.0",
     "@angular/router": "^5.1.0",
@@ -42,7 +42,7 @@
     "three-trackballcontrols": "^0.0.6",
     "ts-md5": "^1.2.0",
     "typescript": "2.4.2",
-    "videogular2": "^5.6.3",
+    "videogular2": "^6.0.1",
     "zone.js": "^0.8.17"
   },
   "devDependencies": {
