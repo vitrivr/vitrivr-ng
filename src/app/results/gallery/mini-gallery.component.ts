@@ -10,6 +10,8 @@ import {FeatureDetailsComponent} from "../feature-details.component";
 import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
 import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segment-drag-container.model";
 import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
+import {VbsSubmissionService} from "../../core/vbs/vbs-submission.service";
+import {Observable} from "rxjs/Observable";
 
 @Component({
     moduleId: module.id,
@@ -34,8 +36,15 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
      * @param _router
      * @param _snackBar
      * @param _dialog
+     * @param _vbs
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MatSnackBar, protected _dialog: MatDialog) {
+    constructor(_cdr: ChangeDetectorRef,
+                _queryService : QueryService,
+                protected _resolver: ResolverService,
+                protected _router: Router,
+                protected _snackBar: MatSnackBar,
+                protected _dialog: MatDialog,
+                protected _vbs: VbsSubmissionService) {
         super(_cdr, _queryService);
     }
 
@@ -103,6 +112,21 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
     }
 
     /**
+     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onSubmitButtonClicked(segment: SegmentScoreContainer) {
+        this._vbs.submitSegment(segment).catch((e,o) => {
+            this._snackBar.open("Failed to submit segment '" + segment.segmentId + "' to VBS due to an error: " + e.message);
+            console.log(e);
+            return Observable.empty();
+        }).subscribe(s => {
+            this._snackBar.open("Successfully submitted segment '" + segment.segmentId + "' to VBS.");
+        });
+    }
+
+    /**
      * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
      *
      * @param {SegmentScoreContainer} segment
@@ -121,6 +145,17 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
     public onTileDrag(event, segment: SegmentScoreContainer) {
         event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
         event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(segment.objectScoreContainer).toJSON());
+    }
+    
+    /**
+     * Returns true, if the submit (to VBS) button should be displayed for the given segmentand false otherwise. This depends on the configuration and
+     * the media type of the object.
+     *
+     * @param {SegmentScoreContainer} segment The segment for which to determine whether the button should be displayed.
+     * @return {boolean} True if submit button should be displayed, false otherwise.
+     */
+    public showsubmit(segment: SegmentScoreContainer): boolean {
+        return segment.objectScoreContainer.mediatype == 'VIDEO' && this._vbs.isOn;
     }
 
     /**

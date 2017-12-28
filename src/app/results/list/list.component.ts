@@ -8,7 +8,8 @@ import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-
 import {FeatureDetailsComponent} from "../feature-details.component";
 import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
-import {OrderBySegmentPipe} from "../../shared/pipes/containers/order-by-segment.pipe";
+import {Observable} from "rxjs/Observable";
+import {VbsSubmissionService} from "app/core/vbs/vbs-submission.service";
 
 @Component({
     moduleId: module.id,
@@ -34,8 +35,15 @@ export class ListComponent extends AbstractResultsViewComponent{
      * @param _router
      * @param _snackBar
      * @param _dialog
+     * @param _vbs
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MatSnackBar, protected _dialog: MatDialog) {
+    constructor(_cdr: ChangeDetectorRef,
+                _queryService : QueryService,
+                protected _resolver: ResolverService,
+                protected _router: Router,
+                protected _snackBar: MatSnackBar,
+                protected _dialog: MatDialog,
+                protected _vbs: VbsSubmissionService) {
         super(_cdr, _queryService);
     }
 
@@ -105,12 +113,38 @@ export class ListComponent extends AbstractResultsViewComponent{
     }
 
     /**
+     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onSubmitButtonClicked(segment: SegmentScoreContainer) {
+        this._vbs.submitSegment(segment).catch((e,o) => {
+            this._snackBar.open("Failed to submit segment '" + segment.segmentId + "' to VBS due to an error: " + e.message);
+            console.log(e);
+            return Observable.empty();
+        }).subscribe(s => {
+            this._snackBar.open("Successfully submitted segment '" + segment.segmentId + "' to VBS.");
+        });
+    }
+
+    /**
      * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
      *
      * @param {SegmentScoreContainer} segment
      */
     public onTileClicked(segment: SegmentScoreContainer) {
         let dialogRef = this._dialog.open(QuickViewerComponent, {data: segment});
+    }
+
+    /**
+     * Returns true, if the submit (to VBS) button should be displayed for the given segmentand false otherwise. This depends on the configuration and
+     * the media type of the object.
+     *
+     * @param {SegmentScoreContainer} segment The segment for which to determine whether the button should be displayed.
+     * @return {boolean} True if submit button should be displayed, false otherwise.
+     */
+    public showsubmit(segment: SegmentScoreContainer): boolean {
+        return segment.objectScoreContainer.mediatype == 'VIDEO' && this._vbs.isOn;
     }
 
     /**
@@ -122,7 +156,6 @@ export class ListComponent extends AbstractResultsViewComponent{
         } else {
             this._mediaobjects = [];
         }
-
         this._cdr.markForCheck();
     }
 }

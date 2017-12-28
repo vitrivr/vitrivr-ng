@@ -4,6 +4,8 @@ import {SegmentScoreContainer} from "../../model/features/scores/segment-score-c
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {VgAPI} from "videogular2/core";
 import {VbsSubmissionService} from "../../../core/vbs/vbs-submission.service";
+import {Observable} from "rxjs/Observable";
+import {MatSnackBar} from "@angular/material";
 
 declare var VTTCue;
 
@@ -41,8 +43,7 @@ export class AdvancedMediaPlayerComponent {
      *
      * @param {ResolverService} _resolver  Injected service to resolve names of resources.
      */
-    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService) {
-    }
+    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService, protected _snackBar: MatSnackBar) {}
 
     /**
      * Callback that is invoked once the Vg player is ready.
@@ -74,10 +75,13 @@ export class AdvancedMediaPlayerComponent {
      * estimate is calculated using the focus segment.
      */
     public onSubmitPressed() {
-        /* Ask for user confirmation and submit the values. */
-        if (confirm("Are you sure you want to submit the current position of video '" + this.mediaobject.objectId + "' to the VBS API?")) {
-            this._vbs.submit(this.focus, this._api.currentTime);
-        }
+        this._vbs.submit(this.focus, this._api.currentTime).catch((e,o) => {
+            this._snackBar.open("Failed to submit segment '" + this.focus.segmentId + "' to VBS due to an error: " + e.message);
+            console.log(e);
+            return Observable.empty();
+        }).subscribe(s => {
+            this._snackBar.open("Successfully submitted segment '" + this.focus.segmentId + "' to VBS.");
+        });
     }
 
     /**
