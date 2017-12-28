@@ -7,13 +7,15 @@ import {ResolverService} from "./basics/resolver.service";
 import {EvaluationService} from "./evaluation/evaluation.service";
 import {BasicModule} from "./basics/basic.module";
 import {EvaluationModule} from "../evaluation/evaluation.module";
-import {TagsService} from "./queries/tags.service";
+import {TagsLookupService} from "./lookup/tags-lookup.service";
+import {VbsSubmissionService} from "./vbs/vbs-submission.service";
+import {VbsModule} from "./vbs/vbs.module";
 
 @NgModule({
-    imports:      [ LookupModule, BasicModule, EvaluationModule ],
-    exports:      [ LookupModule, BasicModule, EvaluationModule ],
+    imports:      [ LookupModule, BasicModule, EvaluationModule, VbsModule ],
+    exports:      [ LookupModule, BasicModule, EvaluationModule, VbsModule ],
     declarations: [ ],
-    providers:    [ TagsService, QueryService, ConfigService, ResolverService, CineastAPI, EvaluationService ]
+    providers:    [ TagsLookupService, QueryService, ConfigService, ResolverService, CineastAPI, EvaluationService, VbsSubmissionService ]
 })
 
 export class CoreModule { }
