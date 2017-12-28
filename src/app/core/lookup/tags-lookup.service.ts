@@ -11,7 +11,7 @@ import {observable} from "rxjs/symbol/observable";
  * used for Tag based (boolean) lookup.
  */
 @Injectable()
-export class TagsService extends CineastRestAPI {
+export class TagsLookupService extends CineastRestAPI {
    /**
      * Constructor.
     *
@@ -28,7 +28,7 @@ export class TagsService extends CineastRestAPI {
      * @param {string} filter Filter predicate.
      */
     public matching(filter: string): Observable<Tag[]> {
-        return this.get<Tag[]>("find/tags/by/matchingname/" + filter);
+        return this.get<Tag[]>("find/tags/by/matchingname/" + filter).first();
     }
 }
 

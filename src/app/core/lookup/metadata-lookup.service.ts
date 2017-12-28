@@ -1,44 +1,32 @@
-
-import {Injectable} from "@angular/core";
-import {CineastAPI} from "../api/cineast-api.service";
-import {MetadataLookup} from "../../shared/model/messages/metadata-lookup.model";
-import {MetadataQueryResult} from "../../shared/model/messages/interfaces/metadata-query-result.interface";
+import {Inject, Injectable} from "@angular/core";
+import {HttpClient} from "@angular/common/http";
+import {CineastRestAPI} from "../api/cineast-rest-api.service";
+import {ConfigService} from "../basics/config.service";
 import {Observable} from "rxjs/Observable";
-import {Subject} from "rxjs/Subject";
-
-
+import {MediaMetadata} from "../../shared/model/media/media-metadata.model";
 /**
- * This service allows for simple lookup for media object metadata. It follows a simple Observer pattern that
- * allows endpoints to register for notifications about state changes (i.e. new MetadataQueryResult objects that
- * become available).
+ * This service provides access to the Metadata stored and exposed by Cineast through the Cineast RESTful API. Metadata is general,
+ * often technical information regarding a specific media object.
  */
 @Injectable()
-export class MetadataLookupService extends Subject<MetadataQueryResult> {
+export class MetadataLookupService extends CineastRestAPI {
     /**
-     * Default constructor; Registers for QR_METADATA messages
+     * Constructor.
      *
-     * @param _api Reference to the CineastAPI. Gets injected by DI.
+     * @param {ConfigService} _configService
+     * @param {HttpClient} _httpClient
      */
-    constructor(private _api: CineastAPI) {
-        super();
-        _api.observable().filter(msg => ("QR_METADATA" === msg[0])).subscribe((msg) => this.onApiMessage(msg[1]));
+    constructor(@Inject(ConfigService) _configService : ConfigService, @Inject(HttpClient) _httpClient: HttpClient) {
+        super(_configService, _httpClient);
     }
 
     /**
-     * Instructs the service to lookup metadata for a specific media object.
+     * This method returns a list of Metadata for the given objectId predicate.
      *
-     * @param objectid ID of the media object for which to lookup metadata.
+     * @param {string} objectId ID of the MediaObject for which to lookup MediaMetadata.
      */
-    public lookup(objectid: string): void {
-        this._api.send(new MetadataLookup(objectid));
-    }
-
-    /**
-     * Callback that gets invoked whenever a message is pushed from the underlying WebSocket.
-     *
-     * @param message
-     */
-    private onApiMessage(message: string): void {
-        this.next(<MetadataQueryResult>JSON.parse(message));
+    public lookup(objectId: string): Observable<MediaMetadata[]> {
+        return this.get<MediaMetadata[]>("find/metadata/by/id/" + objectId).first();
     }
 }
+
