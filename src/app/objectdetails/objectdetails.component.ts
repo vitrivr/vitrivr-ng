@@ -152,7 +152,7 @@ export class ObjectdetailsComponent implements OnInit {
      *
      */
     public onImageViewerClicked() {
-        let imagePath = this._resolver.pathToObject(this._mediaobject); //this._resolver.pathToThumbnail(this._mediaobject.mediatype, this._mediaobject.objectId, this._mediaobject.objectId + "_1"); //
+        let imagePath = this._resolver.pathToObject(this._mediaobject);
         let dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
         dialogRef.afterClosed().first().subscribe((result) => {
 
@@ -168,10 +168,7 @@ export class ObjectdetailsComponent implements OnInit {
         this._segments = this._mediaobject.segments.slice().sort((a, b) => SegmentScoreContainer.compareAsc(a,b));
 
         /* Lookup metadata lines for the provided object. */
-        this._metadataLookup.first().subscribe((msg) => {
-            this._metadata = msg.content
-        });
-        this._metadataLookup.lookup(this._objectId);
+        this._metadataLookup.lookup(this._objectId).subscribe((msg) => this._metadata = msg);
     }
 
     /**

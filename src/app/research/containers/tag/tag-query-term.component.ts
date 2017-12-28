@@ -3,7 +3,7 @@ import {TagQueryTerm} from "../../../shared/model/queries/tag-query-term.model";
 import {FormControl} from "@angular/forms";
 import {Observable} from "rxjs/Observable";
 import {Tag} from "../../../shared/model/misc/tag.model";
-import {TagsService} from "../../../core/queries/tags.service";
+import {TagsLookupService} from "../../../core/lookup/tags-lookup.service";
 import {startWith} from 'rxjs/operators/startWith';
 import {map} from 'rxjs/operators/map';
 
@@ -29,9 +29,9 @@ export class TagQueryTermComponent {
     /**
      * Constructor for TagQueryTermComponent
      *
-     * @param {TagsService} _tagService Service used to load tags from Cineast.
+     * @param {TagsLookupService} _tagService Service used to load tags from Cineast.
      */
-    constructor(_tagService: TagsService) {
+    constructor(_tagService: TagsLookupService) {
         this._field = new FieldGroup(_tagService);
     }
 
@@ -104,9 +104,9 @@ export class FieldGroup {
     /**
      * Constructor for FieldGroup
      *
-     * @param {TagsService} _tags
+     * @param {TagsLookupService} _tags
      */
-    constructor(private _tags: TagsService) {
+    constructor(private _tags: TagsLookupService) {
         this.formControl = new FormControl();
         this.filteredTags = this.formControl.valueChanges.debounceTime(250).pipe(startWith(''), map((tag: string) => {
             if (tag.length >= 3) {
