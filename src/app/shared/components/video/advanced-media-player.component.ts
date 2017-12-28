@@ -3,10 +3,7 @@ import {MediaObjectScoreContainer} from "../../model/features/scores/media-objec
 import {SegmentScoreContainer} from "../../model/features/scores/segment-score-container.model";
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {VgAPI} from "videogular2/core";
-import {ConfigService} from "../../../core/basics/config.service";
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {MetadataLookupService} from "../../../core/lookup/metadata-lookup.service";
-import {VideoUtil} from "../../util/video.util";
+import {VbsSubmissionService} from "../../../core/vbs/vbs-submission.service";
 
 declare var VTTCue;
 
@@ -39,25 +36,12 @@ export class AdvancedMediaPlayerComponent {
     /** The internal VgAPI reference used to interact with the media player. */
     private _track: TextTrack;
 
-    /** The FPS value for the current video (-1 = indeterminate). */
-    private _fps: number = -1;
-
     /**
      * Default constructor.
      *
      * @param {ResolverService} _resolver  Injected service to resolve names of resources.
-     * @param {ConfigService} _config Injected service to access application configuration.
-     * @param {Http} _http Injected service to send XHRHttpRequests
-     * @param {MetadataLookupService} _metadata Injected service to access object metadata through the Cineast API.
      */
-    constructor(public readonly _resolver: ResolverService, private readonly _config: ConfigService, private _http: HttpClient, private _metadata: MetadataLookupService) {
-        this._metadata.first().subscribe(s => {
-            for (let metadata of s.content) {
-                if (metadata.domain === "technical" && metadata.key === "fps") {
-                    this._fps = metadata.value;
-                }
-            }
-        })
+    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService) {
     }
 
     /**
@@ -90,21 +74,9 @@ export class AdvancedMediaPlayerComponent {
      * estimate is calculated using the focus segment.
      */
     public onSubmitPressed() {
-        /* Determine necessary values. */
-        let frame = 0;
-        if (this._fps <= 0) {
-            frame = Math.floor(this._api.currentTime * VideoUtil.bestEffortFPS(this.focus));
-            console.log("FPS value could not be load from metadata. Fallback to a best effort estimate.");
-        } else {
-            frame = Math.floor(this._api.currentTime * this._fps);
-        }
-
         /* Ask for user confirmation and submit the values. */
-        if (confirm("Are you sure you want to submit the current position (frame: " + frame + ") of video '" + this.mediaobject.objectId + "' to VBS?")) {
-            this._http.get(this._config.configuration.vbsEndpoint, {responseType: 'text', params: new HttpParams().set('video', this.mediaobject.objectId).set('team', String(this._config.configuration.vbsTeam)).set('frame', String(frame))}).first().subscribe((r: string) => {
-                /* TODO: Handle response */
-                console.log(r);
-            });
+        if (confirm("Are you sure you want to submit the current position of video '" + this.mediaobject.objectId + "' to the VBS API?")) {
+            this._vbs.submit(this.focus, this._api.currentTime);
         }
     }
 
@@ -131,6 +103,6 @@ export class AdvancedMediaPlayerComponent {
      * @return {boolean}
      */
     get showsubmit(): boolean {
-        return this.mediaobject.mediatype == 'VIDEO' && this._config.configuration.vbsOn && (this._config.configuration.vbsEndpoint != null);
+        return this.mediaobject.mediatype == 'VIDEO' && this._vbs.isOn;
     }
 }

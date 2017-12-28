@@ -9,9 +9,10 @@ import { VgBufferingModule } from "videogular2/buffering";
 
 import {AdvancedMediaPlayerComponent} from "./advanced-media-player.component";
 import {MaterialModule} from "../../../material.module";
+import {VbsModule} from "../../../core/vbs/vbs.module";
 
 @NgModule({
-    imports:      [ MaterialModule, CommonModule, BrowserModule, VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule ],
+    imports:      [ MaterialModule, CommonModule, BrowserModule, VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule, VbsModule ],
     declarations: [ AdvancedMediaPlayerComponent ],
     exports: [ AdvancedMediaPlayerComponent]
 })
