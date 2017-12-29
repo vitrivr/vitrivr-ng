@@ -5,6 +5,7 @@ import {VideoUtil} from "../../shared/util/video.util";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {ConfigService} from "../basics/config.service";
 import {Observable} from "rxjs/Observable";
+import {VbsSequenceLoggerService} from "./vbs-sequence-logger.service";
 
 /**
  * This service orchestrates similarity queries using the Cineast API (WebSocket). The service is responsible for
@@ -19,7 +20,7 @@ export class VbsSubmissionService {
      * @param {HttpClient} _http
      * @param {ConfigService} _config
      */
-    constructor(private _metadata: MetadataLookupService, private _http: HttpClient, private _config: ConfigService) {}
+    constructor(private _metadata: MetadataLookupService, private _http: HttpClient, private _config: ConfigService, private _logger: VbsSequenceLoggerService) {}
 
     /**
      * Submits the provided SegmentScoreContainer and to the VBS endpoint. Uses the segment's start timestamp as timepoint.
@@ -43,7 +44,18 @@ export class VbsSubmissionService {
             .filter(m => m.domain === "technical" && m.key === "fps")
             .map(m => m.value)
             .defaultIfEmpty(VideoUtil.bestEffortFPS(segment))
-            .flatMap(s => this._http.get(this._config.configuration.vbsEndpoint, {responseType: 'text', params: new HttpParams().set('video', segment.objectId).set('team', this._config.configuration.vbsTeam).set('frame', String(VbsSubmissionService.timeToFrame(time, s)))}));
+            .flatMap(s => {
+                let params = new HttpParams()
+                    .set('video', segment.objectId)
+                    .set('team', this._config.configuration.vbsTeam)
+                    .set('frame', String(VbsSubmissionService.timeToFrame(time, s)))
+                    .set('shot', String(segment.mediaSegment.sequenceNumber));
+                if (this._logger.isEmpty()) {
+                    params.set('iseq', this._logger.sequence);
+                    this._logger.clear();
+                }
+                return this._http.get(this._config.configuration.vbsEndpoint, {responseType: 'text', params: params})
+            });
     }
 
     /**
