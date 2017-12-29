@@ -6,6 +6,7 @@ import {Tag} from "../../../shared/model/misc/tag.model";
 import {TagsLookupService} from "../../../core/lookup/tags-lookup.service";
 import {startWith} from 'rxjs/operators/startWith';
 import {map} from 'rxjs/operators/map';
+import {MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from "@angular/material";
 
 @Component({
     selector: 'qt-tag',
@@ -13,12 +14,12 @@ import {map} from 'rxjs/operators/map';
     styleUrls: ['tag-query-term.component.css']
 })
 export class TagQueryTermComponent {
+
     /** The TagQueryTerm object associated with this TagQueryTermComponent. That object holds all the query settings. */
     @Input()
     private tagTerm: TagQueryTerm;
 
-    @ViewChild('input')
-    private _input: any;
+    private _inputValue: string;
 
     /** List of tag fields  currently displayed. */
     private _field: FieldGroup;
@@ -36,7 +37,7 @@ export class TagQueryTermComponent {
     }
 
     /**
-     * Getter for form controll.
+     * Getter for form control.
      *
      * @return {any}
      */
@@ -45,7 +46,7 @@ export class TagQueryTermComponent {
     }
 
     /**
-     * Getter for form controll.
+     * Getter for form control.
      *
      * @return {any}
      */
@@ -54,13 +55,34 @@ export class TagQueryTermComponent {
     }
 
     /**
+     * Getter for the input value.
+     *
+     * @return {string}
+     */
+    get inputValue(): string {
+        return this._inputValue;
+    }
+
+    /**
+     * Setter for the input value.
+     * 
+     * @param {string} value
+     */
+    set inputValue(value: string) {
+        this._inputValue = value;
+    }
+
+    /**
      * Invoked whenever the user selects a Tag from the list.
      *
      * @param {Tag} tag The selected tag.
      */
     public onTagSelected(tag: Tag) {
+        for (let existing of this._tags) {
+            if (existing.id == tag.id) return;
+        }
         this.addTag(tag);
-        this._input.nativeElement.value = "";
+        this._inputValue = "";
         this.tagTerm.data = "data:application/json;base64," + btoa(JSON.stringify(this._tags.map(v => {return v;})));
     }
 
@@ -90,8 +112,6 @@ export class TagQueryTermComponent {
  * Groups the FormControl and the data source Observable of a specific tag field.
  */
 export class FieldGroup {
-
-
     /** The FormControl used to control the tag field. */
     public readonly formControl: FormControl;
 
