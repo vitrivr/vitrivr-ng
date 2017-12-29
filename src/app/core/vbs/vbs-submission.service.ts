@@ -43,7 +43,7 @@ export class VbsSubmissionService {
             .filter(m => m.domain === "technical" && m.key === "fps")
             .map(m => m.value)
             .defaultIfEmpty(VideoUtil.bestEffortFPS(segment))
-            .flatMap(s => this._http.get(this._config.configuration.vbsEndpoint, {responseType: 'text', params: new HttpParams().set('video', segment.objectId).set('team', String(this._config.configuration.vbsTeam)).set('frame', String(VbsSubmissionService.timeToFrame(time, s)))}));
+            .flatMap(s => this._http.get(this._config.configuration.vbsEndpoint, {responseType: 'text', params: new HttpParams().set('video', segment.objectId).set('team', this._config.configuration.vbsTeam).set('frame', String(VbsSubmissionService.timeToFrame(time, s)))}));
     }
 
     /**

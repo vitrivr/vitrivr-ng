@@ -55,14 +55,14 @@ export class Config {
      * Configures the VBS (Video Browser Showdown) mode. Activating the VBS mode will make certain functionality
      * available in Vitrivr NG (like submitting videos).
      *
-     * @type {{active: boolean; endpoint: string}}
+     * @type {{active: boolean; team: string; endpoint: string}}
      */
     private vbs = {
         /* Flag indicating whether VBS mode should be active or not. */
         active: false,
 
         /* The team number within the VBS contest. */
-        team: -1,
+        team: null,
 
         /* URL to the VBS endpoint. */
         endpoint: null
@@ -202,7 +202,7 @@ export class Config {
      *
      * @return {string}
      */
-    get vbsTeam(): number {
+    get vbsTeam(): string {
         return this.vbs.team;
     }
 
