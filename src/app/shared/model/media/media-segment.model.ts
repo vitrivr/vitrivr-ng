@@ -4,8 +4,8 @@
  */
 export interface MediaSegment {
     segmentId : string,
-    objectId : string,
-    segmentnumber : number, /* FK: Used to associate with MediaObject. */
+    objectId : string, /* FK: Used to associate with MediaObject. */
+    sequenceNumber : number,
     start : number,
     end : number,
     startabs : number,
