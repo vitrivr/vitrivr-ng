@@ -11,15 +11,11 @@ export class Config {
      * @type {{host: string; port: number; http_secure: boolean; ws_secure: boolean; ping_interval: number}}
      */
     private api = {
-        /* IP address or hostname (no scheme). */
-        host : null,
-
-        port : 4567,
-        http_secure: false,
-        ws_secure: false,
-
-        /* Default ping interval in milliseconds. */
-        ping_interval: 10000
+        host : window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
+        port : 4567, /* Port for the API. */
+        http_secure: false, /* Whether or not TLS should be used for HTTP connection. */
+        ws_secure: false, /* Whether or not TLS should be used for WebSocket connection. */
+        ping_interval: 10000 /* Default ping interval in milliseconds. */
     };
 
     /**
@@ -28,17 +24,10 @@ export class Config {
      * @type {{}}
      */
     private resources = {
-        /** Path / URL to location where media object thumbnails will be stored. */
-        host_thumbnails: "http://localhost/vitrivr",
-
-        /** Path / URL to location where media object's will be stored. */
-        host_object: "http://localhost/vitrivr",
-
-        /** Default suffix for thumbnails. */
-        suffix_default: ".jpg",
-
-        /** Per-mediatype suffix definition for thumbnails. */
-        suffix: {}
+        host_thumbnails: window.location.protocol + "//" + window.location.hostname + "/vitrivr/thumbnails",  /** Path / URL to location where media object thumbnails will be stored. */
+        host_object: window.location.protocol + "//" + window.location.hostname + "/vitrivr/objects", /** Path / URL to location where media object's will be stored. */
+        suffix_default: ".jpg", /** Default suffix for thumbnails. */
+        suffix: {} /** Per-mediatype suffix definition for thumbnails. */
     };
 
     /**
@@ -52,8 +41,8 @@ export class Config {
     };
 
     /**
-     * Configures the VBS (Video Browser Showdown) mode. Activating the VBS mode will make certain functionality
-     * available in Vitrivr NG (like submitting videos).
+     * Configures the VBS (Video Browser Showdown) mode. Activating the VBS mode will make certain functionality available in
+     * Vitrivr NG (like submitting videos).
      *
      * @type {{active: boolean; endpoint: string}}
      */
@@ -92,11 +81,26 @@ export class Config {
      * @param vbs
      */
     constructor(api?: any, resources?: any, evaluation?: any, queryContainerTypes?: any, vbs?: any) {
-        if (api) this.api = api;
-        if (resources) this.resources = resources;
-        if (evaluation) this.evaluation = evaluation;
-        if (queryContainerTypes) this.queryContainerTypes = queryContainerTypes;
-        if (vbs) this.vbs = vbs;
+        if (api) Config.merge(this.api, api);
+        if (resources) Config.merge(this.resources, resources);
+        if (evaluation) Config.merge(this.evaluation, evaluation);
+        if (queryContainerTypes) Config.merge(this.queryContainerTypes, queryContainerTypes);
+        if (vbs) Config.merge(this.vbs, vbs);
+    }
+
+
+    /**
+     * Merges the loaded properties with the existing, default properties.
+     *
+     * @param defaultProperty The default property.
+     * @param loadedProperty The loaded property.
+     */
+    public static merge(defaultProperty, loadedProperty) {
+        for (let property in loadedProperty) {
+            if (loadedProperty.hasOwnProperty(property) && defaultProperty.hasOwnProperty(property)) {
+                defaultProperty[property] = loadedProperty[property];
+            }
+        }
     }
 
     /**
