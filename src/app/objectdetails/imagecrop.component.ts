@@ -67,7 +67,7 @@ export class ImagecropComponent implements OnInit {
      *
      */
     public onSearchClicked() {
-        this._query.findByDataUrl(this._data.image);
+        this._query.findSimilarImageByDataUrl(this._data.image);
         this._ref.close(this._data.image);
     }
 
