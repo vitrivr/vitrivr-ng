@@ -1,12 +1,11 @@
 <div style="padding:10px;">
-    <p class="background-prompt" *ngIf="segments.length == 0 && !loading">No results available. Please start a search...</p>
+    <p class="background-prompt" *ngIf="!(dataSource | async) && !loading">No results available. Please start a search...</p>
 
-    <p class="background-prompt" *ngIf="segments.length == 0 && loading"><mat-spinner></mat-spinner></p>
+    <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
     <div class="mini-gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="4px" fxLayoutAlign="space-between start">
-        <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of segments | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background-color]="colorForSegment(segment)">
+        <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of dataSource | async | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background-color]="colorForSegment(segment)">
             <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
-
             <div *ngIf="inFocus(segment)" class="footer" fxLayout="row-reverse">
                 <button *ngIf="segment.selected" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Unmark">
                     <mat-icon >star</mat-icon>
@@ -26,6 +25,10 @@
 
                 <button mat-icon-button (click)="onInformationButtonClicked(segment)" class="tile-button" matTooltip="Feature information">
                     <mat-icon>help</mat-icon>
+                </button>
+
+                <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" class="tile-button" matTooltip="Load neighboring segments">
+                    <mat-icon>settings_ethernet</mat-icon>
                 </button>
 
                 <button *ngIf="showsubmit(segment)" mat-icon-button (click)="onSubmitButtonClicked(segment)" class="tile-button" matTooltip="Submit segment to VBS">

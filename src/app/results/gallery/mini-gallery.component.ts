@@ -13,6 +13,7 @@ import {MediaObjectDragContainer} from "../../shared/model/internal/media-object
 import {VbsSubmissionService} from "../../core/vbs/vbs-submission.service";
 import {Observable} from "rxjs/Observable";
 import {ConfigService} from "../../core/basics/config.service";
+import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
 
 @Component({
     moduleId: module.id,
@@ -21,17 +22,13 @@ import {ConfigService} from "../../core/basics/config.service";
     styleUrls: ['mini-gallery.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MiniGalleryComponent extends AbstractResultsViewComponent{
-    /** List of MediaObjectScoreContainers currently displayed by the gallery. */
-    protected _segments : SegmentScoreContainer[] = [];
-
+export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentScoreContainer[]> {
     /** Reference to the SegmentScoreContainer that is currently in focus. */
     private _focus: SegmentScoreContainer;
 
     /**
      * Default constructor.
      *
-     * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
      * @param _queryService
      * @param _resolver
      * @param _router
@@ -39,22 +36,13 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
      * @param _dialog
      * @param _vbs
      */
-    constructor(_cdr: ChangeDetectorRef,
-                _queryService : QueryService,
+    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService,
                 protected _resolver: ResolverService,
                 protected _router: Router,
                 protected _snackBar: MatSnackBar,
                 protected _dialog: MatDialog,
                 protected _vbs: VbsSubmissionService) {
         super(_cdr, _queryService);
-    }
-
-    /**
-     *
-     * @return {MediaObjectScoreContainer[]}
-     */
-    get segments(): SegmentScoreContainer[] {
-        return this._segments;
     }
 
     /**
@@ -113,6 +101,15 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
     }
 
     /**
+     * Invokes when a user clicks the 'Find neighbouring segments' button.
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
+        this._queryService.findNeighboringSegments(segment.segmentId);
+    }
+
+    /**
      * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
      *
      * @param {SegmentScoreContainer} segment
@@ -160,16 +157,13 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
     }
 
     /**
-     * This method is used internally to update the gallery view.
+     * Subscribes to the data exposed by the ResultsContainer.
+     *
+     * @return {Observable<MediaObjectScoreContainer>}
      */
-    protected updateView() {
-        if (this.results) {
-            this._segments = this.results.segments;
-            this._focus = null;
-        } else {
-            this._segments = [];
+    protected subscribe(results: ResultsContainer) {
+        if (results) {
+            this._dataSource = results.segmentsAsObservable;
         }
-
-        this._cdr.markForCheck();
     }
 }

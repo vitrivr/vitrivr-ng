@@ -2,20 +2,18 @@ import {ChangeDetectorRef, OnDestroy, OnInit} from "@angular/core";
 import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
 import {QueryChange, QueryService} from "../core/queries/query.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
+import {ScoreContainer} from "../shared/model/features/scores/compound-score-container.model";
+import {Observable} from "rxjs/Observable";
 
-export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy  {
-
+export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy  {
     /* Indicator whether the progress bar should be visible. */
     private _loading : boolean = false;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
 
-    /** Local reference to the ResultsContainer holding the query results. May be null. */
-    private _results : ResultsContainer;
-
-    /** Local reference to the subscription to the ResultsContainer. */
-    private _resultsSubscriptionRef;
+    /** Local reference to the data source holding the query results.*/
+    protected _dataSource : Observable<T> = Observable.empty();
 
     /**
      * Default constructor.
@@ -23,7 +21,9 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
      * @param _queryService
      */
-    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService) {}
+    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService) {
+
+    }
 
     /**
      * Calculates and returns a green colour with a varying intensity based on the provided score.
@@ -48,13 +48,7 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
         this._queryServiceSubscription = this._queryService.observable
             .filter(msg => ["STARTED", "ENDED", "ERROR", "CLEAR"].indexOf(msg) > -1)
             .subscribe((msg) => this.onQueryStateChange(msg));
-
-
-        /* Register ResultsContainer from QueryService if there is an active one. */
-        if (this._queryService.results) this.register(this._queryService.results);
-
-        /* Update view. */
-        this.updateView();
+        this.subscribe(this._queryService.results);
     }
 
     /**
@@ -63,9 +57,6 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
     public ngOnDestroy() {
         this._queryServiceSubscription.unsubscribe();
         this._queryServiceSubscription = null;
-
-        /* Unregister current ResultsContainer. */
-        this.unregister()
     }
 
     /**
@@ -78,13 +69,13 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
     }
 
     /**
-     * Getter for results.
      *
-     * @return {ResultsContainer}
+     * @return {Observable<T>}
      */
-    get results(): ResultsContainer {
-        return this._results;
+    get dataSource(): Observable<T> {
+        return this._dataSource;
     }
+
 
     /**
      * Invoked whenever the QueryService reports that the results were updated. Causes
@@ -96,50 +87,22 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
         switch (msg) {
             case 'STARTED':
                 this._loading = true;
-                this._results = this._queryService.results;
-                this._results.subscribe(() => {this.updateView();});
+                this.subscribe(this._queryService.results);
                 break;
             case 'ENDED':
             case 'ERROR':
                 this._loading = false;
                 break;
             case 'CLEAR':
-                this.unregister();
+                this._dataSource = Observable.empty();
                 break;
         }
-
-        this.updateView();
+        this._cdr.markForCheck();
     }
 
     /**
-     * Registers the provided ResultsContainer instance as the one that feeds the current ResultsViewComponent instance.
      *
      * @param {ResultsContainer} results
      */
-    protected register(results: ResultsContainer) {
-        if (!results) throw new Error("The provided results are null or undefined; this is a programmers error!");
-
-        /* Apply results */
-        this._results = results;
-        this._resultsSubscriptionRef = this._results.subscribe(() => {
-            this.updateView();
-        });
-    }
-
-    /**
-     * Unregisters the currently active ResultsContainer instance and stops this view from getting data from it.
-     */
-    protected unregister() {
-        if (this._resultsSubscriptionRef) {
-            this._resultsSubscriptionRef.unsubscribe();
-            this._resultsSubscriptionRef = null;
-        }
-        this._results = null;
-    }
-
-    /**
-     * This method is used internally to update the results view, i.e. re-populate the list
-     * of items and re-render the component by marking it for change.
-     */
-    protected abstract updateView();
+    protected abstract subscribe(results: ResultsContainer);
 }

@@ -11,6 +11,7 @@ import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
 import {Observable} from "rxjs/Observable";
 import {VbsSubmissionService} from "app/core/vbs/vbs-submission.service";
 import {ConfigService} from "../../core/basics/config.service";
+import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
 
 @Component({
     moduleId: module.id,
@@ -19,11 +20,7 @@ import {ConfigService} from "../../core/basics/config.service";
     styleUrls: ['list.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListComponent extends AbstractResultsViewComponent{
-
-    /** List of MediaObjectScoreContainers currently displayed by the list. */
-    private _mediaobjects : MediaObjectScoreContainer[] = [];
-
+export class ListComponent extends AbstractResultsViewComponent<MediaObjectScoreContainer[]> {
     /** Reference to the SegmentScoreContainer that is currently in focus. */
     private _focus: SegmentScoreContainer;
 
@@ -38,8 +35,7 @@ export class ListComponent extends AbstractResultsViewComponent{
      * @param _dialog
      * @param _vbs
      */
-    constructor(_cdr: ChangeDetectorRef,
-                _queryService : QueryService,
+    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService,
                 protected _resolver: ResolverService,
                 protected _router: Router,
                 protected _snackBar: MatSnackBar,
@@ -65,15 +61,6 @@ export class ListComponent extends AbstractResultsViewComponent{
      */
     public inFocus(segment: SegmentScoreContainer) {
         return this._focus == segment;
-    }
-
-    /**
-     * Getter for list of MediaObjectScoreContainer
-     *
-     * @return {MediaObjectScoreContainer[]}
-     */
-    get mediaobjects(): MediaObjectScoreContainer[] {
-        return this._mediaobjects;
     }
 
     /**
@@ -105,12 +92,21 @@ export class ListComponent extends AbstractResultsViewComponent{
     }
 
     /**
-     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
+     * Invoked when a user clicks the 'star / favorite' button. Toggles the selection mode of the SegmentScoreContainer.
      *
      * @param {SegmentScoreContainer} segment
      */
     public onStarButtonClicked(segment: SegmentScoreContainer) {
         segment.toggleMark();
+    }
+
+    /**
+     * Invokes when a user clicks the 'Find neighbouring segments' button.
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
+        this._queryService.findNeighboringSegments(segment.segmentId);
     }
 
     /**
@@ -149,14 +145,27 @@ export class ListComponent extends AbstractResultsViewComponent{
     }
 
     /**
-     * This method is used internally to update the gallery view.
+     * This is a helper method to facilitate updating the the list correct. It is necessary due to nesting in the template (twp NgFor). To determine, whether to update the view,
+     * angular only takes the outer observable into account. As long as this observable doesn't change, there is now update. Doe to the hierarchical nature of the data, it is - however -
+     * entirely possible that the outer observable is not changed while segments are being added to the container.
+     *
+     * This function created a unique identifier per MediaObjectScoreContainer which takes the number of segments into account.
+     *
+     * @param index
+     * @param {MediaObjectScoreContainer} item
      */
-    protected updateView() {
-        if (this.results) {
-            this._mediaobjects = this.results.objects;
-        } else {
-            this._mediaobjects = [];
+    public trackByFunction(index, item: MediaObjectScoreContainer) {
+        return item.objectId + "_" + item.numberOfSegments;
+    }
+
+    /**
+     * Subscribes to the data exposed by the ResultsContainer.
+     *
+     * @return {Observable<MediaObjectScoreContainer>}
+     */
+    protected subscribe(results: ResultsContainer) {
+        if (results) {
+            this._dataSource = results.mediaobjectsAsObservable;
         }
-        this._cdr.markForCheck();
     }
 }

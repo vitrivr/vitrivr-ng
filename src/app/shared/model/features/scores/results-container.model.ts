@@ -4,21 +4,14 @@ import {DefaultWeightFunction} from "../weighting/default-weight-function.model"
 import {MediaObjectScoreContainer} from "./media-object-score-container.model";
 import {SegmentScoreContainer} from "./segment-score-container.model";
 import {Feature} from "../feature.model";
-import {ObjectQueryResult} from "../../messages/interfaces/query-result-object.interface";
-import {SegmentQueryResult} from "../../messages/interfaces/query-result-segment.interface";
-import {SimilarityQueryResult} from "../../messages/interfaces/query-result-similarty.interface";
-import {Subject} from "rxjs/Subject";
+import {ObjectQueryResult} from "../../messages/interfaces/responses/query-result-object.interface";
+import {SegmentQueryResult} from "../../messages/interfaces/responses/query-result-segment.interface";
+import {SimilarityQueryResult} from "../../messages/interfaces/responses/query-result-similarty.interface";
+import {Subscription} from "rxjs/Subscription";
+import {Observable} from "rxjs/Observable";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
-export class ResultsContainer extends Subject<boolean> {
-    /**
-     * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
-     * results have been returned yet OR that no query is running.
-     *
-     * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
-     * be filtered).
-     */
-    private _mediatypes: Map<MediaType,boolean> = new Map();
-
+export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
     private _objectid_to_object_map : Map<string,MediaObjectScoreContainer> = new Map();
 
@@ -35,25 +28,33 @@ export class ResultsContainer extends Subject<boolean> {
     private _features: Feature[] = [];
 
     /**
-     * Constructor for ResultsConatiner.
+     * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
+     * results have been returned yet OR that no query is running.
+     *
+     * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
+     * be filtered).
+     */
+    private _mediatypes: Map<MediaType,boolean> = new Map();
+
+    /** A subject that can be used to publish changes to the results. */
+    private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
+
+    /** A subject that can be used to publish changes to the results. */
+    private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
+
+    /** A subject that can be used to publish changes to the results. */
+    private _results_features_subject: BehaviorSubject<Feature[]> = new BehaviorSubject(this._features);
+
+    /** A subject that can be used to publish changes to the results. */
+    private _results_types_subject: BehaviorSubject<IterableIterator<[MediaType,boolean]>> = new BehaviorSubject(this._mediatypes.entries());
+
+    /**
+     * Constructor for ResultsContainer.
      *
      * @param {string} queryId Unique ID of the query. Used to filter messages!
      * @param {WeightFunction} weightFunction Function that should be used to calculate the scores.
      */
-    constructor(public readonly queryId: string, private weightFunction : WeightFunction = new DefaultWeightFunction()) {
-        super();
-    }
-
-    /**
-     * Getter for the list of MediaObjectScoreContainers in this ResultsContainer.
-     *
-     * @return {MediaObjectScoreContainer[]}
-     */
-    get objects() {
-        return this._results_objects.filter(value => {
-            return value.show && this._mediatypes.get(value.mediatype)
-        });
-    }
+    constructor(public readonly queryId: string, private weightFunction : WeightFunction = new DefaultWeightFunction()) {}
 
     /**
      *
@@ -71,17 +72,6 @@ export class ResultsContainer extends Subject<boolean> {
      */
     public getObject(objectId: string) {
         return this._objectid_to_object_map.get(objectId);
-    }
-
-    /**
-     * Getter for the list of SegmentScoreContainer in this ResultsContainer.
-     *
-     * @return {SegmentScoreContainer[]}
-     */
-    get segments() {
-        return this._results_segments.filter(value => {
-            return value.objectScoreContainer.show && this._mediatypes.get(value.objectScoreContainer.mediatype);
-        });
     }
 
     /**
@@ -103,6 +93,36 @@ export class ResultsContainer extends Subject<boolean> {
     }
 
     /**
+     *
+     * @return {Subscription<MediaObjectScoreContainer[]>}
+     */
+    get mediaobjectsAsObservable(): Observable<MediaObjectScoreContainer[]> {
+        return this._results_objects_subject.asObservable()
+    }
+
+    /**
+     *
+     * @return {Subscription<MediaObjectScoreContainer[]>}
+     */
+    get segmentsAsObservable(): Observable<SegmentScoreContainer[]> {
+        return this._results_segments_subject.asObservable();
+    }
+
+    /**
+     *
+     */
+    get featuresAsObservable(): Observable<Feature[]> {
+        return this._results_features_subject.asObservable();
+    }
+
+    /**
+     *
+     */
+    get mediatypesAsObservable(): Observable<IterableIterator<[MediaType,boolean]>> {
+        return this._results_types_subject.asObservable();
+    }
+
+    /**
      * Changes the filter attribute for the provided mediatype. If the mediatype is unknwon
      * to the QueryService, this method has no effect.
      *
@@ -113,10 +133,10 @@ export class ResultsContainer extends Subject<boolean> {
      * @param active New filter status. True = is visible, false = will be filtered
      */
     public toggleMediatype(type: MediaType, active: boolean) {
-        if (this._mediatypes.has(type) && this._mediatypes.get(type) != active) {
+        if (this._mediatypes.has(type)) {
             this._mediatypes.set(type, active);
-            this.next(true);
         }
+        this.next();
     }
 
     /**
@@ -133,7 +153,7 @@ export class ResultsContainer extends Subject<boolean> {
         this._results_objects.forEach((value) => { value.update(features, weightFunction); });
 
         /* Publish a change. */
-        this.next(true);
+        this.next();
     }
 
     /**
@@ -155,7 +175,7 @@ export class ResultsContainer extends Subject<boolean> {
         }
 
         /* Publish a change. */
-        this.next(true);
+        this.next();
 
         /* Return true. */
         return true;
@@ -182,13 +202,11 @@ export class ResultsContainer extends Subject<boolean> {
         }
 
         /* Publish a change. */
-        this.next(true);
+        this.next();
 
         /* Return true. */
         return true;
     }
-
-
 
     /**
      * Processes the SimilarityQueryResult message. Registers the feature (if new) and updates the scores
@@ -198,7 +216,6 @@ export class ResultsContainer extends Subject<boolean> {
      * @return {boolean} True, if SimilarityQueryResult was processed i.e. queryId corresponded with that of the message.
      */
     public processSimilarityMessage(sim : SimilarityQueryResult) {
-
         if (sim.queryId !== this.queryId) return false;
 
         /* Get and (if missing) add a unique feature. */
@@ -213,15 +230,33 @@ export class ResultsContainer extends Subject<boolean> {
             }
         }
 
-        /* Rerank the results. */
+        /* Rerank the results (calling this method also causes an invokation of next(). */
         this.rerank();
-
-        /* Publish a change. */
-        this.next(true);
 
         /* Return true. */
         return true;
     }
+
+    /**
+     * Completes the two subjects and invalidates them thereby.
+     */
+    public complete() {
+        this._results_objects_subject.complete();
+        this._results_segments_subject.complete();
+        this._results_features_subject.complete();
+        this._results_types_subject.complete();
+    }
+
+    /**
+     * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
+     */
+    private next() {
+        this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show).filter(v => this._mediatypes.get(v.objectScoreContainer.mediatype) == true));
+        this._results_objects_subject.next(this._results_objects.filter(v => v.show).filter(v => this._mediatypes.get(v.mediatype) == true));
+        this._results_features_subject.next(this._features);
+        this._results_types_subject.next(this._mediatypes.entries());
+    }
+
 
     /**
      * Returns a unique MediaObjectScoreContainer instance for the provided objectId. That is, if a MediaObjectScoreContainer
@@ -243,6 +278,8 @@ export class ResultsContainer extends Subject<boolean> {
     }
 
     /**
+     * Returns a unique Feature instance for the provided category name. That is, if a Feature has been created and registered with the
+     * ResultsContainer for the provided category, that instance is returned. Otherwise, a new instance is created and registered.
      *
      * @param {string} category
      * @return {Feature}

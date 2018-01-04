@@ -2,7 +2,7 @@ import {Component, HostListener, OnInit} from '@angular/core';
 import {QueryService} from "../core/queries/query.service";
 import {QueryContainerInterface} from "../shared/model/queries/interfaces/query-container.interface";
 import {QueryContainer} from "../shared/model/queries/query-container.model";
-import {SimilarityQuery} from "../shared/model/messages/similarity-query.model";
+import {SimilarityQuery} from "../shared/model/messages/queries/similarity-query.model";
 
 @Component({
     moduleId: module.id,

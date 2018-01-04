@@ -1,16 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
-import {QueryChange, QueryService} from "../../core/queries/query.service";
+import {QueryService} from "../../core/queries/query.service";
 import {Router} from "@angular/router";
 import {ResolverService} from "../../core/basics/resolver.service";
-import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
-import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
 import {AbstractResultsViewComponent} from "../abstract-results-view.component";
 import {MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {FeatureDetailsComponent} from "../feature-details.component";
 import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segment-drag-container.model";
-import {MediaSegment} from "../../shared/model/media/media-segment.model";
 import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
+import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
 
 @Component({
     moduleId: module.id,
@@ -19,10 +17,7 @@ import {MediaObjectDragContainer} from "../../shared/model/internal/media-object
     styleUrls: ['gallery.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GalleryComponent extends AbstractResultsViewComponent {
-    /** List of MediaObjectScoreContainers currently displayed by the gallery. */
-    protected _mediaobjects : MediaObjectScoreContainer[] = [];
-
+export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectScoreContainer[]> {
     /** Reference to the MediaObjectScoreContainer that is currently in focus. */
     protected _focus: MediaObjectScoreContainer;
 
@@ -63,7 +58,6 @@ export class GalleryComponent extends AbstractResultsViewComponent {
     set tilesize(value: number) {
         if (value > 10) {
             this._tilesize = value;
-            this._cdr.markForCheck();
         }
     }
 
@@ -85,16 +79,7 @@ export class GalleryComponent extends AbstractResultsViewComponent {
     set tilegap(value: number) {
         if (value > 2) {
             this._tilegap = value;
-            this._cdr.markForCheck();
         }
-    }
-
-    /**
-     *
-     * @return {MediaObjectScoreContainer[]}
-     */
-    get mediaobjects(): MediaObjectScoreContainer[] {
-        return this._mediaobjects;
     }
 
     /**
@@ -177,16 +162,13 @@ export class GalleryComponent extends AbstractResultsViewComponent {
     }
 
     /**
-     * This method is used internally to update the gallery view.
+     * Subscribes to the data exposed by the ResultsContainer.
+     *
+     * @return {Observable<MediaObjectScoreContainer>}
      */
-    protected updateView() {
-        if (this.results) {
-            this._mediaobjects = this.results.objects;
-            this._focus = null;
-        } else {
-            this._mediaobjects = [];
+    protected subscribe(results: ResultsContainer) {
+        if (results) {
+            this._dataSource = results.mediaobjectsAsObservable;
         }
-
-        this._cdr.markForCheck();
     }
 }

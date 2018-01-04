@@ -1,8 +1,8 @@
 <h3>Query refinement</h3>
 
-<div *ngIf="features.length > 0">
+<div *ngIf="(features | async)">
     <h4>Weights</h4>
-    <div *ngFor="let feature of features" class="slider-group" [style.color]="feature.color">
+    <div *ngFor="let feature of features | async" class="slider-group" [style.color]="feature.color">
         <span class="label constrained">{{feature.name}}</span>
         <mat-slider min="0" max="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></mat-slider>
         <span class="label constrained"> {{feature.weight}}%</span>
@@ -10,14 +10,14 @@
     <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
 </div>
 
-<div *ngIf="mediatypes.length > 0">
+<div *ngIf="(mediatypes | async)">
     <h4>Filters</h4>
     <section class="checkbox-group">
-        <mat-checkbox *ngFor="let type of mediatypes" [name]="type" [checked]="isActive(type)" labelPosition="before" (change)="onFilterChanged($event)">{{type}}</mat-checkbox>
+        <mat-checkbox *ngFor="let type of (mediatypes | async)" [name]="type[0]" [checked]="type[1]" labelPosition="before" (change)="onFilterChanged($event)">{{type[0]}}</mat-checkbox>
     </section>
 </div>
 
 
-<div *ngIf="mediatypes.length == 0 && features.length == 0">
+<div *ngIf="!(features | async) && !(mediatypes | async) ">
     <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>
 </div>
