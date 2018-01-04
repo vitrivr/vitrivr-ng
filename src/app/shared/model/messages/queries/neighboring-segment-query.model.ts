@@ -3,6 +3,6 @@ import {MessageType} from "../message-type.model";
 import {QueryConfig} from "../interfaces/requests/query-config.interface";
 
 export class NeighboringSegmentQuery implements NeighboringSegmentQueryMessage {
-    public readonly messageType: MessageType = "Q_NEGSEG";
+    public readonly messageType: MessageType = "Q_NESEG";
     constructor(public readonly segmentId: string, public readonly config: QueryConfig, public readonly count: number = 3) {}
 }
