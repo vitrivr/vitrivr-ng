@@ -1,8 +1,10 @@
-import {MessageType} from "./message-type.model";
-import {MetadataLookupMessage} from "./interfaces/metadata-lookup.interface";
+import {MessageType} from "../message-type.model";
+import {MetadataLookupMessage} from "../interfaces/requests/metadata-lookup.interface";
+import {QueryConfig} from "../interfaces/requests/query-config.interface";
 
 export class MetadataLookup implements MetadataLookupMessage {
     readonly messageType : MessageType = "M_LOOKUP";
+    readonly config : QueryConfig = null;
 
     /** Object IDs for which to lookup metadata. */
     readonly objectids : string[] = [];

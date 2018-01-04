@@ -1,5 +1,5 @@
 import {QueryResult} from "./query-result.interface";
-import {MediaMetadata} from "../../media/media-metadata.model";
+import {MediaMetadata} from "../../../media/media-metadata.model";
 
 /**
  * Defines the general structure of a MetadataQueryResult.

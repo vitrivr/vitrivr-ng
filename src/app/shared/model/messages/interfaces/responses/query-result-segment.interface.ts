@@ -1,5 +1,5 @@
 import {QueryResult} from "./query-result.interface";
-import {MediaSegment} from "../../media/media-segment.model";
+import {MediaSegment} from "../../../media/media-segment.model";
 /**
  *
  */

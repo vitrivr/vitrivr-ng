@@ -1,5 +1,5 @@
 import {QueryResult} from "./query-result.interface";
-import {MediaObject} from "../../media/media-object.model";
+import {MediaObject} from "../../../media/media-object.model";
 /**
  *
  */

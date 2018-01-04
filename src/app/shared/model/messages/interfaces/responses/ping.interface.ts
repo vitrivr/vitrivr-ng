@@ -1,4 +1,4 @@
-import {Message} from "./message.interface";
+import {Message} from "../message.interface";
 
 /*
  * Interface that defines a PING message used to query the status
