@@ -2,7 +2,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import {CineastAPI} from "../core/api/cineast-api.service";
-import {StatusType, Ping} from "../shared/model/messages/interfaces/ping.interface";
+import {StatusType, Ping} from "../shared/model/messages/interfaces/responses/ping.interface";
 import {ConfigService} from "../core/basics/config.service";
 import {Subscription} from "rxjs/Subscription";
 
