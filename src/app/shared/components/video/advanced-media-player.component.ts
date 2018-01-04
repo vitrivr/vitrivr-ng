@@ -6,6 +6,7 @@ import {VgAPI} from "videogular2/core";
 import {VbsSubmissionService} from "../../../core/vbs/vbs-submission.service";
 import {Observable} from "rxjs/Observable";
 import {MatSnackBar} from "@angular/material";
+import {ConfigService} from "../../../core/basics/config.service";
 
 declare var VTTCue;
 
@@ -80,7 +81,7 @@ export class AdvancedMediaPlayerComponent {
             console.log(e);
             return Observable.empty();
         }).subscribe(s => {
-            this._snackBar.open("Successfully submitted segment '" + this.focus.segmentId + "' to VBS.");
+            this._snackBar.open("Submitted segment '" + this.focus.segmentId + "' to VBS. Response: " + s.toString(),null, {duration: ConfigService.SNACKBAR_DURATION});
         });
     }
 

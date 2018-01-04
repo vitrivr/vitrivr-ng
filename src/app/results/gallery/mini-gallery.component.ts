@@ -12,6 +12,7 @@ import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segme
 import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
 import {VbsSubmissionService} from "../../core/vbs/vbs-submission.service";
 import {Observable} from "rxjs/Observable";
+import {ConfigService} from "../../core/basics/config.service";
 
 @Component({
     moduleId: module.id,
@@ -122,7 +123,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent{
             console.log(e);
             return Observable.empty();
         }).subscribe(s => {
-            this._snackBar.open("Successfully submitted segment '" + segment.segmentId + "' to VBS.");
+            this._snackBar.open("Submitted segment '" + segment.segmentId + "' to VBS. Response: " + s.toString(),null, {duration: ConfigService.SNACKBAR_DURATION});
         });
     }
 
