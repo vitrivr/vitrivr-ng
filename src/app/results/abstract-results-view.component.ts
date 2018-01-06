@@ -4,6 +4,9 @@ import {QueryChange, QueryService} from "../core/queries/query.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 import {ScoreContainer} from "../shared/model/features/scores/compound-score-container.model";
 import {Observable} from "rxjs/Observable";
+import {SelectionService} from "../core/selection/selection.service";
+import {Tag} from "../core/selection/tag.model";
+import {ColorUtil} from "../shared/util/color.util";
 
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy  {
     /* Indicator whether the progress bar should be visible. */
@@ -20,24 +23,27 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
      * @param _queryService
+     * @param _selectionService
      */
-    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService) {
-
-    }
+    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService, protected _selectionService: SelectionService) {}
 
     /**
      * Calculates and returns a green colour with a varying intensity based on the provided score.
      *
-     * @param {number} score
+     * @param {number} segment The segment for which the background should be evaluated.
      * @return String that encodes the RGB value.
      */
-    public colorForSegment(segment: SegmentScoreContainer): string {
+    public backgroundForSegment(segment: SegmentScoreContainer): string {
         let score = segment.score;
-        let v = Math.round(255.0 - (score * 255.0));
-        if (segment.marked)  {
-            return "#" + ((1 << 24) + (v << 16) + (v << 8) + 255).toString(16).slice(1);
+        let tags: Tag[] = this._selectionService.getTags(segment.segmentId);
+        if (tags.length == 0) {
+            let v = Math.round(255.0 - (score * 255.0));
+            return ColorUtil.rgbToHex(v,255, v);
+        } else if (tags.length == 1) {
+            return tags[0].colorForRelevance(score);
         } else {
-            return "#" + ((1 << 24) + (v << 16) + (255 << 8) + v).toString(16).slice(1);
+            let width = 100.0/tags.length;
+            return "repeating-linear-gradient(90deg," + tags.map((t,i) => t.colorForRelevance(score) + " " + i*width + "%," + t.colorForRelevance(score)+ " " + (i+1)*width + "%").join(",") + ")";
         }
     }
 
@@ -74,6 +80,14 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      */
     get dataSource(): Observable<T> {
         return this._dataSource;
+    }
+
+    /**
+     *
+     * @return {Tag[]}
+     */
+    get selectionService(): SelectionService {
+        return this._selectionService;
     }
 
 

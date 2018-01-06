@@ -9,6 +9,7 @@ import {FeatureDetailsComponent} from "../feature-details.component";
 import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segment-drag-container.model";
 import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
 import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
+import {SelectionService} from "../../core/selection/selection.service";
 
 @Component({
     moduleId: module.id,
@@ -32,12 +33,18 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
      * @param _queryService
+     * @param _selectionService
      * @param _resolver
      * @param _router
      * @param _snackBar
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MatSnackBar) {
-        super(_cdr, _queryService);
+    constructor(_cdr: ChangeDetectorRef,
+                _queryService : QueryService,
+                _selectionService: SelectionService,
+                protected _resolver: ResolverService,
+                protected _router: Router,
+                protected _snackBar: MatSnackBar) {
+        super(_cdr, _queryService, _selectionService);
     }
 
     /**
@@ -136,15 +143,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
         } else {
             throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
         }
-    }
-
-    /**
-     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
-     *
-     * @param {MediaObjectScoreContainer} object
-     */
-    public onStarButtonClicked(object: MediaObjectScoreContainer) {
-        object.representativeSegment.toggleMark();
     }
 
     /**

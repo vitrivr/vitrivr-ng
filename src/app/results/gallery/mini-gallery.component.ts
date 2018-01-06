@@ -14,6 +14,8 @@ import {VbsSubmissionService} from "../../core/vbs/vbs-submission.service";
 import {Observable} from "rxjs/Observable";
 import {ConfigService} from "../../core/basics/config.service";
 import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
+import {SelectionService} from "../../core/selection/selection.service";
+import {Tag} from "../../core/selection/tag.model";
 
 @Component({
     moduleId: module.id,
@@ -30,19 +32,23 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * Default constructor.
      *
      * @param _queryService
+     * @param _selectionService
      * @param _resolver
      * @param _router
      * @param _snackBar
      * @param _dialog
      * @param _vbs
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService,
+    constructor(_cdr: ChangeDetectorRef,
+                _queryService : QueryService,
+                _selectionService: SelectionService,
                 protected _resolver: ResolverService,
                 protected _router: Router,
                 protected _snackBar: MatSnackBar,
                 protected _dialog: MatDialog,
-                protected _vbs: VbsSubmissionService) {
-        super(_cdr, _queryService);
+                protected _vbs: VbsSubmissionService,
+                protected _selection: SelectionService) {
+        super(_cdr, _queryService, _selectionService);
     }
 
     /**
@@ -92,21 +98,23 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
     }
 
     /**
-     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
-     *
-     * @param {SegmentScoreContainer} segment
-     */
-    public onStarButtonClicked(segment: SegmentScoreContainer) {
-       segment.toggleMark();
-    }
-
-    /**
      * Invokes when a user clicks the 'Find neighbouring segments' button.
      *
      * @param {SegmentScoreContainer} segment
      */
     public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
         this._queryService.findNeighboringSegments(segment.segmentId);
+    }
+
+    /**
+     * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
+     *
+     * @param {SegmentScoreContainer} segment The segment that was tagged.
+     * @param {Tag} tag The tag that should be toggled.
+     */
+    public onTagButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
+        this._selectionService.toggle(segment.segmentId,tag);
+        this._cdr.markForCheck();
     }
 
     /**
@@ -146,13 +154,13 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
     }
     
     /**
-     * Returns true, if the submit (to VBS) button should be displayed for the given segmentand false otherwise. This depends on the configuration and
+     * Returns true, if the submit (to VBS) button should be displayed for the given segment and false otherwise. This depends on the configuration and
      * the media type of the object.
      *
      * @param {SegmentScoreContainer} segment The segment for which to determine whether the button should be displayed.
      * @return {boolean} True if submit button should be displayed, false otherwise.
      */
-    public showsubmit(segment: SegmentScoreContainer): boolean {
+    public showVbsSubmitButton(segment: SegmentScoreContainer): boolean {
         return segment.objectScoreContainer.mediatype == 'VIDEO' && this._vbs.isOn;
     }
 

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {QueryService, QueryChange} from "../core/queries/query.service";
 import {EvaluationEvent} from "../shared/model/evaluation/evaluation-event";
 import {EvaluationState} from "../shared/model/evaluation/evaluation-state";
@@ -15,6 +15,7 @@ import {Location} from "@angular/common";
 import {ConfigService} from "../core/basics/config.service";
 import {Observable} from "rxjs/Observable";
 import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario";
+import {SelectionService} from "../core/selection/selection.service";
 
 
 type DisplayType = "NONE" | "SCENARIO" | "GALLERY" | "HISTORY";
@@ -37,11 +38,14 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      *
      * @param _queryService
      * @param _storageService
+     * @param _selectionService
      * @param _resolverService
      * @param snackBar
      */
     constructor(
+        _cdr: ChangeDetectorRef,
         _queryService : QueryService,
+        _selectionService: SelectionService,
         _resolver: ResolverService,
         _router: Router,
         _snackBar: MatSnackBar,
@@ -49,7 +53,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         private _evaluation: EvaluationService,
         private _route: ActivatedRoute,
         private _dialog: MatDialog) {
-        super(_queryService,_resolver,_router,_snackBar);
+        super(_cdr, _queryService,_selectionService,_resolver,_router,_snackBar);
     }
 
     /**

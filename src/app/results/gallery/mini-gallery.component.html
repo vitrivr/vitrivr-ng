@@ -4,34 +4,33 @@
     <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
     <div class="mini-gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="4px" fxLayoutAlign="space-between start">
-        <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of dataSource | async | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background-color]="colorForSegment(segment)">
+        <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of dataSource | async | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background]="backgroundForSegment(segment)">
             <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
-            <div *ngIf="inFocus(segment)" class="footer" fxLayout="row-reverse">
-                <button *ngIf="segment.selected" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Unmark">
-                    <mat-icon >star</mat-icon>
-                </button>
 
-                <button *ngIf="!segment.selected" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Mark as favourite">
-                    <mat-icon>star_border</mat-icon>
+            <div  *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
+                <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Add '{{tag.name}}' tag" (click)="onTagButtonClicked(segment,tag)">
+                    <mat-icon [style.color]="selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">album</mat-icon>
                 </button>
+            </div>
 
-                <button mat-icon-button (click)="onMltButtonClicked(segment)" class="tile-button" matTooltip="More-like-this">
+            <div *ngIf="inFocus(segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
+                <button mat-icon-button (click)="onMltButtonClicked(segment)" matTooltip="More-like-this">
                     <mat-icon>youtube_searched_for</mat-icon>
                 </button>
 
-                <button mat-icon-button (click)="onDetailsButtonClicked(segment)" class="tile-button" matTooltip="Show details">
+                <button mat-icon-button (click)="onDetailsButtonClicked(segment)" matTooltip="Show details">
                     <mat-icon>remove_red_eye</mat-icon>
                 </button>
 
-                <button mat-icon-button (click)="onInformationButtonClicked(segment)" class="tile-button" matTooltip="Feature information">
+                <button mat-icon-button (click)="onInformationButtonClicked(segment)" matTooltip="Feature information">
                     <mat-icon>help</mat-icon>
                 </button>
 
-                <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" class="tile-button" matTooltip="Load neighboring segments">
+                <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" matTooltip="Load neighboring segments">
                     <mat-icon>settings_ethernet</mat-icon>
                 </button>
 
-                <button *ngIf="showsubmit(segment)" mat-icon-button (click)="onSubmitButtonClicked(segment)" class="tile-button" matTooltip="Submit segment to VBS">
+                <button *ngIf="showVbsSubmitButton(segment)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
                     <mat-icon>send</mat-icon>
                 </button>
             </div>
