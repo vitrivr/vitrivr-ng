@@ -16,8 +16,8 @@
                 </div>
 
                 <div *ngIf="inFocus(segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
-                    <button mat-icon-button (click)="onMltButtonClicked(segment)" matTooltip="More-like-this">
-                        <mat-icon>youtube_searched_for</mat-icon>
+                    <button *ngIf="showsubmit(segment)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
+                        <mat-icon>send</mat-icon>
                     </button>
 
                     <button mat-icon-button (click)="onDetailsButtonClicked(segment)" matTooltip="Show details">
@@ -28,12 +28,12 @@
                         <mat-icon>help</mat-icon>
                     </button>
 
-                    <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" matTooltip="Load neighboring segments">
-                        <mat-icon>settings_ethernet</mat-icon>
+                    <button mat-icon-button (click)="onMltButtonClicked(segment)" matTooltip="More-like-this">
+                        <mat-icon>youtube_searched_for</mat-icon>
                     </button>
 
-                    <button *ngIf="showsubmit(segment)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
-                        <mat-icon>send</mat-icon>
+                    <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" matTooltip="Load neighboring segments">
+                        <mat-icon>settings_ethernet</mat-icon>
                     </button>
                 </div>
             </div>
