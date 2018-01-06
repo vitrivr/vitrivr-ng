@@ -1,6 +1,6 @@
 import {Component, Input} from "@angular/core";
-import {MediaObjectScoreContainer} from "../../model/features/scores/media-object-score-container.model";
-import {SegmentScoreContainer} from "../../model/features/scores/segment-score-container.model";
+import {MediaObjectScoreContainer} from "../../model/results/scores/media-object-score-container.model";
+import {SegmentScoreContainer} from "../../model/results/scores/segment-score-container.model";
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {VgAPI} from "videogular2/core";
 import {VbsSubmissionService} from "../../../core/vbs/vbs-submission.service";

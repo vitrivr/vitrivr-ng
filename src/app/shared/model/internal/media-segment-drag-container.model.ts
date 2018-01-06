@@ -1,6 +1,6 @@
 import {MediaType} from "../media/media-type.model";
 import {MediaSegment} from "../media/media-segment.model";
-import {SegmentScoreContainer} from "../features/scores/segment-score-container.model";
+import {SegmentScoreContainer} from "../results/scores/segment-score-container.model";
 
 /**
  * This is an internal helper class used for Drag & Drop operatoin. It contains information on a dragged MediaSegment.

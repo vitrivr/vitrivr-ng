@@ -1,15 +1,16 @@
 import {MediaType} from "../../media/media-type.model";
-import {WeightFunction} from "../weighting/weight-function.interface";
-import {DefaultWeightFunction} from "../weighting/default-weight-function.model";
+import {FusionFunction} from "../fusion/weight-function.interface";
+import {DefaultFusionFunction} from "../fusion/default-fusion-function.model";
 import {MediaObjectScoreContainer} from "./media-object-score-container.model";
 import {SegmentScoreContainer} from "./segment-score-container.model";
-import {Feature} from "../feature.model";
+import {WeightedFeatureCategory} from "../weighted-feature-category.model";
 import {ObjectQueryResult} from "../../messages/interfaces/responses/query-result-object.interface";
 import {SegmentQueryResult} from "../../messages/interfaces/responses/query-result-segment.interface";
 import {SimilarityQueryResult} from "../../messages/interfaces/responses/query-result-similarty.interface";
 import {Subscription} from "rxjs/Subscription";
 import {Observable} from "rxjs/Observable";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {FeatureCategories} from "../feature-categories.model";
 
 export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -24,8 +25,8 @@ export class ResultsContainer {
     /** Internal data structure that contains all SegmentScoreContainers. */
     private _results_segments: SegmentScoreContainer[] = [];
 
-    /** List of all the features that were returned and hence are known to the results container. */
-    private _features: Feature[] = [];
+    /** List of all the results that were returned and hence are known to the results container. */
+    private _features: WeightedFeatureCategory[] = [];
 
     /**
      * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
@@ -43,7 +44,7 @@ export class ResultsContainer {
     private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
 
     /** A subject that can be used to publish changes to the results. */
-    private _results_features_subject: BehaviorSubject<Feature[]> = new BehaviorSubject(this._features);
+    private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
 
     /** A subject that can be used to publish changes to the results. */
     private _results_types_subject: BehaviorSubject<IterableIterator<[MediaType,boolean]>> = new BehaviorSubject(this._mediatypes.entries());
@@ -52,9 +53,9 @@ export class ResultsContainer {
      * Constructor for ResultsContainer.
      *
      * @param {string} queryId Unique ID of the query. Used to filter messages!
-     * @param {WeightFunction} weightFunction Function that should be used to calculate the scores.
+     * @param {FusionFunction} weightFunction Function that should be used to calculate the scores.
      */
-    constructor(public readonly queryId: string, private weightFunction : WeightFunction = new DefaultWeightFunction()) {}
+    constructor(public readonly queryId: string, private weightFunction : FusionFunction = new DefaultFusionFunction()) {}
 
     /**
      *
@@ -75,11 +76,11 @@ export class ResultsContainer {
     }
 
     /**
-     * Getter for the list of features.
+     * Getter for the list of results.
      *
-     * @returns {Feature[]}
+     * @returns {WeightedFeatureCategory[]}
      */
-    get features(): Feature[] {
+    get features(): WeightedFeatureCategory[] {
         return this._features;
     }
 
@@ -111,7 +112,7 @@ export class ResultsContainer {
     /**
      *
      */
-    get featuresAsObservable(): Observable<Feature[]> {
+    get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
         return this._results_features_subject.asObservable();
     }
 
@@ -141,13 +142,13 @@ export class ResultsContainer {
 
     /**
      * Re-ranks the objects and segments, i.e. calculates new scores, using the provided list of
-     * features and weight function. If none are provided, the default ones define in the ResultsContainer
+     * results and weight function. If none are provided, the default ones define in the ResultsContainer
      * are used.
      *
-     * @param {Feature[]} features
-     * @param {WeightFunction} weightFunction
+     * @param {WeightedFeatureCategory[]} features
+     * @param {FusionFunction} weightFunction
      */
-    public rerank(features?: Feature[], weightFunction?: WeightFunction) {
+    public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
         if (!features) features = this.features;
         if (!weightFunction) weightFunction = this.weightFunction;
         this._results_objects.forEach((value) => { value.update(features, weightFunction); });
@@ -282,13 +283,13 @@ export class ResultsContainer {
      * ResultsContainer for the provided category, that instance is returned. Otherwise, a new instance is created and registered.
      *
      * @param {string} category
-     * @return {Feature}
+     * @return {WeightedFeatureCategory}
      */
-    private uniqueFeature(category: string): Feature {
+    private uniqueFeature(category: FeatureCategories): WeightedFeatureCategory {
         for (let feature of this._features) {
             if (feature.name == category) return feature;
         }
-        let feature = new Feature(category, category, 100);
+        let feature = new WeightedFeatureCategory(category, category, 100);
         this._features.push(feature);
         return feature;
     }

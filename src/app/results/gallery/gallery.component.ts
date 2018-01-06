@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
+import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
 import {QueryService} from "../../core/queries/query.service";
 import {Router} from "@angular/router";
 import {ResolverService} from "../../core/basics/resolver.service";
@@ -8,10 +8,10 @@ import {MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {FeatureDetailsComponent} from "../feature-details.component";
 import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segment-drag-container.model";
 import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
-import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
+import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {SelectionService} from "../../core/selection/selection.service";
 import {Tag} from "../../core/selection/tag.model";
-import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
+import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
 
 @Component({
     moduleId: module.id,

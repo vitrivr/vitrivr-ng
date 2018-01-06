@@ -1,6 +1,6 @@
 import {ScoreContainer} from "./compound-score-container.model";
-import {WeightFunction} from "../weighting/weight-function.interface";
-import {Feature} from "../feature.model";
+import {FusionFunction} from "../fusion/weight-function.interface";
+import {WeightedFeatureCategory} from "../weighted-feature-category.model";
 import {Similarity} from "../../media/similarity.model";
 import {MediaSegment} from "../../media/media-segment.model";
 import {MediaObjectScoreContainer} from "./media-object-score-container.model";
@@ -11,7 +11,7 @@ import {MediaObjectScoreContainer} from "./media-object-score-container.model";
  */
 export class SegmentScoreContainer extends ScoreContainer {
     /** List of scores. Entries should correspond to those in the array categories. */
-    private _scores : Map<Feature, number> = new Map();
+    private _scores : Map<WeightedFeatureCategory, number> = new Map();
 
     /**
      * Default constructor.
@@ -38,7 +38,7 @@ export class SegmentScoreContainer extends ScoreContainer {
      * @param category
      * @param similarity
      */
-    public addSimilarity(category : Feature, similarity : Similarity): boolean {
+    public addSimilarity(category : WeightedFeatureCategory, similarity : Similarity): boolean {
         if (similarity.key !== this._mediaSegment.segmentId) return false;
         this.scores.set(category, similarity.value);
         return true;
@@ -46,19 +46,19 @@ export class SegmentScoreContainer extends ScoreContainer {
 
     /**
      * Updates the score value by multiplying the scores in the scores array by the weights
-     * of the associated feature-object. Only features in the provided list are considered.
+     * of the associated feature-object. Only results in the provided list are considered.
      *
      * @param features List of feature categories that should be used to calculate the score.
-     * @param func The weighting function that should be used to calculate the score.
+     * @param func The fusion function that should be used to calculate the score.
      */
-    public update(features: Feature[], func: WeightFunction) {
+    public update(features: WeightedFeatureCategory[], func: FusionFunction) {
         this._score = func.scoreForSegment(features, this);
     }
 
     /**
      * Returns the Map of scores
      *
-     * @return {Map<Feature, number>}
+     * @return {Map<WeightedFeatureCategory, number>}
      */
     get scores() {
         return this._scores;

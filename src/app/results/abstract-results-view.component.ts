@@ -1,8 +1,8 @@
 import {ChangeDetectorRef, OnDestroy, OnInit} from "@angular/core";
-import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
+import {ResultsContainer} from "../shared/model/results/scores/results-container.model";
 import {QueryChange, QueryService} from "../core/queries/query.service";
-import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
-import {ScoreContainer} from "../shared/model/features/scores/compound-score-container.model";
+import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
+import {ScoreContainer} from "../shared/model/results/scores/compound-score-container.model";
 import {Observable} from "rxjs/Observable";
 import {SelectionService} from "../core/selection/selection.service";
 import {Tag} from "../core/selection/tag.model";

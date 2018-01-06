@@ -3,15 +3,15 @@ import {AbstractResultsViewComponent} from "../abstract-results-view.component";
 import {QueryService} from "../../core/queries/query.service";
 import {ResolverService} from "../../core/basics/resolver.service";
 import {Router} from "@angular/router";
-import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
-import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
+import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
+import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
 import {FeatureDetailsComponent} from "../feature-details.component";
 import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
 import {Observable} from "rxjs/Observable";
 import {VbsSubmissionService} from "app/core/vbs/vbs-submission.service";
 import {ConfigService} from "../../core/basics/config.service";
-import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
+import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {SelectionService} from "../../core/selection/selection.service";
 import {Tag} from "../../core/selection/tag.model";
 

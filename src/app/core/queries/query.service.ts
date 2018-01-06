@@ -12,7 +12,7 @@ import {SimilarityQuery} from "../../shared/model/messages/queries/similarity-qu
 import {MoreLikeThisQuery} from "../../shared/model/messages/queries/more-like-this-query.model";
 import {QueryError} from "../../shared/model/messages/interfaces/responses/query-error.interface";
 import {QueryContainer} from "../../shared/model/queries/query-container.model";
-import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
+import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {NeighboringSegmentQuery} from "../../shared/model/messages/queries/neighboring-segment-query.model";
 import {ReadableQueryConfig} from "../../shared/model/messages/queries/readable-query-config.model";
 

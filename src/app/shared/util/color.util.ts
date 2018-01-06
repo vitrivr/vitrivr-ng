@@ -52,4 +52,18 @@ export class ColorUtil {
     public static rgbToHex(r: number,g: number,b: number): string {
         return "#" +  ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     }
+
+    /**
+     * Generates and returns a random RGB colour in the hex representation.
+     *
+     * @returns {string} Colour string.
+     */
+    public static randomColorHex(): string   {
+        let letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color
+    }
 }

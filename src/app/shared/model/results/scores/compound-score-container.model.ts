@@ -1,6 +1,6 @@
 
-import {WeightFunction} from "../weighting/weight-function.interface";
-import {Feature} from "../feature.model";
+import {FusionFunction} from "../fusion/weight-function.interface";
+import {WeightedFeatureCategory} from "../weighted-feature-category.model";
 import {Similarity} from "../../media/similarity.model";
 /**
  * This class defines an abstract container for compound scores, i.e. scores that are obtained as a result of multiple
@@ -24,17 +24,17 @@ export abstract class ScoreContainer {
      * @param category Category for which to add the similarity value.
      * @param similarity Similarity value
      */
-    public abstract addSimilarity(category : Feature, similarity : Similarity) : void;
+    public abstract addSimilarity(category : WeightedFeatureCategory, similarity : Similarity) : void;
 
 
     /**
      * Method can be used to update the score of a ScoreContainer given a list of
      * feature categories and a weight function.
      *
-     * @param features List of features that should be used to calculate the score.
+     * @param features List of results that should be used to calculate the score.
      * @param func The weight function that should be used to calculate the score.
      */
-    public abstract update(features: Feature[], func: WeightFunction) : void;
+    public abstract update(features: WeightedFeatureCategory[], func: FusionFunction) : void;
 
     /**
      * Getter for the container's score.

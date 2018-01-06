@@ -1,10 +1,10 @@
-import {WeightFunction} from "./weight-function.interface";
-import {Feature} from "../feature.model";
+import {FusionFunction} from "./weight-function.interface";
+import {WeightedFeatureCategory} from "../weighted-feature-category.model";
 import {MediaObjectScoreContainer} from "../scores/media-object-score-container.model";
 import {SegmentScoreContainer} from "../scores/segment-score-container.model";
 
 
-export class DefaultWeightFunction implements WeightFunction {
+export class DefaultFusionFunction implements FusionFunction {
     /**
      * Calculates and returns the weighted score of a MediaObjectScoreContainer. This implementation simply
      * returns the maximum score of any of the child segments!
@@ -12,9 +12,9 @@ export class DefaultWeightFunction implements WeightFunction {
      * @param features Feature categories to consider when calculating the score.
      * @param mediaObjectScoreContainer MediaObjectScoreContainer for which to calculate the score.
      *
-     * @return Weighted score for teh MediaObjectScoreContainer given the features
+     * @return Weighted score for teh MediaObjectScoreContainer given the results
      */
-    scoreForObject(features: Feature[], mediaObjectScoreContainer: MediaObjectScoreContainer): number {
+    scoreForObject(features: WeightedFeatureCategory[], mediaObjectScoreContainer: MediaObjectScoreContainer): number {
         let score = 0;
         mediaObjectScoreContainer.segments.forEach((value : SegmentScoreContainer) => {
             value.update(features, this);
@@ -31,12 +31,12 @@ export class DefaultWeightFunction implements WeightFunction {
      * @param features Feature categories to consider when calculating the score.
      * @param segmentScoreContainer SegmentScoreContainer for which to calculate the score.
      *
-     * @return Weighted score for teh MediaObjectScoreContainer given the features
+     * @return Weighted score for teh MediaObjectScoreContainer given the results
      */
-    scoreForSegment(features: Feature[], segmentScoreContainer: SegmentScoreContainer): number {
+    scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number {
         let score = 0;
         let total = 0;
-        features.forEach((value: Feature) => {
+        features.forEach((value: WeightedFeatureCategory) => {
             if (segmentScoreContainer.scores.has(value))score += (segmentScoreContainer.scores.get(value) * value.weight);
             total += value.weight;
         });

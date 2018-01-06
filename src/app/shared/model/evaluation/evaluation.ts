@@ -1,10 +1,10 @@
 import {EvaluationEvent} from "./evaluation-event";
 import {EvaluationRating} from "./evaluation-rating";
 import {EvaluationState} from "./evaluation-state";
-import {MediaObjectScoreContainer} from "../features/scores/media-object-score-container.model";
+import {MediaObjectScoreContainer} from "../results/scores/media-object-score-container.model";
 import {TimeFormatterUtil} from "../../util/timer-formatter.util";
 import {EvaluationScenario} from "./evaluation-scenario";
-import {Feature} from "../features/feature.model";
+import {WeightedFeatureCategory} from "../results/weighted-feature-category.model";
 
 /**
  * Represents a single evaluation scenario.
@@ -117,7 +117,7 @@ export class Evaluation {
      *
      * @return New state of the Evaluation object.
      */
-    public accept(features: Feature[], results: MediaObjectScoreContainer[]): EvaluationState {
+    public accept(features: WeightedFeatureCategory[], results: MediaObjectScoreContainer[]): EvaluationState {
         if (this._state == EvaluationState.RunningQueries) {
             /* Store per-category weights. */
             this._per_category_weights = {};

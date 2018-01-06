@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import {MatCheckboxChange, MatSliderChange} from "@angular/material";
 import {QueryChange, QueryService} from "../core/queries/query.service";
-import {Feature} from "../shared/model/features/feature.model";
+import {WeightedFeatureCategory} from "../shared/model/results/weighted-feature-category.model";
 import {MediaType} from "../shared/model/media/media-type.model";
 import {Observable} from "rxjs/Observable";
 
@@ -22,10 +22,10 @@ import {Observable} from "rxjs/Observable";
  */
 export class RefinementComponent implements OnInit, OnDestroy {
 
-    /** An observable for the current features. */
-    private _features : Observable<Feature[]> = Observable.empty();
+    /** An observable for the current results. */
+    private _features : Observable<WeightedFeatureCategory[]> = Observable.empty();
 
-    /** An observable for the current features. */
+    /** An observable for the current results. */
     private _mediatypes : Observable<IterableIterator<[MediaType,boolean]>> = Observable.empty();
 
     /** Local reference to the subscription to the QueryService. */
@@ -91,7 +91,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param feature The feature that was changed.
      * @param event MatSliderChange event that contains the new value.
      */
-    public onValueChanged(feature: Feature, event: MatSliderChange) {
+    public onValueChanged(feature: WeightedFeatureCategory, event: MatSliderChange) {
         if (this._queryService.results) {
             feature.weight = event.value;
             this._queryService.results.rerank()
@@ -110,9 +110,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
     /**
      * Getter for refinement array.
      *
-     * @return {Feature[]}
+     * @return {WeightedFeatureCategory[]}
      */
-    get features(): Observable<Feature[]> {
+    get features(): Observable<WeightedFeatureCategory[]> {
         return this._features;
     }
 }

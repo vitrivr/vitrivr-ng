@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
+import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
 import {MetadataLookupService} from "../lookup/metadata-lookup.service";
 import {VideoUtil} from "../../shared/util/video.util";
 import {HttpClient, HttpParams} from "@angular/common/http";

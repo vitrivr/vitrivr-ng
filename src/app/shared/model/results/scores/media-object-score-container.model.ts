@@ -3,9 +3,9 @@ import {ScoreContainer} from "./compound-score-container.model";
 import {SegmentScoreContainer} from "./segment-score-container.model";
 import {MediaObject} from "../../media/media-object.model";
 import {MediaSegment} from "../../media/media-segment.model";
-import {Feature} from "../feature.model";
+import {WeightedFeatureCategory} from "../weighted-feature-category.model";
 import {Similarity} from "../../media/similarity.model";
-import {WeightFunction} from "../weighting/weight-function.interface";
+import {FusionFunction} from "../fusion/weight-function.interface";
 import {MediaType} from "../../media/media-type.model";
 
 /**
@@ -24,7 +24,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     private _mediaObject? : MediaObject;
 
     /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet. */
-    private _cache : Map<string,Array<[Feature,Similarity]>> = new Map();
+    private _cache : Map<string,Array<[WeightedFeatureCategory,Similarity]>> = new Map();
 
     /**
      * Default constructor.
@@ -58,7 +58,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @param category
      * @param similarity
      */
-    public addSimilarity(category : Feature, similarity : Similarity) {
+    public addSimilarity(category : WeightedFeatureCategory, similarity : Similarity) {
         if (this._segmentScores.has(similarity.key)) {
             this._segmentScores.get(similarity.key).addSimilarity(category, similarity);
         } else if (this._cache.has(similarity.key)) {
@@ -75,7 +75,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @param features List of feature categories that should be used to calculate the score.
      * @param func The weight function that should be used to calculate the score.
      */
-    public update(features: Feature[], func: WeightFunction) {
+    public update(features: WeightedFeatureCategory[], func: FusionFunction) {
         this._score = func.scoreForObject(features, this);
     }
 

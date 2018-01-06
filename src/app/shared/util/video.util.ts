@@ -1,5 +1,5 @@
 
-import {SegmentScoreContainer} from "../model/features/scores/segment-score-container.model";
+import {SegmentScoreContainer} from "../model/results/scores/segment-score-container.model";
 
 export class VideoUtil {
 

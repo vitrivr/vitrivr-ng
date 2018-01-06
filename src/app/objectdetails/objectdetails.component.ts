@@ -5,12 +5,12 @@ import {MetadataLookupService} from "../core/lookup/metadata-lookup.service";
 import {QueryService} from "../core/queries/query.service";
 import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
-import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
+import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
 import {Location} from "@angular/common";
 import {MatDialog, MatSnackBar} from "@angular/material";
-import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
+import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-object-score-container.model";
 import {ImagecropComponent} from "./imagecrop.component";
-import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
+import {ResultsContainer} from "../shared/model/results/scores/results-container.model";
 import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
 import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
 

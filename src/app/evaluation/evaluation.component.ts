@@ -3,7 +3,7 @@ import {QueryService, QueryChange} from "../core/queries/query.service";
 import {EvaluationEvent} from "../shared/model/evaluation/evaluation-event";
 import {EvaluationState} from "../shared/model/evaluation/evaluation-state";
 import {ResolverService} from "../core/basics/resolver.service";
-import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
+import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-object-score-container.model";
 import {MatSnackBar, MatDialog, MatDialogConfig} from "@angular/material";
 import {EvaluationTemplate} from "../shared/model/evaluation/evaluation-template";
 import {ActivatedRoute, Params, Router} from "@angular/router";
