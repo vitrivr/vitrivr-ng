@@ -43,15 +43,6 @@
                     <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" width="200px" height="200px">
 
                     <div class="tile-footer" fxLayout="row-reverse">
-
-                        <button *ngIf="segment.marked" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Unmark">
-                            <mat-icon >star</mat-icon>
-                        </button>
-
-                        <button *ngIf="!segment.marked" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Mark as favourite">
-                            <mat-icon>star_border</mat-icon>
-                        </button>
-
                         <button mat-icon-button *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" (click)="onPlayClick(segment)" matTooltip="Start playback"><mat-icon>play_arrow</mat-icon></button>
                         <button mat-icon-button (click)="onMltClick(segment)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button>
                     </div>

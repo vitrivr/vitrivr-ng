@@ -122,15 +122,6 @@ export class ObjectdetailsComponent implements OnInit {
     }
 
     /**
-     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
-     *
-     * @param {SegmentScoreContainer} segment
-     */
-    public onStarButtonClicked(segment: SegmentScoreContainer) {
-        segment.toggleMark();
-    }
-
-    /**
      * Triggered whenever someone clicks the 'More-Like-This' button. The segment the click belongs to is then used to perform
      * a More-Like-This query.
      *
