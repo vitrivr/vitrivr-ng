@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import OBJLoaderProto from 'three-obj-loader';
-import STLLoaderProto from 'three-stl-loader';
+import * as OBJLoaderProto from 'three-obj-loader';
+import * as STLLoaderProto from 'three-stl-loader';
 
 /* UGLY: Load the model-file loaders. */
 
