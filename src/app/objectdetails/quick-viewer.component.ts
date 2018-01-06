@@ -7,7 +7,8 @@ import {ResolverService} from "../core/basics/resolver.service";
 @Component({
     moduleId: module.id,
     selector: 'quick-viewer',
-    templateUrl: 'quick-viewer.component.html'
+    templateUrl: 'quick-viewer.component.html',
+    styleUrls: ['quick-viewer.component.css']
 })
 export class QuickViewerComponent {
 
