@@ -13,14 +13,24 @@ import {VbsSequenceLoggerService} from "./vbs-sequence-logger.service";
  */
 @Injectable()
 export class VbsSubmissionService {
+    /** URL pointing to the VBS HTTP endpoint. */
+    private _endpoint: string = null;
+
+    /** VBS team number. */
+    private _team: string = null;
+
     /**
      * Constructor for VbsSubmissionService.
      *
      * @param {MetadataLookupService} _metadata
      * @param {HttpClient} _http
-     * @param {ConfigService} _config
      */
-    constructor(private _metadata: MetadataLookupService, private _http: HttpClient, private _config: ConfigService, private _logger: VbsSequenceLoggerService) {}
+    constructor(_config: ConfigService, private _metadata: MetadataLookupService, private _http: HttpClient, private _logger: VbsSequenceLoggerService) {
+        _config.asObservable().subscribe(c => {
+            this._endpoint = c.vbsEndpoint;
+            this._team = c.vbsTeam;
+        });
+    }
 
     /**
      * Submits the provided SegmentScoreContainer and to the VBS endpoint. Uses the segment's start timestamp as timepoint.
@@ -47,14 +57,14 @@ export class VbsSubmissionService {
             .flatMap(s => {
                 let params = new HttpParams()
                     .set('video', segment.objectId)
-                    .set('team', this._config.configuration.vbsTeam)
+                    .set('team', this._team)
                     .set('frame', String(VbsSubmissionService.timeToFrame(time, s)))
                     .set('shot', String(segment.mediaSegment.sequenceNumber));
                 if (this._logger.isEmpty()) {
-                    params.set('iseq', this._logger.sequence);
-                    this._logger.clear();
+                    //params.set('iseq', this._logger.sequence);
+                    //this._logger.clear();
                 }
-                return this._http.get(this._config.configuration.vbsEndpoint, {responseType: 'text', params: params})
+                return this._http.get(this._endpoint, {responseType: 'text', params: params})
             });
     }
 
@@ -64,7 +74,7 @@ export class VbsSubmissionService {
      * @return {boolean}
      */
     get isOn(): boolean {
-        return this._config.configuration.vbsOn && this._config.configuration.vbsEndpoint != null && this._config.configuration.vbsTeam != null;
+        return this._endpoint != null && this._team != null;
     }
 
     /**
