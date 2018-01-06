@@ -18,7 +18,7 @@ export class CineastAPI extends AbstractWebsocketService {
      */
     constructor(@Inject(ConfigService) _configService : ConfigService) {
         super(true);
-        _configService.observable.subscribe((config) => {
+        _configService.subscribe((config) => {
             if (config.endpoint_ws != null) {
                 this.connect(config.endpoint_ws);
             }
