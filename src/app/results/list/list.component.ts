@@ -12,6 +12,8 @@ import {Observable} from "rxjs/Observable";
 import {VbsSubmissionService} from "app/core/vbs/vbs-submission.service";
 import {ConfigService} from "../../core/basics/config.service";
 import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
+import {SelectionService} from "../../core/selection/selection.service";
+import {Tag} from "../../core/selection/tag.model";
 
 @Component({
     moduleId: module.id,
@@ -29,19 +31,22 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
      * @param _queryService
+     * @param _selectionService
      * @param _resolver
      * @param _router
      * @param _snackBar
      * @param _dialog
      * @param _vbs
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService,
+    constructor(_cdr: ChangeDetectorRef,
+                _queryService : QueryService,
+                _selectionService: SelectionService,
                 protected _resolver: ResolverService,
                 protected _router: Router,
                 protected _snackBar: MatSnackBar,
                 protected _dialog: MatDialog,
                 protected _vbs: VbsSubmissionService) {
-        super(_cdr, _queryService);
+        super(_cdr, _queryService, _selectionService);
     }
 
     /**
@@ -92,21 +97,23 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
     }
 
     /**
-     * Invoked when a user clicks the 'star / favorite' button. Toggles the selection mode of the SegmentScoreContainer.
-     *
-     * @param {SegmentScoreContainer} segment
-     */
-    public onStarButtonClicked(segment: SegmentScoreContainer) {
-        segment.toggleMark();
-    }
-
-    /**
      * Invokes when a user clicks the 'Find neighbouring segments' button.
      *
      * @param {SegmentScoreContainer} segment
      */
     public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
         this._queryService.findNeighboringSegments(segment.segmentId);
+    }
+
+    /**
+     * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
+     *
+     * @param {SegmentScoreContainer} segment The segment that was tagged.
+     * @param {Tag} tag The tag that should be toggled.
+     */
+    public onTagButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
+        this._selectionService.toggle(segment.segmentId,tag);
+        this._cdr.markForCheck();
     }
 
     /**

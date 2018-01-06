@@ -13,9 +13,6 @@ export class SegmentScoreContainer extends ScoreContainer {
     /** List of scores. Entries should correspond to those in the array categories. */
     private _scores : Map<Feature, number> = new Map();
 
-    /** Flag indicating whether the current SegmentScoreContainer has been marked. Defaults to false.*/
-    private _marked: boolean = false;
-
     /**
      * Default constructor.
      *
@@ -56,22 +53,6 @@ export class SegmentScoreContainer extends ScoreContainer {
      */
     public update(features: Feature[], func: WeightFunction) {
         this._score = func.scoreForSegment(features, this);
-    }
-
-    /**
-     * Toggles the mark of the current SegmentScoreContainer.
-     */
-    public toggleMark() {
-       this._marked = !this._marked
-    }
-
-    /**
-     * Getter for the marked flag.
-     *
-     * @return {boolean}
-     */
-    get marked(): boolean {
-        return this._marked;
     }
 
     /**
