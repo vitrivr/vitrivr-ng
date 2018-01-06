@@ -6,25 +6,25 @@
     background: url('../../../assets/images/loading.png') no-repeat center;
 }
 
-.tile .tile-header {
+.tile .header {
     top:0;
     left: 0;
     right: 0;
     height: 50px;
-    padding: 10px;
+    padding: 7.5px;
     position: absolute;
     z-index: 100;
     opacity: 0.65;
     color: black;
 }
 
-.tile .tile-body {
+.tile .body {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.tile .tile-footer {
+.tile .footer {
     top: 200px;
     left: 0;
     right: 0;
@@ -43,6 +43,21 @@ div.filename {
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 14px;
+}
+
+.tags > button {
+    max-height: 20px !important;
+    max-width: 20px !important;
+    line-height: 0 !important;
+}
+
+.tags .mat-icon {
+    max-height: 18px;
+    max-width: 18px;
+}
+
+.tags .material-icons {
+    font-size: 16px !important;
 }
 
 div.score {

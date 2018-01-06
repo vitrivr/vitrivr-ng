@@ -10,6 +10,8 @@ import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segme
 import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
 import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
 import {SelectionService} from "../../core/selection/selection.service";
+import {Tag} from "../../core/selection/tag.model";
+import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
 
 @Component({
     moduleId: module.id,
@@ -157,6 +159,17 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
         } else {
             throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
         }
+    }
+
+    /**
+     * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
+     *
+     * @param {SegmentScoreContainer} object The segment that was tagged.
+     * @param {Tag} tag The tag that should be toggled.
+     */
+    public onTagButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
+        this._selectionService.toggle(segment.segmentId,tag);
+        this._cdr.markForCheck();
     }
 
     /**
