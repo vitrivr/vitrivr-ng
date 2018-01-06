@@ -10,12 +10,13 @@ import {EvaluationModule} from "../evaluation/evaluation.module";
 import {TagsLookupService} from "./lookup/tags-lookup.service";
 import {VbsSubmissionService} from "./vbs/vbs-submission.service";
 import {VbsModule} from "./vbs/vbs.module";
+import {SelectionModule} from "./selection/selection.module";
+import {SelectionService} from "./selection/selection.service";
 
 @NgModule({
-    imports:      [ LookupModule, BasicModule, EvaluationModule, VbsModule ],
-    exports:      [ LookupModule, BasicModule, EvaluationModule, VbsModule ],
+    imports:      [ LookupModule, BasicModule, EvaluationModule, VbsModule, SelectionModule ],
+    exports:      [ LookupModule, BasicModule, EvaluationModule, VbsModule, SelectionModule ],
     declarations: [ ],
-    providers:    [ TagsLookupService, QueryService, ConfigService, ResolverService, CineastAPI, EvaluationService, VbsSubmissionService ]
+    providers:    [ TagsLookupService, QueryService, ConfigService, ResolverService, CineastAPI, EvaluationService, VbsSubmissionService, SelectionService ]
 })
-
 export class CoreModule { }
