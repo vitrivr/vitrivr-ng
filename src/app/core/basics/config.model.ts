@@ -1,3 +1,5 @@
+import {Tag} from "../selection/tag.model";
+
 export class Config {
     /** Context of the Cineast API. */
     private static CONTEXT = "api";
@@ -10,7 +12,7 @@ export class Config {
      *
      * @type {{host: string; port: number; http_secure: boolean; ws_secure: boolean; ping_interval: number}}
      */
-    private api = {
+    private _api = {
         host : window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
         port : 4567, /* Port for the API. */
         http_secure: false, /* Whether or not TLS should be used for HTTP connection. */
@@ -23,7 +25,7 @@ export class Config {
      *
      * @type {{}}
      */
-    private resources = {
+    private _resources = {
         host_thumbnails: window.location.protocol + "//" + window.location.hostname + "/vitrivr/thumbnails",  /** Path / URL to location where media object thumbnails will be stored. */
         host_object: window.location.protocol + "//" + window.location.hostname + "/vitrivr/objects", /** Path / URL to location where media object's will be stored. */
         suffix_default: ".jpg", /** Default suffix for thumbnails. */
@@ -35,7 +37,7 @@ export class Config {
      *
      * @type {{active: boolean; templates: string[]}}
      */
-    private evaluation = {
+    private _evaluation = {
         active: true,
         templates: [] /* URLs */
     };
@@ -46,16 +48,21 @@ export class Config {
      *
      * @type {{active: boolean; team: string; endpoint: string}}
      */
-    private vbs = {
-        /* Flag indicating whether VBS mode should be active or not. */
-        active: false,
-
+    private _vbs = {
         /* The team number within the VBS contest. */
         team: null,
 
         /* URL to the VBS endpoint. */
         endpoint: null
     };
+
+    /** List of available tag. */
+    private _tags: Tag[] = [
+        new Tag("Red", 0),
+        new Tag("Blue", 240),
+        new Tag("Yellow", 60),
+        new Tag("Magenta", 300),
+    ];
 
     /**
      * Contains information regarding the available query-containers. Depending on this configuration, the user will be presented
@@ -80,12 +87,13 @@ export class Config {
      * @param queryContainerTypes
      * @param vbs
      */
-    constructor(api?: any, resources?: any, evaluation?: any, queryContainerTypes?: any, vbs?: any) {
-        if (api) Config.merge(this.api, api);
-        if (resources) Config.merge(this.resources, resources);
-        if (evaluation) Config.merge(this.evaluation, evaluation);
+    constructor(api?: any, resources?: any, evaluation?: any, queryContainerTypes?: any, vbs?: any, tags?: Tag[]) {
+        if (api) Config.merge(this._api, api);
+        if (resources) Config.merge(this._resources, resources);
+        if (evaluation) Config.merge(this._evaluation, evaluation);
         if (queryContainerTypes) Config.merge(this.queryContainerTypes, queryContainerTypes);
-        if (vbs) Config.merge(this.vbs, vbs);
+        if (vbs) Config.merge(this._vbs, vbs);
+        if (tags) this._tags = tags;
     }
 
 
@@ -109,7 +117,7 @@ export class Config {
      * @return {string}
      */
     get host_thumbnails(): string {
-        return this.resources.host_thumbnails;
+        return this._resources.host_thumbnails;
     }
 
     /**
@@ -118,7 +126,7 @@ export class Config {
      * @return {string}
      */
     get host_object(): string {
-        return this.resources.host_object;
+        return this._resources.host_object;
     }
 
     /**
@@ -127,9 +135,9 @@ export class Config {
      * @return {string}
      */
     get endpoint_ws(): string {
-        let scheme = this.api.ws_secure ? "wss://" : "ws://";
-        if (this.api.host && this.api.port) {
-            return scheme + this.api.host + ":" + this.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/websocket";
+        let scheme = this._api.ws_secure ? "wss://" : "ws://";
+        if (this._api.host && this._api.port) {
+            return scheme + this._api.host + ":" + this._api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/websocket";
         } else {
             return null;
         }
@@ -141,9 +149,9 @@ export class Config {
      * @return {string}
      */
     get endpoint_http(): string {
-        let scheme = this.api.ws_secure ? "https://" : "http://";
-        if (this.api.host && this.api.port) {
-            return scheme + this.api.host + ":" + this.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/";
+        let scheme = this._api.ws_secure ? "https://" : "http://";
+        if (this._api.host && this._api.port) {
+            return scheme + this._api.host + ":" + this._api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/";
         } else {
             return null;
         }
@@ -155,7 +163,7 @@ export class Config {
      * @return {number}
      */
     get ping_interval(): number {
-        return this.api.ping_interval;
+        return this._api.ping_interval;
     }
 
     /**
@@ -164,7 +172,7 @@ export class Config {
      * @return {string}
      */
     get suffix_default(): string {
-        return this.resources.suffix_default;
+        return this._resources.suffix_default;
     }
 
     /**
@@ -173,7 +181,7 @@ export class Config {
      * @return {{}|any}
      */
     get suffix(): any {
-        return this.resources.suffix;
+        return this._resources.suffix;
     }
 
     /**
@@ -182,23 +190,14 @@ export class Config {
      * @return {boolean}
      */
     get evaluationOn(): boolean {
-        return this.evaluation.active;
+        return this._evaluation.active;
     }
     /**
      *
      * @return {Array}
      */
     get evaluationTemplates(): any {
-        return this.evaluation.templates;
-    }
-
-    /**
-     * Returns true, if the VBS mode is on and false otherwise.
-     *
-     * @return {boolean}
-     */
-    get vbsOn(): boolean {
-        return this.vbs.active;
+        return this._evaluation.templates;
     }
 
     /**
@@ -207,7 +206,7 @@ export class Config {
      * @return {string}
      */
     get vbsTeam(): string {
-        return this.vbs.team;
+        return this._vbs.team;
     }
 
     /**
@@ -216,6 +215,15 @@ export class Config {
      * @return {string}
      */
     get vbsEndpoint(): string {
-        return this.vbs.endpoint;
+        return this._vbs.endpoint;
+    }
+
+    /**
+     * Returns the available Tags.
+     *
+     * @return {Tags[]}
+     */
+    get tags(): Tag[] {
+        return this._tags;
     }
 }
