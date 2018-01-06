@@ -13,7 +13,7 @@ export class ResearchComponent implements OnInit {
     /** QueryContainer's held by the current instance of ResearchComponent. */
     public readonly containers : QueryContainerInterface[] = [];
 
-    /** */
+    /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
     private _lastEnter: number = 0;
 
     /**
