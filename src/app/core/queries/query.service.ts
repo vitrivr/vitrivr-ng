@@ -15,6 +15,8 @@ import {QueryContainer} from "../../shared/model/queries/query-container.model";
 import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {NeighboringSegmentQuery} from "../../shared/model/messages/queries/neighboring-segment-query.model";
 import {ReadableQueryConfig} from "../../shared/model/messages/queries/readable-query-config.model";
+import {ConfigService} from "../basics/config.service";
+import {Config} from "../basics/config.model";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -41,15 +43,18 @@ export class QueryService {
     /** Results of a query. May be empty. */
     private _results: ResultsContainer;
 
+    private _config: Observable<Config>;
+
     /**
      * Default constructor.
      *
      * @param _api Reference to the CineastAPI. Gets injected by DI.
      */
-    constructor(private _api : CineastAPI) {
-        _api.observable()
+    constructor(private _api : CineastAPI, _config: ConfigService) {
+        this._api.observable()
             .filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg[0]) > -1)
             .subscribe((msg) => this.onApiMessage(msg[1]));
+        this._config = _config.asObservable();
         console.log("QueryService is up and running!");
     }
 
@@ -116,17 +121,14 @@ export class QueryService {
      */
     public findMoreLikeThis(segmentId: string, categories?: string[]) : boolean {
         if (this._running) return false;
-        if (this._results.features.length == 0) return false;
 
-        /* If no categories were provided, use the ones present in the current result. */
-        if (!categories) {
-            categories = [];
-            for (let feature of this._results.features) {
-                categories.push(feature.name);
-            }
-        }
+        /* Use categories from last query AND the default categories for MLT. */
+        this._config.first().subscribe(config => {
+            let categories = this._results.features.map(f => f.name);
+            config.mlt.filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
+            if (categories.length > 0) this._api.send(new MoreLikeThisQuery(segmentId, categories));
+        });
 
-        this._api.send(new MoreLikeThisQuery(segmentId, categories));
         return true;
     }
 

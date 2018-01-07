@@ -1,4 +1,5 @@
 import {Tag} from "../selection/tag.model";
+import {FeatureCategories} from "../../shared/model/results/feature-categories.model";
 
 export class Config {
     /** Context of the Cineast API. */
@@ -64,6 +65,14 @@ export class Config {
         new Tag("Magenta", 300),
     ];
 
+    /** List of default More-Like-This categories. */
+    private _mlt: FeatureCategories[] = [
+        "globalcolor",
+        "localcolor",
+        "quantized",
+        "edge"
+    ];
+
     /**
      * Contains information regarding the available query-containers. Depending on this configuration, the user will be presented
      * with more or less options for querying.
@@ -79,21 +88,25 @@ export class Config {
     };
 
     /**
-     * Default constructor for configuration object.
+     * Default constructor for configuration object. The different configuration type can be passed to this constructor and the will be merged with
+     * the default configuration.
      *
-     * @param api
-     * @param resources
-     * @param evaluation
-     * @param queryContainerTypes
-     * @param vbs
+     * @param api Optional Cineast API configuration as, e.g. loaded from a file.
+     * @param resources Optional resources configuration as, e.g. loaded from a file.
+     * @param evaluation Optional evaluation configuration as, e.g. loaded from a file.
+     * @param queryContainerTypes Optional VBS configuration as, e.g. loaded from a file.
+     * @param vbs Optional VBS configuration as, e.g. loaded from a file.
+     * @param tags Optional tag configurations as, e.g. loaded from a file.
+     * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
      */
-    constructor(api?: any, resources?: any, evaluation?: any, queryContainerTypes?: any, vbs?: any, tags?: Tag[]) {
+    constructor(api?: any, resources?: any, evaluation?: any, queryContainerTypes?: any, vbs?: any, tags?: Tag[], mlt?: FeatureCategories[]) {
         if (api) Config.merge(this._api, api);
         if (resources) Config.merge(this._resources, resources);
         if (evaluation) Config.merge(this._evaluation, evaluation);
         if (queryContainerTypes) Config.merge(this.queryContainerTypes, queryContainerTypes);
         if (vbs) Config.merge(this._vbs, vbs);
         if (tags) this._tags = tags;
+        if (mlt) this._mlt = mlt;
     }
 
 
@@ -225,5 +238,14 @@ export class Config {
      */
     get tags(): Tag[] {
         return this._tags;
+    }
+
+    /**
+     * Returns the default More-Like-This categories.
+     *
+     * @return {Tags[]}
+     */
+    get mlt(): FeatureCategories[] {
+        return this._mlt;
     }
 }

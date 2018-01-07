@@ -32,8 +32,8 @@ export class ConfigService extends BehaviorSubject<Config> {
      */
     public reload() {
         this._http.get('config.json?r=' + UUIDGenerator.suid()).first().subscribe((result: Object) => {
-            if (result["api"] || result["resources"] || result["evaluation"] || result["queryContainerTypes"]  || result["vbs"] || result["tags"]) {
-                let configuration = new Config(result["api"], result["resources"], result["evaluation"], result["queryContainerTypes"], result["vbs"], result["tags"]);
+            if (result["api"] || result["resources"] || result["evaluation"] || result["queryContainerTypes"]  || result["vbs"] || result["tags"] || result["mlt"]) {
+                let configuration = new Config(result["api"], result["resources"], result["evaluation"], result["queryContainerTypes"], result["vbs"], result["tags"], result["mlt"]);
                 this.next(configuration);
             }
         });
