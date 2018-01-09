@@ -32,7 +32,7 @@
                         <mat-icon>youtube_searched_for</mat-icon>
                     </button>
 
-                    <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" matTooltip="Load neighboring segments">
+                    <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" (contextmenu)="onNeighborsButtonRightClicked($event, segment)" matTooltip="Load neighboring segments">
                         <mat-icon>settings_ethernet</mat-icon>
                     </button>
                 </div>

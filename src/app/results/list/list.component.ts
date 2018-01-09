@@ -106,6 +106,18 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
     }
 
     /**
+     * Invokes when a user right clicks the 'Find neighbouring segments' button. Loads neighbouring segments with
+     * a count of 500.
+     *
+     * @param {Event} event
+     * @param {SegmentScoreContainer} segment
+     */
+    public onNeighborsButtonRightClicked(event: Event, segment: SegmentScoreContainer) {
+        this._queryService.findNeighboringSegments(segment.segmentId, 500);
+        event.preventDefault();
+    }
+
+    /**
      * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
      *
      * @param {SegmentScoreContainer} segment The segment that was tagged.
