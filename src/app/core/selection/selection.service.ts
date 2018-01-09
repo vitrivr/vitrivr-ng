@@ -1,13 +1,14 @@
 import {Injectable} from "@angular/core";
 import {ConfigService} from "../basics/config.service";
 import {Tag} from "./tag.model";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 /**
  * This service orchestrates similarity requests using the Cineast API (WebSocket). The service is responsible for
  * issuing findSimilar requests, processing incoming responses and ranking of the requests.
  */
 @Injectable()
-export class SelectionService {
+export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
     /** List of available Tag objects. */
     private readonly _available: Set<Tag> = new Set();
 
@@ -20,6 +21,8 @@ export class SelectionService {
      * @param {ConfigService} _config
      */
     constructor(_config: ConfigService) {
+        super(new Map());
+
         _config.subscribe(c => {
             this._available.clear();
             c.tags.forEach(t => this.registerTag(t))
@@ -39,15 +42,16 @@ export class SelectionService {
         } else {
             this._selections.set(identifier, new Set([tag]));
         }
+        this.next(this._selections);
     }
 
     /**
-     * Removes the provided Tag for the provided identifier. If all tags have been removed from the list, the identifier
+     * Removes the provided Tag for the provided identifier. If all selection have been removed from the list, the identifier
      * is removed completely.
      *
      * @param {string} identifier Identifier for which to remove all tags.
      * @param {Tag} tag The Tag that should be removed.
-     * @return true if tag for identifier was removed, false if either identifier was unknown OR did not contain that tTag
+     * @return true if tag for identifier was removed, false if either identifier was unknown OR did not contain that tag
      */
     public remove(identifier: string, tag: Tag): boolean {
         if (this._selections.has(identifier)) {
@@ -55,6 +59,7 @@ export class SelectionService {
             let success = entry.delete(tag);
             if (!success) return false;
             if (entry.size == 0) this._selections.delete(identifier);
+            this.next(this._selections);
             return true;
         }
         return false;
@@ -75,13 +80,18 @@ export class SelectionService {
 
 
     /**
-     * Removes all Tags for the provided identifier.
+     * Removes all tags for the provided identifier.
      *
      * @param {string} identifier Identifier for which to remove all tags.
      * @return true if identifier was removed, false if it was not known.
      */
     public removeAll(identifier: string) {
-        return this._selections.delete(identifier);
+        if(this._selections.delete(identifier)) {
+            this.next(this._selections);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -124,6 +134,7 @@ export class SelectionService {
      */
     public clear() {
         this._selections.clear();
+        this.next(this._selections);
     }
 
     /**

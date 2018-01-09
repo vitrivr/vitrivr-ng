@@ -1,8 +1,8 @@
 import {ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import {MatCheckboxChange, MatSliderChange} from "@angular/material";
-import {QueryChange, QueryService} from "../core/queries/query.service";
-import {WeightedFeatureCategory} from "../shared/model/results/weighted-feature-category.model";
-import {MediaType} from "../shared/model/media/media-type.model";
+import {QueryChange, QueryService} from "../../core/queries/query.service";
+import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
+import {MediaType} from "../../shared/model/media/media-type.model";
 import {Observable} from "rxjs/Observable";
 
 @Component({

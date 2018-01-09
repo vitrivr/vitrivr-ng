@@ -9,7 +9,7 @@ export type FeatureCategories =
     "localfeatures_fast" |
     "asr" |
     "ocr" |
-    "tags" |
+    "selection" |
     "meta" |
     "hpcpaverage" |
     "audiomatching" |
