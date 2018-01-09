@@ -15,6 +15,9 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
 
+    /** Local reference to the subscription of the SelectionService. */
+    protected _selectionServiceSubscription;
+
     /** Local reference to the data source holding the query results.*/
     protected _dataSource : Observable<T> = Observable.empty();
 
@@ -48,12 +51,13 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     }
 
     /**
-     * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
+     * Lifecycle Hook (onInit): Subscribes to the QueryService and the SelectionService
      */
     public ngOnInit(): void {
         this._queryServiceSubscription = this._queryService.observable
             .filter(msg => ["STARTED", "ENDED", "ERROR", "CLEAR"].indexOf(msg) > -1)
             .subscribe((msg) => this.onQueryStateChange(msg));
+        this._selectionServiceSubscription = this._selectionService.subscribe(s => this._cdr.markForCheck());
         this.subscribe(this._queryService.results);
     }
 
@@ -63,6 +67,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     public ngOnDestroy() {
         this._queryServiceSubscription.unsubscribe();
         this._queryServiceSubscription = null;
+        this._selectionServiceSubscription.unsubscribe();
+        this._selectionServiceSubscription = null
     }
 
     /**
