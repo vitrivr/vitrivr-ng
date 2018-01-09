@@ -102,7 +102,7 @@ export class QueryService {
      * @param {number} count Number of segments on each side.
      */
     public findNeighboringSegments(segmentId: string, count?: number) {
-        if (!this._running && this.results) {
+        if (this.results) {
             this._api.send(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
             return true;
         } else {
