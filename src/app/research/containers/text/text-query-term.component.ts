@@ -22,7 +22,8 @@ export class TextQueryTermComponent {
     public readonly categories: [string, string][] = [
         ['ocr', 'Text on Screen'],
         ['asr', 'Subtitles'],
-        ['metadata', 'Metadata'],
+        ['meta', 'Metadata'],
+        ['tagsft', 'Tags'],
     ];
 
     /**
