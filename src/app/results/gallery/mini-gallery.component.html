@@ -8,7 +8,7 @@
             <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
 
             <div  *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
-                <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Add '{{tag.name}}' tag" (click)="onTagButtonClicked(segment,tag)" (contextmenu)="onTagButtonRightClicked($event, segment,tag)">
+                <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onTagButtonClicked(segment,tag)" (contextmenu)="onTagButtonRightClicked($event, segment,tag)">
                     <mat-icon [style.color]="selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">album</mat-icon>
                 </button>
             </div>

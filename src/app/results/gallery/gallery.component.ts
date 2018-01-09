@@ -169,7 +169,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
      */
     public onTagButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
         this._selectionService.toggle(segment.segmentId,tag);
-        this._cdr.markForCheck();
     }
 
     /**
@@ -183,7 +182,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
         for (let s of object.segments) {
             this._selectionService.toggle(s.segmentId,tag);
         }
-        this._cdr.markForCheck();
         event.preventDefault();
     }
 
