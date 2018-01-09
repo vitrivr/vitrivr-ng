@@ -129,6 +129,21 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
     }
 
     /**
+     * Invoked when a user right clicks one of the 'Tag' buttons. Toggles all tags for the selected objects.
+     *
+     * @param {Event} event
+     * @param {SegmentScoreContainer} segment The segment that was tagged.
+     * @param {Tag} tag The tag that should be toggled.
+     */
+    public onTagButtonRightClicked(event: Event, segment: SegmentScoreContainer, tag: Tag) {
+        for (let s of segment.objectScoreContainer.segments) {
+            this._selectionService.toggle(s.segmentId,tag);
+        }
+        this._cdr.markForCheck();
+        event.preventDefault();
+    }
+
+    /**
      * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
      *
      * @param {SegmentScoreContainer} segment

@@ -164,13 +164,29 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
     /**
      * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
      *
-     * @param {SegmentScoreContainer} object The segment that was tagged.
+     * @param {SegmentScoreContainer} segment The segment that was tagged.
      * @param {Tag} tag The tag that should be toggled.
      */
     public onTagButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
         this._selectionService.toggle(segment.segmentId,tag);
         this._cdr.markForCheck();
     }
+
+    /**
+     * Invoked when a user right clicks one of the 'Tag' buttons. Toggles all tags for the selected objects.
+     *
+     * @param {Event} event
+     * @param {MediaObjectScoreContainer} object The object that was tagged.
+     * @param {Tag} tag The tag that should be toggled.
+     */
+    public onTagButtonRightClicked(event: Event, object: MediaObjectScoreContainer, tag: Tag) {
+        for (let s of object.segments) {
+            this._selectionService.toggle(s.segmentId,tag);
+        }
+        this._cdr.markForCheck();
+        event.preventDefault();
+    }
+
 
     /**
      * Subscribes to the data exposed by the ResultsContainer.
