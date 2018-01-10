@@ -1,8 +1,8 @@
-import {Injectable} from "@angular/core";
+import {Inject, Injectable} from "@angular/core";
 import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs/Subject";
 
-import {CineastAPI} from "../api/cineast-api.service";
+import {CineastWebSocketFactoryService} from "../api/cineast-web-socket-factory.service";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {QueryStart} from "../../shared/model/messages/interfaces/responses/query-start.interface";
 import {SegmentQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-segment.interface";
@@ -17,6 +17,9 @@ import {NeighboringSegmentQuery} from "../../shared/model/messages/queries/neigh
 import {ReadableQueryConfig} from "../../shared/model/messages/queries/readable-query-config.model";
 import {ConfigService} from "../basics/config.service";
 import {Config} from "../basics/config.model";
+import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
+import {Ping} from "../../shared/model/messages/interfaces/responses/ping.interface";
+import {falseIfMissing} from "protractor/built/util";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -43,19 +46,22 @@ export class QueryService {
     /** Results of a query. May be empty. */
     private _results: ResultsContainer;
 
+    /** The Vitrivr NG configuration as observabl.e */
     private _config: Observable<Config>;
 
     /**
      * Default constructor.
      *
-     * @param _api Reference to the CineastAPI. Gets injected by DI.
+     * @param _api Reference to the CineastWebSocketFactoryService. Gets injected by DI.
+     * @param _config
      */
-    constructor(private _api : CineastAPI, _config: ConfigService) {
-        this._api.observable()
-            .filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg[0]) > -1)
-            .subscribe((msg) => this.onApiMessage(msg[1]));
-        this._config = _config.asObservable();
-        console.log("QueryService is up and running!");
+    constructor(@Inject(CineastWebSocketFactoryService) private _api : CineastWebSocketFactoryService, @Inject(ConfigService) _config: ConfigService) {
+        _api.filter(c => c != null)
+            .map(c => c.socket.filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1))
+            .concatAll().subscribe((msg: Message) =>this.onApiMessage(msg));
+
+       this._config = _config.asObservable();
+       console.log("QueryService is up and running!");
     }
 
     /**
@@ -67,12 +73,9 @@ export class QueryService {
      * @returns {boolean} true if query was issued, false otherwise.
      */
     public findSimilar(query : SimilarityQuery) : boolean {
-        if (!this._running) {
-            this._api.send(query.toJson());
-            return true;
-        } else {
-            return false;
-        }
+        if (this._running) return false;
+        if (!this._api.getValue()) return false;
+        this._api.getValue().send(query.toJson());
     }
 
     /**
@@ -102,12 +105,9 @@ export class QueryService {
      * @param {number} count Number of segments on each side.
      */
     public findNeighboringSegments(segmentId: string, count?: number) {
-        if (this.results) {
-            this._api.send(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
-            return true;
-        } else {
-            return false;
-        }
+        if (!this._results) return false;
+        if (!this._api.getValue()) return false;
+        this._api.getValue().send(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
     }
 
     /**
@@ -121,12 +121,13 @@ export class QueryService {
      */
     public findMoreLikeThis(segmentId: string, categories?: string[]) : boolean {
         if (this._running) return false;
+        if (!this._api.getValue()) return false;
 
         /* Use categories from last query AND the default categories for MLT. */
         this._config.first().subscribe(config => {
             let categories = this._results.features.map(f => f.name);
             config.mlt.filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
-            if (categories.length > 0) this._api.send(new MoreLikeThisQuery(segmentId, categories));
+            if (categories.length > 0) this._api.getValue().send(new MoreLikeThisQuery(segmentId, categories));
         });
 
         return true;
@@ -166,27 +167,26 @@ export class QueryService {
      *
      * @param message
      */
-    private onApiMessage(message: string): void {
-        let parsed = <Message>JSON.parse(message);
-        switch (parsed.messageType) {
+    private onApiMessage(message: Message): void {
+        switch (message.messageType) {
             case "QR_START":
-                let qs = <QueryStart>parsed;
+                let qs = <QueryStart>message;
                 if (!this._results || qs.queryId != this.results.queryId) this.startNewQuery(qs.queryId);
                 break;
             case "QR_OBJECT":
-                let obj = <ObjectQueryResult>parsed;
+                let obj = <ObjectQueryResult>message;
                 if (this._results && this._results.processObjectMessage(obj)) this._subject.next("UPDATED");
                 break;
             case "QR_SEGMENT":
-                let seg = <SegmentQueryResult>parsed;
+                let seg = <SegmentQueryResult>message;
                 if (this._results && this._results.processSegmentMessage(seg)) this._subject.next("UPDATED");
                 break;
             case "QR_SIMILARITY":
-                let sim = <SimilarityQueryResult>parsed;
+                let sim = <SimilarityQueryResult>message;
                 if (this._results && this._results.processSimilarityMessage(sim)) this._subject.next("UPDATED");
                 break;
             case "QR_ERROR":
-                this.errorOccurred(<QueryError>parsed);
+                this.errorOccurred(<QueryError>message);
                 break;
             case "QR_END":
                 this.finalizeQuery();

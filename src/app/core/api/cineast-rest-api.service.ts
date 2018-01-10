@@ -17,12 +17,9 @@ export class CineastRestAPI {
      * @param {ConfigService} _configService
      * @param {HttpClient} _httpClient
      */
-    constructor(@Inject(ConfigService) _configService : ConfigService,
-                @Inject(HttpClient) protected _httpClient: HttpClient) {
-        _configService.observable.subscribe((config) => {
-            if (config.endpoint_http != null) {
-                this._endpoint = config.endpoint_http;
-            }
+    constructor(@Inject(ConfigService) _configService : ConfigService, @Inject(HttpClient) protected _httpClient: HttpClient) {
+        _configService.asObservable().filter(c => c.endpoint_http != null).subscribe((config) => {
+            this._endpoint = config.endpoint_http;
         });
     }
 

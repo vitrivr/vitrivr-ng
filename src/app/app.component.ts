@@ -28,7 +28,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private _configServiceSubscription: Subscription;
 
     /**
-     * Default constructor. Subscribe for PING messages at the CineastAPI.
+     * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
      *
      * @param _queryService
      * @param _configService
