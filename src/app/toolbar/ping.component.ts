@@ -12,7 +12,7 @@ import {Message} from "../shared/model/messages/interfaces/message.interface";
     selector: 'api-status',
     template:`
         <span >
-            <mat-icon style="vertical-align:text-bottom;">{{icon}}</mat-icon>&nbsp;{{latency ? '(' + latency + 'ms)' : ''}}
+            <mat-icon style="vertical-align:text-bottom;">{{icon}}</mat-icon>&nbsp;{{latency < 100000 ? '(' + latency + 'ms)' : "(&#x221e;)"}}
         </span>
     `
 })
@@ -25,7 +25,7 @@ export class PingComponent implements OnInit, OnDestroy {
     private _last : number = 0;
 
     /** Calculated latency. */
-    private _latency: number = 0;
+    private _latency: number = Number.MAX_VALUE;
 
     /** Number of packets in transit. Reset after every response. */
     private _transit: number = 0;
@@ -62,6 +62,7 @@ export class PingComponent implements OnInit, OnDestroy {
             this._api.getValue().send(<Message>{messageType: "PING"});
             if (this._transit > 1) {
                 this._apistatus = "DISCONNECTED";
+                this._latency = Number.MAX_VALUE;
                 this._transit = 0;
             }
         })
