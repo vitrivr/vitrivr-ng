@@ -13,7 +13,7 @@
 <div *ngIf="(mediatypes | async)">
     <h4>Filters</h4>
     <section class="checkbox-group">
-        <mat-checkbox *ngFor="let type of (mediatypes | async)" [name]="type[0]" [checked]="type[1]" labelPosition="before" (change)="onFilterChanged($event)">{{type[0]}}</mat-checkbox>
+        <mat-checkbox *ngFor="let type of (mediatypes | async).entries()" [name]="type[0]" [checked]="type[1]" labelPosition="before" (change)="onFilterChanged($event)">{{type[0]}}</mat-checkbox>
     </section>
 </div>
 

@@ -26,7 +26,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
     private _features : Observable<WeightedFeatureCategory[]> = Observable.empty();
 
     /** An observable for the current results. */
-    private _mediatypes : Observable<IterableIterator<[MediaType,boolean]>> = Observable.empty();
+    private _mediatypes : Observable<Map<MediaType,boolean>> = Observable.empty();
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
@@ -103,7 +103,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
      *
      * @return {MediaType[]}
      */
-    get mediatypes(): Observable<IterableIterator<[MediaType,boolean]>> {
+    get mediatypes(): Observable<Map<MediaType,boolean>> {
         return this._mediatypes
     }
 

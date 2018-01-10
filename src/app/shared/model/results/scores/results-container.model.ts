@@ -47,7 +47,7 @@ export class ResultsContainer {
     private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
 
     /** A subject that can be used to publish changes to the results. */
-    private _results_types_subject: BehaviorSubject<IterableIterator<[MediaType,boolean]>> = new BehaviorSubject(this._mediatypes.entries());
+    private _results_types_subject: BehaviorSubject<Map<MediaType,boolean>> = new BehaviorSubject(this._mediatypes);
 
     /**
      * Constructor for ResultsContainer.
@@ -119,7 +119,7 @@ export class ResultsContainer {
     /**
      *
      */
-    get mediatypesAsObservable(): Observable<IterableIterator<[MediaType,boolean]>> {
+    get mediatypesAsObservable(): Observable<Map<MediaType,boolean>> {
         return this._results_types_subject.asObservable();
     }
 
@@ -255,7 +255,7 @@ export class ResultsContainer {
         this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show).filter(v => this._mediatypes.get(v.objectScoreContainer.mediatype) == true));
         this._results_objects_subject.next(this._results_objects.filter(v => v.show).filter(v => this._mediatypes.get(v.mediatype) == true));
         this._results_features_subject.next(this._features);
-        this._results_types_subject.next(this._mediatypes.entries());
+        this._results_types_subject.next(this._mediatypes);
     }
 
 
