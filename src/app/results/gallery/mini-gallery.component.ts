@@ -148,13 +148,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * @param {SegmentScoreContainer} segment
      */
     public onSubmitButtonClicked(segment: SegmentScoreContainer) {
-        this._vbs.submitSegment(segment).catch((e,o) => {
-            this._snackBar.open("Failed to submit segment '" + segment.segmentId + "' to VBS due to an error: " + e.message);
-            console.log(e);
-            return Observable.empty();
-        }).subscribe(s => {
-            this._snackBar.open("Submitted segment '" + segment.segmentId + "' to VBS. Response: " + s.toString(),null, {duration: ConfigService.SNACKBAR_DURATION});
-        });
+        this._vbs.submitSegment(segment).subscribe();
     }
 
     /**

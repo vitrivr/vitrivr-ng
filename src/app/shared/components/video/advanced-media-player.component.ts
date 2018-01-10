@@ -43,8 +43,9 @@ export class AdvancedMediaPlayerComponent {
      * Default constructor.
      *
      * @param {ResolverService} _resolver  Injected service to resolve names of resources.
+     * @param {VbsSubmissionService} _vbs
      */
-    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService, protected _snackBar: MatSnackBar) {}
+    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService) {}
 
     /**
      * Callback that is invoked once the Vg player is ready.
@@ -76,13 +77,7 @@ export class AdvancedMediaPlayerComponent {
      * estimate is calculated using the focus segment.
      */
     public onSubmitPressed() {
-        this._vbs.submit(this.focus, this._api.currentTime).catch((e,o) => {
-            this._snackBar.open("Failed to submit segment '" + this.focus.segmentId + "' to VBS due to an error: " + e.message);
-            console.log(e);
-            return Observable.empty();
-        }).subscribe(s => {
-            this._snackBar.open("Submitted segment '" + this.focus.segmentId + "' to VBS. Response: " + s.toString(),null, {duration: ConfigService.SNACKBAR_DURATION});
-        });
+        this._vbs.submit(this.focus, this._api.currentTime).subscribe();
     }
 
     /**

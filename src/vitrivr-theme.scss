@@ -132,6 +132,20 @@ h4.inverse {
   transform: translate(-50%, -50%)
 }
 
+.snackbar-success {
+  background-color: #0A8A0A;
+  opacity: 0.85;
+}
+
+.snackbar-error {
+  background-color: #B90000;
+  opacity: 0.85;
+}
+
+.snackbar-warning {
+  background-color: #FFA500;
+  opacity: 0.85;
+}
 
 
 .flex-container {
