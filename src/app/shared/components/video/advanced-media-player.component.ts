@@ -5,8 +5,8 @@ import {ResolverService} from "../../../core/basics/resolver.service";
 import {VgAPI} from "videogular2/core";
 import {VbsSubmissionService} from "../../../core/vbs/vbs-submission.service";
 import {Observable} from "rxjs/Observable";
-import {MatSnackBar} from "@angular/material";
-import {ConfigService} from "../../../core/basics/config.service";
+import {Subject} from "rxjs/Subject";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 declare var VTTCue;
 
@@ -37,7 +37,7 @@ export class AdvancedMediaPlayerComponent {
     private _api: VgAPI;
 
     /** The internal VgAPI reference used to interact with the media player. */
-    private _track: TextTrack;
+    private _track: BehaviorSubject<TextTrack>;
 
     /**
      * Default constructor.
@@ -45,7 +45,9 @@ export class AdvancedMediaPlayerComponent {
      * @param {ResolverService} _resolver  Injected service to resolve names of resources.
      * @param {VbsSubmissionService} _vbs
      */
-    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService) {}
+    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService) {
+        this._track = new BehaviorSubject<TextTrack>(null)
+    }
 
     /**
      * Callback that is invoked once the Vg player is ready.
@@ -57,14 +59,14 @@ export class AdvancedMediaPlayerComponent {
 
         /* Adds a text track and creates a cue per segment in the media object. */
         this._api.addTextTrack("metadata", "Segments");
-        this._track = this._api.textTracks[0];
         for (let segment of this.mediaobject.segments) {
             let cue = new VTTCue(segment.starttime, segment.endtime, "Segment: " + segment.segmentId);
             cue.id = segment.segmentId;
-            this._track.addCue(cue)
+            this._api.textTracks[0].addCue(cue)
         }
 
         /* Add callback for when the loading of media starts. */
+        this._track.next(this._api.textTracks[0]);
         this._api.getDefaultMedia().subscriptions.loadStart.subscribe(() => this.seekToFocusPosition())
     }
 
@@ -92,7 +94,7 @@ export class AdvancedMediaPlayerComponent {
      *
      * @return {TextTrack}
      */
-    get track(): TextTrack {
+    get track(): Observable<TextTrack> {
         return this._track;
     }
 
@@ -102,7 +104,7 @@ export class AdvancedMediaPlayerComponent {
      *
      * @return {boolean}
      */
-    get showsubmit(): boolean {
+    get showVbsSubmit(): boolean {
         return this.mediaobject.mediatype == 'VIDEO' && this._vbs.isOn;
     }
 }
