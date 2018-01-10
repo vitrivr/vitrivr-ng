@@ -6,6 +6,7 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {ConfigService} from "../basics/config.service";
 import {Observable} from "rxjs/Observable";
 import {VbsSequenceLoggerService} from "./vbs-sequence-logger.service";
+import {MatSnackBar} from "@angular/material";
 
 /**
  * This service orchestrates similarity queries using the Cineast API (WebSocket). The service is responsible for
@@ -25,7 +26,7 @@ export class VbsSubmissionService {
      * @param {MetadataLookupService} _metadata
      * @param {HttpClient} _http
      */
-    constructor(_config: ConfigService, private _metadata: MetadataLookupService, private _http: HttpClient, private _logger: VbsSequenceLoggerService) {
+    constructor(_config: ConfigService, private _metadata: MetadataLookupService, private _http: HttpClient, private _logger: VbsSequenceLoggerService, private _snackBar: MatSnackBar) {
         _config.asObservable().subscribe(c => {
             this._endpoint = c.vbsEndpoint;
             this._team = c.vbsTeam;
@@ -60,12 +61,22 @@ export class VbsSubmissionService {
                     .set('team', this._team)
                     .set('frame', String(VbsSubmissionService.timeToFrame(time, s)))
                     .set('shot', String(segment.mediaSegment.sequenceNumber));
-                if (this._logger.isEmpty()) {
-                    //params.set('iseq', this._logger.sequence);
-                    //this._logger.clear();
-                }
                 return this._http.get(this._endpoint, {responseType: 'text', params: params})
-            });
+            })
+            .catch((e,o) => {
+                this._snackBar.open("Failed to submit segment '" + segment.segmentId + "' to VBS due to a HTTP error: " + e.message, null,{duration: ConfigService.SNACKBAR_DURATION, panelClass: "snackbar-error"});
+                return Observable.empty();
+            })
+            .do(msg => {
+                if (typeof msg == 'string') {
+                    let snackbarClass = "snackbar-warning";
+                    if (msg.indexOf("Correct") > -1) {
+                        snackbarClass = "snackbar-success"
+                    }
+                    this._snackBar.open("Submitted segment '" + segment.segmentId + "' to VBS. Response: " + msg,null, {duration: ConfigService.SNACKBAR_DURATION, panelClass: snackbarClass})
+                }
+            })
+            .first();
     }
 
     /**
