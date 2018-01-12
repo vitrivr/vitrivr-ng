@@ -41,8 +41,7 @@ export class ResearchComponent implements OnInit {
      * SimilarityQuery message, and submitting that message to the QueryService.
      */
     public onSearchClicked() {
-        let query = new SimilarityQuery(this.containers);
-        this._queryService.findSimilar(query);
+        this._queryService.findSimilar(this.containers);
     }
 
     /**

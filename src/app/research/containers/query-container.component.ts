@@ -2,7 +2,7 @@ import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
 import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-type.interface";
 import {ConfigService} from "../../core/basics/config.service";
-import {Config} from "../../core/basics/config.model";
+import {Config} from "../../shared/model/config/config.model";
 import {Observable} from "rxjs/Observable";
 
 @Component({

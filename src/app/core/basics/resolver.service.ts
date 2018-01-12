@@ -3,7 +3,7 @@ import {ConfigService} from "./config.service";
 import {MediaObject} from "../../shared/model/media/media-object.model";
 import {MediaSegment} from "../../shared/model/media/media-segment.model";
 import {MediaType, MediaTypes} from "../../shared/model/media/media-type.model";
-import {Config} from "./config.model";
+import {Config} from "../../shared/model/config/config.model";
 
 /**
  * This class can be used to resolve paths / URL's to media-objects (original file)

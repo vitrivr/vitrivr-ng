@@ -16,6 +16,7 @@ import {ConfigService} from "../core/basics/config.service";
 import {Observable} from "rxjs/Observable";
 import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario";
 import {SelectionService} from "../core/selection/selection.service";
+import {Config} from "../shared/model/config/config.model";
 
 
 type DisplayType = "NONE" | "SCENARIO" | "GALLERY" | "HISTORY";
@@ -109,7 +110,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (this.canBeStarted()) {
             this._evaluationset.current.start();
             this.saveEvaluation();
-            this._snackBar.open('Evaluation started. Happy searching!', null, {duration: ConfigService.SNACKBAR_DURATION});
+            this._snackBar.open('Evaluation started. Happy searching!', null, {duration: Config.SNACKBAR_DURATION});
         }
     }
 
@@ -120,7 +121,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (this.canBeAborted()) {
             this._evaluationset.current.abort();
             this.saveEvaluation();
-            this._snackBar.open('Scenario aborted. You can restart it any time.', null, {duration: ConfigService.SNACKBAR_DURATION});
+            this._snackBar.open('Scenario aborted. You can restart it any time.', null, {duration: Config.SNACKBAR_DURATION});
         }
     }
 
@@ -131,9 +132,9 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         if (this.canBeCompleted() && this._evaluationset.current.state == EvaluationState.RankingResults) {
             this._evaluationset.current.complete();
             if (!this._evaluationset.next()) {
-                this._snackBar.open('Evaluation completed. Thank you for participating!', null, {duration: ConfigService.SNACKBAR_DURATION});
+                this._snackBar.open('Evaluation completed. Thank you for participating!', null, {duration: Config.SNACKBAR_DURATION});
             } else {
-                this._snackBar.open('Next scenario is up ahead!', null, {duration: ConfigService.SNACKBAR_DURATION});
+                this._snackBar.open('Next scenario is up ahead!', null, {duration: Config.SNACKBAR_DURATION});
                 this.queryService.clear();
             }
             this.saveEvaluation();
@@ -148,7 +149,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
             this._dataSource.first().map(m => {
                 if (this._evaluationset.current.accept(this._queryService.results.features, m) == EvaluationState.RankingResults) {
                     this.saveEvaluation();
-                    this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: ConfigService.SNACKBAR_DURATION});
+                    this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: Config.SNACKBAR_DURATION});
                 }
             });
         }
@@ -165,7 +166,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                  },
                 (error) => {
                     console.log(error);
-                    this._snackBar.open("Failed to create downloadable results (JSZip error)." , null, {duration: ConfigService.SNACKBAR_DURATION});
+                    this._snackBar.open("Failed to create downloadable results (JSZip error)." , null, {duration: Config.SNACKBAR_DURATION});
                 }
         )});
     }
@@ -409,7 +410,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
             () => {},
             (error) => {
                 console.log(error);
-                this._snackBar.open('Could not persist the recent changes to the evaluation. Proceed with caution...', null, {duration: ConfigService.SNACKBAR_DURATION});
+                this._snackBar.open('Could not persist the recent changes to the evaluation. Proceed with caution...', null, {duration: Config.SNACKBAR_DURATION});
             }
         );
     }
@@ -428,11 +429,11 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
                     return this.startNewEvaluation(template, participant, name)
             }).first().subscribe(
                 () => {
-                    this._snackBar.open("Evaluation started successfully. Welcome '" + this._evaluationset.name + "'! Thank you for participating.", null, {duration: ConfigService.SNACKBAR_DURATION});
+                    this._snackBar.open("Evaluation started successfully. Welcome '" + this._evaluationset.name + "'! Thank you for participating.", null, {duration: Config.SNACKBAR_DURATION});
                 },
                 (error) => {
                     console.log(error);
-                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
                         this._location.back();
                     });
                 }
@@ -440,17 +441,17 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         } else if (participant) {
             this.loadRunningEvaluation(participant).first().subscribe(
                 () => {
-                    this._snackBar.open("Evaluation resumed successfully. Welcome back'" + this._evaluationset.name + "'!", null, {duration: ConfigService.SNACKBAR_DURATION});
+                    this._snackBar.open("Evaluation resumed successfully. Welcome back'" + this._evaluationset.name + "'!", null, {duration: Config.SNACKBAR_DURATION});
                 },
                 (error) => {
                     console.log(error);
-                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
                         this._location.back();
                     });
                 }
             );
         } else {
-            this._snackBar.open('Could not load the evaluation module because some information is missing.', null, {duration: ConfigService.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+            this._snackBar.open('Could not load the evaluation module because some information is missing.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
                 this._location.back();
             });
         }
