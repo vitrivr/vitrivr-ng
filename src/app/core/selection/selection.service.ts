@@ -22,10 +22,9 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
      */
     constructor(_config: ConfigService) {
         super(new Map());
-
         _config.subscribe(c => {
             this._available.clear();
-            c.tags.forEach(t => this.registerTag(t))
+            c.get<Tag[]>('tags').forEach(t => this.registerTag(t))
         });
     }
 

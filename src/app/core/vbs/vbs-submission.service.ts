@@ -7,6 +7,7 @@ import {ConfigService} from "../basics/config.service";
 import {Observable} from "rxjs/Observable";
 import {VbsSequenceLoggerService} from "./vbs-sequence-logger.service";
 import {MatSnackBar} from "@angular/material";
+import {Config} from "../../shared/model/config/config.model";
 
 /**
  * This service orchestrates similarity queries using the Cineast API (WebSocket). The service is responsible for
@@ -23,13 +24,16 @@ export class VbsSubmissionService {
     /**
      * Constructor for VbsSubmissionService.
      *
+     * @param {ConfigService} _config
      * @param {MetadataLookupService} _metadata
      * @param {HttpClient} _http
+     * @param {VbsSequenceLoggerService} _logger
+     * @param {MatSnackBar} _snackBar
      */
     constructor(_config: ConfigService, private _metadata: MetadataLookupService, private _http: HttpClient, private _logger: VbsSequenceLoggerService, private _snackBar: MatSnackBar) {
         _config.asObservable().subscribe(c => {
-            this._endpoint = c.vbsEndpoint;
-            this._team = c.vbsTeam;
+            this._endpoint = c.get<string>('vbs.endpoint');
+            this._team =  c.get<string>('vbs.team');
         });
     }
 
@@ -64,7 +68,7 @@ export class VbsSubmissionService {
                 return this._http.get(this._endpoint, {responseType: 'text', params: params})
             })
             .catch((e,o) => {
-                this._snackBar.open("Failed to submit segment '" + segment.segmentId + "' to VBS due to a HTTP error: " + e.message, null,{duration: ConfigService.SNACKBAR_DURATION, panelClass: "snackbar-error"});
+                this._snackBar.open("Failed to submit segment '" + segment.segmentId + "' to VBS due to a HTTP error: " + e.message, null,{duration: Config.SNACKBAR_DURATION, panelClass: "snackbar-error"});
                 return Observable.empty();
             })
             .do(msg => {
@@ -73,7 +77,7 @@ export class VbsSubmissionService {
                     if (msg.indexOf("Correct") > -1) {
                         snackbarClass = "snackbar-success"
                     }
-                    this._snackBar.open("Submitted segment '" + segment.segmentId + "' to VBS. Response: " + msg,null, {duration: ConfigService.SNACKBAR_DURATION, panelClass: snackbarClass})
+                    this._snackBar.open("Submitted segment '" + segment.segmentId + "' to VBS. Response: " + msg,null, {duration: Config.SNACKBAR_DURATION, panelClass: snackbarClass})
                 }
             })
             .first();
