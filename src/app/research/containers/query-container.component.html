@@ -2,27 +2,27 @@
 <mat-card style="margin:10px;padding:10px;">
     <mat-card-header style="margin-bottom:15px;">
         <div fxLayout="row" fxLayoutWrap fxLayoutGap="15px" style="width:90%;">
-            <button *ngIf="(config|async).querySettings.options.image" (click)="onToggleButtonClicked('IMAGE')" class="icon-button" matTooltip="Toggle image query term">
+            <button *ngIf="(config|async).get('query.options.image')" (click)="onToggleButtonClicked('IMAGE')" class="icon-button" matTooltip="Toggle image query term">
                 <mat-icon [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">panorama</mat-icon>
             </button>
 
-            <button *ngIf="(config|async).querySettings.options.audio" (click)="onToggleButtonClicked('AUDIO')" class="icon-button" matTooltip="Toggle audio query term">
+            <button *ngIf="(config|async).get('query.options.audio')" (click)="onToggleButtonClicked('AUDIO')" class="icon-button" matTooltip="Toggle audio query term">
                 <mat-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</mat-icon>
             </button>
 
-            <button *ngIf="(config|async).querySettings.options.model3d" (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" matTooltip="Toggle 3D query term">
+            <button *ngIf="(config|async).get('query.options.moded3d')" (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" matTooltip="Toggle 3D query term">
                 <mat-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</mat-icon>
             </button>
 
-            <button *ngIf="(config|async).querySettings.options.motion" (click)="onToggleButtonClicked('MOTION')" class="icon-button" matTooltip="Toggle motion query term">
+            <button *ngIf="(config|async).get('query.options.motion')" (click)="onToggleButtonClicked('MOTION')" class="icon-button" matTooltip="Toggle motion query term">
                 <mat-icon [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">directions_run</mat-icon>
             </button>
 
-            <button *ngIf="(config|async).querySettings.options.text" (click)="onToggleButtonClicked('TEXT')" class="icon-button" matTooltip="Toggle text query term">
+            <button *ngIf="(config|async).get('query.options.text')" (click)="onToggleButtonClicked('TEXT')" class="icon-button" matTooltip="Toggle text query term">
                 <mat-icon [attr.class]="containerModel.hasTerm('TEXT') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">text_fields</mat-icon>
             </button>
 
-            <button *ngIf="(config|async).querySettings.options.tag" (click)="onToggleButtonClicked('TAG')" class="icon-button" matTooltip="Toggle tag query term">
+            <button *ngIf="(config|async).get('query.options.tag')" (click)="onToggleButtonClicked('TAG')" class="icon-button" matTooltip="Toggle tag query term">
                 <mat-icon [attr.class]="containerModel.hasTerm('TAG') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">label</mat-icon>
             </button>
         </div>
