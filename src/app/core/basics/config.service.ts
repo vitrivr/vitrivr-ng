@@ -67,7 +67,13 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @return {Observable<Config>}
      */
     private loadFromDatabase(): Observable<Config> {
-        return Observable.fromPromise(this._configTable.get(Config.DB_KEY)).filter(r => r).map((r: Object) => Config.deserialize(r)).first();
+        return Observable.fromPromise(this._configTable.get(Config.DB_KEY)).map((r: Object) => {
+            if (r) {
+                return Config.deserialize(r)
+            } else {
+                return null;
+            }
+        }).first();
     }
 
     /**
@@ -76,7 +82,13 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @return {Observable<Config>}
      */
     private loadFromServer(): Observable<Config> {
-        return this._http.get('config.json?r=' + UUIDGenerator.suid()).map((r: Object) => Config.deserialize(r)).first();
+        return this._http.get('config.json?r=' + UUIDGenerator.suid()).map((r: Object) => {
+            if (r) {
+                return Config.deserialize(r)
+            } else {
+                return null;
+            }
+        }).first();
     }
 
     /**
