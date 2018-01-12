@@ -28,13 +28,12 @@ export class AppComponent {
      * @param _snackBar
      */
     constructor(_queryService : QueryService, _configService: ConfigService, private _snackBar: MatSnackBar) {
-        this._loading = _queryService.observable.map((msg: QueryChange) => {
+        this._loading = _queryService.observable.filter(msg => ["STARTED","ENDED","ERROR"].indexOf(msg) > -1).map((msg: QueryChange) => {
             switch (msg) {
                 case "STARTED":
                     return true;
                 case "ENDED":
                 case "ERROR":
-                default:
                     return false;
         }});
         this._config = _configService.asObservable();
