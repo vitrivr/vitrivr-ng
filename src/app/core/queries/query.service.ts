@@ -16,10 +16,10 @@ import {ResultsContainer} from "../../shared/model/results/scores/results-contai
 import {NeighboringSegmentQuery} from "../../shared/model/messages/queries/neighboring-segment-query.model";
 import {ReadableQueryConfig} from "../../shared/model/messages/queries/readable-query-config.model";
 import {ConfigService} from "../basics/config.service";
-import {Config} from "../basics/config.model";
-import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
-import {Ping} from "../../shared/model/messages/interfaces/responses/ping.interface";
-import {falseIfMissing} from "protractor/built/util";
+import {Config} from "../../shared/model/config/config.model";
+import {Hint} from "../../shared/model/messages/interfaces/requests/query-config.interface";
+import {FeatureCategories} from "../../shared/model/results/feature-categories.model";
+import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -46,7 +46,7 @@ export class QueryService {
     /** Results of a query. May be empty. */
     private _results: ResultsContainer;
 
-    /** The Vitrivr NG configuration as observabl.e */
+    /** The Vitrivr NG configuration as observable */
     private _config: Observable<Config>;
 
     /**
@@ -69,13 +69,15 @@ export class QueryService {
      *
      * Note: Queries can only be started if no query is currently ongoing.
      *
-     * @param query The SimilarityQuery message.
+     * @param containers The list of QueryContainers used to create the query.
      * @returns {boolean} true if query was issued, false otherwise.
      */
-    public findSimilar(query : SimilarityQuery) : boolean {
+    public findSimilar(containers : QueryContainerInterface[]) : boolean {
         if (this._running) return false;
         if (!this._api.getValue()) return false;
-        this._api.getValue().send(query.toJson());
+        this._config.first().subscribe(config => {
+            this._api.getValue().send(new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+        });
     }
 
     /**
@@ -88,11 +90,7 @@ export class QueryService {
       qq.addTerm("IMAGE");
       qq.getTerm("IMAGE").data = dataUrl;
       qq.getTerm("IMAGE").setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
-
-      let query = new SimilarityQuery(
-        [qq]
-      );
-      return this.findSimilar(query);
+      return this.findSimilar([qq]);
     }
 
     /**
@@ -126,8 +124,10 @@ export class QueryService {
         /* Use categories from last query AND the default categories for MLT. */
         this._config.first().subscribe(config => {
             let categories = this._results.features.map(f => f.name);
-            config.mlt.filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
-            if (categories.length > 0) this._api.getValue().send(new MoreLikeThisQuery(segmentId, categories));
+            config.get<FeatureCategories[]>('mlt').filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
+            if (categories.length > 0) {
+                this._api.getValue().send(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+            }
         });
 
         return true;
