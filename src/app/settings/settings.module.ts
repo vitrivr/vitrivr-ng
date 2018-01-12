@@ -7,8 +7,9 @@ import {MaterialModule} from "../material.module";
 import {SettingsComponent} from "./settings.component";
 import {SelectionManagementComponent} from "./selection/selection-management.component";
 import {PreferencesComponent} from "./preferences/preferences.component";
+import {FlexLayoutModule} from "@angular/flex-layout";
 @NgModule({
-    imports:      [ MaterialModule, BrowserModule, FormsModule],
+    imports:      [ MaterialModule, BrowserModule, FormsModule, FlexLayoutModule],
     declarations: [ RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent ],
     exports:      [ RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, ]
 })
