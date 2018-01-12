@@ -8,10 +8,5 @@ export interface QueryContainerInterface {
     addTerm(type: QueryTermType): boolean;
     removeTerm(type: QueryTermType): boolean;
     hasTerm(type: QueryTermType): boolean;
-    getTerm(type: QueryTermType): QueryTermInterface;
-
-    /**
-     * Returns a JSON object representing the current QueryContainerInterface instance.
-     */
-    toJson(): any;
+    terms: QueryTermInterface[];
 }
