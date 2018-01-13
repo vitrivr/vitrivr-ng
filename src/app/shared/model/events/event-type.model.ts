@@ -5,6 +5,7 @@ export enum EventType {
     QUERY_MODEL3D,
     QUERY_FULLTEXT,
     QUERY_TAG,
+    MLT,
     CLEAR,
     REFINEMENT,
     FILTERING,
