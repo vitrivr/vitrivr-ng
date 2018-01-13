@@ -5,13 +5,10 @@ import {ConfigService} from "./core/basics/config.service";
 import {Config} from "./shared/model/config/config.model";
 import {Observable} from "rxjs/Observable";
 @Component({
-    styles : [`
-        mat-sidenav {
-            width: 300px;
-        }
-    `],
+    moduleId: module.id,
     selector: 'vitrivr',
-    templateUrl: 'app.component.html'
+    templateUrl: 'app.component.html',
+    styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
     /** Observable that returns the most recent application configuration. */
