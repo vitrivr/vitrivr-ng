@@ -1,0 +1,14 @@
+export enum EventType {
+    QUERY_IMAGE,
+    QUERY_AUDIO,
+    QUERY_MOTION,
+    QUERY_MODEL3D,
+    QUERY_FULLTEXT,
+    QUERY_TAG,
+    CLEAR,
+    REFINEMENT,
+    FILTERING,
+    HIGHLIGHTING,
+    BROWSING,
+    VIEWING
+}
