@@ -34,13 +34,15 @@
 </div>
 
 <mat-sidenav-container #sidenavcontainer fullscreen style="margin-top:75px;">
-    <mat-sidenav #querysidenav mode="side" [opened]="true" class="vitrivr-sidenav left">
+    <mat-sidenav #querysidenav mode="side" [opened]="true" class="left">
         <research></research>
     </mat-sidenav>
 
-    <router-outlet> </router-outlet>
+    <mat-sidenav-content>
+        <router-outlet> </router-outlet>
+    </mat-sidenav-content>
 
-    <mat-sidenav #featuressidenav mode="side" position="end" class="vitrivr-sidenav right">
+    <mat-sidenav #featuressidenav mode="side" position="end" class="right">
         <settings></settings>
     </mat-sidenav>
 </mat-sidenav-container>
