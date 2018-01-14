@@ -79,7 +79,7 @@ export class AdvancedMediaPlayerComponent {
      * estimate is calculated using the focus segment.
      */
     public onSubmitPressed() {
-        this._vbs.submit(this.focus, this._api.currentTime).subscribe();
+        this._vbs.submit(this.focus, this._api.currentTime);
     }
 
     /**
@@ -102,9 +102,9 @@ export class AdvancedMediaPlayerComponent {
      * Returns true, if the submit (to VBS) button should be displayed and false otherwise. This depends on the configuration and
      * the media type of the object.
      *
-     * @return {boolean}
+     * @return {Observable<boolean>}
      */
-    get showVbsSubmit(): boolean {
-        return this.mediaobject.mediatype == 'VIDEO' && this._vbs.isOn;
+    get showVbsSubmitButton(): Observable<boolean> {
+        return this._vbs.isOn.map(v => v && this.mediaobject.mediatype == 'VIDEO');
     }
 }

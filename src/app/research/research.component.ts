@@ -2,7 +2,12 @@ import {Component, HostListener, OnInit} from '@angular/core';
 import {QueryService} from "../core/queries/query.service";
 import {QueryContainerInterface} from "../shared/model/queries/interfaces/query-container.interface";
 import {QueryContainer} from "../shared/model/queries/query-container.model";
-import {SimilarityQuery} from "../shared/model/messages/queries/similarity-query.model";
+import {EventBusService} from "../core/basics/event-bus.service";
+import {ContextKey, InteractionEventComponent} from "../shared/model/events/interaction-event-component.model";
+import {InteractionEventType} from "../shared/model/events/interaction-event-type.model";
+import {InteractionEvent} from "../shared/model/events/interaction-event.model";
+import {Observable} from "rxjs/Observable";
+
 
 @Component({
     moduleId: module.id,
@@ -17,10 +22,12 @@ export class ResearchComponent implements OnInit {
     private _lastEnter: number = 0;
 
     /**
-     * Constructor for ResearchComponent. Injects the globel QueryService instance.
-     * @param _queryService QueryService instance (Singleton)
+     * Constructor for ResearchComponent. Injects the gloal QueryService and EventBusService instance.
+     *
+     * @param _queryService QueryService instance (Singleton) used to issue queries.
+     * @param _eventBus EventBusService instance (Singleton) used to publish user interaction information.
      */
-    constructor(private _queryService: QueryService) { }
+    constructor(private _queryService: QueryService, private _eventBus: EventBusService) {}
 
     /**
      * Lifecycle Callback (OnInit): Adds a new QueryTermContainer.
@@ -42,6 +49,36 @@ export class ResearchComponent implements OnInit {
      */
     public onSearchClicked() {
         this._queryService.findSimilar(this.containers);
+        Observable.from(this.containers).flatMap(c => c.terms).map(t => {
+           let context: Map<ContextKey,any> = new Map();
+           context.set("q:categories", t.categories);
+           switch (t.type) {
+                case "IMAGE":
+                    return new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context);
+                case "AUDIO":
+                    return new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context);
+                case "MOTION":
+                    return new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context);
+                case "MODEL3D":
+                    return new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context);
+                case "TEXT":
+                    context.set("q:value", t.data);
+                    return new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context);
+                case "TAG":
+                    context.set("q:value", t.data);
+                    return new InteractionEventComponent(InteractionEventType.QUERY_TAG, context);
+            }
+        }).bufferCount(Number.MIN_SAFE_INTEGER).subscribe(c => this._eventBus.publish(new InteractionEvent(...c)))
+    }
+
+    /**
+     * Clears all results and resets query terms.
+     */
+    public onClearAllClicked() {
+        this._queryService.clear();
+        this.containers.length = 0;
+        this.addQueryTermContainer();
+        this._eventBus.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.CLEAR)));
     }
 
     /**
@@ -71,14 +108,5 @@ export class ResearchComponent implements OnInit {
         if ( event.keyCode == 113) {
             this.onClearAllClicked();
         }
-    }
-
-    /**
-     * Clears all results and resets query terms.
-     */
-    public onClearAllClicked() {
-        this._queryService.clear();
-        this.containers.length = 0;
-        this.addQueryTermContainer();
     }
 }

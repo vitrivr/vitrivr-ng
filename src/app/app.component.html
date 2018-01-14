@@ -1,7 +1,7 @@
 <mat-toolbar color="primary">
     <img src="../assets/images/vitrivr_logo.png">
-    <span class="spacer-flex"></span>
 
+    <span class="spacer-flex"></span>
 
     <button mat-icon-button (click)="querysidenav.toggle()" matTooltip="Toggle query sidebar"><mat-icon>search</mat-icon></button>
 
@@ -26,11 +26,14 @@
     <button mat-icon-button  (click)="featuressidenav.toggle()" matTooltip="Toggle query refinement sidebar"><mat-icon>storage</mat-icon></button>
 
     <span class="spacer-flex"></span>
-    <api-status><mat-icon>av timer</mat-icon></api-status>
+
+    <api-status>
+        <mat-icon>av timer</mat-icon>
+    </api-status>
 </mat-toolbar>
 
 <div>
-    <mat-progress-bar mode="query" [attr.color]="'accent'" *ngIf="(loading|async) == true"></mat-progress-bar>
+    <mat-progress-bar mode="query" [attr.color]="'accent'" *ngIf="(loading|async)"></mat-progress-bar>
 </div>
 
 <mat-sidenav-container #sidenavcontainer fullscreen style="margin-top:75px;">

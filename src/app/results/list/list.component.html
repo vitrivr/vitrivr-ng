@@ -4,19 +4,19 @@
     <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
     <div class="list">
-        <div *ngFor="let mediaobject of (dataSource | async | OrderByScorePipe); trackBy: trackByFunction" class="object" draggable="true" fxLayout="row" fxLayoutWrap fxLayoutGap="4px">
-            <div *ngFor="let segment of mediaobject.segments | OrderBySegmentPipe" class="{{segment.marked ? 'segment marked' : 'segment'}}" (mouseenter)="focus = segment" (mouseleave)="focus = null" [style.background]="backgroundForSegment(segment)">
+        <div *ngFor="let mediaobject of (dataSource | async | OrderByScorePipe); trackBy: trackByFunction" class="object"  fxLayout="row" fxLayoutWrap fxLayoutGap="4px">
+            <div *ngFor="let segment of mediaobject.segments | OrderBySegmentPipe" class="{{segment.marked ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, mediaobject)" [style.background]="backgroundForSegment(segment)">
 
                 <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
 
-                <div  *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
-                    <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onTagButtonClicked(segment,tag)" (contextmenu)="onTagButtonRightClicked($event, segment,tag)">
+                <div *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
+                    <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(segment,tag)" (contextmenu)="onHighlightButtonRightClicked($event, segment,tag)">
                         <mat-icon [style.color]="selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">album</mat-icon>
                     </button>
                 </div>
 
                 <div *ngIf="inFocus(segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
-                    <button *ngIf="showsubmit(segment)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
+                    <button *ngIf="(showVbsSubmitButton(segment) | async)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
                         <mat-icon>send</mat-icon>
                     </button>
 

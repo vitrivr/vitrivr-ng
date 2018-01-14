@@ -4,17 +4,17 @@
     <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
     <div class="mini-gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="4px" fxLayoutAlign="space-between start">
-        <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of dataSource | async | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background]="backgroundForSegment(segment)">
+        <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of dataSource | async | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, segment.objectScoreContainer)" [style.background]="backgroundForSegment(segment)">
             <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
 
             <div  *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
-                <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onTagButtonClicked(segment,tag)" (contextmenu)="onTagButtonRightClicked($event, segment,tag)">
+                <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(segment,tag)" (contextmenu)="onHighlightButtonRightClicked($event, segment,tag)">
                     <mat-icon [style.color]="selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">album</mat-icon>
                 </button>
             </div>
 
             <div *ngIf="inFocus(segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
-                <button *ngIf="showVbsSubmitButton(segment)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
+                <button *ngIf="(showVbsSubmitButton(segment) | async)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
                     <mat-icon>send</mat-icon>
                 </button>
 

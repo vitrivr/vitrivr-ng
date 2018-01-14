@@ -4,6 +4,10 @@ import {QueryChange, QueryService} from "../../core/queries/query.service";
 import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
 import {MediaType} from "../../shared/model/media/media-type.model";
 import {Observable} from "rxjs/Observable";
+import {EventBusService} from "../../core/basics/event-bus.service";
+import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
+import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
+import {InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
 
 @Component({
     moduleId: module.id,
@@ -36,9 +40,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * in the refinement.
      *
      * @param _cdr Reference to the ChangeDetector (Angular JS)
-     * @param _queryService Reference to the QueryService instance.
+     * @param _queryService Reference to the QueryService singleton instance.
+     * @param _eventBusService Reference to the EventBusService singleton instance.
      */
-    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService) {}
+    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService, private _eventBus: EventBusService) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
@@ -80,7 +85,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onFilterChanged(event: MatCheckboxChange) {
         if (this._queryService.results) {
-            this._queryService.results.toggleMediatype(<MediaType>event.source.name, event.source.checked)
+            this._queryService.results.toggleMediatype(<MediaType>event.source.name, event.source.checked);
+            this._eventBus.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
         }
     }
 
@@ -94,7 +100,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
     public onValueChanged(feature: WeightedFeatureCategory, event: MatSliderChange) {
         if (this._queryService.results) {
             feature.weight = event.value;
-            this._queryService.results.rerank()
+            this._queryService.results.rerank();
+            this._eventBus.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.REFINE)));
         }
     }
 

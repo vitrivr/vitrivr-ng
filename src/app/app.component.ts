@@ -1,9 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import {QueryChange, QueryService,} from "./core/queries/query.service";
 import {MatSnackBar} from "@angular/material";
 import {ConfigService} from "./core/basics/config.service";
 import {Config} from "./shared/model/config/config.model";
 import {Observable} from "rxjs/Observable";
+import {EventBusService} from "./core/basics/event-bus.service";
 @Component({
     moduleId: module.id,
     selector: 'vitrivr',
@@ -20,11 +21,11 @@ export class AppComponent {
     /**
      * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
      *
-     * @param _queryService
-     * @param _configService
-     * @param _snackBar
+     * @param _queryService Reference to the singleton QueryService.
+     * @param _configService Reference to the singleton ConfigService.
+     * @param _eventBusService Reference to the singleton EventBusService.
      */
-    constructor(_queryService : QueryService, _configService: ConfigService, private _snackBar: MatSnackBar) {
+    constructor(_queryService : QueryService, _configService: ConfigService, private _eventBusService: EventBusService) {
         this._loading = _queryService.observable.filter(msg => ["STARTED","ENDED","ERROR"].indexOf(msg) > -1).map((msg: QueryChange) => {
             switch (msg) {
                 case "STARTED":
@@ -37,16 +38,18 @@ export class AppComponent {
     }
 
     /**
+     * Getter for the observable config attribute.
      *
-     * @return {ConfigService}
+     * @return {Observable<Config>}
      */
     get config(): Observable<Config> {
         return this._config;
     }
 
     /**
+     * Getter for the observable loading attribute.
      *
-     * @return {ConfigService}
+     * @return {Observable<boolean>}
      */
     get loading(): Observable<boolean> {
         return this._loading;

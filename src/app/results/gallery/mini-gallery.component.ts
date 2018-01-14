@@ -5,17 +5,16 @@ import {QueryService} from "../../core/queries/query.service";
 import {ResolverService} from "../../core/basics/resolver.service";
 import {Router} from "@angular/router";
 import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
-import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
-import {FeatureDetailsComponent} from "../feature-details.component";
+import {MatDialog, MatSnackBar} from "@angular/material";
 import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
-import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segment-drag-container.model";
-import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
 import {VbsSubmissionService} from "../../core/vbs/vbs-submission.service";
 import {Observable} from "rxjs/Observable";
-import {ConfigService} from "../../core/basics/config.service";
 import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {SelectionService} from "../../core/selection/selection.service";
-import {Tag} from "../../core/selection/tag.model";
+import {EventBusService} from "../../core/basics/event-bus.service";
+import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
+import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
+import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
 
 @Component({
     moduleId: module.id,
@@ -31,24 +30,26 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
     /**
      * Default constructor.
      *
-     * @param _queryService
-     * @param _selectionService
+     * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
+     * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
+     * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
+     * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
+     * @param _router The Router used for navigation
+     * @param _snackBar The MatSnackBar component used to display the SnackBar.
      * @param _resolver
-     * @param _router
-     * @param _snackBar
      * @param _dialog
      * @param _vbs
      */
     constructor(_cdr: ChangeDetectorRef,
                 _queryService : QueryService,
                 _selectionService: SelectionService,
+                _eventBusService: EventBusService,
+                _router: Router,
+                _snackBar: MatSnackBar,
                 protected _resolver: ResolverService,
-                protected _router: Router,
-                protected _snackBar: MatSnackBar,
                 protected _dialog: MatDialog,
-                protected _vbs: VbsSubmissionService,
-                protected _selection: SelectionService) {
-        super(_cdr, _queryService, _selectionService);
+                protected _vbs: VbsSubmissionService) {
+        super(_cdr, _queryService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**
@@ -68,33 +69,6 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      */
     public inFocus(segment: SegmentScoreContainer) {
         return this._focus == segment;
-    }
-
-    /**
-     * Invoked whenever a user clicks on the object details button. Triggers a transition to the ObjectdetailsComponent.
-     *
-     * @param segment SegmentScoreContainer for which details should be displayed.
-     */
-    public onDetailsButtonClicked(segment: SegmentScoreContainer) {
-        this._router.navigate(['/mediaobject/' + segment.objectId]);
-    }
-
-    /**
-     * Invoked whenever a user clicks on the MLT (= MoreLikeThis) button. Triggers a MLT query with the QueryService.
-     *
-     * @param segment SegmentScoreContainer which should be used for MLT.
-     */
-    public onMltButtonClicked(segment: SegmentScoreContainer) {
-        this._queryService.findMoreLikeThis(segment.segmentId);
-    }
-
-    /**
-     * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
-     *
-     * @param {SegmentScoreContainer} segment
-     */
-    public onInformationButtonClicked(segment: SegmentScoreContainer) {
-        this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data : segment, duration: 2500});
     }
 
     /**
@@ -119,36 +93,12 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
     }
 
     /**
-     * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
-     *
-     * @param {SegmentScoreContainer} segment The segment that was tagged.
-     * @param {Tag} tag The tag that should be toggled.
-     */
-    public onTagButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
-        this._selectionService.toggle(segment.segmentId,tag);
-    }
-
-    /**
-     * Invoked when a user right clicks one of the 'Tag' buttons. Toggles all tags for the selected objects.
-     *
-     * @param {Event} event
-     * @param {SegmentScoreContainer} segment The segment that was tagged.
-     * @param {Tag} tag The tag that should be toggled.
-     */
-    public onTagButtonRightClicked(event: Event, segment: SegmentScoreContainer, tag: Tag) {
-        for (let s of segment.objectScoreContainer.segments) {
-            this._selectionService.toggle(s.segmentId,tag);
-        }
-        event.preventDefault();
-    }
-
-    /**
      * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
      *
      * @param {SegmentScoreContainer} segment
      */
     public onSubmitButtonClicked(segment: SegmentScoreContainer) {
-        this._vbs.submitSegment(segment).subscribe();
+        this._vbs.submitSegment(segment);
     }
 
     /**
@@ -158,18 +108,11 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      */
     public onTileClicked(segment: SegmentScoreContainer) {
         let dialogRef = this._dialog.open(QuickViewerComponent, {data: segment});
-    }
 
-    /**
-     * Whenever a tile is dragged the associated segment and the media object that tile represents is converted to
-     * JSON and added to the dataTransfer object of the drag event.
-     *
-     * @param event Drag event
-     * @param segment SegmentScoreContainer that is being dragged.
-     */
-    public onTileDrag(event, segment: SegmentScoreContainer) {
-        event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
-        event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(segment.objectScoreContainer).toJSON());
+        /* Emit an EXAMINE event on the bus. */
+        let context: Map<ContextKey,any> = new Map();
+        context.set("i:mediasegment", segment.segmentId);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
     
     /**
@@ -179,8 +122,8 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * @param {SegmentScoreContainer} segment The segment for which to determine whether the button should be displayed.
      * @return {boolean} True if submit button should be displayed, false otherwise.
      */
-    public showVbsSubmitButton(segment: SegmentScoreContainer): boolean {
-        return segment.objectScoreContainer.mediatype == 'VIDEO' && this._vbs.isOn;
+    public showVbsSubmitButton(segment: SegmentScoreContainer): Observable<boolean> {
+        return this._vbs.isOn.map(v => v && segment.objectScoreContainer.mediatype == 'VIDEO');
     }
 
     /**

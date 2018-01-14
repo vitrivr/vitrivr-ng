@@ -1,17 +1,13 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
 import {QueryService} from "../../core/queries/query.service";
 import {Router} from "@angular/router";
 import {ResolverService} from "../../core/basics/resolver.service";
 import {AbstractResultsViewComponent} from "../abstract-results-view.component";
-import {MatSnackBar, MatSnackBarConfig} from "@angular/material";
-import {FeatureDetailsComponent} from "../feature-details.component";
-import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segment-drag-container.model";
-import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
+import {MatSnackBar} from "@angular/material";
 import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {SelectionService} from "../../core/selection/selection.service";
-import {Tag} from "../../core/selection/tag.model";
-import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
+import {EventBusService} from "../../core/basics/event-bus.service";
 
 @Component({
     moduleId: module.id,
@@ -34,19 +30,21 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
      * Default constructor.
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
-     * @param _queryService
-     * @param _selectionService
+     * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
+     * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
+     * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
+     * @param _router The Router used for navigation
+     * @param _snackBar The MatSnackBar component used to display the SnackBar.
      * @param _resolver
-     * @param _router
-     * @param _snackBar
      */
     constructor(_cdr: ChangeDetectorRef,
                 _queryService : QueryService,
                 _selectionService: SelectionService,
-                protected _resolver: ResolverService,
-                protected _router: Router,
-                protected _snackBar: MatSnackBar) {
-        super(_cdr, _queryService, _selectionService);
+                _eventBusService: EventBusService,
+                _router: Router,
+                _snackBar: MatSnackBar,
+                protected _resolver: ResolverService) {
+        super(_cdr, _queryService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**
@@ -92,18 +90,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
     }
 
     /**
-     * Whenever a tile is dragged, the most representative segment and the media object that tile represents is converted to JSON and
-     * added to the dataTransfer object of the drag event.
-     *
-     * @param event Drag event
-     * @param object MediaObjectScoreContainer that is being dragged.
-     */
-    public onTileDrag(event, object: MediaObjectScoreContainer) {
-        event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(object.representativeSegment).toJSON());
-        event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
-    }
-
-    /**
      * Sets the focus to the provided MediaObjectScoreContainer.
      *
      * @param focus
@@ -122,69 +108,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
     public inFocus(mediaobject: MediaObjectScoreContainer) {
         return this._focus == mediaobject;
     }
-
-    /**
-     * Triggered whenever a user clicks on the object details button. Triggers a
-     * transition to the ObjectdetailsComponent.
-     *
-     * @param object MediaObjectScoreContainer for which details should be displayed.
-     */
-    public onDetailsButtonClicked(object: MediaObjectScoreContainer) {
-        this._router.navigate(['/mediaobject/' + object.objectId]);
-    }
-
-    /**
-     * Triggered whenever a user clicks on the MLT (= MoreLikeThis) button. Triggers
-     * a MLT query with the QueryService.
-     *
-     * @param object MediaObjectScoreContainer which should be used for MLT.
-     */
-    public onMltButtonClicked(object: MediaObjectScoreContainer) {
-        if (object.representativeSegment) {
-            this._queryService.findMoreLikeThis(object.representativeSegment.segmentId);
-        } else {
-            throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
-        }
-    }
-
-    /**
-     * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
-     *
-     *
-     * @param {MediaObjectScoreContainer} object
-     */
-    public onInformationButtonClicked(object: MediaObjectScoreContainer) {
-        if (object.representativeSegment) {
-            this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: object.representativeSegment, duration: 2500});
-        } else {
-            throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
-        }
-    }
-
-    /**
-     * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
-     *
-     * @param {SegmentScoreContainer} segment The segment that was tagged.
-     * @param {Tag} tag The tag that should be toggled.
-     */
-    public onTagButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
-        this._selectionService.toggle(segment.segmentId,tag);
-    }
-
-    /**
-     * Invoked when a user right clicks one of the 'Tag' buttons. Toggles all tags for the selected objects.
-     *
-     * @param {Event} event
-     * @param {MediaObjectScoreContainer} object The object that was tagged.
-     * @param {Tag} tag The tag that should be toggled.
-     */
-    public onTagButtonRightClicked(event: Event, object: MediaObjectScoreContainer, tag: Tag) {
-        for (let s of object.segments) {
-            this._selectionService.toggle(s.segmentId,tag);
-        }
-        event.preventDefault();
-    }
-
 
     /**
      * Subscribes to the data exposed by the ResultsContainer.
