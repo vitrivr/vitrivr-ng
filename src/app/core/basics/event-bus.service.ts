@@ -1,8 +1,13 @@
 import {Injectable} from "@angular/core";
 import {Subject} from "rxjs/Subject";
 import {Observable} from "rxjs/Observable";
-import {InteractionEvent} from "../../shared/model/events/event.model";
+import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 
+/**
+ * This is a simple application singleton used to emmit application wide events usually triggered by some sort of user-interaction. It
+ * is up to the components to emmit the appropriate events. Other services or components within Vitrivr NG may register to those events
+ * and act on them.
+ */
 @Injectable()
 export class EventBusService {
     /** The subject used to publish events to. */
