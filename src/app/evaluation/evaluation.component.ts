@@ -17,6 +17,7 @@ import {Observable} from "rxjs/Observable";
 import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario";
 import {SelectionService} from "../core/selection/selection.service";
 import {Config} from "../shared/model/config/config.model";
+import {EventBusService} from "../core/basics/event-bus.service";
 
 
 type DisplayType = "NONE" | "SCENARIO" | "GALLERY" | "HISTORY";
@@ -47,6 +48,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         _cdr: ChangeDetectorRef,
         _queryService : QueryService,
         _selectionService: SelectionService,
+        _evemtBusService: EventBusService,
         _resolver: ResolverService,
         _router: Router,
         _snackBar: MatSnackBar,
@@ -54,7 +56,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         private _evaluation: EvaluationService,
         private _route: ActivatedRoute,
         private _dialog: MatDialog) {
-        super(_cdr, _queryService,_selectionService,_resolver,_router,_snackBar);
+        super(_cdr, _queryService,_selectionService,_evemtBusService,_router,_snackBar,_resolver);
     }
 
     /**
