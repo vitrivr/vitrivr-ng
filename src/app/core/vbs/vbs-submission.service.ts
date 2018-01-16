@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
 import {MetadataLookupService} from "../lookup/metadata-lookup.service";
 import {VideoUtil} from "../../shared/util/video.util";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {ConfigService} from "../basics/config.service";
 import {Observable} from "rxjs/Observable";
 import {MatSnackBar} from "@angular/material";
@@ -52,9 +52,15 @@ export class VbsSubmissionService {
             if (endpoint && team) {
                 let events = VbsAction.mapEventStream(_eventBusService.observable())
                     .buffer(this._submitSubject)
-                    .map(ev => ev.map(e => e.map(a => a.toString()).reduce((a1,a2) => a1 + a2)).join(","))
-                    .do(seq => this._seqBuffer.push(seq));
-
+                    .map(ev => ev.map(e => e.map(a => a.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR))
+                    .do(seq => {
+                        let now = new Date();
+                        if (seq && seq.length > 0) {
+                            this._seqBuffer.push(seq + "; time " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds())
+                        } else {
+                            this._seqBuffer.push("time " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds());
+                        }
+                    });
                 this._vbsSubscription = this._submitSubject
                     .flatMap(([segment,time]) => {
                         return _metadata.lookup(segment.objectId)
@@ -67,12 +73,14 @@ export class VbsSubmissionService {
                     .withLatestFrom(events,([segment,frame]) => [segment,frame,endpoint,team])
                     .flatMap(([segment,frame,endpoint,team]:[SegmentScoreContainer,number,string,string]) => {
                         let params = new HttpParams().set('video', segment.objectId).set('team', String(team)).set('frame', String(frame));
-                        let iseq = this._seqBuffer.join(",");
+                        let iseq = this._seqBuffer.join(VbsAction.SEPARATOR);
                         if (iseq.length > 0 && iseq.length < 255) {
                             params = params.set('iseq', iseq);
                             return this._http.get(String(endpoint),{responseType: 'text', params: params});
-                        } else if (iseq.length > 255) {
-                            return this._http.post(String(endpoint), {iseq: iseq}, {responseType: 'text', params: params});
+                        } else if (iseq.length >= 255) {
+                            params = params.set('iseq', iseq);
+                            let headers = new HttpHeaders().append("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+                            return this._http.post(String(endpoint), params.toString(), {responseType: 'text', headers: headers});
                         } else {
                             return this._http.get(String(endpoint), {responseType: 'text', params: params});
                         }

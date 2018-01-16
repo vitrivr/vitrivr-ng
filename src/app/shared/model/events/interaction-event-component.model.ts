@@ -6,6 +6,7 @@ export type ContextKey =
     |   "q:value" /* Value  submitted with a query. */
     |   "i:mediaobject" /* The item that was interacted with (mediaobject). */
     |   "i:mediasegment" /* The item that was interacted with (mediasegment). */
+    |   "w:weights" /* The categories and weights after a re-weighting action. */
 
 
 /**
