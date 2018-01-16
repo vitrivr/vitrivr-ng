@@ -88,12 +88,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
         if (!this._queryService.results) return;
 
         /* Filter objects asynchronously. */
-        Observable.create((observer: Observer< Map<MediaType,boolean>>) => {
+        Promise.resolve(this._queryService.results).then((results) => {
             this._queryService.results.toggleMediatype(<MediaType>event.source.name, event.source.checked);
-            observer.next(this._queryService.results.mediatypes);
-        }).subscribe(() => {
             this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
-        })
+        });
     }
 
     /**
@@ -107,14 +105,13 @@ export class RefinementComponent implements OnInit, OnDestroy {
         if (!this._queryService.results) return;
 
         /* Re-rank all objects asynchronously. */
-        Observable.create((observer: Observer<WeightedFeatureCategory[]>) => {
+        Promise.resolve(this._queryService.results).then((results)  => {
             feature.weight = event.value;
             this._queryService.results.rerank();
-            observer.next( this._queryService.results.features);
-        }).subscribe((weights) => {
+
             /* Submit event to EventBus. */
             let categories: Map<ContextKey,WeightedFeatureCategory[]> = new Map();
-            categories.set("w:weights",weights);
+            categories.set("w:weights",results.features);
             this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.REFINE, categories)));
         });
     }
