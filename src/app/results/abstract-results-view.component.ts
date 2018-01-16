@@ -117,14 +117,14 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     /**
      * Triggered whenever a user clicks on the object details button. Triggers a transition to the ObjectdetailsComponent.
      *
-     * @param object MediaObjectScoreContainer for which details should be displayed.
+     * @param segment SegmentScoreContainer for which details should be displayed.
      */
-    public onDetailsButtonClicked(object: MediaObjectScoreContainer) {
-        this._router.navigate(['/mediaobject/' + object.objectId]);
+    public onDetailsButtonClicked(segment: SegmentScoreContainer) {
+        this._router.navigate(['/mediaobject/' + segment.objectScoreContainer.objectId]);
 
         /* Emit an EXAMINE event on the bus. */
         let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediaobject", object.objectId);
+        context.set("i:mediasegment", segment.objectId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
 
