@@ -1,4 +1,4 @@
-<div style="padding:10px;"  (scroll)="onScroll($event)">
+<div style="padding:10px;">
     <p class="background-prompt" *ngIf="!(dataSource | async) && !loading">No results available. Please start a search...</p>
 
     <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
