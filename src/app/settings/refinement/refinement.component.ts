@@ -7,7 +7,8 @@ import {Observable} from "rxjs/Observable";
 import {EventBusService} from "../../core/basics/event-bus.service";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
-import {InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
+import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
+import {Observer} from "rxjs/Observer";
 
 @Component({
     moduleId: module.id,
@@ -43,7 +44,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param _queryService Reference to the QueryService singleton instance.
      * @param _eventBusService Reference to the EventBusService singleton instance.
      */
-    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService, private _eventBus: EventBusService) {}
+    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService, private _eventBusService: EventBusService) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
@@ -84,10 +85,15 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param event
      */
     public onFilterChanged(event: MatCheckboxChange) {
-        if (this._queryService.results) {
+        if (!this._queryService.results) return;
+
+        /* Filter objects asynchronously. */
+        Observable.create((observer: Observer< Map<MediaType,boolean>>) => {
             this._queryService.results.toggleMediatype(<MediaType>event.source.name, event.source.checked);
-            this._eventBus.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
-        }
+            observer.next(this._queryService.results.mediatypes);
+        }).subscribe(() => {
+            this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
+        })
     }
 
     /**
@@ -98,11 +104,19 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param event MatSliderChange event that contains the new value.
      */
     public onValueChanged(feature: WeightedFeatureCategory, event: MatSliderChange) {
-        if (this._queryService.results) {
+        if (!this._queryService.results) return;
+
+        /* Re-rank all objects asynchronously. */
+        Observable.create((observer: Observer<WeightedFeatureCategory[]>) => {
             feature.weight = event.value;
             this._queryService.results.rerank();
-            this._eventBus.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.REFINE)));
-        }
+            observer.next( this._queryService.results.features);
+        }).subscribe((weights) => {
+            /* Submit event to EventBus. */
+            let categories: Map<ContextKey,WeightedFeatureCategory[]> = new Map();
+            categories.set("w:weights",weights);
+            this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.REFINE, categories)));
+        });
     }
 
     /**
