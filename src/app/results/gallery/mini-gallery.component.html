@@ -5,7 +5,7 @@
 
     <div class="mini-gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="4px" fxLayoutAlign="space-between start">
         <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of dataSource | async | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, segment.objectScoreContainer)" [style.background]="backgroundForSegment(segment)">
-            <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
+            <img src="{{_resolver.pathToThumbnail(segment)}}" draggable="false" (click)="onTileClicked(segment)"/>
 
             <div  *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
                 <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(segment,tag)" (contextmenu)="onHighlightButtonRightClicked($event, segment,tag)">
