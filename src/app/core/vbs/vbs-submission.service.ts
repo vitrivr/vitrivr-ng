@@ -19,7 +19,7 @@ import {Subscription} from "rxjs/Subscription";
 @Injectable()
 export class VbsSubmissionService {
     /** The observable used to react to changes to the Vitrivr NG configuration. */
-    private _config: Observable<[string, string]>;
+    private _config: Observable<[string,string, number]>;
 
     /** A buffer of old, already submitted sequences. */
     private _seqBuffer: string[] = [];
@@ -44,21 +44,21 @@ export class VbsSubmissionService {
      */
     constructor(_config: ConfigService, _eventBusService: EventBusService, private _metadata: MetadataLookupService, private _http: HttpClient, private _snackBar: MatSnackBar) {
         this._config = _config.asObservable()
-            .map(c => <[string,string]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.team')]);
+            .map(c => <[string,string, number]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<number>('vbs.toolid')]);
 
 
         /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
-        this._configSubscription = this._config.subscribe(([endpoint, team]) => {
+        this._configSubscription = this._config.subscribe(([endpoint, team, tool]) => {
             if (endpoint && team) {
                 let events = VbsAction.mapEventStream(_eventBusService.observable())
                     .buffer(this._submitSubject)
                     .map(ev => ev.map(e => e.map(a => a.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR))
                     .do(seq => {
-                        let now = new Date();
+                        let time = `time ${Date.now()}`;
                         if (seq && seq.length > 0) {
-                            this._seqBuffer.push(seq + "; time " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds());
+                            this._seqBuffer.push(seq + VbsAction.SEPARATOR + time);
                         } else {
-                            this._seqBuffer.push("time " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds());
+                            this._seqBuffer.push(time);
                         }
                     });
                 this._vbsSubscription = this._submitSubject
@@ -70,10 +70,10 @@ export class VbsSubmissionService {
                             .defaultIfEmpty(VideoUtil.bestEffortFPS(segment))
                             .first();
                     },([segment,time], fps) => [segment,VbsSubmissionService.timeToFrame(time,fps)])
-                    .withLatestFrom(events,([segment,frame]) => [segment,frame,endpoint,team])
-                    .flatMap(([segment,frame,endpoint,team]:[SegmentScoreContainer,number,string,string]) => {
+                    .withLatestFrom(events,([segment,frame]) => [segment,frame])
+                    .flatMap(([segment,frame]:[SegmentScoreContainer,number]) => {
                         let params = new HttpParams().set('video', segment.objectId).set('team', String(team)).set('frame', String(frame));
-                        let iseq = this._seqBuffer.join(VbsAction.SEPARATOR);
+                        let iseq = VbsAction.TOOL_ID_PREFIX + tool + VbsAction.SEPARATOR + this._seqBuffer.join(VbsAction.SEPARATOR);
                         if (iseq.length > 0 && iseq.length < 255) {
                             params = params.set('iseq', iseq);
                             return this._http.get(String(endpoint),{responseType: 'text', params: params});

@@ -43,7 +43,10 @@ export class Config {
         },
         vbs : {
             /* The team number within the VBS contest. */
-            team: null,
+            teamid: null,
+
+            /* The tool number within the VBS context (each instance should have its own ID). */
+            toolid: null,
 
             /* URL to the VBS endpoint. */
             endpoint: null

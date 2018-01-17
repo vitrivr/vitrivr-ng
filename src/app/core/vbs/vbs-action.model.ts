@@ -22,7 +22,10 @@ export enum VbsActionType {
 export class VbsAction {
 
     /** Separator used to connect two VbsActions. */
-    public static SEPARATOR = "; ";
+    public static SEPARATOR = ";";
+
+    /** Prefix used for the tool ID. */
+    public static TOOL_ID_PREFIX = "VTR";
 
     /**
      * Default constructor for VbsAction.
