@@ -38,7 +38,7 @@ export type QueryChange = "STARTED" | "ENDED" | "ERROR" | "UPDATED" | "FEATURE" 
 @Injectable()
 export class QueryService {
     /** Flag indicating whether a query is currently being executed. */
-    private _running : boolean = false;
+    private _running : number = 0;
 
     /** Subject that allows Observers to subscribe to changes emitted from the QueryService. */
     private _subject : Subject<QueryChange> = new Subject();
@@ -67,13 +67,13 @@ export class QueryService {
     /**
      * Starts a new similarity query. Success is indicated by the return value.
      *
-     * Note: Queries can only be started if no query is currently ongoing.
+     * Note: Similarity queries can only be started if no query is currently running.
      *
      * @param containers The list of QueryContainers used to create the query.
      * @returns {boolean} true if query was issued, false otherwise.
      */
     public findSimilar(containers : QueryContainerInterface[]) : boolean {
-        if (this._running) return false;
+        if (this._running > 0) return false;
         if (!this._api.getValue()) return false;
         this._config.first().subscribe(config => {
             this._api.getValue().send(new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
@@ -81,16 +81,28 @@ export class QueryService {
     }
 
     /**
+     * Starts a new MoreLikeThis query. Success is indicated by the return value.
      *
-     * @param {string} dataUrl
-     * @return {boolean}
+     * Note: Similarity queries can only be started if no query is currently running.
+     *
+     * @param segmentId The ID of the segment that should serve as example.
+     * @param categories Optional list of category names that should be used for More-Like-This.
+     * @returns {boolean} true if query was issued, false otherwise.
      */
-    public findSimilarImageByDataUrl(dataUrl: string) : boolean {
-      let qq = new QueryContainer();
-      qq.addTerm("IMAGE");
-      qq.getTerm("IMAGE").data = dataUrl;
-      qq.getTerm("IMAGE").setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
-      return this.findSimilar([qq]);
+    public findMoreLikeThis(segmentId: string, categories?: string[]) : boolean {
+        if (this._running > 0) return false;
+        if (!this._api.getValue()) return false;
+
+        /* Use categories from last query AND the default categories for MLT. */
+        this._config.first().subscribe(config => {
+            let categories = this._results.features.map(f => f.name);
+            config.get<FeatureCategories[]>('mlt').filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
+            if (categories.length > 0) {
+                this._api.getValue().send(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+            }
+        });
+
+        return true;
     }
 
     /**
@@ -109,31 +121,6 @@ export class QueryService {
     }
 
     /**
-     * Starts a new MoreLikeThis query. Success is indicated by the return value.
-     *
-     * Note: Queries can only be started if no query is currently ongoing.
-     *
-     * @param segmentId The ID of the segment that should serve as example.
-     * @param categories Optional list of category names that should be used for More-Like-This.
-     * @returns {boolean} true if query was issued, false otherwise.
-     */
-    public findMoreLikeThis(segmentId: string, categories?: string[]) : boolean {
-        if (this._running) return false;
-        if (!this._api.getValue()) return false;
-
-        /* Use categories from last query AND the default categories for MLT. */
-        this._config.first().subscribe(config => {
-            let categories = this._results.features.map(f => f.name);
-            config.get<FeatureCategories[]>('mlt').filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
-            if (categories.length > 0) {
-                this._api.getValue().send(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
-            }
-        });
-
-        return true;
-    }
-
-    /**
      * Getter for results.
      *
      * @return {ResultsContainer}
@@ -148,7 +135,7 @@ export class QueryService {
      * @return {boolean}
      */
     get running(): boolean {
-        return this._running;
+        return this._running > 0;
     }
 
     /**
@@ -171,7 +158,7 @@ export class QueryService {
         switch (message.messageType) {
             case "QR_START":
                 let qs = <QueryStart>message;
-                if (!this._results || qs.queryId != this.results.queryId) this.startNewQuery(qs.queryId);
+                this.startNewQuery(qs.queryId);
                 break;
             case "QR_OBJECT":
                 let obj = <ObjectQueryResult>message;
@@ -195,17 +182,14 @@ export class QueryService {
     }
 
     /**
-     * Starts a new RunningQueries in response to a QR_START message. Stores the
-     * queryId for further reference and purges the similarities and segment_to_object_map.
+     * Updates the local state in response to a QR_START message. This method triggers an observable change in the QueryService class.
      *
-     * This method triggers an observable change in the QueryService class.
-     *
-     * @param id ID of the new query. Used to associate responses.
+     * @param queryId ID of the new query. Used to associate responses.
      */
-    private startNewQuery(id : string) {
+    private startNewQuery(queryId : string) {
         /* Start the actual query. */
-        this._results = new ResultsContainer(id);
-        this._running = true;
+        if (!this._results || (this._results && this._results.queryId != queryId)) this._results = new ResultsContainer(queryId);
+        this._running += 1;
         this._subject.next("STARTED" as QueryChange);
     }
 
@@ -215,7 +199,7 @@ export class QueryService {
      * This method triggers an observable change in the QueryService class.
      */
     private finalizeQuery() {
-        this._running = false;
+        this._running -= 1;
         this._subject.next("ENDED" as QueryChange);
     }
 
@@ -225,7 +209,7 @@ export class QueryService {
      * This method triggers an observable change in the QueryService class.
      */
     private errorOccurred(message: QueryError) {
-        this._running = false;
+        this._running -= 1;
         this._subject.next("ERROR" as QueryChange);
         console.log("QueryService received error: " + message.message);
     }
@@ -239,7 +223,7 @@ export class QueryService {
         /* If query is still running, stop it. */
         if (this._running) {
             this._subject.next("ENDED" as QueryChange);
-            this._running = false;
+            this._running = 0;
         }
 
         /* Complete the ResultsContainer and release it. */
