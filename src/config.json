@@ -6,9 +6,10 @@
     "protocol_ws": "ws",
     "ping_interval": 10000
   },
+
   "resources": {
-    "host_thumbnails" : "http://127.0.0.1/vitrivr/thumbnails/",
-    "host_object": "http://127.0.0.1/vitrivr/objects/",
+    "host_thumbnails" : "http://127.0.0.1/thumbnails/:t/:o/:s:x",
+    "host_objects": "http://127.0.0.1/objects/:t/:n",
     "suffix_default":".jpg",
     "suffix": {
       "IMAGE": "png",
@@ -18,7 +19,7 @@
   "evaluation": {
     "active":false
   },
-  "mlt" : ["globalcolor", "localcolor", "quantized", "edge"],
+  "mlt" : ["globalcolor", "localcolor", "edge"],
   "query": {
     "options": {
       "image": true,

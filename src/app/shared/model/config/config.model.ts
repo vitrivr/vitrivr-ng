@@ -33,7 +33,7 @@ export class Config {
         },
         resources : {
             host_thumbnails: window.location.protocol + "//" + window.location.hostname + "/vitrivr/thumbnails",  /** Path / URL to location where media object thumbnails will be stored. */
-            host_object: window.location.protocol + "//" + window.location.hostname + "/vitrivr/objects", /** Path / URL to location where media object's will be stored. */
+            host_objects: window.location.protocol + "//" + window.location.hostname + "/vitrivr/objects", /** Path / URL to location where media object's will be stored. */
             suffix_default: ".jpg", /** Default suffix for thumbnails. */
             suffix: {} /** Per-mediatype suffix definition for thumbnails. */
         },
@@ -221,7 +221,7 @@ export class Config {
      * @deprecated
      */
     get host_object(): string {
-        return this._config.resources.host_object;
+        return this._config.resources.host_objects;
     }
 
     /**
