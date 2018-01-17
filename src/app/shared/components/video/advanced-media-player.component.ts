@@ -67,7 +67,7 @@ export class AdvancedMediaPlayerComponent {
 
         /* Add callback for when the loading of media starts. */
         this._track.next(this._api.textTracks[0]);
-        this._api.getDefaultMedia().subscriptions.loadStart.subscribe(() => this.seekToFocusPosition())
+        this._api.getDefaultMedia().subscriptions.loadedData.first().subscribe(() => this.seekToFocusPosition());
     }
 
     /**
