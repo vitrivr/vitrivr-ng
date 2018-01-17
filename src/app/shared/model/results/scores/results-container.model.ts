@@ -172,7 +172,7 @@ export class ResultsContainer {
 
             /* Get unique MediaObjectScore container and apply MediaObject. */
             let mosc = this.uniqueMediaObjectScoreContainer(object.objectId);
-            mosc.mediaObject = object;
+            mosc.object = object;
         }
 
         /* Publish a change. */

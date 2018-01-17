@@ -21,7 +21,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     private _segments : SegmentScoreContainer[] = [];
 
     /** Reference to the actual MediaObject this container belongs to. */
-    private _mediaObject? : MediaObject;
+    private _object? : MediaObject;
 
     /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet. */
     private _cache : Map<string,Array<[WeightedFeatureCategory,Similarity]>> = new Map();
@@ -82,10 +82,19 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     /**
      * Setter for media object.
      *
-     * @param value
+     * @param value New value.
      */
-    set mediaObject(value: MediaObject) {
-        if (this._objectId == value.objectId) this._mediaObject = value;
+    set object(value: MediaObject) {
+        if (this._objectId == value.objectId) this._object = value;
+    }
+
+    /**
+     * Getter for the media object
+     *
+     * @return {MediaObject | undefined}
+     */
+    get object() {
+        return this._object
     }
 
     /**
@@ -103,7 +112,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @return {string}
      */
     get name() : string {
-        return this._mediaObject.name;
+        return this._object.name;
     }
 
     /**
@@ -112,14 +121,14 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @return {string}
      */
     get mediatype() : MediaType {
-        return this._mediaObject.mediatype;
+        return this._object.mediatype;
     }
 
     /**
      * Getter for the media object's path.
      */
     get path() : string {
-        return this._mediaObject.path;
+        return this._object.path;
     }
 
     /**
@@ -129,7 +138,7 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      * @returns {boolean} true if it can be displayed, false otherwise.
      */
     get show() : boolean {
-        return (this._mediaObject && this._segmentScores.size > 0);
+        return (this._object && this._segmentScores.size > 0);
     }
 
     /**

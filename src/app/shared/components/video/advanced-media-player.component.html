@@ -22,10 +22,10 @@
 
     </vg-controls>
 
-    <video id="videoplayer" *ngIf="mediaobject.mediatype == 'VIDEO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
+    <video id="videoplayer" *ngIf="mediaobject.mediatype == 'VIDEO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObjectForContainer(mediaobject)}}">
     </video>
 
-    <audio id="audioplayer" *ngIf="mediaobject.mediatype == 'AUDIO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
+    <audio id="audioplayer" *ngIf="mediaobject.mediatype == 'AUDIO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObjectForContainer(mediaobject)}}">
     </audio>
 </vg-player>
 

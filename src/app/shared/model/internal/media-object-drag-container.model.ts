@@ -63,6 +63,6 @@ export class MediaObjectDragContainer {
      * @return {MediaObjectDragContainer} Resulting MediaObjectDragContainer.
      */
     public static fromScoreContainer(container: MediaObjectScoreContainer): MediaObjectDragContainer {
-        return new MediaObjectDragContainer(container.mediatype, container.mediaObject);
+        return new MediaObjectDragContainer(container.mediatype, container.object);
     }
 }

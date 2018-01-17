@@ -3,6 +3,8 @@ import {ConfigService} from "./config.service";
 import {MediaType, MediaTypes} from "../../shared/model/media/media-type.model";
 import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
 import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
+import {MediaObject} from "../../shared/model/media/media-object.model";
+import {MediaSegment} from "../../shared/model/media/media-segment.model";
 
 /**
  * Definition of the possible tokens that can be used to build the URL.
@@ -68,11 +70,19 @@ export class ResolverService {
     }
 
     /**
-     * Resolves and returns the absolute path / URL to a media object.
+     * Resolves and returns the absolute path / URL to a MediaObjectScoreContainer.
+     *
+     * @param object The MediaObjectScoreContainer for which to return the path.
+     */
+    public pathToObjectForContainer(object: MediaObjectScoreContainer) {
+       return this.pathToObject(object.object)
+    }
+    /**
+     * Resolves and returns the absolute path / URL to a MediaObject.
      *
      * @param object The MediaObject for which to return the path.
      */
-    public pathToObject(object: MediaObjectScoreContainer) {
+    public pathToObject(object: MediaObject) {
         let rep = {};
         rep[Token.OBJECT_ID] = object.objectId;
         rep[Token.OBJECT_NAME] = object.name;
@@ -88,14 +98,25 @@ export class ResolverService {
      *
      * @param segment The SegmentScoreContainer for which to resolve the thumbnail.
      */
-    public pathToThumbnail(segment: SegmentScoreContainer) {
+    public pathToThumbnailForContainer(segment: SegmentScoreContainer) {
+        return this.pathToThumbnail(segment.objectScoreContainer.object, segment.mediaSegment);
+    }
+
+    /**
+     * Resolves and returns the absolute path / URL to the thumbnail of a given combination of MediaSegment and MediaObject.
+     *
+     * @param {MediaObject} object The MediaObject for which to return the path / URL
+     * @param {MediaSegment} segment The MediaSegment for which to return the path / URL
+     * @return {string}
+     */
+    public pathToThumbnail(object: MediaObject, segment: MediaSegment) {
         let rep = {};
-        rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
-        rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;
-        rep[Token.OBJECT_PATH] = segment.objectScoreContainer.path;
-        rep[Token.OBJECT_TYPE_LOWER] = segment.objectScoreContainer.mediatype.toLowerCase();
-        rep[Token.OBJECT_TYPE_UPPER] = segment.objectScoreContainer.mediatype;
-        rep[Token.SUFFIX] = this.suffices.get(segment.objectScoreContainer.mediatype);
+        rep[Token.OBJECT_ID] = object.objectId;
+        rep[Token.OBJECT_NAME] = object.name;
+        rep[Token.OBJECT_PATH] = object.path;
+        rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
+        rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
+        rep[Token.SUFFIX] = this.suffices.get(object.mediatype);
         rep[Token.SEGMENT_ID] = segment.segmentId;
         return this.host_thumbnails.replace(this._regex, (match) => rep[match] || match);
     }

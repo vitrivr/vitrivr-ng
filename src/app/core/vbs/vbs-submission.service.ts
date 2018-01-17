@@ -56,7 +56,7 @@ export class VbsSubmissionService {
                     .do(seq => {
                         let now = new Date();
                         if (seq && seq.length > 0) {
-                            this._seqBuffer.push(seq + "; time " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds())
+                            this._seqBuffer.push(seq + "; time " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds());
                         } else {
                             this._seqBuffer.push("time " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds());
                         }

@@ -104,7 +104,7 @@ export class ObjectdetailsComponent {
      *
      */
     public onImageViewerClicked(object: MediaObjectScoreContainer) {
-        let imagePath = this._resolver.pathToObject(object);
+        let imagePath = this._resolver.pathToObjectForContainer(object);
         let dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
         dialogRef.afterClosed().first().subscribe((result) => {});
     }
