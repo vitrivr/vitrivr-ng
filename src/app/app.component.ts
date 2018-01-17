@@ -1,6 +1,5 @@
-import {Component, HostListener} from '@angular/core';
+import {Component} from '@angular/core';
 import {QueryChange, QueryService,} from "./core/queries/query.service";
-import {MatSnackBar} from "@angular/material";
 import {ConfigService} from "./core/basics/config.service";
 import {Config} from "./shared/model/config/config.model";
 import {Observable} from "rxjs/Observable";
@@ -27,13 +26,8 @@ export class AppComponent {
      */
     constructor(_queryService : QueryService, _configService: ConfigService, private _eventBusService: EventBusService) {
         this._loading = _queryService.observable.filter(msg => ["STARTED","ENDED","ERROR"].indexOf(msg) > -1).map((msg: QueryChange) => {
-            switch (msg) {
-                case "STARTED":
-                    return true;
-                case "ENDED":
-                case "ERROR":
-                    return false;
-        }});
+            return _queryService.running;
+        });
         this._config = _configService.asObservable();
     }
 
