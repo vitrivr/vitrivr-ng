@@ -74,31 +74,31 @@ export class VbsSubmissionService {
                     .flatMap(([segment,frame]:[SegmentScoreContainer,number]) => {
                         let params = new HttpParams().set('video', segment.objectId).set('team', String(team)).set('frame', String(frame));
                         let iseq = VbsAction.TOOL_ID_PREFIX + tool + VbsAction.SEPARATOR + this._seqBuffer.join(VbsAction.SEPARATOR);
+                        let observable = null;
                         if (iseq.length > 0 && iseq.length < 255) {
                             params = params.set('iseq', iseq);
-                            return this._http.get(String(endpoint),{responseType: 'text', params: params});
+                            observable = this._http.get(String(endpoint),{responseType: 'text', params: params});
                         } else if (iseq.length >= 255) {
                             params = params.set('iseq', iseq);
                             let headers = new HttpHeaders().append("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
-                            return this._http.post(String(endpoint), params.toString(), {responseType: 'text', headers: headers});
+                            observable = this._http.post(String(endpoint), params.toString(), {responseType: 'text', headers: headers})
                         } else {
-                            return this._http.get(String(endpoint), {responseType: 'text', params: params});
+                            observable = this._http.get(String(endpoint), {responseType: 'text', params: params});
+                        }
+                        return observable.catch((err) => Observable.of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`));
+                    })
+                    .map((msg: string) => {
+                        if (msg.indexOf("Correct") > -1) {
+                            return [msg,"snackbar-success"];
+                        }else if (msg.indexOf("Failed") > -1) {
+                            return [msg,"snackbar-error"];
+                        } else {
+                            return [msg,"snackbar-warning"];
                         }
                     })
-                    .catch((e,message) => {
-                        this._snackBar.open("Failed to submit segment to VBS due to a HTTP error: " + e.message, null,{duration: Config.SNACKBAR_DURATION, panelClass: "snackbar-error"});
-                        return Observable.empty();
-                    })
-                    .subscribe((message) => {
-                        if (typeof message == 'string') {
-                            let snackbarClass = "snackbar-warning";
-                            if (message.indexOf("Correct") > -1) {
-                                snackbarClass = "snackbar-success"
-                            }
-                            this._snackBar.open("Submitted segment to VBS. Response: " + message,null, {duration: Config.SNACKBAR_DURATION, panelClass: snackbarClass})
-                        }
-                    })
-
+                    .subscribe(([msg,clazz]) => {
+                        this._snackBar.open(msg,null, {duration: Config.SNACKBAR_DURATION, panelClass: clazz});
+                    });
             } else if (this._vbsSubscription != null) {
                 this._vbsSubscription.unsubscribe();
                 this._vbsSubscription = null;
