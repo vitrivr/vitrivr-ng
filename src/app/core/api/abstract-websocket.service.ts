@@ -158,7 +158,7 @@ export abstract class AbstractWebsocketService {
      * @param error
      */
     protected onSocketError(error : any) {
-        console.log("Error occurred with socket to '" + this._url + "':" + error);
+        console.log("Error occurred with socket to '" + this._url + "':" + JSON.stringify(error));
         this._status = "ERROR";
         this._socket = null;
         if (this.reestablish) this.dispatchTimer();
