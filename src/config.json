@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "10.34.58.44",
+    "host" : "localhost",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
@@ -8,8 +8,8 @@
   },
 
   "resources": {
-    "host_thumbnails" : "http://10.34.58.44/vitrivr/thumbnails/",
-    "host_object": "http://10.34.58.44/vitrivr/objects/",
+    "host_thumbnails" : "http://localhost/vitrivr/thumbnails/",
+    "host_object": "http://localhost/vitrivr/objects/",
     "suffix_default":".jpg",
     "suffix": {
       "IMAGE": "png",
@@ -17,7 +17,7 @@
     }
   },
   "vbs": {
-    "active":true,
+    "active":false,
     "team" : 1,
     "endpoint": "http://10.34.58.37:12345/submit"
   },
