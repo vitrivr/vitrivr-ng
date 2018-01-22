@@ -20,7 +20,8 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "vitrivr-theme.css"
+        "vitrivr-theme.css",
+        "../node_modules/videogular2/fonts/videogular.css"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",

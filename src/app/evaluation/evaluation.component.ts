@@ -4,7 +4,7 @@ import {EvaluationEvent} from "../shared/model/evaluation/evaluation-event";
 import {EvaluationState} from "../shared/model/evaluation/evaluation-state";
 import {ResolverService} from "../core/basics/resolver.service";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
-import {MdSnackBar, MdDialog, MdDialogConfig} from "@angular/material";
+import {MatSnackBar, MatDialog, MatDialogConfig} from "@angular/material";
 import {EvaluationTemplate} from "../shared/model/evaluation/evaluation-template";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {EvaluationSet} from "../shared/model/evaluation/evaluation-set";
@@ -47,11 +47,11 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         _queryService : QueryService,
         _resolver: ResolverService,
         _router: Router,
-        _snackBar: MdSnackBar,
+        _snackBar: MatSnackBar,
         private _location: Location,
         private _evaluation: EvaluationService,
         private _route: ActivatedRoute,
-        private _dialog: MdDialog) {
+        private _dialog: MatDialog) {
         super(_cdr,_queryService,_resolver,_router,_snackBar);
     }
 
@@ -187,7 +187,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     public onScenarioClick() {
         if (!this._evaluationset) return;
-        let config = new MdDialogConfig();
+        let config = new MatDialogConfig();
         config.width='500px';
         config.data = this.currentScenario;
         this._dialog.open(ScenarioDetailsDialogComponent, config);

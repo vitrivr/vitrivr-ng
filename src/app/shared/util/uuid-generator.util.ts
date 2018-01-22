@@ -20,7 +20,9 @@ export class UUIDGenerator {
     }
 
     /**
+     * Generates a new, short UUID and returns it.
      *
+     * @return {string}
      */
     public static suid() {
         let d = new Date().getTime();

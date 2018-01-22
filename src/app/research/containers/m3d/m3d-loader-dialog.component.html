@@ -1,18 +1,18 @@
-<md-toolbar color="primary">
-    <button md-icon-button>
-        <md-icon>rotate_left</md-icon>
+<mat-toolbar color="primary">
+    <button mat-icon-button>
+        <mat-icon>rotate_left</mat-icon>
     </button>
 
     <span class="spacer-flex"></span>
 
-    <button md-icon-button (click)="onLoadFilePressed()">
-        <md-icon>file_upload</md-icon>
+    <button mat-icon-button (click)="onLoadFilePressed()">
+        <mat-icon>file_upload</mat-icon>
     </button>
 
-    <button md-icon-button (click)="onSavePressed()">
-        <md-icon>save</md-icon>
+    <button mat-icon-button (click)="onSavePressed()">
+        <mat-icon>save</mat-icon>
     </button>
-</md-toolbar>
+</mat-toolbar>
 
 <m3d-loader #m3dloader [width]="300" [height]="300" [interaction]="true"></m3d-loader>
 

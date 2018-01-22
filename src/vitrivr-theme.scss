@@ -11,8 +11,8 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue.
-$vitrivr-app-primary: mat-palette($mat-indigo);
-$vitrivr-app-accent:  mat-palette($mat-green);
+$vitrivr-app-primary: mat-palette($mat-indigo, 600);
+$vitrivr-app-accent:  mat-palette($mat-green, 600);
 
 // The warn palette is optional (defaults to red).
 $vitrivr-app-warn:    mat-palette($mat-red);
@@ -287,4 +287,9 @@ hr.fade {
 /** The default highlighted colour for buttons. */
 .highlighted {
   color: nth(nth($vitrivr-app-accent, 5), 2) !important;
+}
+
+/** Fix scrub bar for Videogular2. */
+.scrubBar {
+  position:static !important;
 }

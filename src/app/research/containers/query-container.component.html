@@ -1,36 +1,36 @@
 
-<md-card style="margin:10px;padding:10px;">
-    <md-card-header style="margin-bottom:15px;">
+<mat-card style="margin:10px;padding:10px;">
+    <mat-card-header style="margin-bottom:15px;">
         <div fxLayout="row" fxLayoutWrap fxLayoutGap="15px" style="width:90%;">
-            <button *ngIf="config.queryContainerTypes.image" (click)="onToggleButtonClicked('IMAGE')" class="icon-button" mdTooltip="Toggle image query term">
-                <md-icon [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">panorama</md-icon>
+            <button *ngIf="config.queryContainerTypes.image" (click)="onToggleButtonClicked('IMAGE')" class="icon-button" matTooltip="Toggle image query term">
+                <mat-icon [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">panorama</mat-icon>
             </button>
 
-            <button *ngIf="config.queryContainerTypes.audio" (click)="onToggleButtonClicked('AUDIO')" class="icon-button" mdTooltip="Toggle audio query term">
-                <md-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</md-icon>
+            <button *ngIf="config.queryContainerTypes.audio" (click)="onToggleButtonClicked('AUDIO')" class="icon-button" matTooltip="Toggle audio query term">
+                <mat-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</mat-icon>
             </button>
 
-            <button *ngIf="config.queryContainerTypes.model3d" (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" mdTooltip="Toggle 3D query term">
-                <md-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</md-icon>
+            <button *ngIf="config.queryContainerTypes.model3d" (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" matTooltip="Toggle 3D query term">
+                <mat-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</mat-icon>
             </button>
 
-            <button *ngIf="config.queryContainerTypes.motion" (click)="onToggleButtonClicked('MOTION')" class="icon-button" mdTooltip="Toggle motion query term">
-                <md-icon [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">directions_run</md-icon>
+            <button *ngIf="config.queryContainerTypes.motion" (click)="onToggleButtonClicked('MOTION')" class="icon-button" matTooltip="Toggle motion query term">
+                <mat-icon [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">directions_run</mat-icon>
             </button>
 
-            <button *ngIf="config.queryContainerTypes.text" (click)="onToggleButtonClicked('TEXT')" class="icon-button" mdTooltip="Toggle text query term">
-                <md-icon [attr.class]="containerModel.hasTerm('TEXT') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">text_fields</md-icon>
+            <button *ngIf="config.queryContainerTypes.text" (click)="onToggleButtonClicked('TEXT')" class="icon-button" matTooltip="Toggle text query term">
+                <mat-icon [attr.class]="containerModel.hasTerm('TEXT') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">text_fields</mat-icon>
             </button>
         </div>
         <div style="width:10%;">
-            <button class="icon-button" (click)="onRemoveButtonClicked()" mdTooltip="Remove query container"><md-icon>close</md-icon></button>
+            <button class="icon-button" (click)="onRemoveButtonClicked()" matTooltip="Remove query container"><mat-icon>close</mat-icon></button>
         </div>
-    </md-card-header>
-    <md-card-content>
+    </mat-card-header>
+    <mat-card-content>
         <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
         <qt-audio *ngIf="containerModel.hasTerm('AUDIO')" [audioTerm]="containerModel.getTerm('AUDIO')"></qt-audio>
         <qt-m3d *ngIf="containerModel.hasTerm('MODEL3D')" [m3dTerm]="containerModel.getTerm('MODEL3D')"></qt-m3d>
         <qt-motion *ngIf="containerModel.hasTerm('MOTION')" [motionTerm]="containerModel.getTerm('MOTION')"></qt-motion>
         <qt-text *ngIf="containerModel.hasTerm('TEXT')" [textTerm]="containerModel.getTerm('TEXT')"></qt-text>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>

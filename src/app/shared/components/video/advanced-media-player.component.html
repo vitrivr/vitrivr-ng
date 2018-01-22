@@ -1,0 +1,33 @@
+<vg-player (onPlayerReady)="onPlayerReady($event)" [style.width]="width + 'px'">
+    <vg-controls>
+        <vg-play-pause></vg-play-pause>
+
+        <mat-icon (click)="seekToFocusPosition()" class="player-button" matTooltip="Seek to position of focused segment.">replay</mat-icon>
+
+        <vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>
+
+        <vg-scrub-bar>
+            <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+            <vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
+            <vg-scrub-bar-cue-points *ngIf="track" [vgCuePoints]="track.cues"></vg-scrub-bar-cue-points>
+        </vg-scrub-bar>
+
+        <vg-time-display vgProperty="total" vgFormat="mm:ss"></vg-time-display>
+
+        <vg-mute></vg-mute>
+
+        <vg-fullscreen></vg-fullscreen>
+
+        <mat-icon *ngIf="showsubmit" class="player-button" matTooltip="Submit current position to VBS API." (click)="onSubmitPressed()">send</mat-icon>
+
+    </vg-controls>
+
+    <video id="videoplayer" *ngIf="mediaobject.mediatype == 'VIDEO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
+    </video>
+
+    <audio id="audioplayer" *ngIf="mediaobject.mediatype == 'AUDIO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
+    </audio>
+</vg-player>
+
+
+

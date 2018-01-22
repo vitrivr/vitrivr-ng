@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy} from '@angular/core';
-import {MdCheckboxChange, MdSliderChange} from "@angular/material";
-import {QueryChange, QueryService} from "../core/queries/query.service";
+import {MatCheckboxChange, MatSliderChange} from "@angular/material";
+import {QueryService} from "../core/queries/query.service";
 import {Feature} from "../shared/model/features/feature.model";
 import {MediaType} from "../shared/model/media/media-type.model";
 import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
@@ -75,9 +75,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      *
      * @param event
      */
-    public onFilterChanged(event: MdCheckboxChange) {
+    public onFilterChanged(event: MatCheckboxChange) {
         if (this._results) {
-            this._results.toggleMediatype(<MediaType>event.source.name, event.source.checked);
+            Promise.resolve().then(() => this._results.toggleMediatype(<MediaType>event.source.name, event.source.checked));
         }
     }
 
@@ -86,12 +86,12 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * the change to the QueryService, which will trigger a re-ranking of the results
      *
      * @param feature The feature that was changed.
-     * @param event MdSliderChange event that contains the new value.
+     * @param event MatSliderChange event that contains the new value.
      */
-    public onValueChanged(feature: Feature, event: MdSliderChange) {
+    public onValueChanged(feature: Feature, event: MatSliderChange) {
         feature.weight = event.value;
         if (this._results) {
-            this._results.rerank();
+            Promise.resolve().then(() => this._results.rerank());
         }
     }
 

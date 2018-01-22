@@ -1,4 +1,4 @@
-<md-toolbar color="primary">
+<mat-toolbar color="primary">
     <span [style.width]="'15px'"[style.height]="'15px'" [style.background-color]="'#FFFFFF'" [style.border-style]="color == '#FFFFFF' ? 'solid' : 'none'" [style.border-color]="'red'" (click)="onColorChange('#FFFFFF')"></span>
 
     <span class="spacer-tiny"></span>
@@ -7,20 +7,20 @@
 
     <span class="spacer-tiny"></span>
 
-    <md-icon>border_color</md-icon>
+    <mat-icon>border_color</mat-icon>
     <span class="spacer-tiny"></span>
 
-    <md-slider min="1" max="100" step="1" [(ngModel)]="linesize" [style.min-width]="'100px'" (change)="onLineSizeChange()" tickInterval="auto"></md-slider>
+    <mat-slider min="1" max="100" step="1" [(ngModel)]="linesize" [style.min-width]="'100px'" (change)="onLineSizeChange()" tickInterval="auto"></mat-slider>
     <span class="spacer-flex"></span>
 
-    <button md-icon-button (click)="onClearCanvasClicked()" mdTooltip="Clear canvas">
-        <md-icon>clear</md-icon>
+    <button mat-icon-button (click)="onClearCanvasClicked()" matTooltip="Clear canvas">
+        <mat-icon>clear</mat-icon>
     </button>
 
-    <button md-icon-button (click)="close()" mdTooltip="Save sketch">
-        <md-icon>save</md-icon>
+    <button mat-icon-button (click)="close()" matTooltip="Save sketch">
+        <mat-icon>save</mat-icon>
     </button>
-</md-toolbar>
+</mat-toolbar>
 
 <sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
 

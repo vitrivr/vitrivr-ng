@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
-import {MdSnackBar} from "@angular/material";
+import {MatSnackBar} from "@angular/material";
 import {ConfigService} from "../core/basics/config.service";
 import {UUIDGenerator} from "../shared/util/uuid-generator.util";
 import {Subscription} from "rxjs/Subscription";
@@ -9,53 +9,53 @@ import {Subscription} from "rxjs/Subscription";
     moduleId: module.id,
     selector: 'evaluation-selection',
     template: `
-        <md-card class="evaluation-card">
-            <md-card-header>
-                <md-card-title>Vitrivr NG: Start New Evaluation</md-card-title>
-                <md-card-subtitle>Please elect an evaluation template and note down your ID.</md-card-subtitle>
-            </md-card-header>
-            <md-card-content [style.margin-top]="'20px;'" [style.margin-bottom]="'20px;'">
+        <mat-card class="evaluation-card">
+            <mat-card-header>
+                <mat-card-title>Vitrivr NG: Start New Evaluation</mat-card-title>
+                <mat-card-subtitle>Please elect an evaluation template and note down your ID.</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content [style.margin-top]="'20px;'" [style.margin-bottom]="'20px;'">
                 <p>
-                    <md-input-container style="width:100%;">
-                        <input mdInput placeholder="Evaluation ID (please keep)" [value]="randomId" disabled/>
-                    </md-input-container>
+                    <mat-form-field style="width:100%;">
+                        <input matInput placeholder="Evaluation ID (please keep)" [value]="randomId" disabled/>
+                    </mat-form-field>
                 </p>
 
                 <p>
-                    <md-select placeholder="Template" [(ngModel)]="urlFieldValue" [style.width]="'100%'">
-                        <md-option *ngFor="let template of templates" [value]="template.url">{{template.name}}
-                        </md-option>
-                    </md-select>
+                    <mat-select placeholder="Template" [(ngModel)]="urlFieldValue" [style.width]="'100%'">
+                        <mat-option *ngFor="let template of templates" [value]="template.url">{{template.name}}
+                        </mat-option>
+                    </mat-select>
                    
                 </p>
 
                 <p>
-                    <md-input-container style="width:100%;">
-                        <input mdInput placeholder="Your name" [(ngModel)]="nameFieldValue"/>
-                    </md-input-container>
+                    <mat-form-field style="width:100%;">
+                        <input matInput placeholder="Your name" [(ngModel)]="nameFieldValue"/>
+                    </mat-form-field>
                 </p>
-            </md-card-content>
-            <md-card-actions>
-                <button md-button (click)="onStartClick()">START EVALUATION</button>
-            </md-card-actions>
-        </md-card>
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-button (click)="onStartClick()">START EVALUATION</button>
+            </mat-card-actions>
+        </mat-card>
 
-        <md-card class="evaluation-card">
-            <md-card-header>
-                <md-card-title>Vitrivr NG: Continue evaluation</md-card-title>
-                <md-card-subtitle>Please enter your evaluation ID in order to continue.</md-card-subtitle>
-            </md-card-header>
-            <md-card-content [style.margin-top]="'20px;'" [style.margin-bottom]="'20px;'">
+        <mat-card class="evaluation-card">
+            <mat-card-header>
+                <mat-card-title>Vitrivr NG: Continue evaluation</mat-card-title>
+                <mat-card-subtitle>Please enter your evaluation ID in order to continue.</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content [style.margin-top]="'20px;'" [style.margin-bottom]="'20px;'">
                 <p>
-                    <md-input-container style="width:100%;">
-                        <input mdInput placeholder="Evaluation ID" [(ngModel)]="enteredId"/>
-                    </md-input-container>
+                    <mat-form-field style="width:100%;">
+                        <input matInput placeholder="Evaluation ID" [(ngModel)]="enteredId"/>
+                    </mat-form-field>
                 </p>
-            </md-card-content>
-            <md-card-actions>
-                <button md-button (click)="onContinueClick()">CONTINUE EVALUATION</button>
-            </md-card-actions>
-        </md-card>
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-button (click)="onContinueClick()">CONTINUE EVALUATION</button>
+            </mat-card-actions>
+        </mat-card>
     `
 })
 export class EvaluationSelectionComponent implements OnInit, OnDestroy {
@@ -84,7 +84,7 @@ export class EvaluationSelectionComponent implements OnInit, OnDestroy {
      * @param _router
      * @param snackBar
      */
-    constructor(private _configService: ConfigService, private _router: Router, private snackBar: MdSnackBar) {
+    constructor(private _configService: ConfigService, private _router: Router, private snackBar: MatSnackBar) {
         this.randomId = UUIDGenerator.suid();
     }
 

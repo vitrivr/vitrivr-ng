@@ -1,10 +1,10 @@
-<img #previewimg class="previewimg" width="150" style="background-image: url('assets/images/transparent.png')" (click)="onViewerClicked()" (drop)="onViewerDropped($event)" (dragenter)="onViewerDragEnter($event)" (dragover)="onViewerDragOver($event)" (dragleave)="onViewerDragExit($event)"  mdTooltip="Click to change image..."/>
+<img #previewimg class="previewimg" width="150" style="background-image: url('assets/images/transparent.png')" (click)="onViewerClicked()" (drop)="onViewerDropped($event)" (dragenter)="onViewerDragEnter($event)" (dragover)="onViewerDragOver($event)" (dragleave)="onViewerDragExit($event)"  matTooltip="Click to change image..."/>
 
 <div style="display:flex; align-items: center; justify-content: center;">
-    <md-icon class="muted" mdTooltip="Rough sketch">brush</md-icon>
+    <mat-icon class="muted" matTooltip="Rough sketch">brush</mat-icon>
     <div class="toolbar-spacer-small"></div>
-    <md-slider min="0" max="4" step="1" value="2" [(ngModel)]="sliderSetting" (change)="onSettingsChanged($event)"></md-slider>
+    <mat-slider min="0" max="4" step="1" value="2" [(ngModel)]="sliderSetting" (change)="onSettingsChanged($event)"></mat-slider>
     <div class="toolbar-spacer-small"></div>
-    <md-icon class="muted"  mdTooltip="Example image">insert_photo</md-icon>
+    <mat-icon class="muted"  matTooltip="Example image">insert_photo</mat-icon>
 </div>
 <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>

@@ -1,16 +1,23 @@
 import {Component, Inject} from "@angular/core";
-import {MD_SNACK_BAR_DATA} from "@angular/material";
+import {MAT_SNACK_BAR_DATA} from "@angular/material";
 import {Feature} from "../shared/model/features/feature.model";
+import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 
 @Component({
     moduleId: module.id,
     selector: 'feature-details',
-    template: `<div class="snackbar-feature" *ngFor="let line of lines">{{line}}</div>`,
-    styles: ['.snackbar-feature { background-color: rgb(0,0,0); color: white; opacity: 0.65; font-size: 1.5em; padding: 5px; }']
+    template: `        
+        <h3>{{title}}</h3>
+        <div class="snackbar-feature" *ngFor="let line of lines">{{line}}</div>
+    `,
+    styles: ['.snackbar-feature { color: white; opacity: 0.65; font-size: 1.5em; padding: 5px; }']
 })
 export class FeatureDetailsComponent{
 
-    /** */
+    /** The title string displayed by the FeatureDetailsComponent. */
+    private _title: string;
+
+    /** The individual lines displayed by the FeatureDetailsComponent (one line per feature). */
     private _lines: string[] = [];
 
 
@@ -19,8 +26,9 @@ export class FeatureDetailsComponent{
      *
      * @param {Map<Feature, number>} data Data containing the features and associated scores.
      */
-    constructor(@Inject(MD_SNACK_BAR_DATA) data: Map<Feature,number>) {
-        data.forEach((value, key) => {this._lines.push(key.name + ": " + Math.round(value * 1000) / 1000);})
+    constructor(@Inject(MAT_SNACK_BAR_DATA) data: SegmentScoreContainer) {
+        this._title = data.segmentId + " (" + (data.score * 100).toFixed(2) + "%)";
+        data.scores.forEach((value, key) => {this._lines.push(key.name + ": " + Math.round(value * 1000) / 1000);})
     }
 
     /**
@@ -30,5 +38,14 @@ export class FeatureDetailsComponent{
      */
     get lines(): string[] {
         return this._lines;
+    }
+
+    /**
+     * Getter for title.
+     *
+     * @return {string}
+     */
+    get title(): string {
+        return this._title;
     }
 }

@@ -1,5 +1,5 @@
 import {Component, ViewChild, Inject, OnInit, OnDestroy, Optional} from '@angular/core';
-import {MD_DIALOG_DATA, MdDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {AudioRecorderComponent} from "../../../shared/components/audio/audio-recorder.component";
 import {Observable} from "rxjs/Observable";
 import {Subscription} from "rxjs/Subscription";
@@ -42,7 +42,7 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
      * @param dialogRef
      * @param _data Data that is passed to the AudioRecorderDialogComponent.
      */
-    constructor(private dialogRef: MdDialogRef<AudioRecorderDialogComponent>, @Optional() @Inject(MD_DIALOG_DATA) private _data? : any) {}
+    constructor(private dialogRef: MatDialogRef<AudioRecorderDialogComponent>, @Optional() @Inject(MAT_DIALOG_DATA) private _data? : any) {}
 
     /**
      * Lifecycle Hook (onInit): Loads the injected audio data (if specified) and creates

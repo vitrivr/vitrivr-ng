@@ -1,14 +1,14 @@
 <div [style.padding-left]="'10px'" [style.text-align]="'left'">
     <h5 [style.margin-top]="'0'" [style.margin-bottom]="'1em'">Categories:</h5>
     <section fxLayout="row" fxLayoutWrap fxLayoutGap="15px">
-        <md-checkbox *ngFor="let category of categories" [value]="category[0]" (change)="onCheckboxChange($event)">{{category[1]}}</md-checkbox>
+        <mat-checkbox *ngFor="let category of categories" [value]="category[0]" (change)="onCheckboxChange($event)">{{category[1]}}</mat-checkbox>
     </section>
 
     <br/>
 
-    <md-input-container class="textinput">
-        <input mdInput placeholder="Search text" [(ngModel)]="inputValue">
-    </md-input-container>
+    <mat-form-field class="textinput">
+        <input matInput placeholder="Search text" [(ngModel)]="inputValue">
+    </mat-form-field>
 </div>
 
 <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>

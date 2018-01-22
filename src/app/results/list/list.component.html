@@ -1,16 +1,26 @@
 <div style="padding:10px;">
     <p class="background-prompt" *ngIf="mediaobjects.length == 0 && !loading">No results available. Please start a search...</p>
 
-    <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><md-spinner></md-spinner></p>
+    <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><mat-spinner></mat-spinner></p>
 
     <div class="list">
         <div *ngFor="let mediaobject of mediaobjects | OrderByScorePipe" class="object" draggable="true" fxLayout="row" fxLayoutWrap fxLayoutGap="4px">
-            <div *ngFor="let segment of mediaobject.segments | OrderBySegmentPipe" class="segment" (mouseenter)="focus = segment" (mouseleave)="focus = null" [style.background-color]="colorForScore(segment.score)">
+            <div *ngFor="let segment of mediaobject.segments | OrderBySegmentPipe" class="{{segment.marked ? 'segment marked' : 'segment'}}" (mouseenter)="focus = segment" (mouseleave)="focus = null" [style.background-color]="colorForSegment(segment)">
+
                 <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
-                <div  *ngIf="inFocus(segment)" class="footer" fxLayout="row-reverse">
-                    <button md-icon-button (click)="onMltButtonClicked(segment)" class="tile-button" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button>
-                    <button md-icon-button (click)="onDetailsButtonClicked(segment)" class="tile-button" mdTooltip="Show details"><md-icon>remove_red_eye</md-icon></button>
-                    <button md-icon-button (click)="onInformationButtonClicked(segment)" class="tile-button" mdTooltip="Feature information"><md-icon>help</md-icon></button>
+
+                <div *ngIf="inFocus(segment)" class="footer" fxLayout="row-reverse">
+                    <button *ngIf="segment.marked" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Unmark">
+                        <mat-icon >star</mat-icon>
+                    </button>
+
+                    <button *ngIf="!segment.marked" mat-icon-button (click)="onStarButtonClicked(segment)" class="tile-button" matTooltip="Mark as favourite">
+                        <mat-icon>star_border</mat-icon>
+                    </button>
+
+                    <button mat-icon-button (click)="onMltButtonClicked(segment)" class="tile-button" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button>
+                    <button mat-icon-button (click)="onDetailsButtonClicked(segment)" class="tile-button" matTooltip="Show details"><mat-icon>remove_red_eye</mat-icon></button>
+                    <button mat-icon-button (click)="onInformationButtonClicked(segment)" class="tile-button" matTooltip="Feature information"><mat-icon>help</mat-icon></button>
                 </div>
             </div>
         </div>

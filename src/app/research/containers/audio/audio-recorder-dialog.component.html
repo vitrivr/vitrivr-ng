@@ -1,19 +1,19 @@
-<md-toolbar color="primary">
-    <button md-icon-button (click)="onRecordButtonPressed()" *ngIf="recorder.recordingAvailable()"><md-icon [attr.class]="recorder.isRecording() ? 'material-icons rec-active' : 'material-icons'">fiber_manual_record</md-icon></button>
-    <button md-icon-button (click)="onPlayButtonPressed()"><md-icon [attr.class]="recorder.isPlaying() ? 'material-icons play-active' : 'material-icons'">play_arrow</md-icon></button>
+<mat-toolbar color="primary">
+    <button mat-icon-button (click)="onRecordButtonPressed()" *ngIf="recorder.recordingAvailable()"><mat-icon [attr.class]="recorder.isRecording() ? 'material-icons rec-active' : 'material-icons'">fiber_manual_record</mat-icon></button>
+    <button mat-icon-button (click)="onPlayButtonPressed()"><mat-icon [attr.class]="recorder.isPlaying() ? 'material-icons play-active' : 'material-icons'">play_arrow</mat-icon></button>
 
     <span class="spacer-tiny"></span>
 
     <span class="label" style="color:white;">{{statustext}}</span>
 
     <span class="spacer-flex"></span>
-    <button md-icon-button (click)="onLoadAudioPressed()"><md-icon>file_upload</md-icon></button>
+    <button mat-icon-button (click)="onLoadAudioPressed()"><mat-icon>file_upload</mat-icon></button>
 
     <span class="spacer-tiny"></span>
-    <button md-icon-button (click)="onSaveButtonPressed()">
-        <md-icon>save</md-icon>
+    <button mat-icon-button (click)="onSaveButtonPressed()">
+        <mat-icon>save</mat-icon>
     </button>
-</md-toolbar>
+</mat-toolbar>
 
 <record-audio #recorder></record-audio>
 <input #audioloader type="file" (change)="onFileAvailable($event)" hidden>

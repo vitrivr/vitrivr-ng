@@ -9,13 +9,13 @@ import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario
             <p [innerHTML]="scenario.description"></p>
             <div *ngIf="scenario.illustrations.length > 0">
                 <h5>Illustrations</h5>
-                <img *ngFor="let illustration of scenario.illustrations" src="{{illustration.url}}"  mdTooltip="{{illustration.description}}" [style.width]="'200px'"/>
+                <img *ngFor="let illustration of scenario.illustrations" src="{{illustration.url}}"  matTooltip="{{illustration.description}}" [style.width]="'200px'"/>
             </div>
 
             <div *ngIf="scenario.material.length > 0">
                 <h5>Helper material (Download)</h5>
                 <ul>
-                    <li *ngFor="let material of scenario.material"><a href="{{material.url}}" mdTooltip="{{material.description}}" download>{{material.name}}</a></li>
+                    <li *ngFor="let material of scenario.material"><a href="{{material.url}}" matTooltip="{{material.description}}" download>{{material.name}}</a></li>
                 </ul>
             </div>
         </div>

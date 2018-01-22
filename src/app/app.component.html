@@ -1,48 +1,48 @@
 <div>
-    <md-toolbar color="primary">
+    <mat-toolbar color="primary">
         <img src="assets/images/vitrivr_logo.png">
         <span class="spacer-flex"></span>
 
 
-        <button md-icon-button (click)="querysidenav.toggle()" mdTooltip="Toggle query sidebar"><md-icon>search</md-icon></button>
+        <button mat-icon-button (click)="querysidenav.toggle()" matTooltip="Toggle query sidebar"><mat-icon>search</mat-icon></button>
 
         <span class="spacer-xlarge"></span>
 
-        <a md-icon-button routerLink="/gallery" routerLinkActive="active" mdTooltip="Gallery view"><md-icon>grid_on</md-icon></a>
+        <a mat-icon-button routerLink="/gallery" routerLinkActive="active" matTooltip="Gallery view"><mat-icon>grid_on</mat-icon></a>
 
         <span class="spacer-medium"></span>
 
-        <a md-icon-button routerLink="/mini-gallery" routerLinkActive="active" mdTooltip="Mini-gallery view"><md-icon>view_comfy</md-icon></a>
+        <a mat-icon-button routerLink="/mini-gallery" routerLinkActive="active" matTooltip="Mini-gallery view"><mat-icon>view_comfy</mat-icon></a>
 
         <span class="spacer-medium"></span>
 
-        <a md-icon-button routerLink="/list" routerLinkActive="active" mdTooltip="List view"><md-icon>list</md-icon></a>
+        <a mat-icon-button routerLink="/list" routerLinkActive="active" matTooltip="List view"><mat-icon>list</mat-icon></a>
 
         <span class="spacer-xlarge"></span>
 
-        <a *ngIf="config.evaluation.active" md-icon-button routerLink="/evaluation" routerLinkActive="active" mdTooltip="Navigate to evaluation module"><md-icon>assessment</md-icon></a>
+        <a *ngIf="config.evaluationOn" mat-icon-button routerLink="/evaluation" routerLinkActive="active" matTooltip="Navigate to evaluation module"><mat-icon>assessment</mat-icon></a>
 
-        <span *ngIf="config.evaluation.active" class="spacer-medium"></span>
+        <span *ngIf="config.evaluationOn" class="spacer-medium"></span>
 
-        <button md-icon-button  (click)="featuressidenav.toggle()" mdTooltip="Toggle query refinement sidebar"><md-icon>storage</md-icon></button>
+        <button mat-icon-button  (click)="featuressidenav.toggle()" matTooltip="Toggle query refinement sidebar"><mat-icon>storage</mat-icon></button>
 
         <span class="spacer-flex"></span>
-        <api-status><md-icon>av timer</md-icon></api-status>
-    </md-toolbar>
+        <api-status><mat-icon>av timer</mat-icon></api-status>
+    </mat-toolbar>
 
     <div>
-        <md-progress-bar mode="query" [attr.color]="'accent'" *ngIf="loading"></md-progress-bar>
+        <mat-progress-bar mode="query" [attr.color]="'accent'" *ngIf="loading"></mat-progress-bar>
     </div>
 
-    <md-sidenav-container #sidenavcontainer fullscreen style="margin-top:75px;">
-        <md-sidenav #querysidenav mode="side" opened="true" align="start" class="vitrivr-sidenav left">
+    <mat-sidenav-container #sidenavcontainer fullscreen style="margin-top:75px;">
+        <mat-sidenav #querysidenav mode="side" opened="true" align="start" class="vitrivr-sidenav left">
             <research></research>
-        </md-sidenav>
+        </mat-sidenav>
 
         <router-outlet> </router-outlet>
 
-        <md-sidenav #featuressidenav mode="side" opened="false" align="end" class="vitrivr-sidenav right">
+        <mat-sidenav #featuressidenav mode="side" opened="false" align="end" class="vitrivr-sidenav right">
             <refinement></refinement>
-        </md-sidenav>
-    </md-sidenav-container>
+        </mat-sidenav>
+    </mat-sidenav-container>
 </div>

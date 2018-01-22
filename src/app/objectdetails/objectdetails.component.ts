@@ -7,10 +7,12 @@ import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
 import {Location} from "@angular/common";
-import {MdDialog, MdSnackBar} from "@angular/material";
+import {MatDialog, MatSnackBar} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
 import {ImagecropComponent} from "./imagecrop.component";
 import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
+import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
+import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
 
 @Component({
     moduleId: module.id,
@@ -61,8 +63,8 @@ export class ObjectdetailsComponent implements OnInit {
                 private _location: Location,
                 private _metadataLookup: MetadataLookupService,
                 private _resolver: ResolverService,
-                private _snackBar: MdSnackBar,
-                private _dialog: MdDialog) {
+                private _snackBar: MatSnackBar,
+                private _dialog: MatDialog) {
 
         this._results = _query.results;
     }
@@ -100,7 +102,8 @@ export class ObjectdetailsComponent implements OnInit {
      * @param segment SegmentScoreContainer that is being dragged.
      */
     public onSegmentDrag(event, segment: SegmentScoreContainer) {
-        event.dataTransfer.setData("application/vitrivr-mediasegment", JSON.stringify(segment.mediaSegment));
+        event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
+        event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(segment.objectScoreContainer).toJSON());
     }
 
     /**
@@ -116,6 +119,15 @@ export class ObjectdetailsComponent implements OnInit {
             this.videoplayer.nativeElement.currentTime = segment.starttime;
             this.videoplayer.nativeElement.play();
         }
+    }
+
+    /**
+     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
+     *
+     * @param {SegmentScoreContainer} segment
+     */
+    public onStarButtonClicked(segment: SegmentScoreContainer) {
+        segment.toggleMark();
     }
 
     /**
@@ -156,7 +168,7 @@ export class ObjectdetailsComponent implements OnInit {
         this._segments = this._mediaobject.segments.slice().sort((a, b) => SegmentScoreContainer.compareAsc(a,b));
 
         /* Lookup metadata lines for the provided object. */
-        this._metadataLookup.observable().first().subscribe((msg) => {
+        this._metadataLookup.first().subscribe((msg) => {
             this._metadata = msg.content
         });
         this._metadataLookup.lookup(this._objectId);

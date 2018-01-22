@@ -6,24 +6,24 @@ export class Config {
     private static VERSION = "v1";
 
     /**
-     * Contains API specific configuration like hostname, port and protocols
-     * used for communication.
+     * Contains API specific configuration like hostname, port and protocols used for communication.
      *
-     * @type {{host: string; port: number}}
+     * @type {{host: string; port: number; http_secure: boolean; ws_secure: boolean; ping_interval: number}}
      */
     private api = {
+        /* IP address or hostname (no scheme). */
         host : null,
+
         port : 4567,
-        protocol_http: "http",
-        protocol_ws: "ws",
+        http_secure: false,
+        ws_secure: false,
 
         /* Default ping interval in milliseconds. */
         ping_interval: 10000
     };
 
     /**
-     * Contains information concerning access to resources like multimedia objects
-     * and thumbnails for preview.
+     * Contains information concerning access to resources like multimedia objects and thumbnails for preview.
      *
      * @type {{}}
      */
@@ -44,13 +44,36 @@ export class Config {
     /**
      * Contains information concerning the configuration of the evaluation module.
      *
-     * @type {{}}
+     * @type {{active: boolean; templates: string[]}}
      */
-    public evaluation = {
+    private evaluation = {
         active: true,
-        templates: []
+        templates: [] /* URLs */
     };
 
+    /**
+     * Configures the VBS (Video Browser Showdown) mode. Activating the VBS mode will make certain functionality
+     * available in Vitrivr NG (like submitting videos).
+     *
+     * @type {{active: boolean; endpoint: string}}
+     */
+    private vbs = {
+        /* Flag indicating whether VBS mode should be active or not. */
+        active: false,
+
+        /* The team number within the VBS contest. */
+        team: -1,
+
+        /* URL to the VBS endpoint. */
+        endpoint: null
+    };
+
+    /**
+     * Contains information regarding the available query-containers. Depending on this configuration, the user will be presented
+     * with more or less options for querying.
+     *
+     * @type {{image: boolean; audio: boolean; model3d: boolean; motion: boolean; text: boolean}}
+     */
     public queryContainerTypes = {
         image: true,
         audio: true,
@@ -65,12 +88,15 @@ export class Config {
      * @param api
      * @param resources
      * @param evaluation
+     * @param queryContainerTypes
+     * @param vbs
      */
-    constructor(api?: any, resources?: any, evaluation?: any, queryContainerTypes?: any) {
+    constructor(api?: any, resources?: any, evaluation?: any, queryContainerTypes?: any, vbs?: any) {
         if (api) this.api = api;
         if (resources) this.resources = resources;
         if (evaluation) this.evaluation = evaluation;
         if (queryContainerTypes) this.queryContainerTypes = queryContainerTypes;
+        if (vbs) this.vbs = vbs;
     }
 
     /**
@@ -97,8 +123,9 @@ export class Config {
      * @return {string}
      */
     get endpoint_ws(): string {
-        if (this.api.protocol_ws && this.api.host && this.api.port) {
-            return this.api.protocol_ws + "://" + this.api.host + ":" + this.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/";
+        let scheme = this.api.ws_secure ? "wss://" : "ws://";
+        if (this.api.host && this.api.port) {
+            return scheme + this.api.host + ":" + this.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/";
         } else {
             return null;
         }
@@ -110,8 +137,9 @@ export class Config {
      * @return {string}
      */
     get endpoint_http(): string {
-        if (this.api.protocol_http && this.api.host && this.api.port) {
-            return this.api.protocol_http + "://" + this.api.host + ":" + this.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/";
+        let scheme = this.api.ws_secure ? "https://" : "http://";
+        if (this.api.host && this.api.port) {
+            return scheme + this.api.host + ":" + this.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/";
         } else {
             return null;
         }
@@ -145,7 +173,7 @@ export class Config {
     }
 
     /**
-     * Returns true, if the EvaluationModule is on and false otherwise.
+     * Returns true, if the evaluation modules is on and false otherwise.
      *
      * @return {boolean}
      */
@@ -158,5 +186,32 @@ export class Config {
      */
     get evaluationTemplates(): any {
         return this.evaluation.templates;
+    }
+
+    /**
+     * Returns true, if the VBS mode is on and false otherwise.
+     *
+     * @return {boolean}
+     */
+    get vbsOn(): boolean {
+        return this.vbs.active;
+    }
+
+    /**
+     * Returns the URL to the VBS endpoint.
+     *
+     * @return {string}
+     */
+    get vbsTeam(): number {
+        return this.vbs.team;
+    }
+
+    /**
+     * Returns the URL to the VBS endpoint.
+     *
+     * @return {string}
+     */
+    get vbsEndpoint(): string {
+        return this.vbs.endpoint;
     }
 }
