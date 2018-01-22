@@ -3,60 +3,15 @@ import {QueryTermType} from "./interfaces/query-term-type.interface";
 
 export abstract class AbstractQueryTerm implements QueryTermInterface {
     /** Base64 encoded audio data. */
-    protected _data: string;
-
-    /** Array with the active feature categories. */
-    protected _categories : string[];
-
-    /** Type of QueryTerm. */
-    protected _type : QueryTermType;
+    public data: string;
 
     /**
      * Constructor for AbstractQueryTerm
      *
      * @param type Type of the QueryTerm
-     * @param defaults Default categories
+     * @param categories Default categories
      */
-    constructor(type: QueryTermType, defaults: string[] = []) {
-        this._type = type;
-        this._categories = defaults;
-    }
-
-    /**
-     * Getter for type.
-     *
-     * @return {QueryTermType}
-     */
-    get type(): QueryTermType {
-        return this._type;
-    }
-
-    /**
-     * Getter for categories.
-     *
-     * @return {string[]}
-     */
-    get categories(): string[] {
-        return this._categories;
-    }
-
-    /**
-     * Getter for data.
-     *
-     * @return {string[]}
-     */
-    get data(): string {
-        return this._data;
-    }
-
-    /**
-     * Setter for data.
-     *
-     * @param {string} data
-     */
-    set data(data: string) {
-        this._data = data;
-    }
+    constructor(public readonly type: QueryTermType, public readonly categories: string[] = []) {}
 
     /**
      * Adds a named query category to the QueryTerm. The implementation must make sure, that
@@ -65,9 +20,9 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
      * @param {string} category
      */
     public pushCategory(category: string) {
-        let index : number = this._categories.indexOf(category);
+        let index : number = this.categories.indexOf(category);
         if (index == -1) {
-            this._categories.push(category);
+            this.categories.push(category);
         }
     }
 
@@ -78,7 +33,7 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
      * @return {boolean} True if category is contained, else false.
      */
     public hasCategory(category: string): boolean {
-        return (this._categories.indexOf(category) > -1);
+        return (this.categories.indexOf(category) > -1);
     }
 
     /**
@@ -88,9 +43,9 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
      * @param {string} category
      */
     public removeCategory(category: string) {
-        let index : number = this._categories.indexOf(category);
+        let index : number = this.categories.indexOf(category);
         if (index > -1) {
-            this._categories.splice(index, 1);
+            this.categories.splice(index, 1);
         }
     }
 
@@ -100,20 +55,9 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
      * @param {string} categories
      */
     public setCategories(categories: string[]) {
-        this._categories = [];
+        this.categories.splice(0, this.categories.length);
         for (let category of categories) {
-            this._categories.push(category);
-        }
-    }
-
-    /**
-     * Returns a JSON object representing the current AbstractQueryTerm instance.
-     */
-    public toJson() : any {
-        return {
-            data : this._data,
-            categories : this._categories,
-            type: this._type
+            this.categories.push(category);
         }
     }
 }

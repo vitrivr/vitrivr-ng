@@ -1,6 +1,6 @@
 import {MediaType} from "../media/media-type.model";
 import {MediaObject} from "../media/media-object.model";
-import {MediaObjectScoreContainer} from "../features/scores/media-object-score-container.model";
+import {MediaObjectScoreContainer} from "../results/scores/media-object-score-container.model";
 
 /**
  * This is an internal helper class used for Drag & Drop operatoin. It contains information on a dragged MediaObject.
@@ -63,6 +63,6 @@ export class MediaObjectDragContainer {
      * @return {MediaObjectDragContainer} Resulting MediaObjectDragContainer.
      */
     public static fromScoreContainer(container: MediaObjectScoreContainer): MediaObjectDragContainer {
-        return new MediaObjectDragContainer(container.mediatype, container.mediaObject);
+        return new MediaObjectDragContainer(container.mediatype, container.object);
     }
 }

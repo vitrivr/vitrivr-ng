@@ -9,7 +9,7 @@ import {AppComponent}  from './app.component';
 import {ResearchModule} from "./research/research.module";
 import {PingComponent} from "./toolbar/ping.component";
 import {CoreModule} from "./core/core.module";
-import {FeaturesModule} from "./refinement/refinement.module";
+import {SettingsModule} from "./settings/settings.module";
 import {ObjectdetailsModule} from "./objectdetails/objectdetails.module";
 import {AppRoutingModule} from "./app-routing.module";
 import {EvaluationModule} from "./evaluation/evaluation.module";
@@ -30,7 +30,7 @@ import {ResultsModule} from "./results/results.module";
       EvaluationModule,
       ObjectdetailsModule,
       ResearchModule,
-      FeaturesModule
+      SettingsModule
   ],
   declarations: [ AppComponent, PingComponent ],
   providers:    [ ],

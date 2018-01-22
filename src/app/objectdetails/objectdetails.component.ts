@@ -5,14 +5,14 @@ import {MetadataLookupService} from "../core/lookup/metadata-lookup.service";
 import {QueryService} from "../core/queries/query.service";
 import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
-import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
+import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
 import {Location} from "@angular/common";
 import {MatDialog, MatSnackBar} from "@angular/material";
-import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
+import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-object-score-container.model";
 import {ImagecropComponent} from "./imagecrop.component";
-import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
 import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
 import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
+import {Observable} from "rxjs/Observable";
 
 @Component({
     moduleId: module.id,
@@ -22,7 +22,7 @@ import {MediaObjectDragContainer} from "../shared/model/internal/media-object-dr
 })
 
 
-export class ObjectdetailsComponent implements OnInit {
+export class ObjectdetailsComponent {
     /** */
     @ViewChild('audioplayer')
     private audioplayer: any;
@@ -35,20 +35,8 @@ export class ObjectdetailsComponent implements OnInit {
     @ViewChild('imageviewer')
     private imageviewer: any;
 
-    /** ID of the media object that is currently examined. */
-    private _objectId: string;
-
-    /** ID of the media object that is currently examined. */
-    private _mediaobject: MediaObjectScoreContainer;
-
     /** List of MediaMetadata items for the current multimedia object. */
     private _metadata: MediaMetadata[] = [];
-
-    /** List of SegmentScoreContainrs items for the current multimedia object. */
-    private _segments: SegmentScoreContainer[] = [];
-
-    /** */
-    private _results : ResultsContainer;
 
     /**
      *
@@ -65,34 +53,7 @@ export class ObjectdetailsComponent implements OnInit {
                 private _resolver: ResolverService,
                 private _snackBar: MatSnackBar,
                 private _dialog: MatDialog) {
-
-        this._results = _query.results;
     }
-
-    /**
-     * Lifecycle hook (onInit): Subscribes to changes of the Router class. Whenever the parameter becomes available,
-     * the onParamsAvailable method is invoked.
-     */
-    public ngOnInit() {
-        this._route.params.first().subscribe((params: Params) => this.onParamsAvailable(params));
-    }
-
-    /**
-     * Invoked when parameters from the ActiveRouter become available.
-     *
-     * @param params Parameters.
-     */
-    private onParamsAvailable(params: Params) {
-        this._objectId = params['objectId'];
-        if (this._objectId && this._results && this._results.hasObject(this._objectId)) {
-            this.refresh();
-        } else {
-            this._snackBar.open("The specified objectId '" + this._objectId + "' not found in the query results. Returning...", null, {duration: 3000}).afterDismissed().first().subscribe(() => {
-                this._location.back()
-            });
-        }
-    }
-
 
     /**
      * Event Handler: Whenever a segment is dragged, that segment is converted to JSON and added to the dataTransfer
@@ -122,15 +83,6 @@ export class ObjectdetailsComponent implements OnInit {
     }
 
     /**
-     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
-     *
-     * @param {SegmentScoreContainer} segment
-     */
-    public onStarButtonClicked(segment: SegmentScoreContainer) {
-        segment.toggleMark();
-    }
-
-    /**
      * Triggered whenever someone clicks the 'More-Like-This' button. The segment the click belongs to is then used to perform
      * a More-Like-This query.
      *
@@ -151,36 +103,10 @@ export class ObjectdetailsComponent implements OnInit {
     /**
      *
      */
-    public onImageViewerClicked() {
-        let imagePath = this._resolver.pathToObject(this._mediaobject); //this._resolver.pathToThumbnail(this._mediaobject.mediatype, this._mediaobject.objectId, this._mediaobject.objectId + "_1"); //
+    public onImageViewerClicked(object: MediaObjectScoreContainer) {
+        let imagePath = this._resolver.pathToObjectForContainer(object);
         let dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
-        dialogRef.afterClosed().first().subscribe((result) => {
-
-        });
-    }
-
-    /**
-     * Refreshes the view by loading all necessary lines.
-     */
-    private refresh() {
-        /* Fetch the media-object from the QueryService. */
-        this._mediaobject = this._results.getObject(this._objectId);
-        this._segments = this._mediaobject.segments.slice().sort((a, b) => SegmentScoreContainer.compareAsc(a,b));
-
-        /* Lookup metadata lines for the provided object. */
-        this._metadataLookup.first().subscribe((msg) => {
-            this._metadata = msg.content
-        });
-        this._metadataLookup.lookup(this._objectId);
-    }
-
-    /**
-     * Getter for object id.
-     *
-     * @return {string}
-     */
-    get objectId(): string {
-        return this._objectId;
+        dialogRef.afterClosed().first().subscribe((result) => {});
     }
 
     /**
@@ -188,8 +114,8 @@ export class ObjectdetailsComponent implements OnInit {
      *
      * @returns {MediaObject}
      */
-    get mediaobject(): MediaObject {
-        return this._mediaobject;
+    get mediaobject(): Observable<MediaObjectScoreContainer> {
+        return this._route.params.first().map(params => this._query.results.getObject(params['objectId']))
     }
 
     /**
@@ -199,14 +125,5 @@ export class ObjectdetailsComponent implements OnInit {
      */
     get metadata(): MediaMetadata[] {
         return this._metadata;
-    }
-
-    /**
-     * Getter for segments.
-     *
-     * @returns {SegmentScoreContainer[]}
-     */
-    get segments(): SegmentScoreContainer[] {
-        return this._segments;
     }
 }

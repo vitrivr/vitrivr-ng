@@ -1,0 +1,18 @@
+mat-sidenav {
+    width: 300px;
+    padding: 10px;
+    min-width: 100px;
+}
+
+mat-sidenav.left {
+    margin-right:10px;
+}
+
+mat-sidenav.right {
+    margin-left:10px;
+}
+
+.vitrivr-toolbar-menu {
+    padding: 0 14px 0 14px;
+    color: white;
+}

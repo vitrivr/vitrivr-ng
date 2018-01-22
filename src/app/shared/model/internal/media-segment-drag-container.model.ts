@@ -1,6 +1,7 @@
 import {MediaType} from "../media/media-type.model";
 import {MediaSegment} from "../media/media-segment.model";
-import {SegmentScoreContainer} from "../features/scores/segment-score-container.model";
+import {SegmentScoreContainer} from "../results/scores/segment-score-container.model";
+import {MediaObject} from "../media/media-object.model";
 
 /**
  * This is an internal helper class used for Drag & Drop operatoin. It contains information on a dragged MediaSegment.
@@ -11,10 +12,10 @@ export class MediaSegmentDragContainer {
 
     /**
      *
-     * @param {MediaType} _mediatype The type of the MediaObject the provided segment belongs to.
+     * @param {MediaType} _object The MediaObject packaged in this MediaSegmentDragContainer
      * @param {MediaSegment} _segment The MediaSegment packaged in this MediaSegmentDragContainer
      */
-    private constructor(private _mediatype: MediaType, private _segment: MediaSegment) {
+    private constructor(private _object: MediaObject, private _segment: MediaSegment) {
     }
 
     /**
@@ -22,8 +23,8 @@ export class MediaSegmentDragContainer {
      *
      * @return {MediaType}
      */
-    get mediatype(): MediaType {
-        return this._mediatype;
+    get object(): MediaObject {
+        return this._object;
     }
 
     /**
@@ -41,7 +42,7 @@ export class MediaSegmentDragContainer {
      * @return {string} JSON string representing the MediaSegmentDragContainer
      */
     public toJSON() {
-        return JSON.stringify({mediatype: this.mediatype, segment: this.segment})
+        return JSON.stringify({object: this._object, segment: this._segment})
     }
 
     /**
@@ -53,16 +54,16 @@ export class MediaSegmentDragContainer {
      */
     public static fromJSON(json: string): MediaSegmentDragContainer {
        let object = JSON.parse(json);
-       return new MediaSegmentDragContainer(object["mediatype"], object["segment"]);
+       return new MediaSegmentDragContainer(object["object"], object["segment"]);
     }
 
     /**
      * Creates a new MediaSegmentDragContainer from a provided SegmentScoreContainer.
      *
-     * @param {string} json JSON string that should be parsed.
+     * @param {SegmentScoreContainer} container The SegmentScoreContainer that should be transformed.
      * @return {MediaSegmentDragContainer} Resulting MediaSegmentDragContainer.
      */
     public static fromScoreContainer(container: SegmentScoreContainer): MediaSegmentDragContainer {
-        return new MediaSegmentDragContainer(container.objectScoreContainer.mediatype, container.mediaSegment);
+        return new MediaSegmentDragContainer(container.objectScoreContainer.object, container.mediaSegment);
     }
 }

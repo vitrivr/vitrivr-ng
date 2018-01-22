@@ -1,18 +1,25 @@
-import {Injectable} from "@angular/core";
+import {Inject, Injectable} from "@angular/core";
 import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs/Subject";
 
-import {CineastAPI} from "../api/cineast-api.service";
+import {CineastWebSocketFactoryService} from "../api/cineast-web-socket-factory.service";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
-import {QueryStart} from "../../shared/model/messages/interfaces/query-start.interface";
-import {SegmentQueryResult} from "../../shared/model/messages/interfaces/query-result-segment.interface";
-import {SimilarityQueryResult} from "../../shared/model/messages/interfaces/query-result-similarty.interface";
-import {ObjectQueryResult} from "../../shared/model/messages/interfaces/query-result-object.interface";
-import {SimilarityQuery} from "../../shared/model/messages/similarity-query.model";
-import {MoreLikeThisQuery} from "../../shared/model/messages/more-like-this-query.model";
-import {QueryError} from "../../shared/model/messages/interfaces/query-error.interface";
+import {QueryStart} from "../../shared/model/messages/interfaces/responses/query-start.interface";
+import {SegmentQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-segment.interface";
+import {SimilarityQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-similarty.interface";
+import {ObjectQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-object.interface";
+import {SimilarityQuery} from "../../shared/model/messages/queries/similarity-query.model";
+import {MoreLikeThisQuery} from "../../shared/model/messages/queries/more-like-this-query.model";
+import {QueryError} from "../../shared/model/messages/interfaces/responses/query-error.interface";
 import {QueryContainer} from "../../shared/model/queries/query-container.model";
-import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
+import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
+import {NeighboringSegmentQuery} from "../../shared/model/messages/queries/neighboring-segment-query.model";
+import {ReadableQueryConfig} from "../../shared/model/messages/queries/readable-query-config.model";
+import {ConfigService} from "../basics/config.service";
+import {Config} from "../../shared/model/config/config.model";
+import {Hint} from "../../shared/model/messages/interfaces/requests/query-config.interface";
+import {FeatureCategories} from "../../shared/model/results/feature-categories.model";
+import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -25,13 +32,13 @@ import {ResultsContainer} from "../../shared/model/features/scores/results-conta
 export type QueryChange = "STARTED" | "ENDED" | "ERROR" | "UPDATED" | "FEATURE" | "CLEAR";
 
 /**
- * This service orchestrates similarity queries using the Cineast API (WebSocket). The service is responsible for
- * issuing findSimilar requests, processing incoming responses and ranking of the queries.
+ * This service orchestrates similarity requests using the Cineast API (WebSocket). The service is responsible for
+ * issuing findSimilar requests, processing incoming responses and ranking of the requests.
  */
 @Injectable()
 export class QueryService {
     /** Flag indicating whether a query is currently being executed. */
-    private _running : boolean = false;
+    private _running : number = 0;
 
     /** Subject that allows Observers to subscribe to changes emitted from the QueryService. */
     private _subject : Subject<QueryChange> = new Subject();
@@ -39,72 +46,78 @@ export class QueryService {
     /** Results of a query. May be empty. */
     private _results: ResultsContainer;
 
+    /** The Vitrivr NG configuration as observable */
+    private _config: Observable<Config>;
+
     /**
      * Default constructor.
      *
-     * @param _api Reference to the CineastAPI. Gets injected by DI.
+     * @param _api Reference to the CineastWebSocketFactoryService. Gets injected by DI.
+     * @param _config
      */
-    constructor(private _api : CineastAPI) {
-        _api.observable()
-            .filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg[0]) > -1)
-            .subscribe((msg) => this.onApiMessage(msg[1]));
-        console.log("QueryService is up and running!");
+    constructor(@Inject(CineastWebSocketFactoryService) private _api : CineastWebSocketFactoryService, @Inject(ConfigService) _config: ConfigService) {
+        _api.filter(c => c != null)
+            .map(c => c.socket.filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1))
+            .concatAll().subscribe((msg: Message) =>this.onApiMessage(msg));
+
+       this._config = _config.asObservable();
+       console.log("QueryService is up and running!");
     }
 
     /**
      * Starts a new similarity query. Success is indicated by the return value.
      *
-     * Note: Queries can only be started if no query is currently ongoing.
+     * Note: Similarity queries can only be started if no query is currently running.
      *
-     * @param query The SimilarityQueryMessage.
+     * @param containers The list of QueryContainers used to create the query.
      * @returns {boolean} true if query was issued, false otherwise.
      */
-    public findSimilar(query : SimilarityQuery) : boolean {
-        if (!this._running) {
-            this._api.send(query.toJson());
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     *
-     * @param {string} dataUrl
-     * @return {boolean}
-     */
-    public findByDataUrl(dataUrl: string) : boolean {
-
-      let qq = new QueryContainer();
-      qq.addTerm("IMAGE");
-      qq.getTerm("IMAGE").data = dataUrl;
-      qq.getTerm("IMAGE").setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
-
-      let query = new SimilarityQuery(
-        [qq]
-      );
-      return this.findSimilar(query);
+    public findSimilar(containers : QueryContainerInterface[]) : boolean {
+        if (this._running > 0) return false;
+        if (!this._api.getValue()) return false;
+        this._config.first().subscribe(config => {
+            this._api.getValue().send(new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+        });
     }
 
     /**
      * Starts a new MoreLikeThis query. Success is indicated by the return value.
      *
-     * Note: Queries can only be started if no query is currently ongoing.
+     * Note: Similarity queries can only be started if no query is currently running.
      *
      * @param segmentId The ID of the segment that should serve as example.
+     * @param categories Optional list of category names that should be used for More-Like-This.
      * @returns {boolean} true if query was issued, false otherwise.
      */
-    public findMoreLikeThis(segmentId: string) : boolean {
-        if (this._running) return false;
-        if (this._results.features.length == 0) return false;
+    public findMoreLikeThis(segmentId: string, categories?: string[]) : boolean {
+        if (this._running > 0) return false;
+        if (!this._api.getValue()) return false;
 
-        let categories: string[] = [];
-        for (let feature of this._results.features) {
-            categories.push(feature.name);
-        }
+        /* Use categories from last query AND the default categories for MLT. */
+        this._config.first().subscribe(config => {
+            let categories = this._results.features.map(f => f.name);
+            config.get<FeatureCategories[]>('mlt').filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
+            if (categories.length > 0) {
+                this._api.getValue().send(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+            }
+        });
 
-        this._api.send(new MoreLikeThisQuery(segmentId, categories));
         return true;
+    }
+
+    /**
+     * Starts a new MoreLikeThis query. Success is indicated by the return value. The results of this query will always
+     * be appended to the existing result set!
+     *
+     * Note: Queries can only be started if no query is currently ongoing.
+     *
+     * @param {string} segmentId The ID of the segment for which neighbors should be fetched.
+     * @param {number} count Number of segments on each side.
+     */
+    public findNeighboringSegments(segmentId: string, count?: number) {
+        if (!this._results) return false;
+        if (!this._api.getValue()) return false;
+        this._api.getValue().send(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
     }
 
     /**
@@ -122,7 +135,7 @@ export class QueryService {
      * @return {boolean}
      */
     get running(): boolean {
-        return this._running;
+        return this._running > 0;
     }
 
     /**
@@ -131,7 +144,7 @@ export class QueryService {
      *
      * @returns {Observable<QueryChange>}
      */
-    get observable() : Observable<QueryChange>{
+    get observable() : Observable<QueryChange> {
         return this._subject.asObservable();
     }
 
@@ -141,27 +154,26 @@ export class QueryService {
      *
      * @param message
      */
-    private onApiMessage(message: string): void {
-        let parsed = <Message>JSON.parse(message);
-        switch (parsed.messageType) {
+    private onApiMessage(message: Message): void {
+        switch (message.messageType) {
             case "QR_START":
-                let qs = <QueryStart>parsed;
+                let qs = <QueryStart>message;
                 this.startNewQuery(qs.queryId);
                 break;
             case "QR_OBJECT":
-                let obj = <ObjectQueryResult>parsed;
+                let obj = <ObjectQueryResult>message;
                 if (this._results && this._results.processObjectMessage(obj)) this._subject.next("UPDATED");
                 break;
             case "QR_SEGMENT":
-                let seg = <SegmentQueryResult>parsed;
+                let seg = <SegmentQueryResult>message;
                 if (this._results && this._results.processSegmentMessage(seg)) this._subject.next("UPDATED");
                 break;
             case "QR_SIMILARITY":
-                let sim = <SimilarityQueryResult>parsed;
+                let sim = <SimilarityQueryResult>message;
                 if (this._results && this._results.processSimilarityMessage(sim)) this._subject.next("UPDATED");
                 break;
             case "QR_ERROR":
-                this.errorOccurred(<QueryError>parsed);
+                this.errorOccurred(<QueryError>message);
                 break;
             case "QR_END":
                 this.finalizeQuery();
@@ -170,17 +182,14 @@ export class QueryService {
     }
 
     /**
-     * Starts a new RunningQueries in response to a QR_START message. Stores the
-     * queryId for further reference and purges the similarities and segment_to_object_map.
+     * Updates the local state in response to a QR_START message. This method triggers an observable change in the QueryService class.
      *
-     * This method triggers an observable change in the QueryService class.
-     *
-     * @param id ID of the new query. Used to associate responses.
+     * @param queryId ID of the new query. Used to associate responses.
      */
-    private startNewQuery(id : string) {
+    private startNewQuery(queryId : string) {
         /* Start the actual query. */
-        this._results = new ResultsContainer(id);
-        this._running = true;
+        if (!this._results || (this._results && this._results.queryId != queryId)) this._results = new ResultsContainer(queryId);
+        this._running += 1;
         this._subject.next("STARTED" as QueryChange);
     }
 
@@ -190,7 +199,7 @@ export class QueryService {
      * This method triggers an observable change in the QueryService class.
      */
     private finalizeQuery() {
-        this._running = false;
+        this._running -= 1;
         this._subject.next("ENDED" as QueryChange);
     }
 
@@ -200,20 +209,21 @@ export class QueryService {
      * This method triggers an observable change in the QueryService class.
      */
     private errorOccurred(message: QueryError) {
-        this._running = false;
+        this._running -= 1;
         this._subject.next("ERROR" as QueryChange);
         console.log("QueryService received error: " + message.message);
     }
 
     /**
-     * Clears the results and aborts the current query from being executed (Warning: The
-     * abort is not propagated to the Cineast API, which might still be running).
+     * Clears the results and aborts the current query from being executed
+     *
+     * (Warning: The abort is not propagated to the Cineast API, which might still be running).
      */
     public clear() {
         /* If query is still running, stop it. */
         if (this._running) {
             this._subject.next("ENDED" as QueryChange);
-            this._running = false;
+            this._running = 0;
         }
 
         /* Complete the ResultsContainer and release it. */

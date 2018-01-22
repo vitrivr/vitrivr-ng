@@ -1,89 +1,51 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {QueryService, QueryChange} from "./core/queries/query.service";
-import {MatSnackBar} from "@angular/material";
+import {Component} from '@angular/core';
+import {QueryChange, QueryService,} from "./core/queries/query.service";
 import {ConfigService} from "./core/basics/config.service";
-import {Config} from "./core/basics/config.model";
-import {Subscription} from "rxjs/Subscription";
+import {Config} from "./shared/model/config/config.model";
+import {Observable} from "rxjs/Observable";
+import {EventBusService} from "./core/basics/event-bus.service";
 @Component({
-    styles : [`
-        mat-sidenav {
-            width: 300px;
-        }
-    `],
+    moduleId: module.id,
     selector: 'vitrivr',
-    templateUrl: 'app.component.html'
+    templateUrl: 'app.component.html',
+    styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent {
+    /** Observable that returns the most recent application configuration. */
+    private _config: Observable<Config>;
 
-    /* Indicator whether the progress bar should be visible. */
-    public loading : boolean = false;
-
-    /* Current instance of application configuration. */
-    private _config: Config;
-
-    /* Subscription to QueryService for further reference. */
-    private _queryServiceSubscription: Subscription;
-
-    /* Subscription to ConfigService for further reference. */
-    private _configServiceSubscription: Subscription;
+    /** Observable that return the loading state of the QueryService. */
+    private _loading: Observable<boolean>;
 
     /**
-     * Default constructor. Subscribe for PING messages at the CineastAPI.
+     * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
      *
-     * @param _queryService
-     * @param _configService
-     * @param _snackBar
+     * @param _queryService Reference to the singleton QueryService.
+     * @param _configService Reference to the singleton ConfigService.
+     * @param _eventBusService Reference to the singleton EventBusService.
      */
-    constructor(private _queryService : QueryService, private _configService: ConfigService, private _snackBar: MatSnackBar) {}
-
-    /**
-     * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
-     */
-    public ngOnInit(): void {
-        this._queryServiceSubscription = this._queryService.observable.filter(msg => ["STARTED", "ERROR", "ENDED"].indexOf(msg) > -1).subscribe((msg) => {
-            this.onQueryStateChange(msg)
+    constructor(_queryService : QueryService, _configService: ConfigService, private _eventBusService: EventBusService) {
+        this._loading = _queryService.observable.filter(msg => ["STARTED","ENDED","ERROR"].indexOf(msg) > -1).map((msg: QueryChange) => {
+            return _queryService.running;
         });
-        this._configServiceSubscription = this._configService.observable.subscribe((config) => {
-            this._config = config;
-        })
+        this._config = _configService.asObservable();
     }
 
     /**
-     * Lifecycle Hook (onDestroy): Unsubscribes from the QueryService subscription.
-     */
-    public ngOnDestroy() {
-        this._queryServiceSubscription.unsubscribe();
-        this._configServiceSubscription.unsubscribe();
-        this._queryServiceSubscription = null;
-        this._configServiceSubscription = null;
-    }
-
-    /**
+     * Getter for the observable config attribute.
      *
-     * @return {ConfigService}
+     * @return {Observable<Config>}
      */
-    get config(): Config {
+    get config(): Observable<Config> {
         return this._config;
     }
 
     /**
-     * Called, whenever QueryService reports a state change the AppComponent
-     * has subscribed to.
+     * Getter for the observable loading attribute.
      *
-     * @param msg
+     * @return {Observable<boolean>}
      */
-    private onQueryStateChange(msg : QueryChange) {
-        switch (msg) {
-            case "STARTED":
-                this.loading = true;
-                break;
-            case "ENDED":
-                this.loading = false;
-                break;
-            case "ERROR":
-                this.loading = false;
-                this._snackBar.open("Cineast API returned an error - query aborted!" , null, {duration: ConfigService.SNACKBAR_DURATION});
-                break;
-        }
+    get loading(): Observable<boolean> {
+        return this._loading;
     }
 }

@@ -1,62 +1,70 @@
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
-import {CineastAPI} from "../core/api/cineast-api.service";
-import {StatusType, Ping} from "../shared/model/messages/interfaces/ping.interface";
+import {CineastWebSocketFactoryService} from "../core/api/cineast-web-socket-factory.service";
+import {StatusType, Ping} from "../shared/model/messages/interfaces/responses/ping.interface";
 import {ConfigService} from "../core/basics/config.service";
 import {Subscription} from "rxjs/Subscription";
+import {WebSocketWrapper} from "../core/api/web-socket-wrapper.model";
+import {Message} from "../shared/model/messages/interfaces/message.interface";
 
 @Component({
     selector: 'api-status',
     template:`
         <span >
-            <mat-icon style="vertical-align:text-bottom;">{{getIcon()}}</mat-icon>&nbsp;{{getLatency() ? '(' + getLatency() + 'ms)' : ''}}
+            <mat-icon style="vertical-align:text-bottom;">{{icon}}</mat-icon>&nbsp;{{latency < 100000 ? '(' + latency + 'ms)' : "(&#x221e;)"}}
         </span>
     `
 })
 
 export class PingComponent implements OnInit, OnDestroy {
-
+    /** The current API status. */
     private _apistatus : StatusType = "DISCONNECTED";
-    private last : number;
-    private  latency: number;
+
+    /** Timestamp of the last PING packet. */
+    private _last : number = 0;
+
+    /** Calculated latency. */
+    private _latency: number = Number.MAX_VALUE;
+
+    /** Number of packets in transit. Reset after every response. */
+    private _transit: number = 0;
 
     /* Subscription to QueryService for further reference. */
     private _apiSubscription: Subscription;
-
-    /* Subscription to ConfigService for further reference. */
-    private _configServiceSubscription: Subscription;
 
     /* Subscription to Timer for further reference. */
     private _timerSubscription: Subscription;
 
     /**
-     * Default constructor. Subscribe for PING messages at the CineastAPI.
+     * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
      *
      * @param _api
      * @param _configService
      */
-    constructor(private _api : CineastAPI, private _configService : ConfigService) {}
+    constructor(private _api : CineastWebSocketFactoryService, private _configService : ConfigService) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the API and the ConfigService.
      */
     public ngOnInit(): void {
         /* Subscribes to API changes. */
-        this._apiSubscription = this._api.observable()
-            .filter(msg =>["PING"].indexOf(msg[0]) > -1)
-            .subscribe((msg) => this.onMessage(msg[1]));
+        this._apiSubscription = this._api.filter(c => c != null).map(c => c.socket.filter(msg => msg.messageType == "PING")).concatAll().subscribe((msg: Ping) => {
+            this._apistatus = msg.status;
+            this._transit = 0;
+            this._latency = (Date.now() - this._last)
+        });
 
-        /* Subscribes to changes in the configuration file. */
-        this._configServiceSubscription = this._configService.observable.subscribe((config) => {
-            if (this._timerSubscription) {
-                this._timerSubscription.unsubscribe();
-                this._timerSubscription = null;
+        /* Subscribes to changes in the configuration file and dispatches the ping timer. */
+        this._timerSubscription = this._configService.asObservable().map(c => Observable.timer(0, c.ping_interval)).concatAll().subscribe(() => {
+            this._last = Date.now();
+            this._transit +=1;
+            this._api.getValue().send(<Message>{messageType: "PING"});
+            if (this._transit > 1) {
+                this._apistatus = "DISCONNECTED";
+                this._latency = Number.MAX_VALUE;
+                this._transit = 0;
             }
-            this._timerSubscription = Observable.timer(0, config.ping_interval).subscribe(() => {
-                this.last = Date.now();
-                this._api.send({messageType:'PING'});
-            })
         })
     }
 
@@ -65,21 +73,9 @@ export class PingComponent implements OnInit, OnDestroy {
      */
     public ngOnDestroy(): void {
         this._apiSubscription.unsubscribe();
-        this._configServiceSubscription.unsubscribe();
-        if (this._timerSubscription) this._timerSubscription.unsubscribe();
+        this._timerSubscription.unsubscribe();
         this._apiSubscription = null;
-        this._configServiceSubscription = null;
         this._timerSubscription = null;
-    }
-
-    /**
-     * Processes a response message and changes the icon accordingly.
-     *
-     * @param msg
-     */
-    private onMessage(msg: string) {
-        this._apistatus =  (<Ping>JSON.parse(msg)).status;
-        this.latency = (Date.now() - this.last)
     }
 
     /**
@@ -87,7 +83,7 @@ export class PingComponent implements OnInit, OnDestroy {
      *
      * @returns {any}
      */
-    public getIcon() : string {
+    get icon() : string {
         switch (this._apistatus) {
             case 'DISCONNECTED':
                 return 'flash_off';
@@ -105,7 +101,7 @@ export class PingComponent implements OnInit, OnDestroy {
      *
      * @returns {number}
      */
-    public getLatency() {
-        return this.latency;
+    get latency() {
+        return this._latency;
     }
 }

@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform} from "@angular/core";
-import {SegmentScoreContainer} from "../../model/features/scores/segment-score-container.model";
-import {ScoreContainer} from "../../model/features/scores/compound-score-container.model";
+import {SegmentScoreContainer} from "../../model/results/scores/segment-score-container.model";
+import {ScoreContainer} from "../../model/results/scores/compound-score-container.model";
 
 @Pipe({
     name: 'OrderByScorePipe'

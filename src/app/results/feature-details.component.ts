@@ -1,7 +1,7 @@
 import {Component, Inject} from "@angular/core";
 import {MAT_SNACK_BAR_DATA} from "@angular/material";
-import {Feature} from "../shared/model/features/feature.model";
-import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
+import {WeightedFeatureCategory} from "../shared/model/results/weighted-feature-category.model";
+import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
 
 @Component({
     moduleId: module.id,
@@ -24,7 +24,7 @@ export class FeatureDetailsComponent{
     /**
      * Default constructor; populates the array of texts.
      *
-     * @param {Map<Feature, number>} data Data containing the features and associated scores.
+     * @param {Map<WeightedFeatureCategory, number>} data Data containing the results and associated scores.
      */
     constructor(@Inject(MAT_SNACK_BAR_DATA) data: SegmentScoreContainer) {
         this._title = data.segmentId + " (" + (data.score * 100).toFixed(2) + "%)";

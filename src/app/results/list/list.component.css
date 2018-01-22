@@ -7,7 +7,7 @@
 
 .segment {
     width: 120px;
-    height: 100px;
+    height: 110px;
     position: relative;
 }
 
@@ -22,6 +22,18 @@
     object-fit: contain;
 }
 
+.segment .header {
+    position: absolute;
+    top: 0;
+    height: 25px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: black;
+    opacity: 0.65;
+    color: white;
+}
+
 .segment .footer {
     position: absolute;
     top: 75px;
@@ -32,6 +44,23 @@
     background-color: black;
     opacity: 0.65;
     color: white;
+}
+
+/* Styles the button in the tile footer. */
+
+.header > button {
+    max-height: 20px !important;
+    max-width: 20px !important;
+    line-height: 0 !important;
+}
+
+.header .mat-icon {
+    max-height: 18px;
+    max-width: 18px;
+}
+
+.header .material-icons {
+    font-size: 16px !important;
 }
 
 /* Styles the button in the tile footer. */

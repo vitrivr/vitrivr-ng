@@ -132,6 +132,20 @@ h4.inverse {
   transform: translate(-50%, -50%)
 }
 
+.snackbar-success {
+  background-color: #0A8A0A;
+  opacity: 0.85;
+}
+
+.snackbar-error {
+  background-color: #B90000;
+  opacity: 0.85;
+}
+
+.snackbar-warning {
+  background-color: #FFA500;
+  opacity: 0.85;
+}
 
 
 .flex-container {
@@ -176,26 +190,6 @@ div.weight-distribution {
 
 .slider-group {
   display:flex; align-items: center; justify-content: space-between;
-}
-
-/* Defines general appearance of app: toolbar and sidenavs. */
-
-.vitrivr-sidenav {
-  padding: 10px;
-  min-width: 100px;
-}
-
-.vitrivr-sidenav.left {
-  margin-right:10px;
-}
-
-.vitrivr-sidenav.right {
-  margin-left:10px;
-}
-
-.vitrivr-toolbar-menu {
-  padding: 0 14px 0 14px;
-  color: white;
 }
 
 /* Defines some spacer classes that can be used in flexboxes etc. */

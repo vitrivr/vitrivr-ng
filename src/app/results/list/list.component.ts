@@ -1,14 +1,20 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from "@angular/core";
 import {AbstractResultsViewComponent} from "../abstract-results-view.component";
 import {QueryService} from "../../core/queries/query.service";
 import {ResolverService} from "../../core/basics/resolver.service";
 import {Router} from "@angular/router";
-import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
-import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
-import {FeatureDetailsComponent} from "../feature-details.component";
-import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
+import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
+import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
+import {MatDialog, MatSnackBar} from "@angular/material";
 import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
-import {OrderBySegmentPipe} from "../../shared/pipes/containers/order-by-segment.pipe";
+import {Observable} from "rxjs/Observable";
+import {VbsSubmissionService} from "app/core/vbs/vbs-submission.service";
+import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
+import {SelectionService} from "../../core/selection/selection.service";
+import {EventBusService} from "../../core/basics/event-bus.service";
+import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
+import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
+import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
 
 @Component({
     moduleId: module.id,
@@ -17,11 +23,7 @@ import {OrderBySegmentPipe} from "../../shared/pipes/containers/order-by-segment
     styleUrls: ['list.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListComponent extends AbstractResultsViewComponent{
-
-    /** List of MediaObjectScoreContainers currently displayed by the list. */
-    private _mediaobjects : MediaObjectScoreContainer[] = [];
-
+export class ListComponent extends AbstractResultsViewComponent<MediaObjectScoreContainer[]> {
     /** Reference to the SegmentScoreContainer that is currently in focus. */
     private _focus: SegmentScoreContainer;
 
@@ -29,14 +31,25 @@ export class ListComponent extends AbstractResultsViewComponent{
      * Default constructor.
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
-     * @param _queryService
+     * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
+     * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
+     * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
+     * @param _router The Router used for navigation
+     * @param _snackBar The MatSnackBar component used to display the SnackBar.
      * @param _resolver
-     * @param _router
-     * @param _snackBar
      * @param _dialog
+     * @param _vbs
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MatSnackBar, protected _dialog: MatDialog) {
-        super(_cdr, _queryService);
+    constructor(_cdr: ChangeDetectorRef,
+                _queryService : QueryService,
+                _selectionService: SelectionService,
+                _eventBusService: EventBusService,
+                 _router: Router,
+                _snackBar: MatSnackBar,
+                protected _resolver: ResolverService,
+                protected _dialog: MatDialog,
+                protected _vbs: VbsSubmissionService) {
+        super(_cdr, _queryService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**
@@ -59,40 +72,24 @@ export class ListComponent extends AbstractResultsViewComponent{
     }
 
     /**
-     * Getter for list of MediaObjectScoreContainer
-     *
-     * @return {MediaObjectScoreContainer[]}
-     */
-    get mediaobjects(): MediaObjectScoreContainer[] {
-        return this._mediaobjects;
-    }
-
-    /**
-     * Invoked whenever a user clicks on the object details button. Triggers a transition to the ObjectdetailsComponent.
-     *
-     * @param segment SegmentScoreContainer for which details should be displayed.
-     */
-    public onDetailsButtonClicked(segment: SegmentScoreContainer) {
-        this._router.navigate(['/mediaobject/' + segment.objectId]);
-    }
-
-    /**
-     * Invoked whenever a user clicks on the MLT (= MoreLikeThis) button. Triggers a MLT query with the QueryService.
-     *
-     * @param segment SegmentScoreContainer which should be used for MLT.
-     */
-    public onMltButtonClicked(segment: SegmentScoreContainer) {
-        this._queryService.findMoreLikeThis(segment.segmentId);
-    }
-
-    /**
-     * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
-     *
+     * Invokes when a user clicks the 'Find neighbouring segments' button.
      *
      * @param {SegmentScoreContainer} segment
      */
-    public onInformationButtonClicked(segment: SegmentScoreContainer) {
-        this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data : segment, duration: 2500});
+    public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
+        this._queryService.findNeighboringSegments(segment.segmentId);
+    }
+
+    /**
+     * Invokes when a user right clicks the 'Find neighbouring segments' button. Loads neighbouring segments with
+     * a count of 500.
+     *
+     * @param {Event} event
+     * @param {SegmentScoreContainer} segment
+     */
+    public onNeighborsButtonRightClicked(event: Event, segment: SegmentScoreContainer) {
+        this._queryService.findNeighboringSegments(segment.segmentId, 500);
+        event.preventDefault();
     }
 
     /**
@@ -100,8 +97,8 @@ export class ListComponent extends AbstractResultsViewComponent{
      *
      * @param {SegmentScoreContainer} segment
      */
-    public onStarButtonClicked(segment: SegmentScoreContainer) {
-        segment.toggleMark();
+    public onSubmitButtonClicked(segment: SegmentScoreContainer) {
+        this._vbs.submitSegment(segment);
     }
 
     /**
@@ -111,18 +108,46 @@ export class ListComponent extends AbstractResultsViewComponent{
      */
     public onTileClicked(segment: SegmentScoreContainer) {
         let dialogRef = this._dialog.open(QuickViewerComponent, {data: segment});
+
+        /* Emit an EXAMINE event on the bus. */
+        let context: Map<ContextKey,any> = new Map();
+        context.set("i:mediasegment", segment.segmentId);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
 
     /**
-     * This method is used internally to update the gallery view.
+     * Returns true, if the submit (to VBS) button should be displayed for the given segment and false otherwise. This depends on the configuration and
+     * the media type of the object.
+     *
+     * @param {SegmentScoreContainer} segment The segment for which to determine whether the button should be displayed.
+     * @return {boolean} True if submit button should be displayed, false otherwise.
      */
-    protected updateView() {
-        if (this.results) {
-            this._mediaobjects = this.results.objects;
-        } else {
-            this._mediaobjects = [];
-        }
+    public showVbsSubmitButton(segment: SegmentScoreContainer): Observable<boolean> {
+        return this._vbs.isOn.map(v => v && segment.objectScoreContainer.mediatype == 'VIDEO');
+    }
 
-        this._cdr.markForCheck();
+    /**
+     * This is a helper method to facilitate updating the the list correct. It is necessary due to nesting in the template (twp NgFor). To determine, whether to update the view,
+     * angular only takes the outer observable into account. As long as this observable doesn't change, there is now update. Doe to the hierarchical nature of the data, it is - however -
+     * entirely possible that the outer observable is not changed while segments are being added to the container.
+     *
+     * This function created a unique identifier per MediaObjectScoreContainer which takes the number of segments into account.
+     *
+     * @param index
+     * @param {MediaObjectScoreContainer} item
+     */
+    public trackByFunction(index, item: MediaObjectScoreContainer) {
+        return item.objectId + "_" + item.numberOfSegments;
+    }
+
+    /**
+     * Subscribes to the data exposed by the ResultsContainer.
+     *
+     * @return {Observable<MediaObjectScoreContainer>}
+     */
+    protected subscribe(results: ResultsContainer) {
+        if (results) {
+            this._dataSource = results.mediaobjectsAsObservable;
+        }
     }
 }

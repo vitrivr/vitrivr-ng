@@ -1,16 +1,13 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {MediaObjectScoreContainer} from "../../shared/model/features/scores/media-object-score-container.model";
-import {QueryChange, QueryService} from "../../core/queries/query.service";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
+import {QueryService} from "../../core/queries/query.service";
 import {Router} from "@angular/router";
 import {ResolverService} from "../../core/basics/resolver.service";
-import {SegmentScoreContainer} from "../../shared/model/features/scores/segment-score-container.model";
-import {ResultsContainer} from "../../shared/model/features/scores/results-container.model";
 import {AbstractResultsViewComponent} from "../abstract-results-view.component";
-import {MatSnackBar, MatSnackBarConfig} from "@angular/material";
-import {FeatureDetailsComponent} from "../feature-details.component";
-import {MediaSegmentDragContainer} from "../../shared/model/internal/media-segment-drag-container.model";
-import {MediaSegment} from "../../shared/model/media/media-segment.model";
-import {MediaObjectDragContainer} from "../../shared/model/internal/media-object-drag-container.model";
+import {MatSnackBar} from "@angular/material";
+import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
+import {SelectionService} from "../../core/selection/selection.service";
+import {EventBusService} from "../../core/basics/event-bus.service";
 
 @Component({
     moduleId: module.id,
@@ -19,10 +16,7 @@ import {MediaObjectDragContainer} from "../../shared/model/internal/media-object
     styleUrls: ['gallery.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GalleryComponent extends AbstractResultsViewComponent {
-    /** List of MediaObjectScoreContainers currently displayed by the gallery. */
-    protected _mediaobjects : MediaObjectScoreContainer[] = [];
-
+export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectScoreContainer[]> {
     /** Reference to the MediaObjectScoreContainer that is currently in focus. */
     protected _focus: MediaObjectScoreContainer;
 
@@ -36,13 +30,21 @@ export class GalleryComponent extends AbstractResultsViewComponent {
      * Default constructor.
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
-     * @param _queryService
+     * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
+     * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
+     * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
+     * @param _router The Router used for navigation
+     * @param _snackBar The MatSnackBar component used to display the SnackBar.
      * @param _resolver
-     * @param _router
-     * @param _snackBar
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, protected _resolver: ResolverService, protected _router: Router, protected _snackBar: MatSnackBar) {
-        super(_cdr, _queryService);
+    constructor(_cdr: ChangeDetectorRef,
+                _queryService : QueryService,
+                _selectionService: SelectionService,
+                _eventBusService: EventBusService,
+                _router: Router,
+                _snackBar: MatSnackBar,
+                protected _resolver: ResolverService) {
+        super(_cdr, _queryService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**
@@ -63,7 +65,6 @@ export class GalleryComponent extends AbstractResultsViewComponent {
     set tilesize(value: number) {
         if (value > 10) {
             this._tilesize = value;
-            this._cdr.markForCheck();
         }
     }
 
@@ -85,28 +86,7 @@ export class GalleryComponent extends AbstractResultsViewComponent {
     set tilegap(value: number) {
         if (value > 2) {
             this._tilegap = value;
-            this._cdr.markForCheck();
         }
-    }
-
-    /**
-     *
-     * @return {MediaObjectScoreContainer[]}
-     */
-    get mediaobjects(): MediaObjectScoreContainer[] {
-        return this._mediaobjects;
-    }
-
-    /**
-     * Whenever a tile is dragged, the most representative segment and the media object that tile represents is converted to JSON and
-     * added to the dataTransfer object of the drag event.
-     *
-     * @param event Drag event
-     * @param object MediaObjectScoreContainer that is being dragged.
-     */
-    public onTileDrag(event, object: MediaObjectScoreContainer) {
-        event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(object.representativeSegment).toJSON());
-        event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
     }
 
     /**
@@ -130,63 +110,13 @@ export class GalleryComponent extends AbstractResultsViewComponent {
     }
 
     /**
-     * Triggered whenever a user clicks on the object details button. Triggers a
-     * transition to the ObjectdetailsComponent.
+     * Subscribes to the data exposed by the ResultsContainer.
      *
-     * @param object MediaObjectScoreContainer for which details should be displayed.
+     * @return {Observable<MediaObjectScoreContainer>}
      */
-    public onDetailsButtonClicked(object: MediaObjectScoreContainer) {
-        this._router.navigate(['/mediaobject/' + object.objectId]);
-    }
-
-    /**
-     * Triggered whenever a user clicks on the MLT (= MoreLikeThis) button. Triggers
-     * a MLT query with the QueryService.
-     *
-     * @param object MediaObjectScoreContainer which should be used for MLT.
-     */
-    public onMltButtonClicked(object: MediaObjectScoreContainer) {
-        if (object.representativeSegment) {
-            this._queryService.findMoreLikeThis(object.representativeSegment.segmentId);
-        } else {
-            throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
+    protected subscribe(results: ResultsContainer) {
+        if (results) {
+            this._dataSource = results.mediaobjectsAsObservable;
         }
-    }
-
-    /**
-     * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
-     *
-     * @param {MediaObjectScoreContainer} object
-     */
-    public onStarButtonClicked(object: MediaObjectScoreContainer) {
-        object.representativeSegment.toggleMark();
-    }
-
-    /**
-     * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
-     *
-     *
-     * @param {MediaObjectScoreContainer} object
-     */
-    public onInformationButtonClicked(object: MediaObjectScoreContainer) {
-        if (object.representativeSegment) {
-            this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: object.representativeSegment, duration: 2500});
-        } else {
-            throw new Error("The specified object '" + object.objectId + "' does not have a most representative segment.");
-        }
-    }
-
-    /**
-     * This method is used internally to update the gallery view.
-     */
-    protected updateView() {
-        if (this.results) {
-            this._mediaobjects = this.results.objects;
-            this._focus = null;
-        } else {
-            this._mediaobjects = [];
-        }
-
-        this._cdr.markForCheck();
     }
 }

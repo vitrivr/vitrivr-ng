@@ -2,47 +2,31 @@ import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
 import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-type.interface";
 import {ConfigService} from "../../core/basics/config.service";
-import {Config} from "../../core/basics/config.model";
+import {Config} from "../../shared/model/config/config.model";
+import {Observable} from "rxjs/Observable";
 
 @Component({
     selector: 'query-container',
     templateUrl: 'query-container.component.html'
 })
 
-export class QueryContainerComponent implements OnInit, OnDestroy {
-    /* The QueryContainer this QueryContainerComponent is associated to. */
+export class QueryContainerComponent {
+    /** The QueryContainer this QueryContainerComponent is associated to. */
     @Input() containerModel : QueryContainerInterface;
 
-    /* A reference to the lists of QueryContainers (to enable remvoing the container). */
+    /** A reference to the lists of QueryContainers (to enable removing the container). */
     @Input() inList : QueryContainerInterface[];
 
-    /** Local instance of Config object. */
-    private _config: Config;
-
-    /** Reference to Subscription to ConfigService. */
-    private _configServiceSubscription;
+    /** A reference to the observable Config exposed by ConfigService. */
+    private _config: Observable<Config>;
 
     /**
      * Constructor; injects ConfigService
      *
      * @param {ConfigService} _configService
      */
-    constructor(private _configService: ConfigService) {}
-
-    /**
-     * Lifecycle Callback (OnInit): Subscribes to ConfigService.
-     */
-    public ngOnInit(): void {
-        this._configServiceSubscription = this._configService.observable.subscribe((config) => {
-            this._config = config;
-        });
-    }
-
-    /**
-     * Lifecycle Callback (OnDestroy): Unsubscribes from subscription to ConfigService.
-     */
-    public ngOnDestroy(): void {
-       this._configServiceSubscription.unsubscribe();
+    constructor(_configService: ConfigService) {
+        this._config = _configService.asObservable();
     }
 
     /**
@@ -50,7 +34,7 @@ export class QueryContainerComponent implements OnInit, OnDestroy {
      *
      * @return {Config}
      */
-    get config(): Config {
+    get config(): Observable<Config> {
         return this._config;
     }
 

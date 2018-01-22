@@ -1,0 +1,18 @@
+<div [style.padding-left]="'10px'" [style.text-align]="'left'">
+    <mat-form-field class="textinput">
+        <input #input matInput placeholder="Enter a tag" aria-label="Enter a tag" [matAutocomplete]="auto" [formControl]="field.formControl" [(value)]="inputValue">
+        <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let tag of field.filteredTags | async" [value]="tag.name" (onSelectionChange)="onTagSelected(tag)">
+                {{tag.name}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+    <mat-chip-list>
+        <mat-chip *ngFor="let tag of tags" [selectable]="true" [removable]="true" (remove)="removeTag(tag)">
+            {{tag.name}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+    </mat-chip-list>
+</div>
+
+<hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>

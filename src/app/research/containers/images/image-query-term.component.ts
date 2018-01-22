@@ -121,14 +121,12 @@ export class ImageQueryTermComponent {
          * Handle dropped object... cases
          */
         if (event.dataTransfer.files.length > 0) {
-
             /* Case 1: Object is a file. */
             reader.readAsDataURL(event.dataTransfer.files.item(0));
         } else if (event.dataTransfer.getData("application/vitrivr-mediasegment")) {
-
             /* Case 2: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
             let drag: MediaSegmentDragContainer = MediaSegmentDragContainer.fromJSON(event.dataTransfer.getData(MediaSegmentDragContainer.FORMAT));
-            let url = this._resolver.pathToThumbnailForSegment(drag.mediatype, drag.segment);
+            let url = this._resolver.pathToThumbnail(drag.object, drag.segment);
             this._http.get(url, {responseType: 'blob'}).first().subscribe(data => {
                 reader.readAsDataURL(data);
             });

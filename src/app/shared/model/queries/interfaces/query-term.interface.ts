@@ -49,9 +49,4 @@ export interface QueryTermInterface {
      * @param {string} categories
      */
     setCategories(categories: string[]);
-
-    /**
-     * Returns a JSON object representing the current QueryTermInterface instance.
-     */
-    toJson() : any;
 }

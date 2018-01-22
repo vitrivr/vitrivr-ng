@@ -1,13 +1,14 @@
 import {Component, Inject, ViewChild} from "@angular/core";
 import {MAT_DIALOG_DATA} from "@angular/material";
-import {MediaObjectScoreContainer} from "../shared/model/features/scores/media-object-score-container.model";
-import {SegmentScoreContainer} from "../shared/model/features/scores/segment-score-container.model";
+import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-object-score-container.model";
+import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
 import {ResolverService} from "../core/basics/resolver.service";
 
 @Component({
     moduleId: module.id,
     selector: 'quick-viewer',
-    templateUrl: 'quick-viewer.component.html'
+    templateUrl: 'quick-viewer.component.html',
+    styleUrls: ['quick-viewer.component.css']
 })
 export class QuickViewerComponent {
 

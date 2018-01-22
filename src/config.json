@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "localhost",
+    "host" : "127.0.0.1",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
@@ -8,31 +8,29 @@
   },
 
   "resources": {
-    "host_thumbnails" : "http://localhost/vitrivr/thumbnails/",
-    "host_object": "http://localhost/vitrivr/objects/",
+    "host_thumbnails" : "http://127.0.0.1/thumbnails/:t/:o/:s:x",
+    "host_objects": "http://127.0.0.1/objects/:t/:n",
     "suffix_default":".jpg",
     "suffix": {
       "IMAGE": "png",
       "VIDEO": "png"
     }
   },
-  "vbs": {
-    "active":false,
-    "team" : 1,
-    "endpoint": "http://10.34.58.37:12345/submit"
-  },
   "evaluation": {
-    "active":false,
-    "templates":[
-      {"name":"Testset A", "url":"http://10.34.58.10/vitrivr/testset/evaluation_a.json"},
-      {"name":"Testset B", "url":"http://10.34.58.10/vitrivr/testset/evaluation_b.json"}
-    ]
+    "active":false
   },
-  "queryContainerTypes":{
-    "image": true,
-    "text" : true,
-    "audio": false,
-    "model3d": false,
-    "motion": false
+  "mlt" : ["globalcolor", "localcolor", "edge"],
+  "query": {
+    "options": {
+      "image": true,
+      "audio": true,
+      "model3d": true,
+      "motion": true,
+      "text": true,
+      "tag": true
+    },
+    "config": {
+      "hints": ["exact"]
+    }
   }
 }
