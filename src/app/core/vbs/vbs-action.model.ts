@@ -31,18 +31,10 @@ export class VbsAction {
      * Default constructor for VbsAction.
      *
      * @param {VbsActionType} action The type of action.
+     * @param {number} timestamp The timestamp of the VbsAction.
      * @param {string} context Optional context information.
      */
-    constructor(public readonly action: VbsActionType, public readonly context?: string) {}
-
-    /**
-     * Returns a string representation of this VbsAction.
-     *
-     * @return {any}
-     */
-    public toString() {
-        return this.action + (this.context ? "(" + this.context + ")" : "");
-    }
+    constructor(public readonly action: VbsActionType, public readonly timestamp: number, public readonly context?: string) {}
 
     /**
      * This method maps the events emitted on the Vitrivr NG EventBusService to VbsActions.
@@ -55,46 +47,46 @@ export class VbsAction {
             e.components.forEach(c => {
                 switch (c.type) {
                     case InteractionEventType.QUERY_AUDIO:
-                        actions.push(new VbsAction(VbsActionType.AUDIO));
+                        actions.push(new VbsAction(VbsActionType.AUDIO, e.timestamp));
                         break;
                     case InteractionEventType.QUERY_MOTION:
-                        actions.push(new VbsAction(VbsActionType.MOTIONSKETCH));
+                        actions.push(new VbsAction(VbsActionType.MOTIONSKETCH, e.timestamp));
                         break;
                     case InteractionEventType.MLT:
-                        actions.push(new VbsAction(VbsActionType.SIMILARITY, c.context.get("q:value")));
+                        actions.push(new VbsAction(VbsActionType.SIMILARITY,e.timestamp, c.context.get("q:value")));
                         break;
                     case InteractionEventType.QUERY_TAG:
-                        actions.push(new VbsAction(VbsActionType.KEYWORD, c.context.get("q:value")));
+                        actions.push(new VbsAction(VbsActionType.KEYWORD,e.timestamp, c.context.get("q:value")));
                         break;
                     case InteractionEventType.QUERY_FULLTEXT: {
                         let categories = c.context.get("q:categories");
                         if (categories.indexOf("tagft") > -1 || categories.indexOf("meta") > -1) actions.push(new VbsAction(VbsActionType.KEYWORD, c.context.get("q:value")));
                         if (categories.indexOf("ocr") > -1) actions.push(new VbsAction(VbsActionType.OCR, c.context.get("q:value")));
-                        if (categories.indexOf("asr") > -1) actions.push(new VbsAction(VbsActionType.AUDIO, c.context.get("q:value") + ",asr"));
+                        if (categories.indexOf("asr") > -1) actions.push(new VbsAction(VbsActionType.AUDIO, e.timestamp,c.context.get("q:value") + ",asr"));
                         break;
                     }
                     case InteractionEventType.QUERY_IMAGE: {
                         let categories = c.context.get("q:categories");
-                        if (categories.indexOf("globalcolor") > -1 || c.context.get("q:categories").indexOf("localcolor") > -1) actions.push(new VbsAction(VbsActionType.COLORSKETCH));
-                        if (categories.indexOf("edge") > -1) actions.push(new VbsAction(VbsActionType.EDGESKETCH));
-                        if (categories.indexOf("localfeatures") > -1) actions.push(new VbsAction(VbsActionType.SIMILARITY));
+                        if (categories.indexOf("globalcolor") > -1 || c.context.get("q:categories").indexOf("localcolor") > -1) actions.push(new VbsAction(VbsActionType.COLORSKETCH, e.timestamp));
+                        if (categories.indexOf("edge") > -1) actions.push(new VbsAction(VbsActionType.EDGESKETCH,e.timestamp));
+                        if (categories.indexOf("localfeatures") > -1) actions.push(new VbsAction(VbsActionType.SIMILARITY, e.timestamp));
                         break;
                     }
                     case InteractionEventType.FILTER:
-                        actions.push(new VbsAction(VbsActionType.FILTERING));
+                        actions.push(new VbsAction(VbsActionType.FILTERING,e.timestamp));
                         break;
                     case InteractionEventType.REFINE:
                         let weights = c.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weight/100).join(",");
-                        actions.push(new VbsAction(VbsActionType.BROWSING, "adjust weights," + weights));
+                        actions.push(new VbsAction(VbsActionType.BROWSING, e.timestamp, "adjust weights," + weights));
                         break;
                     case InteractionEventType.EXAMINE:
-                        actions.push(new VbsAction(VbsActionType.BROWSING, c.context.get("i:mediasegment") + ",examine"));
+                        actions.push(new VbsAction(VbsActionType.BROWSING, e.timestamp, c.context.get("i:mediasegment") + ",examine"));
                         break;
                     case InteractionEventType.BROWSE:
-                        actions.push(new VbsAction(VbsActionType.BROWSING, "browse results"));
+                        actions.push(new VbsAction(VbsActionType.BROWSING, e.timestamp, "browse results"));
                         break;
                     case InteractionEventType.CLEAR:
-                        actions.push(new VbsAction(VbsActionType.RESET));
+                        actions.push(new VbsAction(VbsActionType.RESET, e.timestamp));
                         break;
                     default:
                         break;

@@ -19,7 +19,7 @@ import {Subscription} from "rxjs/Subscription";
 @Injectable()
 export class VbsSubmissionService {
     /** The observable used to react to changes to the Vitrivr NG configuration. */
-    private _config: Observable<[string,string, number]>;
+    private _config: Observable<[string,string, string]>;
 
     /** A buffer of old, already submitted sequences. */
     private _seqBuffer: string[] = [];
@@ -42,63 +42,15 @@ export class VbsSubmissionService {
      * @param {HttpClient} _http
      * @param {MatSnackBar} _snackBar
      */
-    constructor(_config: ConfigService, _eventBusService: EventBusService, private _metadata: MetadataLookupService, private _http: HttpClient, private _snackBar: MatSnackBar) {
+    constructor(_config: ConfigService, private _eventBusService: EventBusService, private _metadata: MetadataLookupService, private _http: HttpClient, private _snackBar: MatSnackBar) {
         this._config = _config.asObservable()
-            .map(c => <[string,string, number]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<number>('vbs.toolid')]);
+            .map(c => <[string,string, string]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<string>('vbs.toolid')]);
 
 
         /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
         this._configSubscription = this._config.subscribe(([endpoint, team, tool]) => {
-            if (endpoint && team) {
-                let events = VbsAction.mapEventStream(_eventBusService.observable())
-                    .buffer(this._submitSubject)
-                    .map(ev => ev.map(e => e.map(a => a.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR))
-                    .do(seq => {
-                        let time = `time ${Date.now()}`;
-                        if (seq && seq.length > 0) {
-                            this._seqBuffer.push(seq + VbsAction.SEPARATOR + time);
-                        } else {
-                            this._seqBuffer.push(time);
-                        }
-                    });
-                this._vbsSubscription = this._submitSubject
-                    .flatMap(([segment,time]) => {
-                        return _metadata.lookup(segment.objectId)
-                            .flatMap(s => Observable.from(s))
-                            .filter(m => m.domain === "technical" && m.key === "fps")
-                            .map(m => m.value)
-                            .defaultIfEmpty(VideoUtil.bestEffortFPS(segment))
-                            .first();
-                    },([segment,time], fps) => [segment,VbsSubmissionService.timeToFrame(time,fps)])
-                    .withLatestFrom(events,([segment,frame]) => [segment,frame])
-                    .flatMap(([segment,frame]:[SegmentScoreContainer,number]) => {
-                        let params = new HttpParams().set('video', segment.objectId).set('team', String(team)).set('frame', String(frame));
-                        let iseq = VbsAction.TOOL_ID_PREFIX + tool + VbsAction.SEPARATOR + this._seqBuffer.join(VbsAction.SEPARATOR);
-                        let observable = null;
-                        if (iseq.length > 0 && iseq.length < 255) {
-                            params = params.set('iseq', iseq);
-                            observable = this._http.get(String(endpoint),{responseType: 'text', params: params});
-                        } else if (iseq.length >= 255) {
-                            params = params.set('iseq', iseq);
-                            let headers = new HttpHeaders().append("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
-                            observable = this._http.post(String(endpoint), params.toString(), {responseType: 'text', headers: headers})
-                        } else {
-                            observable = this._http.get(String(endpoint), {responseType: 'text', params: params});
-                        }
-                        return observable.catch((err) => Observable.of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`));
-                    })
-                    .map((msg: string) => {
-                        if (msg.indexOf("Correct") > -1) {
-                            return [msg,"snackbar-success"];
-                        }else if (msg.indexOf("Failed") > -1) {
-                            return [msg,"snackbar-error"];
-                        } else {
-                            return [msg,"snackbar-warning"];
-                        }
-                    })
-                    .subscribe(([msg,clazz]) => {
-                        this._snackBar.open(msg,null, {duration: Config.SNACKBAR_DURATION, panelClass: clazz});
-                    });
+            if (endpoint && team && tool) {
+                this.reset(endpoint, team, tool)
             } else if (this._vbsSubscription != null) {
                 this._vbsSubscription.unsubscribe();
                 this._vbsSubscription = null;
@@ -130,6 +82,69 @@ export class VbsSubmissionService {
      */
     public clear() {
         this._seqBuffer = []
+    }
+
+    /**
+     * Resets the VBSSubmissionService, re-initiating
+     */
+    public reset(endpoint?: string, team?: string, tool?: string) {
+        if (this._vbsSubscription != null) {
+            this._vbsSubscription.unsubscribe();
+            this._vbsSubscription = null;
+        }
+
+        let time = Date.now(); /* Time of the reset. */
+        let events = VbsAction.mapEventStream(this._eventBusService.observable())
+            .buffer(this._submitSubject)
+            .map(ev => ev.map(e => e.map(a => `${a.action}(${Math.round((a.timestamp-time)/1000)}s${a.context ? "," + a.context : ""}`.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR))
+            .do(seq => {
+                let date = new Date();
+                let time = `time ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+                if (seq && seq.length > 0) {
+                    this._seqBuffer.push(seq + VbsAction.SEPARATOR + time);
+                } else {
+                    this._seqBuffer.push(time);
+                }
+            });
+
+            this._vbsSubscription = this._submitSubject
+            .flatMap(([segment,time]) => {
+                return this._metadata.lookup(segment.objectId)
+                    .flatMap(s => Observable.from(s))
+                    .filter(m => m.domain === "technical" && m.key === "fps")
+                    .map(m => m.value)
+                    .defaultIfEmpty(VideoUtil.bestEffortFPS(segment))
+                    .first();
+            },([segment,time], fps) => [segment,VbsSubmissionService.timeToFrame(time,fps)])
+            .withLatestFrom(events,([segment,frame]) => [segment,frame])
+            .flatMap(([segment,frame]:[SegmentScoreContainer,number]) => {
+                let params = new HttpParams().set('video', segment.objectId).set('team', String(team)).set('frame', String(frame));
+                let iseq = VbsAction.TOOL_ID_PREFIX + tool + VbsAction.SEPARATOR + this._seqBuffer.join(VbsAction.SEPARATOR);
+                let observable = null;
+                if (iseq.length > 0 && iseq.length < 255) {
+                    params = params.set('iseq', iseq);
+                    observable = this._http.get(String(endpoint),{responseType: 'text', params: params});
+                } else if (iseq.length >= 255) {
+                    params = params.set('iseq', iseq);
+                    let headers = new HttpHeaders().append("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+                    observable = this._http.post(String(endpoint), params.toString(), {responseType: 'text', headers: headers})
+                } else {
+                    observable = this._http.get(String(endpoint), {responseType: 'text', params: params});
+                }
+                return observable.catch((err) => Observable.of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`));
+            })
+            .map((msg: string) => {
+                if (msg.indexOf("Correct") > -1) {
+                    return [msg,"snackbar-success"];
+                }else if (msg.indexOf("Failed") > -1) {
+                    return [msg,"snackbar-error"];
+                } else {
+                    return [msg,"snackbar-warning"];
+                }
+            })
+            .subscribe(([msg,clazz]) => {
+                this._snackBar.open(msg,null, {duration: Config.SNACKBAR_DURATION, panelClass: clazz});
+            });
     }
 
      /**
