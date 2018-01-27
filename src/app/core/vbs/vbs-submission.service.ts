@@ -96,7 +96,7 @@ export class VbsSubmissionService {
         let time = Date.now(); /* Time of the reset. */
         let events = VbsAction.mapEventStream(this._eventBusService.observable())
             .buffer(this._submitSubject)
-            .map(ev => ev.map(e => e.map(a => `${a.action}(${Math.round((a.timestamp-time)/1000)}s${a.context ? "," + a.context : ""}`.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR))
+            .map(ev => ev.map(e => e.map(a => `${a.action}(${Math.round((a.timestamp-time)/1000)}s${a.context ? "," + a.context : ""})`.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR))
             .do(seq => {
                 let date = new Date();
                 let time = `time ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
