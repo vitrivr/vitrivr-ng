@@ -60,8 +60,8 @@ export class VbsAction {
                         break;
                     case InteractionEventType.QUERY_FULLTEXT: {
                         let categories = c.context.get("q:categories");
-                        if (categories.indexOf("tagft") > -1 || categories.indexOf("meta") > -1) actions.push(new VbsAction(VbsActionType.KEYWORD, c.context.get("q:value")));
-                        if (categories.indexOf("ocr") > -1) actions.push(new VbsAction(VbsActionType.OCR,  e.timestamp, c.context.get("q:value")));
+                        if (categories.indexOf("tagft") > -1 || categories.indexOf("meta") > -1) actions.push(new VbsAction(VbsActionType.KEYWORD, e.timestamp, c.context.get("q:value")));
+                        if (categories.indexOf("ocr") > -1) actions.push(new VbsAction(VbsActionType.OCR, e.timestamp, c.context.get("q:value")));
                         if (categories.indexOf("asr") > -1) actions.push(new VbsAction(VbsActionType.AUDIO, e.timestamp,c.context.get("q:value") + ",asr"));
                         break;
                     }
