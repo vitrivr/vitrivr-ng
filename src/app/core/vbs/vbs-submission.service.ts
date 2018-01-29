@@ -99,7 +99,7 @@ export class VbsSubmissionService {
             .map(ev => ev.map(e => e.map(a => `${a.action}(${Math.round((a.timestamp-time)/1000)}s${a.context ? "," + a.context : ""})`.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR))
             .do(seq => {
                 let date = new Date();
-                let time = `time ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+                let time = `time ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
                 if (seq && seq.length > 0) {
                     this._seqBuffer.push(seq + VbsAction.SEPARATOR + time);
                 } else {
@@ -131,6 +131,7 @@ export class VbsSubmissionService {
                 } else {
                     observable = this._http.get(String(endpoint), {responseType: 'text', params: params});
                 }
+                console.log(`Submitting video to VBS; id: ${segment.objectId}, frame: ${frame}, sequence: ${iseq}`.toString());
                 return observable.catch((err) => Observable.of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`));
             })
             .map((msg: string) => {
