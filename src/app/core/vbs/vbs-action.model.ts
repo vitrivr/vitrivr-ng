@@ -53,15 +53,15 @@ export class VbsAction {
                         actions.push(new VbsAction(VbsActionType.MOTIONSKETCH, e.timestamp));
                         break;
                     case InteractionEventType.MLT:
-                        actions.push(new VbsAction(VbsActionType.SIMILARITY,e.timestamp, c.context.get("q:value")));
+                        actions.push(new VbsAction(VbsActionType.SIMILARITY, e.timestamp, c.context.get("q:value")));
                         break;
                     case InteractionEventType.QUERY_TAG:
-                        actions.push(new VbsAction(VbsActionType.KEYWORD,e.timestamp, c.context.get("q:value")));
+                        actions.push(new VbsAction(VbsActionType.KEYWORD, e.timestamp, c.context.get("q:value")));
                         break;
                     case InteractionEventType.QUERY_FULLTEXT: {
                         let categories = c.context.get("q:categories");
                         if (categories.indexOf("tagft") > -1 || categories.indexOf("meta") > -1) actions.push(new VbsAction(VbsActionType.KEYWORD, c.context.get("q:value")));
-                        if (categories.indexOf("ocr") > -1) actions.push(new VbsAction(VbsActionType.OCR, c.context.get("q:value")));
+                        if (categories.indexOf("ocr") > -1) actions.push(new VbsAction(VbsActionType.OCR,  e.timestamp, c.context.get("q:value")));
                         if (categories.indexOf("asr") > -1) actions.push(new VbsAction(VbsActionType.AUDIO, e.timestamp,c.context.get("q:value") + ",asr"));
                         break;
                     }
