@@ -78,6 +78,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      */
     public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
         this._queryService.findNeighboringSegments(segment.segmentId);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND)));
     }
 
     /**
@@ -89,6 +90,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      */
     public onNeighborsButtonRightClicked(event: Event, segment: SegmentScoreContainer) {
         this._queryService.findNeighboringSegments(segment.segmentId, 500);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND)));
         event.preventDefault();
     }
 

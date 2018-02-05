@@ -15,7 +15,8 @@ export enum VbsActionType {
     PAGING = "P",
     EXTERNAL = "T",
     BROWSING = "B",
-    RESET = "X"
+    RESET = "X",
+    LOADFRAMES = "V"
 }
 
 
@@ -74,6 +75,9 @@ export class VbsAction {
                     }
                     case InteractionEventType.FILTER:
                         actions.push(new VbsAction(VbsActionType.FILTERING,e.timestamp));
+                        break;
+                    case InteractionEventType.EXPAND:
+                        actions.push(new VbsAction(VbsActionType.LOADFRAMES,e.timestamp));
                         break;
                     case InteractionEventType.REFINE:
                         let weights = c.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weight/100).join(",");
