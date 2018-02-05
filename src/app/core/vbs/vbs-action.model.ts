@@ -77,7 +77,7 @@ export class VbsAction {
                         actions.push(new VbsAction(VbsActionType.FILTERING,e.timestamp));
                         break;
                     case InteractionEventType.EXPAND:
-                        actions.push(new VbsAction(VbsActionType.LOADFRAMES,e.timestamp));
+                        actions.push(new VbsAction(VbsActionType.LOADFRAMES,e.timestamp, c.context.get("i:mediasegment")));
                         break;
                     case InteractionEventType.REFINE:
                         let weights = c.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weight/100).join(",");
