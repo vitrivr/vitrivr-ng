@@ -920,12 +920,6 @@ input.mat-input-element {
   background: white;
   color: rgba(0, 0, 0, 0.87); }
 
-.mat-divider {
-  border-top-color: rgba(0, 0, 0, 0.12); }
-
-.mat-divider-vertical {
-  border-right-color: rgba(0, 0, 0, 0.12); }
-
 .mat-expansion-panel {
   background: white;
   color: rgba(0, 0, 0, 0.87); }
@@ -1001,14 +995,23 @@ input.mat-input-element {
 .mat-input-element:disabled {
   color: rgba(0, 0, 0, 0.38); }
 
-.mat-input-element::placeholder {
-  color: rgba(0, 0, 0, 0.42); }
-.mat-input-element::-moz-placeholder {
-  color: rgba(0, 0, 0, 0.42); }
-.mat-input-element::-webkit-input-placeholder {
-  color: rgba(0, 0, 0, 0.42); }
-.mat-input-element:-ms-input-placeholder {
-  color: rgba(0, 0, 0, 0.42); }
+.mat-input-element {
+  caret-color: #3949ab; }
+  .mat-input-element::placeholder {
+    color: rgba(0, 0, 0, 0.42); }
+  .mat-input-element::-moz-placeholder {
+    color: rgba(0, 0, 0, 0.42); }
+  .mat-input-element::-webkit-input-placeholder {
+    color: rgba(0, 0, 0, 0.42); }
+  .mat-input-element:-ms-input-placeholder {
+    color: rgba(0, 0, 0, 0.42); }
+
+.mat-accent .mat-input-element {
+  caret-color: #43a047; }
+
+.mat-warn .mat-input-element,
+.mat-form-field-invalid .mat-input-element {
+  caret-color: #f44336; }
 
 .mat-list .mat-list-item, .mat-nav-list .mat-list-item, .mat-selection-list .mat-list-item {
   color: rgba(0, 0, 0, 0.87); }
@@ -1019,6 +1022,9 @@ input.mat-input-element {
 
 .mat-list-item-disabled {
   background-color: #eeeeee; }
+
+.mat-divider {
+  border-top-color: rgba(0, 0, 0, 0.12); }
 
 .mat-nav-list .mat-list-item {
   outline: none; }
@@ -1527,21 +1533,6 @@ div.weight-distribution {
   display: flex;
   align-items: center;
   justify-content: space-between; }
-
-/* Defines general appearance of app: toolbar and sidenavs. */
-.vitrivr-sidenav {
-  padding: 10px;
-  min-width: 100px; }
-
-.vitrivr-sidenav.left {
-  margin-right: 10px; }
-
-.vitrivr-sidenav.right {
-  margin-left: 10px; }
-
-.vitrivr-toolbar-menu {
-  padding: 0 14px 0 14px;
-  color: white; }
 
 /* Defines some spacer classes that can be used in flexboxes etc. */
 .spacer-xlarge {

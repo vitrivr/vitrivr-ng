@@ -1,6 +1,7 @@
 <vg-player (onPlayerReady)="onPlayerReady($event)" [style.width]="width + 'px'">
     <vg-controls>
         <vg-play-pause></vg-play-pause>
+        <vg-playback-button [playbackValues]="[0.5, 1.0, 2.0, 4.0, 8.0]"></vg-playback-button>
 
         <mat-icon (click)="seekToFocusPosition()" class="player-button" matTooltip="Seek to position of focused segment.">replay</mat-icon>
 
