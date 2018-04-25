@@ -49,9 +49,9 @@
                 </div>
             </div>
         </mat-tab>
-        <mat-tab label="Metadata ({{metadata.length}})">
+        <mat-tab label="Metadata ({{(metadata|async).length}})">
             <mat-list>
-                <mat-list-item *ngFor="let metadatum of metadata">
+                <mat-list-item *ngFor="let metadatum of (metadata|async)">
                     <p matLine><strong>({{metadatum.domain}}) {{metadatum.key}}: </strong>{{metadatum.value}}</p>
                 </mat-list-item>
             </mat-list>

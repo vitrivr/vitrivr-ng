@@ -36,17 +36,11 @@ export class ObjectdetailsComponent {
     private imageviewer: any;
 
     /** List of MediaMetadata items for the current multimedia object. */
-    private _metadata: MediaMetadata[] = [];
+    private _metadata: Array<MediaMetadata> = [];
 
-    /**
-     *
-     * @param _route
-     * @param _location
-     * @param _query
-     * @param _metadataLookup
-     * @param _resolver
-     */
-    constructor(private _query : QueryService,
+    private _objectId: string;
+
+    constructor(private _query: QueryService,
                 private _route: ActivatedRoute,
                 private _location: Location,
                 private _metadataLookup: MetadataLookupService,
@@ -100,13 +94,10 @@ export class ObjectdetailsComponent {
         this._location.back()
     }
 
-    /**
-     *
-     */
     public onImageViewerClicked(object: MediaObjectScoreContainer) {
-        let imagePath = this._resolver.pathToObjectForContainer(object);
-        let dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
-        dialogRef.afterClosed().first().subscribe((result) => {});
+        const imagePath = this._resolver.pathToObjectForContainer(object);
+        const dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
+        dialogRef.afterClosed().first().subscribe(() => {});
     }
 
     /**
@@ -115,7 +106,12 @@ export class ObjectdetailsComponent {
      * @returns {MediaObject}
      */
     get mediaobject(): Observable<MediaObjectScoreContainer> {
-        return this._route.params.first().map(params => this._query.results.getObject(params['objectId']))
+        if (!this._objectId) {
+          this._route.params.first().subscribe(params => {
+            this._objectId = params['objectId'];
+          })
+        }
+        return new Observable(observer => observer.next(this._query.results.getObject(this._objectId)));
     }
 
     /**
@@ -123,7 +119,26 @@ export class ObjectdetailsComponent {
      *
      * @returns {MediaMetadata[]}
      */
-    get metadata(): MediaMetadata[] {
-        return this._metadata;
+    get metadata(): Observable<MediaMetadata[]> {
+      if (!this._objectId) {
+        this._route.params.first().subscribe(params => {
+          this._objectId = params['objectId']
+        })
+      }
+      return new Observable(observer => {
+          if (!this._metadata || this._metadata.length === 0) {
+            this._metadataLookup.lookup(this._objectId).subscribe(md => {
+              this._metadata = md;
+              observer.next(this._metadata);
+              observer.complete();
+            });
+          }
+          if (this._metadata && this._metadata !== []) {
+            observer.next(this._metadata);
+            observer.complete();
+          } else {
+            observer.next(this._metadata);
+          }
+      });
     }
 }
