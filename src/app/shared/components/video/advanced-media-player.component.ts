@@ -4,9 +4,10 @@ import {SegmentScoreContainer} from "../../model/results/scores/segment-score-co
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {VgAPI} from "videogular2/core";
 import {VbsSubmissionService} from "../../../core/vbs/vbs-submission.service";
-import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs/Subject";
+import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+
 
 declare var VTTCue;
 
