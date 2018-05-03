@@ -10,7 +10,7 @@
                 <mat-icon [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">audiotrack</mat-icon>
             </button>
 
-            <button *ngIf="(config|async).get('query.options.moded3d')" (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" matTooltip="Toggle 3D query term">
+            <button *ngIf="(config|async).get('query.options.model3d')" (click)="onToggleButtonClicked('MODEL3D')" class="icon-button" matTooltip="Toggle 3D query term">
                 <mat-icon [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">3d_rotation</mat-icon>
             </button>
 
