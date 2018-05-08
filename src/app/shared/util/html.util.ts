@@ -2,7 +2,7 @@ import {SegmentScoreContainer} from "../model/results/scores/segment-score-conta
 
 export class HtmlUtil {
     /** RegEx pattern used to test whether a string is a URL. */
-    static URL_PATTERN = new RegExp('((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%\\/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)'))?','ig');
+    static URL_PATTERN = new RegExp("((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%\\/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)",'ig');
 
     /**
      * Calculates a best effort FPS value from the media segment's start and end. The resulting value ony makes sense for videos.
