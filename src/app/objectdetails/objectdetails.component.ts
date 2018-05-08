@@ -36,18 +36,25 @@ export class ObjectdetailsComponent {
     @ViewChild('imageviewer')
     private imageviewer: any;
 
-    /** List of MediaMetadata items for the current multimedia object. */
-    private _metadata: Array<MediaMetadata> = [];
+    private _objectIdObservable : Observable<string>;
 
-    private _objectId: string;
+    private _metadataObservable : Observable<MediaMetadata[]>;
 
-    constructor(private _query: QueryService,
-                private _route: ActivatedRoute,
+    private _mediaObjectObservable : Observable<MediaObjectScoreContainer>;
+
+    constructor(_route: ActivatedRoute,
+                private _query: QueryService,
                 private _location: Location,
                 private _metadataLookup: MetadataLookupService,
                 private _resolver: ResolverService,
                 private _snackBar: MatSnackBar,
                 private _dialog: MatDialog) {
+
+
+        /** Generate observables required to create the view. */
+        this._objectIdObservable = _route.params.map(p => p['objectId']).filter(objectID => this._query.results && this._query.results.hasObject(objectID)).first();
+        this._metadataObservable = this._objectIdObservable.flatMap(objectId => this._metadataLookup.lookup(objectId));
+        this._mediaObjectObservable = this._objectIdObservable.map(objectId => this._query.results.getObject(objectId));
     }
 
     /**
@@ -102,63 +109,39 @@ export class ObjectdetailsComponent {
     }
 
     /**
-     * Getter for media object.
+     * Getter for the local _objectIdObservable.
+     *
+     * @returns {MediaObject}
+     */
+    get objectId(): Observable<string> {
+        return this._objectIdObservable;
+    }
+
+    /**
+     * Getter for the local _mediaObjectObservable.
      *
      * @returns {MediaObject}
      */
     get mediaobject(): Observable<MediaObjectScoreContainer> {
-        if (!this._objectId) {
-          this._route.params.first().subscribe(params => {
-            this._objectId = params['objectId'];
-          })
-        }
-        return new Observable(observer => observer.next(this._query.results.getObject(this._objectId)));
+        return this._mediaObjectObservable;
     }
 
     /**
-     * Getter for metdata
+     * Getter for the local _metadataObservable.
      *
      * @returns {MediaMetadata[]}
      */
     get metadata(): Observable<MediaMetadata[]> {
-      if (!this._objectId) {
-        this._route.params.first().subscribe(params => {
-          this._objectId = params['objectId']
-        })
-      }
-      return new Observable(observer => {
-          if (!this._metadata || this._metadata.length === 0) {
-            this._metadataLookup.lookup(this._objectId).subscribe(md => {
-              this._metadata = md;
-              observer.next(this._metadata);
-              observer.complete();
-            });
-          }
-          if (this._metadata && this._metadata !== []) {
-            observer.next(this._metadata);
-            observer.complete();
-          } else {
-            observer.next(this._metadata);
-          }
-      });
+        return this._metadataObservable;
     }
 
     /**
-     * Checks if the provided string is a URL.
+     * Replaces all links in the provided text by links.
      *
-     * @param {string} str String that should be checked.
-     * @return {boolean} Flag indicating whether or not the string is a URL.
+     * @param {string} str String that should be replaced.
+     * @return {string} Modified string.
      */
-    public isUrl(str: string): boolean {
-        return HtmlUtil.isUrl(str);
-    }
-
-    /**
-     * Opens the provided URL in a new window.
-     *
-     * @param {string} url
-     */
-    public openUrl(url: string) {
-        window.open(url,'_blank')
+    public textWithLink(str: string): string {
+        return HtmlUtil.replaceUrlByLink(str, "_blank");
     }
 }
