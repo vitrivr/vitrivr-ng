@@ -25,14 +25,14 @@
                 <dd><a href="{{_resolver.pathToObjectForContainer((mediaobject|async))}}" download>{{((mediaobject|async)).path}}</a></dd>
                 <dt>Mediatype</dt>
                 <dd>{{(mediaobject|async).mediatype}}</dd>
-                <dt style="margin-top: 16px" *ngIf="(mediaobject|async).mediatype == 'IMAGE'">Tools</dt>
-                <dd *ngIf="(mediaobject|async).mediatype == 'IMAGE'"><button mat-icon-button  matTooltip="Crop Image"><mat-icon>crop</mat-icon></button></dd>
+                <!-- <dt style="margin-top: 16px" *ngIf="(mediaobject|async).mediatype == 'IMAGE'">Tools</dt>-->
+                <!--<dd *ngIf="(mediaobject|async).mediatype == 'IMAGE'"><button mat-icon-button  matTooltip="Crop Image"><mat-icon>crop</mat-icon></button></dd>-->
             </dl>
         </div>
     </div>
 
     <mat-tab-group>
-        <mat-tab label="Segments ({{(mediaobject|async).segments}})">
+        <mat-tab label="Segments ({{(mediaobject|async).segments.length}})">
             <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
                 <div *ngFor="let segment of (mediaobject|async).segments | OrderByScorePipe" fxFlex="200px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
                     <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
@@ -52,7 +52,11 @@
         <mat-tab label="Metadata ({{(metadata|async).length}})">
             <mat-list>
                 <mat-list-item *ngFor="let metadatum of (metadata|async)">
-                    <p matLine><strong>({{metadatum.domain}}) {{metadatum.key}}: </strong>{{metadatum.value}}</p>
+                    <h4 mat-line><strong>{{metadatum.domain}}:{{metadatum.key}}</strong></h4>
+                    <p mat-line style="white-space: pre-wrap;">{{metadatum.value}}</p>
+                    <button *ngIf="isUrl(metadatum.value)" (click)="openUrl(metadatum.value)" mat-icon-button>
+                        <mat-icon>link</mat-icon>
+                    </button>
                 </mat-list-item>
             </mat-list>
         </mat-tab>

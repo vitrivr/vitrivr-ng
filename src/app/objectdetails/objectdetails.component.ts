@@ -13,6 +13,7 @@ import {ImagecropComponent} from "./imagecrop.component";
 import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
 import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
 import {Observable} from "rxjs/Observable";
+import {HtmlUtil} from "../shared/util/html.util";
 
 @Component({
     moduleId: module.id,
@@ -140,5 +141,24 @@ export class ObjectdetailsComponent {
             observer.next(this._metadata);
           }
       });
+    }
+
+    /**
+     * Checks if the provided string is a URL.
+     *
+     * @param {string} str String that should be checked.
+     * @return {boolean} Flag indicating whether or not the string is a URL.
+     */
+    public isUrl(str: string): boolean {
+        return HtmlUtil.isUrl(str);
+    }
+
+    /**
+     * Opens the provided URL in a new window.
+     *
+     * @param {string} url
+     */
+    public openUrl(url: string) {
+        window.open(url,'_blank')
     }
 }
