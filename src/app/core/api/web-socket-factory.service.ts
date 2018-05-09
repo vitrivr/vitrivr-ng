@@ -1,4 +1,3 @@
-import {Observable} from 'rxjs/Rx';
 import {WebSocketSubjectConfig} from "rxjs/observable/dom/WebSocketSubject";
 import {NextObserver} from "rxjs/src/Observer";
 import {WebSocketWrapper} from "./web-socket-wrapper.model";
@@ -14,9 +13,6 @@ export type WebSocketStatus = "DISCONNECTED" | "CONNECTED" | "ERROR" ;
  * The class keeps track of the WebSocketWrapper's it creates and notifies the observers, if the current WebSocketWrapper changes.
  */
 export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
-    /* Indication of the status status. */
-    private _status: WebSocketStatus = "DISCONNECTED";
-
     /**
      * Establishes a connection to the provided endpoint and creates a new WebSocketWrapper. If the active WebSocketWrapper instance is
      * connected, that connection is dropped. Hence, it is advisable to check the WebSocketWrapper's status before using this method.
@@ -25,19 +21,19 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
      */
     public connect(url: string, _retryAfter: number = -1) {
         /* Disconnect last connection if it exists. */
-        if (this.getValue()) this.getValue().disconnect();
+        if (this.getValue()) {
+            this.getValue().disconnect();
+        }
 
         /* Create observers for WebSocket status. */
         let openObserver = <NextObserver<Event>>{
             next: (ev: Event) => {
                 console.log("WebSocket connected to " + url + ".");
-                this._status = "CONNECTED";
             }
         };
         let closeObserver = <NextObserver<CloseEvent>>{
             next: (ev: CloseEvent) => {
                 console.log("WebSocket disconnected from " + url + ". (Code: " + ev.code +")");
-                this._status = "DISCONNECTED";
             }
         };
 
@@ -47,6 +43,6 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
             openObserver: openObserver,
             closeObserver: closeObserver
         };
-        this.next(new WebSocketWrapper(url, Observable.webSocket(config), _retryAfter));
+        this.next(new WebSocketWrapper(_retryAfter, config));
     }
 }
