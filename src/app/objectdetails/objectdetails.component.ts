@@ -7,7 +7,7 @@ import {MediaObject} from "../shared/model/media/media-object.model";
 import {ResolverService} from "../core/basics/resolver.service";
 import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
 import {Location} from "@angular/common";
-import {MatDialog, MatSnackBar} from "@angular/material";
+import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-object-score-container.model";
 import {ImagecropComponent} from "./imagecrop.component";
 import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
@@ -36,25 +36,50 @@ export class ObjectdetailsComponent {
     @ViewChild('imageviewer')
     private imageviewer: any;
 
+    /** The observable that returns the objectID provided by the ActivatedRoute service. */
     private _objectIdObservable : Observable<string>;
 
+    /** The observable that provides the MediaMetadata for the active object. */
     private _metadataObservable : Observable<MediaMetadata[]>;
 
+    /** The observable that provides the MediaMetadata for the active object. */
     private _mediaObjectObservable : Observable<MediaObjectScoreContainer>;
 
+    /**
+     * Constructor for ObjectdetailsComponent.
+     *
+     * @param {ActivatedRoute} _route
+     * @param {Router} _router
+     * @param {MatSnackBar} _snackBar
+     * @param {MetadataLookupService} _metadataLookup
+     * @param {QueryService} _query
+     * @param {Location} _location
+     * @param {ResolverService} _resolver
+     * @param {MatDialog} _dialog
+     */
     constructor(_route: ActivatedRoute,
+                _router: Router,
+                _snackBar: MatSnackBar,
+                _metadataLookup: MetadataLookupService,
                 private _query: QueryService,
                 private _location: Location,
-                private _metadataLookup: MetadataLookupService,
                 private _resolver: ResolverService,
-                private _snackBar: MatSnackBar,
                 private _dialog: MatDialog) {
 
 
         /** Generate observables required to create the view. */
-        this._objectIdObservable = _route.params.map(p => p['objectId']).filter(objectID => this._query.results && this._query.results.hasObject(objectID)).first();
-        this._metadataObservable = this._objectIdObservable.flatMap(objectId => this._metadataLookup.lookup(objectId));
-        this._mediaObjectObservable = this._objectIdObservable.map(objectId => this._query.results.getObject(objectId));
+        this._objectIdObservable = _route.params.map(p => p['objectId']).do(objectID => {
+            if (!_query.results || !_query.results.hasObject(objectID)) {
+                throw new Error(`The provided objectId ${objectID} does not exist in the results. Returning to gallery...`);
+            }
+        }).catch((err, obs) => {
+            return Observable.of(null).do(() => {
+                _snackBar.open(err.message,'',<MatSnackBarConfig>{duration: 2500});
+                _router.navigate(['/gallery']);
+            })
+        }).first();
+        this._metadataObservable = this._objectIdObservable.filter(objectId => objectId != null).flatMap(objectId => _metadataLookup.lookup(objectId));
+        this._mediaObjectObservable = this._objectIdObservable.filter(objectId => objectId != null).map(objectId => _query.results.getObject(objectId));
     }
 
     /**
