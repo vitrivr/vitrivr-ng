@@ -42,33 +42,29 @@ export class M3DQueryTermComponent {
     constructor(private dialog: MatDialog) {}
 
     /**
-     * Triggered whenever the Mode 3D Slide toggle is used to switch between 3D-sketch mode and normal mode.
+     * Triggered whenever the Mode 3D toggle is used to switch between 3D-sketch mode and normal mode.
      */
-    public onModeToggled() {
-        this.onSliderChanged();
+    public onModeToggled(event: Event) {
+        this.sketch = !this.sketch;
+        this.m3dTerm.setCategories(['lightfield']);
     }
 
     /**
-     * This method is invoked whenever the slider value changes. Updates the feature-categories for this M3DQueryTerm
-     * based on a linear, numerical scale.
+     * This method is invoked whenever the slider value changes. Updates the feature-categories for this M3DQueryTerm based on a linear, numerical scale.
      */
     public onSliderChanged() {
-        if (!this.sketch) {
-            this.m3dTerm.setCategories(['lightfield']);
-        } else {
-            switch (this.sliderSetting) {
-                case 0:
-                    this.m3dTerm.setCategories(['sphericalharmonicslow']);
-                    break;
-                case 1:
-                    this.m3dTerm.setCategories(['sphericalharmonicsdefault']);
-                    break;
-                case 2:
-                    this.m3dTerm.setCategories(['sphericalharmonicshigh', 'lightfield']);
-                    break;
-                default:
-                    break;
-            }
+        switch (this.sliderSetting) {
+            case 0:
+                this.m3dTerm.setCategories(['sphericalharmonicslow']);
+                break;
+            case 1:
+                this.m3dTerm.setCategories(['sphericalharmonicsdefault']);
+                break;
+            case 2:
+                this.m3dTerm.setCategories(['sphericalharmonicshigh', 'lightfield']);
+                break;
+            default:
+                break;
         }
     }
 
