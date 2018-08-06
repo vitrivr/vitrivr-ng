@@ -4,6 +4,7 @@ import {CineastRestAPI} from "../api/cineast-rest-api.service";
 import {ConfigService} from "../basics/config.service";
 import {Observable} from "rxjs/Observable";
 import {MediaMetadata} from "../../shared/model/media/media-metadata.model";
+import {MetadataQueryResult} from "../../shared/model/messages/interfaces/responses/metadata-query-result.interface";
 /**
  * This service provides access to the Metadata stored and exposed by Cineast through the Cineast RESTful API. Metadata is general,
  * often technical information regarding a specific media object.
@@ -25,8 +26,8 @@ export class MetadataLookupService extends CineastRestAPI {
      *
      * @param {string} objectId ID of the MediaObject for which to lookup MediaMetadata.
      */
-    public lookup(objectId: string): Observable<MediaMetadata[]> {
-        return this.get<MediaMetadata[]>("find/metadata/by/id/" + objectId).first();
+    public lookup(objectId: string): Observable<MetadataQueryResult> {
+        return this.get<MetadataQueryResult>("find/metadata/by/id/" + objectId).first();
     }
 }
 

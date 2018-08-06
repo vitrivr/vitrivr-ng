@@ -110,6 +110,7 @@ export class VbsSubmissionService {
             this._vbsSubscription = this._submitSubject
             .flatMap(([segment,time]) => {
                 return this._metadata.lookup(segment.objectId)
+                    .map(v => v.content)
                     .flatMap(s => Observable.from(s))
                     .filter(m => m.domain === "technical" && m.key === "fps")
                     .map(m => m.value)

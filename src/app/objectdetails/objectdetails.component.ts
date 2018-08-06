@@ -78,7 +78,7 @@ export class ObjectdetailsComponent {
                 _router.navigate(['/gallery']);
             })
         }).first();
-        this._metadataObservable = this._objectIdObservable.filter(objectId => objectId != null).flatMap(objectId => _metadataLookup.lookup(objectId));
+        this._metadataObservable = this._objectIdObservable.filter(objectId => objectId != null).flatMap(objectId => _metadataLookup.lookup(objectId).map(v => v.content));
         this._mediaObjectObservable = this._objectIdObservable.filter(objectId => objectId != null).map(objectId => _query.results.getObject(objectId));
     }
 
