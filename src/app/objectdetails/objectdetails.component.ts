@@ -1,5 +1,5 @@
-import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {Component, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
 import {MediaMetadata} from "../shared/model/media/media-metadata.model";
 import {MetadataLookupService} from "../core/lookup/metadata-lookup.service";
 import {QueryService} from "../core/queries/query.service";
@@ -12,8 +12,9 @@ import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-ob
 import {ImagecropComponent} from "./imagecrop.component";
 import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
 import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
-import {Observable} from "rxjs/Observable";
+import {EMPTY, Observable, of} from "rxjs";
 import {HtmlUtil} from "../shared/util/html.util";
+import {catchError, filter, first, flatMap, map, tap} from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
@@ -21,8 +22,6 @@ import {HtmlUtil} from "../shared/util/html.util";
     templateUrl: 'objectdetails.component.html',
     styleUrls: ['objectdetails.component.css']
 })
-
-
 export class ObjectdetailsComponent {
     /** */
     @ViewChild('audioplayer')
@@ -68,18 +67,29 @@ export class ObjectdetailsComponent {
 
 
         /** Generate observables required to create the view. */
-        this._objectIdObservable = _route.params.map(p => p['objectId']).do(objectID => {
-            if (!_query.results || !_query.results.hasObject(objectID)) {
-                throw new Error(`The provided objectId ${objectID} does not exist in the results. Returning to gallery...`);
-            }
-        }).catch((err, obs) => {
-            return Observable.of(null).do(() => {
+        this._objectIdObservable = _route.params.pipe(
+            map(p => p['objectId']),
+            tap(objectID => {
+                if (!_query.results || !_query.results.hasObject(objectID)) {
+                    throw new Error(`The provided objectId ${objectID} does not exist in the results. Returning to gallery...`);
+                }
+            }),
+            catchError((err, obs) => {
                 _snackBar.open(err.message,'',<MatSnackBarConfig>{duration: 2500});
                 _router.navigate(['/gallery']);
-            })
-        }).first();
-        this._metadataObservable = this._objectIdObservable.filter(objectId => objectId != null).flatMap(objectId => _metadataLookup.lookup(objectId).map(v => v.content));
-        this._mediaObjectObservable = this._objectIdObservable.filter(objectId => objectId != null).map(objectId => _query.results.getObject(objectId));
+                return EMPTY;
+            }),
+            first()
+        );
+        this._metadataObservable = this._objectIdObservable.pipe(
+            filter(objectId => objectId != null),
+            flatMap(objectId => _metadataLookup.lookup(objectId)),
+            map(v => v.content)
+        );
+        this._mediaObjectObservable = this._objectIdObservable.pipe(
+            filter(objectId => objectId != null),
+            map(objectId => _query.results.getObject(objectId))
+        );
     }
 
     /**
@@ -130,7 +140,7 @@ export class ObjectdetailsComponent {
     public onImageViewerClicked(object: MediaObjectScoreContainer) {
         const imagePath = this._resolver.pathToObjectForContainer(object);
         const dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
-        dialogRef.afterClosed().first().subscribe(() => {});
+        dialogRef.afterClosed().pipe(first()).subscribe(() => {});
     }
 
     /**

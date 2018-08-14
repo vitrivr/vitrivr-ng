@@ -7,7 +7,7 @@ import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media
 import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {VbsSubmissionService} from "app/core/vbs/vbs-submission.service";
 import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {SelectionService} from "../../core/selection/selection.service";
@@ -15,6 +15,7 @@ import {EventBusService} from "../../core/basics/event-bus.service";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
+import {map} from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
@@ -129,7 +130,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @return {boolean} True if submit button should be displayed, false otherwise.
      */
     public showVbsSubmitButton(segment: SegmentScoreContainer): Observable<boolean> {
-        return this._vbs.isOn.map(v => v && segment.objectScoreContainer.mediatype == 'VIDEO');
+        return this._vbs.isOn.pipe(map(v => v && segment.objectScoreContainer.mediatype == 'VIDEO'));
     }
 
     /**

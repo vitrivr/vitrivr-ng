@@ -12,12 +12,12 @@ import {ScenarioDetailsDialogComponent} from "./scenario-details-dialog.componen
 import {GalleryComponent} from "../results/gallery/gallery.component";
 import {EvaluationService} from "../core/evaluation/evaluation.service";
 import {Location} from "@angular/common";
-import {ConfigService} from "../core/basics/config.service";
-import {Observable} from "rxjs/Observable";
+import {Observable, of, throwError, zip} from "rxjs";
 import {EvaluationScenario} from "../shared/model/evaluation/evaluation-scenario";
 import {SelectionService} from "../core/selection/selection.service";
 import {Config} from "../shared/model/config/config.model";
 import {EventBusService} from "../core/basics/event-bus.service";
+import {catchError, filter, first, flatMap, map} from "rxjs/operators";
 
 
 type DisplayType = "NONE" | "SCENARIO" | "GALLERY" | "HISTORY";
@@ -38,11 +38,17 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     /**
      * Constructor; injects the required services for evaluation.
      *
+     * @param _cdr
      * @param _queryService
-     * @param _storageService
      * @param _selectionService
-     * @param _resolverService
-     * @param snackBar
+     * @param _evemtBusService
+     * @param _resolver
+     * @param _router
+     * @param _snackBar
+     * @param _location
+     * @param _evaluation
+     * @param _route
+     * @param _dialog
      */
     constructor(
         _cdr: ChangeDetectorRef,
@@ -60,18 +66,14 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     }
 
     /**
-     * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
+     * Lifecycle Hook (onInit): Subscribes to the QueryService observable and to changes of the Router class. Whenever the parameter
+     * becomes available, the onParamsAvailable method is invoked.
      */
     public ngOnInit() {
-        this._queryServiceSubscription = this._queryService.observable
-            .filter(msg => (["UPDATED", "STARTED", "ERROR", "ENDED", "FEATURE", "CLEAR"].indexOf(msg) > -1))
-            .subscribe((msg) => this.onQueryStateChange(msg));
-
-        /*
-         * Subscribes to changes of the Router class. Whenever the parameter becomes available,
-         * the onParamsAvailable method is invoked.
-         */
-        this._route.params.first().subscribe((params: Params) => this.onParamsAvailable(params));
+        this._queryServiceSubscription = this._queryService.observable.pipe(
+            filter(msg => (["UPDATED", "STARTED", "ERROR", "ENDED", "FEATURE", "CLEAR"].indexOf(msg) > -1))
+        ).subscribe((msg) => this.onQueryStateChange(msg));
+        this._route.params.pipe(first()).subscribe((params: Params) => this.onParamsAvailable(params));
     }
 
     /**
@@ -148,12 +150,15 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     public onResultsAcceptButtonClick() {
         if (this.canBeAccepted()) {
-            this._dataSource.first().map(m => {
-                if (this._evaluationset.current.accept(this._queryService.results.features, m) == EvaluationState.RankingResults) {
-                    this.saveEvaluation();
-                    this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: Config.SNACKBAR_DURATION});
-                }
-            });
+            this._dataSource.pipe(
+                first(),
+                map(m => {
+                    if (this._evaluationset.current.accept(this._queryService.results.features, m) == EvaluationState.RankingResults) {
+                        this.saveEvaluation();
+                        this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + " results." , null, {duration: Config.SNACKBAR_DURATION});
+                    }
+                })
+            );
         }
     }
 
@@ -161,7 +166,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * Invoked whenever the 'Download results' button is clicked.
      */
     public onDownloadButtonClick() {
-        this._evaluation.evaluationData().first().subscribe((zip) => {
+        this._evaluation.evaluationData().pipe(first()).subscribe((zip) => {
             zip.generateAsync({type:"blob"}).then(
                 (result) => {
                     window.open(window.URL.createObjectURL(result));
@@ -181,7 +186,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      */
     public onRateButtonClick(object : MediaObjectScoreContainer, rating : number) {
         if (!this.canBeRated()) return;
-        this._dataSource.map(m => m.indexOf(object)).first().subscribe(i => {
+        this._dataSource.pipe(
+            first(),
+            map(m => m.indexOf(object))
+        ).subscribe(i => {
             this._evaluationset.current.rate(i, rating);
             this.saveEvaluation();
         });
@@ -202,19 +210,22 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * Returns the colour of the star-button for the specified mediaobject and the specified rank.
      * If the button is active, then the colour will be yellow otherwise it is white.
      *
-     * @param mediaobject MediaObjectScoreContainer to which the star-button belongs.
+     * @param object MediaObjectScoreContainer to which the star-button belongs.
      * @param rank Rank the star-button is representing.
      * @returns {any}
      */
     public colorForButton(object : MediaObjectScoreContainer, rank : number): Observable<string> {
-        return this._dataSource.map(m => m.indexOf(object)).map(i => {
-            let objectrank = this._evaluationset.current.getRating(i);
-            if (objectrank >= rank) {
-                return "#FFD700";
-            } else {
-                return "#FFFFFF";
-            }
-        });
+        return this._dataSource.pipe(
+            map(m => {
+                let i = m.indexOf(object);
+                let objectrank = this._evaluationset.current.getRating(i);
+                if (objectrank >= rank) {
+                    return "#FFD700";
+                } else {
+                    return "#FFFFFF";
+                }
+            })
+        );
     }
 
     /**
@@ -352,8 +363,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * @param mediaobject MediaObject that should be checked.
      */
     public objectCanBeRated(mediaobject: MediaObjectScoreContainer): Observable<boolean> {
-        if (this.canBeRated() == false) Observable.of(false);
-        return this.dataSource.map(m => m.indexOf(mediaobject) < this._evaluationset.current.k)
+        if (this.canBeRated() == false) of(false);
+        return this.dataSource.pipe(
+            map(m => m.indexOf(mediaobject) < this._evaluationset.current.k)
+        );
     }
 
     /**
@@ -364,8 +377,11 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * @param mediaobject MediaObject that should be checked.
      */
     public objectHasBeenRated(mediaobject: MediaObjectScoreContainer): Observable<boolean> {
-        if (this.canBeRated() == false) Observable.of(false);
-        return this.dataSource.map(m => m.indexOf(mediaobject)).map(i => this._evaluationset.current.ratings[i] && this._evaluationset.current.ratings[i].rating > -1)
+        if (this.canBeRated() == false) of(false);
+        return this.dataSource.pipe(
+            map(m => m.indexOf(mediaobject)),
+            map(i => this._evaluationset.current.ratings[i] && this._evaluationset.current.ratings[i].rating > -1)
+        );
     }
 
     /**
@@ -408,7 +424,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * Tries to save the recent changes to the evaluation using the evaluation service.
      */
     private saveEvaluation() {
-        this._evaluation.saveEvaluation(this._evaluationset).first().subscribe(
+        this._evaluation.saveEvaluation(this._evaluationset).pipe(first()).subscribe(
             () => {},
             (error) => {
                 console.log(error);
@@ -426,34 +442,36 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         let template = params['template'] ? atob(params['template']) : null;
         let name =  params['name'] ? atob(params['name']) : null;
         if (template && participant) {
-            this.loadRunningEvaluation(participant).catch(
-                (error, caught: Observable<void>) => {
+            this.loadRunningEvaluation(participant).pipe(
+                catchError((error, caught: Observable<void>) => {
                     return this.startNewEvaluation(template, participant, name)
-            }).first().subscribe(
+                }),
+                first()
+            ).subscribe(
                 () => {
                     this._snackBar.open("Evaluation started successfully. Welcome '" + this._evaluationset.name + "'! Thank you for participating.", null, {duration: Config.SNACKBAR_DURATION});
                 },
                 (error) => {
                     console.log(error);
-                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().pipe(first()).subscribe(() => {
                         this._location.back();
                     });
                 }
             );
         } else if (participant) {
-            this.loadRunningEvaluation(participant).first().subscribe(
+            this.loadRunningEvaluation(participant).pipe(first()).subscribe(
                 () => {
                     this._snackBar.open("Evaluation resumed successfully. Welcome back'" + this._evaluationset.name + "'!", null, {duration: Config.SNACKBAR_DURATION});
                 },
                 (error) => {
                     console.log(error);
-                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+                    this._snackBar.open('Could not load the specified evaluation template due to an error.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().pipe(first()).subscribe(() => {
                         this._location.back();
                     });
                 }
             );
         } else {
-            this._snackBar.open('Could not load the evaluation module because some information is missing.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().first().subscribe(() => {
+            this._snackBar.open('Could not load the evaluation module because some information is missing.', null, {duration: Config.SNACKBAR_DURATION}).afterDismissed().pipe(first()).subscribe(() => {
                 this._location.back();
             });
         }
@@ -466,16 +484,19 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * @return {boolean} true if a running evaluation could be loaded from local storage, false otherwise.
      */
     private loadRunningEvaluation(participant: string) : Observable<void> {
-        return this._evaluation.loadEvaluation(participant).first().flatMap((evaluation) => {
-            return Observable.zip(Observable.of(evaluation), this._evaluation.loadEvaluationTemplate(evaluation.template), (evaluation, template) => {
-                if (template != null) {
-                    this._evaluationset = evaluation;
-                    this._template = template;
-                } else {
-                    Observable.throw("Failed to load the evaluation template from '" + evaluation.template + "'.");
-                }
-            });
-        });
+        return this._evaluation.loadEvaluation(participant).pipe(
+            first(),
+            flatMap((evaluation) => {
+                return zip(of(evaluation), this._evaluation.loadEvaluationTemplate(evaluation.template), (evaluation, template) => {
+                    if (template != null) {
+                        this._evaluationset = evaluation;
+                        this._template = template;
+                    } else {
+                        throwError("Failed to load the evaluation template from '" + evaluation.template + "'.");
+                    }
+                });
+            })
+        );
     }
 
     /**
@@ -487,13 +508,16 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      * @param name Optional name of the participant.
      */
     private startNewEvaluation(url: string, participant: string, name?:string): Observable<void> {
-        return this._evaluation.loadEvaluationTemplate(url).first().map((template) => {
-            if (template != null) {
-                this._template = template;
-                this._evaluationset = EvaluationSet.fromTemplate(participant, template, name);
-            } else {
-                Observable.throw("Failed to load the evaluation template from '" + template + "'.");
-            }
-        });
+        return this._evaluation.loadEvaluationTemplate(url).pipe(
+            first(),
+            map((template) => {
+                if (template != null) {
+                    this._template = template;
+                    this._evaluationset = EvaluationSet.fromTemplate(participant, template, name);
+                } else {
+                    throwError("Failed to load the evaluation template from '" + template + "'.");
+                }
+            })
+        );
     }
 }

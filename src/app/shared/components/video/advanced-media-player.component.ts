@@ -4,9 +4,8 @@ import {SegmentScoreContainer} from "../../model/results/scores/segment-score-co
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {VgAPI} from "videogular2/core";
 import {VbsSubmissionService} from "../../../core/vbs/vbs-submission.service";
-import {Subject} from "rxjs/Subject";
-import {Observable} from 'rxjs/Observable';
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {BehaviorSubject, Observable} from "rxjs";
+import {first, map} from "rxjs/operators";
 
 
 declare var VTTCue;
@@ -68,7 +67,7 @@ export class AdvancedMediaPlayerComponent {
 
         /* Add callback for when the loading of media starts. */
         this._track.next(this._api.textTracks[0]);
-        this._api.getDefaultMedia().subscriptions.loadedData.first().subscribe(() => this.seekToFocusPosition());
+        this._api.getDefaultMedia().subscriptions.loadedData.pipe(first()).subscribe(() => this.seekToFocusPosition());
     }
 
     /**
@@ -106,6 +105,6 @@ export class AdvancedMediaPlayerComponent {
      * @return {Observable<boolean>}
      */
     get showVbsSubmitButton(): Observable<boolean> {
-        return this._vbs.isOn.map(v => v && this.mediaobject.mediatype == 'VIDEO');
+        return this._vbs.isOn.pipe(map(v => v && this.mediaobject.mediatype == 'VIDEO'));
     }
 }

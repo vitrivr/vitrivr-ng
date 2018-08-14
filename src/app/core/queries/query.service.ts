@@ -1,6 +1,6 @@
 import {Inject, Injectable} from "@angular/core";
-import {Observable} from "rxjs/Observable";
-import {Subject} from "rxjs/Subject";
+import {Observable} from "rxjs";
+import {Subject} from "rxjs";
 
 import {CineastWebSocketFactoryService} from "../api/cineast-web-socket-factory.service";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
@@ -20,6 +20,7 @@ import {Config} from "../../shared/model/config/config.model";
 import {Hint} from "../../shared/model/messages/interfaces/requests/query-config.interface";
 import {FeatureCategories} from "../../shared/model/results/feature-categories.model";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
+import {filter, first, flatMap} from "rxjs/operators";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -56,9 +57,10 @@ export class QueryService {
      * @param _config
      */
     constructor(@Inject(CineastWebSocketFactoryService) private _api : CineastWebSocketFactoryService, @Inject(ConfigService) _config: ConfigService) {
-        _api.filter(c => c != null)
-            .flatMap(c => c.socket.filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1))
-            .subscribe((msg: Message) => this.onApiMessage(msg));
+        _api.pipe(
+            filter(c => c != null),
+            flatMap(c => c.socket.filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1))
+        ).subscribe((msg: Message) => this.onApiMessage(msg));
 
        this._config = _config.asObservable();
        console.log("QueryService is up and running!");
@@ -75,7 +77,7 @@ export class QueryService {
     public findSimilar(containers : QueryContainerInterface[]) : boolean {
         if (this._running > 0) return false;
         if (!this._api.getValue()) return false;
-        this._config.first().subscribe(config => {
+        this._config.pipe(first()).subscribe(config => {
             this._api.getValue().send(new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
         });
     }
@@ -94,7 +96,7 @@ export class QueryService {
         if (!this._api.getValue()) return false;
 
         /* Use categories from last query AND the default categories for MLT. */
-        this._config.first().subscribe(config => {
+        this._config.pipe(first()).subscribe(config => {
             let categories = this._results.features.map(f => f.name);
             config.get<FeatureCategories[]>('mlt').filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
             if (categories.length > 0) {

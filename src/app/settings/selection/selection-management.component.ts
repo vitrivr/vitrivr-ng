@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from "@angular/core";
 import {SelectionService} from "../../core/selection/selection.service";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {Tag} from "../../core/selection/tag.model";
 
 @Component({
@@ -17,7 +17,7 @@ export class SelectionManagementComponent {
     /**
      * Constructor for SelectionManagementComponent
      *
-     * @param {SelectionService} _selectionServce
+     * @param _selectionService
      */
     constructor(private _selectionService: SelectionService) {
         this._observable = _selectionService.asObservable();

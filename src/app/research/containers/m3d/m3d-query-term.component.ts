@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import {Component, ViewChild, Input} from "@angular/core";
 import {MatDialog} from '@angular/material';
-import {M3DQueryTerm} from "../../../shared/model/queries/m3d-query-term.model";
 import {M3DLoaderDialogComponent} from "./m3d-loader-dialog.component";
 import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.component";
 
@@ -9,6 +8,7 @@ import Mesh = THREE.Mesh;
 import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
 import {QueryTermInterface} from "../../../shared/model/queries/interfaces/query-term.interface";
 import {Model3DFileLoader} from "../../../shared/util/m3d-file-loader.util";
+import {first} from "rxjs/operators";
 
 @Component({
     selector: 'qt-m3d',
@@ -142,7 +142,7 @@ export class M3DQueryTermComponent {
      */
     private openM3DDialog(data? : any) {
         let dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data : data});
-        dialogRef.afterClosed().first().subscribe((result : Mesh) => {
+        dialogRef.afterClosed().pipe(first()).subscribe((result : Mesh) => {
             if (result) {
                 this.preview.setMesh(result);
                 this.preview.render();
@@ -157,7 +157,7 @@ export class M3DQueryTermComponent {
      */
     private openSketchDialog(data? : any) {
         let dialogRef = this.dialog.open(BinarySketchDialogComponent, {data : data});
-        dialogRef.afterClosed().first().subscribe(result => {
+        dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if (result) {
                 this.previewimg.nativeElement.src = result;
                 this.m3dTerm.data = result;

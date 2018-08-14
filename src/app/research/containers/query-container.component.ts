@@ -3,7 +3,7 @@ import {QueryContainerInterface} from "../../shared/model/queries/interfaces/que
 import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-type.interface";
 import {ConfigService} from "../../core/basics/config.service";
 import {Config} from "../../shared/model/config/config.model";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 @Component({
     selector: 'query-container',

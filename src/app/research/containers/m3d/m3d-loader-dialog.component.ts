@@ -1,4 +1,4 @@
-import {Component, ViewChild, HostListener} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.component";
 import {MatDialogRef} from "@angular/material";
 
@@ -31,7 +31,7 @@ export class M3DLoaderDialogComponent {
      * @param event
      */
     public onFileAvailable(event: any) {
-        this.loader.loadMeshFromFile(event.target.files[0])
+        this.loader.loadMeshFromFile(event.target.files[0]);
         this.fileloader.nativeElement.value = null;
     };
 

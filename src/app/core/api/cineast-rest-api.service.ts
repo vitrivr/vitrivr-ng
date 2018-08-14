@@ -1,8 +1,9 @@
 import {Inject} from "@angular/core";
 import {ConfigService} from "../basics/config.service";
 import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {HttpParams} from "@angular/common/http/src/params";
+import {filter} from "rxjs/operators";
 
 /**
  * Class that can be extended or used by services that provide access to some kind of RESTful endpoint exposed by Cineast.
@@ -18,7 +19,9 @@ export class CineastRestAPI {
      * @param {HttpClient} _httpClient
      */
     constructor(@Inject(ConfigService) _configService : ConfigService, @Inject(HttpClient) protected _httpClient: HttpClient) {
-        _configService.asObservable().filter(c => c.endpoint_http != null).subscribe((config) => {
+        _configService.asObservable().pipe(
+            filter(c => c.endpoint_http != null)
+        ).subscribe((config) => {
             this._endpoint = config.endpoint_http;
         });
     }

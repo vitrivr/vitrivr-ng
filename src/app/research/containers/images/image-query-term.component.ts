@@ -5,6 +5,7 @@ import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.mod
 import {ResolverService} from "../../../core/basics/resolver.service";
 import {HttpClient} from "@angular/common/http";
 import {MediaSegmentDragContainer} from "../../../shared/model/internal/media-segment-drag-container.model";
+import {first} from "rxjs/operators";
 
 @Component({
     selector: 'qt-image',
@@ -27,7 +28,9 @@ export class ImageQueryTermComponent {
     /**
      * Default constructor.
      *
-     * @param dialog
+     * @param _dialog
+     * @param _resolver
+     * @param _http
      */
     constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {}
 
@@ -127,7 +130,7 @@ export class ImageQueryTermComponent {
             /* Case 2: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
             let drag: MediaSegmentDragContainer = MediaSegmentDragContainer.fromJSON(event.dataTransfer.getData(MediaSegmentDragContainer.FORMAT));
             let url = this._resolver.pathToThumbnail(drag.object, drag.segment);
-            this._http.get(url, {responseType: 'blob'}).first().subscribe(data => {
+            this._http.get(url, {responseType: 'blob'}).pipe(first()).subscribe(data => {
                 reader.readAsDataURL(data);
             });
         }
@@ -155,7 +158,7 @@ export class ImageQueryTermComponent {
         let dialogRef = this._dialog.open(SketchDialogComponent, {data : data, height:'450px'});
 
         /* Register the onClose callback. */
-        dialogRef.afterClosed().first().subscribe(result => {
+        dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if (result) this.applyImageData(result);
         });
     }

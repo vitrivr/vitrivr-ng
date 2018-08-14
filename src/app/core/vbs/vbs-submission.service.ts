@@ -4,13 +4,13 @@ import {MetadataLookupService} from "../lookup/metadata-lookup.service";
 import {VideoUtil} from "../../shared/util/video.util";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {ConfigService} from "../basics/config.service";
-import {Observable} from "rxjs/Observable";
+import {from, Observable, of, Subscription} from "rxjs";
 import {MatSnackBar} from "@angular/material";
 import {Config} from "../../shared/model/config/config.model";
 import {EventBusService} from "../basics/event-bus.service";
-import {Subject} from "rxjs/Subject";
+import {Subject} from "rxjs";
 import {VbsAction} from "./vbs-action.model";
-import {Subscription} from "rxjs/Subscription";
+import {buffer, defaultIfEmpty, filter, first, flatMap, map, tap, withLatestFrom} from "rxjs/operators";
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -43,8 +43,9 @@ export class VbsSubmissionService {
      * @param {MatSnackBar} _snackBar
      */
     constructor(_config: ConfigService, private _eventBusService: EventBusService, private _metadata: MetadataLookupService, private _http: HttpClient, private _snackBar: MatSnackBar) {
-        this._config = _config.asObservable()
-            .map(c => <[string,string, string]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<string>('vbs.toolid')]);
+        this._config = _config.asObservable().pipe(
+            map(c => <[string,string, string]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<string>('vbs.toolid')])
+        );
 
 
         /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
@@ -94,10 +95,10 @@ export class VbsSubmissionService {
         }
 
         let time = Date.now(); /* Time of the reset. */
-        let events = VbsAction.mapEventStream(this._eventBusService.observable())
-            .buffer(this._submitSubject)
-            .map(ev => ev.map(e => e.map(a => `${a.action}(${Math.round((a.timestamp-time)/1000)}s${a.context ? "," + a.context : ""})`.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR))
-            .do(seq => {
+        let events = VbsAction.mapEventStream(this._eventBusService.observable()).pipe(
+            buffer(this._submitSubject),
+            map(ev => ev.map(e => e.map(a => `${a.action}(${Math.round((a.timestamp-time)/1000)}s${a.context ? "," + a.context : ""})`.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR)),
+            tap(seq => {
                 let date = new Date();
                 let time = `time ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
                 if (seq && seq.length > 0) {
@@ -105,20 +106,22 @@ export class VbsSubmissionService {
                 } else {
                     this._seqBuffer.push(time);
                 }
-            });
+            })
+        );
 
-            this._vbsSubscription = this._submitSubject
-            .flatMap(([segment,time]) => {
-                return this._metadata.lookup(segment.objectId)
-                    .map(v => v.content)
-                    .flatMap(s => Observable.from(s))
-                    .filter(m => m.domain === "technical" && m.key === "fps")
-                    .map(m => m.value)
-                    .defaultIfEmpty(VideoUtil.bestEffortFPS(segment))
-                    .first();
-            },([segment,time], fps) => [segment,VbsSubmissionService.timeToFrame(time,fps)])
-            .withLatestFrom(events,([segment,frame]) => [segment,frame])
-            .flatMap(([segment,frame]:[SegmentScoreContainer,number]) => {
+        this._vbsSubscription = this._submitSubject.pipe(
+            flatMap(([segment,time]) => this._metadata.lookup(segment.objectId).pipe(
+                    map(v => v.content),
+                    flatMap(s => from(s)),
+                    filter(m => m.domain === "technical" && m.key === "fps"),
+                    map(m => m.value),
+                    defaultIfEmpty(VideoUtil.bestEffortFPS(segment)),
+                    map(fps => [segment,VbsSubmissionService.timeToFrame(time,fps)]),
+                    first()
+                )
+            ),
+            withLatestFrom(events,([segment,frame]) => [segment,frame]),
+            flatMap(([segment,frame]:[SegmentScoreContainer,number]) => {
                 let params = new HttpParams().set('video', segment.objectId).set('team', String(team)).set('frame', String(frame));
                 let iseq = VbsAction.TOOL_ID_PREFIX + tool + VbsAction.SEPARATOR + this._seqBuffer.join(VbsAction.SEPARATOR);
                 let observable = null;
@@ -133,9 +136,9 @@ export class VbsSubmissionService {
                     observable = this._http.get(String(endpoint), {responseType: 'text', params: params});
                 }
                 console.log(`Submitting video to VBS; id: ${segment.objectId}, frame: ${frame}, sequence: ${iseq}`.toString());
-                return observable.catch((err) => Observable.of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`));
-            })
-            .map((msg: string) => {
+                return observable.catch((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`));
+            }),
+            map((msg: string) => {
                 if (msg.indexOf("Correct") > -1) {
                     return [msg,"snackbar-success"];
                 }else if (msg.indexOf("Failed") > -1) {
@@ -143,10 +146,10 @@ export class VbsSubmissionService {
                 } else {
                     return [msg,"snackbar-warning"];
                 }
-            })
-            .subscribe(([msg,clazz]) => {
-                this._snackBar.open(msg,null, {duration: Config.SNACKBAR_DURATION, panelClass: clazz});
-            });
+            }
+        )).subscribe(([msg,clazz]) => {
+            this._snackBar.open(msg,null, {duration: Config.SNACKBAR_DURATION, panelClass: clazz});
+        });
     }
 
      /**
@@ -155,7 +158,7 @@ export class VbsSubmissionService {
      * @return {boolean}
      */
     get isOn(): Observable<boolean> {
-        return this._config.map(([endpoint,team]) => endpoint != null && team != null);
+        return this._config.pipe(map(([endpoint,team]) => endpoint != null && team != null));
     }
 
     /**

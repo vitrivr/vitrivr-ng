@@ -8,13 +8,14 @@ import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-s
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
 import {VbsSubmissionService} from "../../core/vbs/vbs-submission.service";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {SelectionService} from "../../core/selection/selection.service";
 import {EventBusService} from "../../core/basics/event-bus.service";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
+import {map} from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
@@ -129,7 +130,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * @return {boolean} True if submit button should be displayed, false otherwise.
      */
     public showVbsSubmitButton(segment: SegmentScoreContainer): Observable<boolean> {
-        return this._vbs.isOn.map(v => v && segment.objectScoreContainer.mediatype == 'VIDEO');
+        return this._vbs.isOn.pipe(map(v => v && segment.objectScoreContainer.mediatype == 'VIDEO'));
     }
 
     /**

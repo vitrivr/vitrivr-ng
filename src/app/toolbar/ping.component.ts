@@ -1,12 +1,11 @@
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Observable} from 'rxjs/Rx';
 import {CineastWebSocketFactoryService} from "../core/api/cineast-web-socket-factory.service";
 import {StatusType, Ping} from "../shared/model/messages/interfaces/responses/ping.interface";
 import {ConfigService} from "../core/basics/config.service";
-import {Subscription} from "rxjs/Subscription";
-import {WebSocketWrapper} from "../core/api/web-socket-wrapper.model";
 import {Message} from "../shared/model/messages/interfaces/message.interface";
+import {concatAll, filter, map} from "rxjs/operators";
+import {Subscription, timer} from "rxjs";
 
 @Component({
     selector: 'api-status',
@@ -49,14 +48,21 @@ export class PingComponent implements OnInit, OnDestroy {
      */
     public ngOnInit(): void {
         /* Subscribes to API changes. */
-        this._apiSubscription = this._api.filter(c => c != null).map(c => c.socket.filter(msg => msg.messageType == "PING")).concatAll().subscribe((msg: Ping) => {
+        this._apiSubscription = this._api.pipe(
+            filter(c => c != null),
+            map(c => c.socket.filter(msg => msg.messageType == "PING")),
+            concatAll()
+        ).subscribe((msg: Ping) => {
             this._apistatus = msg.status;
             this._transit = 0;
             this._latency = (Date.now() - this._last)
         });
 
         /* Subscribes to changes in the configuration file and dispatches the ping timer. */
-        this._timerSubscription = this._configService.asObservable().map(c => Observable.timer(0, c.ping_interval)).concatAll().subscribe(() => {
+        this._timerSubscription = this._configService.asObservable().pipe(
+            map(c => timer(0, c.ping_interval)),
+            concatAll()
+        ).subscribe(() => {
             this._last = Date.now();
             this._transit +=1;
             this._api.getValue().send(<Message>{messageType: "PING"});

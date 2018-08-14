@@ -1,11 +1,13 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {BehaviorSubject, combineLatest} from "rxjs";
 import {Config} from "../../shared/model/config/config.model";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {UUIDGenerator} from "../../shared/util/uuid-generator.util";
 
 import Dexie from "dexie";
+import {fromPromise} from "rxjs/internal-compatibility";
+import {first, flatMap, map, tap} from "rxjs/operators";
 
 /**
  * This service provides access to the application's configuration. It extends a BehaviorSubject i.e. whenever someone subscribes
@@ -36,20 +38,31 @@ export class ConfigService extends BehaviorSubject<Config> {
      * Reloads the Config from the database and the settings file. If a db version exists, that version is preferred.
      */
     public reload() {
-        this.loadFromDatabase().combineLatest(this.loadFromServer()).map(([c1, c2]) =>{
-            return (c1 ? c1 : c2)
-        }).do(c => {
-            return this.saveToDatabase(c)
-        }).first().subscribe(c => this.next(c));
+        combineLatest(
+            this.loadFromDatabase(),
+            this.loadFromServer()
+        ).pipe(
+            map(([c1, c2]) =>{
+                return (c1 ? c1 : c2)
+            }),
+            tap(c => {
+                return this.saveToDatabase(c)
+            }),
+            first()
+        ).subscribe(c => this.next(c));
     }
 
     /**
      * Resets the Config in the database and reloads it from the server.
      */
     public reset() {
-        Observable.fromPromise(this._configTable.delete(Config.DB_KEY)).flatMap(() => this.loadFromServer()).do(c => {
-            return this.saveToDatabase(c)
-        }).first().subscribe(c => this.next(c));
+        fromPromise(this._configTable.delete(Config.DB_KEY)).pipe(
+            flatMap(() => this.loadFromServer()),
+            tap(c => {
+                return this.saveToDatabase(c)
+            }),
+            first()
+        ).subscribe(c => this.next(c));
     }
 
     /**
@@ -58,7 +71,7 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @param {Config} config
      */
     public apply(config: Config) {
-        Observable.fromPromise(this._configTable.put(config)).subscribe(c => this.next(config))
+        fromPromise(this._configTable.put(config)).subscribe(c => this.next(config))
     }
 
     /**
@@ -67,13 +80,16 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @return {Observable<Config>}
      */
     private loadFromDatabase(): Observable<Config> {
-        return Observable.fromPromise(this._configTable.get(Config.DB_KEY)).map((r: Object) => {
-            if (r) {
-                return Config.deserialize(r)
-            } else {
-                return null;
-            }
-        }).first();
+        return fromPromise(this._configTable.get(Config.DB_KEY)).pipe(
+            map((r: Object) => {
+                if (r) {
+                    return Config.deserialize(r)
+                } else {
+                    return null;
+                }
+            }),
+            first()
+        );
     }
 
     /**
@@ -82,13 +98,16 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @return {Observable<Config>}
      */
     private loadFromServer(): Observable<Config> {
-        return this._http.get('config.json?r=' + UUIDGenerator.suid()).map((r: Object) => {
-            if (r) {
-                return Config.deserialize(r)
-            } else {
-                return null;
-            }
-        }).first();
+        return this._http.get('config.json?r=' + UUIDGenerator.suid()).pipe(
+            map((r: Object) => {
+                if (r) {
+                    return Config.deserialize(r)
+                } else {
+                    return null;
+                }
+            }),
+            first()
+        );
     }
 
     /**
@@ -97,7 +116,7 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @param {Config} config The configuration object that should be saved.
      */
     private saveToDatabase(config: Config) {
-        return Observable.fromPromise(this._configTable.put(config)).first().subscribe();
+        return fromPromise(this._configTable.put(config)).pipe(first()).subscribe();
     }
 
     /**

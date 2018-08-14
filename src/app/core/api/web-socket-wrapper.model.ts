@@ -1,6 +1,6 @@
-import {Subject} from "rxjs/Rx";
-import {WebSocketSubjectConfig} from "rxjs/observable/dom/WebSocketSubject";
-import {Observable} from "rxjs/Observable";
+import {Observable, of, EMPTY} from "rxjs";
+import {retryWhen, flatMap, delay} from 'rxjs/operators';
+import {webSocket, WebSocketSubjectConfig} from 'rxjs/webSocket';
 
 /**
  * This class wraps a WebSocket connection. It is usually produced by an instance of WebSocketFactoryService.
@@ -19,21 +19,25 @@ export class WebSocketWrapper {
      * @param {number} _retryAfter Time to wait until connection is re-established after inadvertent disconnect (values < 0 mean that no retry attempts will be made).
      * @param {Subject<any>} _config Subject that is connected to the Socket.
      */
-    constructor(private readonly _retryAfter: number = -1, private readonly _config: WebSocketSubjectConfig) {
+    constructor(private readonly _retryAfter: number = -1, private readonly _config: WebSocketSubjectConfig<any>) {
         if (this._retryAfter >= 0) {
-            this._socket = Observable.webSocket(_config).retryWhen(error => {
-                return error.flatMap(e => {
-                    if (this._disconnected) {
-                        console.log("Lost connection to " + _config.url + "; Retrying after " + _retryAfter + "ms");
-                        return Observable.of(e);
-                    } else {
-                        console.log("Lost connection to " + _config.url + "; No retry since socket was invalidated.");
-                        return Observable.empty();
-                    }
-                }).delay(_retryAfter);
-            });
+            this._socket = webSocket(_config).pipe(
+                retryWhen(error => {
+                    return error.pipe(
+                        flatMap(e => {
+                            if (this._disconnected) {
+                                console.log("Lost connection to " + _config.url + "; Retrying after " + _retryAfter + "ms");
+                                return of(e);
+                            } else {
+                                console.log("Lost connection to " + _config.url + "; No retry since socket was invalidated.");
+                                return EMPTY;
+                            }
+                        }))
+                    }),
+                    delay(_retryAfter)
+            );
         } else {
-            this._socket = Observable.webSocket(_config);
+            this._socket = webSocket(_config);
         }
     }
 

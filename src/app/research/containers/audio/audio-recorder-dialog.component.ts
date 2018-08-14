@@ -1,10 +1,10 @@
 import {Component, ViewChild, Inject, OnInit, OnDestroy, Optional} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {AudioRecorderComponent} from "../../../shared/components/audio/audio-recorder.component";
-import {Observable} from "rxjs/Observable";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription, timer} from "rxjs";
 import {TimeFormatterUtil} from "../../../shared/util/timer-formatter.util";
 import {WaveAudioUtil} from "../../../shared/util/wave-audio.util";
+import {timestamp} from "rxjs/operators";
 
 
 @Component({
@@ -53,7 +53,7 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
             this._recorder.loadAudioFromFile(this._data);
         }
         this._data = null;
-        this._timer = Observable.timer(0, 500).timestamp().subscribe((x) => {
+        this._timer = timer(0, 500).pipe(timestamp()).subscribe((x) => {
             if (this._recorder.isPlaying() && this.status != "Playing") {
                 this.start = x.timestamp;
                 this.status = "Playing";

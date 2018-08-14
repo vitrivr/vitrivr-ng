@@ -6,7 +6,8 @@ import {EventBusService} from "../core/basics/event-bus.service";
 import {ContextKey, InteractionEventComponent} from "../shared/model/events/interaction-event-component.model";
 import {InteractionEventType} from "../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../shared/model/events/interaction-event.model";
-import {Observable} from "rxjs/Observable";
+import {from} from "rxjs";
+import {bufferCount, flatMap, map} from "rxjs/operators";
 
 
 @Component({
@@ -49,26 +50,30 @@ export class ResearchComponent implements OnInit {
      */
     public onSearchClicked() {
         this._queryService.findSimilar(this.containers);
-        Observable.from(this.containers).flatMap(c => c.terms).map(t => {
-           let context: Map<ContextKey,any> = new Map();
-           context.set("q:categories", t.categories);
-           switch (t.type) {
-                case "IMAGE":
-                    return new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context);
-                case "AUDIO":
-                    return new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context);
-                case "MOTION":
-                    return new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context);
-                case "MODEL3D":
-                    return new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context);
-                case "TEXT":
-                    context.set("q:value", t.data);
-                    return new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context);
-                case "TAG":
-                    context.set("q:value", t.data);
-                    return new InteractionEventComponent(InteractionEventType.QUERY_TAG, context);
-            }
-        }).bufferCount(Number.MIN_SAFE_INTEGER).subscribe(c => this._eventBus.publish(new InteractionEvent(...c)))
+        from(this.containers).pipe(
+            flatMap(c => c.terms),
+            map(t => {
+               let context: Map<ContextKey,any> = new Map();
+               context.set("q:categories", t.categories);
+               switch (t.type) {
+                    case "IMAGE":
+                        return new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context);
+                    case "AUDIO":
+                        return new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context);
+                    case "MOTION":
+                        return new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context);
+                    case "MODEL3D":
+                        return new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context);
+                    case "TEXT":
+                        context.set("q:value", t.data);
+                        return new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context);
+                    case "TAG":
+                        context.set("q:value", t.data);
+                        return new InteractionEventComponent(InteractionEventType.QUERY_TAG, context);
+                }
+            }),
+            bufferCount(Number.MIN_SAFE_INTEGER)
+        ).subscribe(c => this._eventBus.publish(new InteractionEvent(...c)))
     }
 
     /**

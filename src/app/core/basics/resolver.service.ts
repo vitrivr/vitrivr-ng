@@ -83,7 +83,14 @@ export class ResolverService {
      * @param object The MediaObject for which to return the path.
      */
     public pathToObject(object: MediaObject) {
-        return object.contentURL;
+        let rep = {};
+        rep[Token.OBJECT_ID] = object.objectId;
+        rep[Token.OBJECT_NAME] = object.name;
+        rep[Token.OBJECT_PATH] = object.path;
+        rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
+        rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
+        rep[Token.SUFFIX] = this.suffices.get(object.mediatype);
+        return this.host_objects.replace(this._regex, (match) => rep[match] || match);
     }
 
     /**
@@ -104,13 +111,13 @@ export class ResolverService {
      */
     public pathToThumbnail(object: MediaObject, segment: MediaSegment) {
         let rep = {};
-      rep[Token.OBJECT_ID] = object.objectId;
-      rep[Token.OBJECT_NAME] = object.name;
-      rep[Token.OBJECT_PATH] = object.path;
-      rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
-      rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
-      rep[Token.SUFFIX] = this.suffices.get(object.mediatype);
-      rep[Token.SEGMENT_ID] = segment.segmentId;
-      return this.host_thumbnails.replace(this._regex, (match) => rep[match] || match);
+        rep[Token.OBJECT_ID] = object.objectId;
+        rep[Token.OBJECT_NAME] = object.name;
+        rep[Token.OBJECT_PATH] = object.path;
+        rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
+        rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
+        rep[Token.SUFFIX] = this.suffices.get(object.mediatype);
+        rep[Token.SEGMENT_ID] = segment.segmentId;
+        return this.host_thumbnails.replace(this._regex, (match) => rep[match] || match);
     }
 }

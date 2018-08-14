@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, Component} from "@angular/core";
 import {ConfigService} from "../../core/basics/config.service";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {Config} from "../../shared/model/config/config.model";
 import {Hint} from "../../shared/model/messages/interfaces/requests/query-config.interface";
 import {MatSlideToggleChange} from "@angular/material";
+import {first, map} from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
@@ -36,7 +37,7 @@ export class PreferencesComponent {
      * @param {MatSlideToggleChange} e The associated change event.
      */
     public onUseInexactIndexChanged(e: MatSlideToggleChange) {
-        this._config.first().subscribe(c => {
+        this._config.pipe(first()).subscribe(c => {
             let hints = c.get<Hint[]>('query.config.hints').filter(h => ["inexact", "exact"].indexOf(h) == -1);
             if (e.checked == true) {
                 hints.push("inexact");
@@ -54,6 +55,9 @@ export class PreferencesComponent {
      * @return {Observable<boolean>}
      */
     get useInexactIndex(): Observable<boolean> {
-        return this._config.map(c => c.get<Hint[]>('query.config.hints')).map(h => h.indexOf("inexact") > -1 && h.indexOf("exact") == -1);
+        return this._config.pipe(
+            map(c => c.get<Hint[]>('query.config.hints')),
+            map(h => h.indexOf("inexact") > -1 && h.indexOf("exact") == -1)
+        );
     }
 }

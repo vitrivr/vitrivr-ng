@@ -3,12 +3,12 @@ import {MatCheckboxChange, MatSliderChange} from "@angular/material";
 import {QueryChange, QueryService} from "../../core/queries/query.service";
 import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
 import {MediaType} from "../../shared/model/media/media-type.model";
-import {Observable} from "rxjs/Observable";
+import {EMPTY, Observable} from "rxjs";
 import {EventBusService} from "../../core/basics/event-bus.service";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
-import {Observer} from "rxjs/Observer";
+import {filter} from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
@@ -28,10 +28,10 @@ import {Observer} from "rxjs/Observer";
 export class RefinementComponent implements OnInit, OnDestroy {
 
     /** An observable for the current results. */
-    private _features : Observable<WeightedFeatureCategory[]> = Observable.empty();
+    private _features : Observable<WeightedFeatureCategory[]> = EMPTY;
 
     /** An observable for the current results. */
-    private _mediatypes : Observable<Map<MediaType,boolean>> = Observable.empty();
+    private _mediatypes : Observable<Map<MediaType,boolean>> = EMPTY;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
@@ -50,9 +50,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
      */
     public ngOnInit(): void {
-        this._queryServiceSubscription = this._queryService.observable
-            .filter(msg => {return ["STARTED", "CLEAR"].indexOf(msg) > -1})
-            .subscribe((msg) => this.onQueryStartEnd(msg));
+        this._queryServiceSubscription = this._queryService.observable.pipe(
+            filter(msg => {return ["STARTED", "CLEAR"].indexOf(msg) > -1})
+        ).subscribe((msg) => this.onQueryStartEnd(msg));
     }
 
     /**
@@ -72,8 +72,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
             this._features = this._queryService.results.featuresAsObservable;
             this._mediatypes = this._queryService.results.mediatypesAsObservable;
         } else if (msg == "CLEAR"){
-            this._mediatypes = Observable.empty();
-            this._features = Observable.empty();
+            this._mediatypes = EMPTY;
+            this._features = EMPTY;
         }
         this._cdr.markForCheck();
     }

@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {ConfigService} from "../basics/config.service";
 import {Tag} from "./tag.model";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {BehaviorSubject} from "rxjs";
 
 /**
  * This service orchestrates similarity requests using the Cineast API (WebSocket). The service is responsible for

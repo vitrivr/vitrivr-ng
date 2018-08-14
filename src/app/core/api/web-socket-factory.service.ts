@@ -1,7 +1,7 @@
 import {WebSocketSubjectConfig} from "rxjs/observable/dom/WebSocketSubject";
 import {NextObserver} from "rxjs/src/Observer";
 import {WebSocketWrapper} from "./web-socket-wrapper.model";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {BehaviorSubject} from "rxjs";
 
 /**
  * Custom type used to indicate the status of the WebSocket status.
@@ -38,7 +38,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
         };
 
         /* Prepare config and create new WebSocket. */
-        let config: WebSocketSubjectConfig = <WebSocketSubjectConfig>{
+        let config: WebSocketSubjectConfig<any> = <WebSocketSubjectConfig<any>>{
             url: url,
             openObserver: openObserver,
             closeObserver: closeObserver

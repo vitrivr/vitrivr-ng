@@ -2,8 +2,7 @@ import {ChangeDetectorRef, OnDestroy, OnInit} from "@angular/core";
 import {ResultsContainer} from "../shared/model/results/scores/results-container.model";
 import {QueryChange, QueryService} from "../core/queries/query.service";
 import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
-import {ScoreContainer} from "../shared/model/results/scores/compound-score-container.model";
-import {Observable} from "rxjs/Observable";
+import {EMPTY, Observable} from "rxjs";
 import {SelectionService} from "../core/selection/selection.service";
 import {Tag} from "../core/selection/tag.model";
 import {ColorUtil} from "../shared/util/color.util";
@@ -17,6 +16,7 @@ import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-ob
 import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
 import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
 import {Router} from "@angular/router";
+import {filter} from "rxjs/operators";
 
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy  {
     /* Indicator whether the progress bar should be visible. */
@@ -29,7 +29,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     protected _selectionServiceSubscription;
 
     /** Local reference to the data source holding the query results.*/
-    protected _dataSource : Observable<T> = Observable.empty();
+    protected _dataSource : Observable<T> = EMPTY;
 
     /**
      * Default constructor.
@@ -72,9 +72,9 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * Lifecycle Hook (onInit): Subscribes to the QueryService and the SelectionService
      */
     public ngOnInit(): void {
-        this._queryServiceSubscription = this._queryService.observable
-            .filter(msg => ["STARTED", "ENDED", "ERROR", "CLEAR"].indexOf(msg) > -1)
-            .subscribe((msg) => this.onQueryStateChange(msg));
+        this._queryServiceSubscription = this._queryService.observable.pipe(
+            filter(msg => ["STARTED", "ENDED", "ERROR", "CLEAR"].indexOf(msg) > -1)
+        ).subscribe((msg) => this.onQueryStateChange(msg));
         this._selectionServiceSubscription = this._selectionService.subscribe(s => this._cdr.markForCheck());
         this.subscribe(this._queryService.results);
     }
@@ -228,7 +228,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
                 this._loading = false;
                 break;
             case 'CLEAR':
-                this._dataSource = Observable.empty();
+                this._dataSource = EMPTY;
                 break;
         }
         this._cdr.markForCheck();

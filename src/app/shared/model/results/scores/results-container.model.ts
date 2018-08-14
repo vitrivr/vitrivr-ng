@@ -7,9 +7,8 @@ import {WeightedFeatureCategory} from "../weighted-feature-category.model";
 import {ObjectQueryResult} from "../../messages/interfaces/responses/query-result-object.interface";
 import {SegmentQueryResult} from "../../messages/interfaces/responses/query-result-segment.interface";
 import {SimilarityQueryResult} from "../../messages/interfaces/responses/query-result-similarty.interface";
-import {Subscription} from "rxjs/Subscription";
-import {Observable} from "rxjs/Observable";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {Observable} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {FeatureCategories} from "../feature-categories.model";
 
 export class ResultsContainer {
@@ -30,6 +29,7 @@ export class ResultsContainer {
 
     /**
      * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
+     * results have been returned yet OR that no query is running.
      * results have been returned yet OR that no query is running.
      *
      * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should

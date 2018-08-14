@@ -4,6 +4,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {HttpClient} from "@angular/common/http";
 import {QueryService} from "../core/queries/query.service";
 import {QueryContainer} from "../shared/model/queries/query-container.model";
+import {first} from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
@@ -24,7 +25,10 @@ export class ImagecropComponent implements OnInit {
 
     /**
      *
-     * @param src
+     * @param _src
+     * @param _ref
+     * @param _http
+     * @param _query
      */
     constructor(@Inject(MAT_DIALOG_DATA) private _src : string, private _ref: MatDialogRef<ImagecropComponent>, private _http: HttpClient, private _query : QueryService) {
         this._cropperSettings = new CropperSettings();
@@ -59,7 +63,7 @@ export class ImagecropComponent implements OnInit {
 
             image.src = reader.result;
         });
-        this._http.get(this._src, {responseType: 'blob'}).first().subscribe(data => {
+        this._http.get(this._src, {responseType: 'blob'}).pipe(first()).subscribe(data => {
             reader.readAsDataURL(data);
         });
     }

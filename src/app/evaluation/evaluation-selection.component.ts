@@ -3,7 +3,7 @@ import {Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material";
 import {ConfigService} from "../core/basics/config.service";
 import {UUIDGenerator} from "../shared/util/uuid-generator.util";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from "rxjs";
 
 @Component({
     moduleId: module.id,

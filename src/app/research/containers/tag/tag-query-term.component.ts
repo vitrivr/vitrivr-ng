@@ -1,12 +1,10 @@
 import {Component, Input, ViewChild} from "@angular/core";
 import {TagQueryTerm} from "../../../shared/model/queries/tag-query-term.model";
 import {FormControl} from "@angular/forms";
-import {Observable} from "rxjs/Observable";
+import {EMPTY, Observable} from "rxjs";
 import {Tag} from "../../../shared/model/misc/tag.model";
 import {TagsLookupService} from "../../../core/lookup/tags-lookup.service";
-import {startWith} from 'rxjs/operators/startWith';
-import {map} from 'rxjs/operators/map';
-import {MatAutocomplete, MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from "@angular/material";
+import {debounceTime, map, mergeAll, startWith} from "rxjs/operators";
 
 @Component({
     selector: 'qt-tag',
@@ -128,13 +126,18 @@ export class FieldGroup {
      */
     constructor(private _tags: TagsLookupService) {
         this.formControl = new FormControl();
-        this.filteredTags = this.formControl.valueChanges.debounceTime(250).pipe(startWith(''), map((tag: string) => {
-            if (tag.length >= 3) {
-                return this._tags.matching(tag)
-            } else {
-                return Observable.empty<Tag[]>();
-            }
-        })).mergeAll();
+        this.filteredTags = this.formControl.valueChanges.pipe(
+            debounceTime(250),
+            startWith(''),
+            map((tag: string) => {
+                if (tag.length >= 3) {
+                    return this._tags.matching(tag)
+                } else {
+                    return EMPTY;
+                }
+            }),
+            mergeAll()
+        );
     }
 
     /**

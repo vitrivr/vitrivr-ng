@@ -3,6 +3,7 @@ import {Component, ViewChild, Input} from "@angular/core";
 import {MatDialog} from '@angular/material';
 import {AudioRecorderDialogComponent} from "./audio-recorder-dialog.component";
 import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.model";
+import {first} from "rxjs/operators";
 
 @Component({
     selector: 'qt-audio',
@@ -123,7 +124,7 @@ export class AudioQueryTermComponent {
      */
     private openAudioRecorderDialog(data?: any) {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent, {data : data});
-        let subscription = dialogRef.afterClosed().first().subscribe(result => {
+        let subscription = dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if (result) {
                 result.then((data: Blob) => {
                     this.player.nativeElement.src = URL.createObjectURL(data);

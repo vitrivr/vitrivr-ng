@@ -2,8 +2,9 @@ import {Component} from '@angular/core';
 import {QueryChange, QueryService,} from "./core/queries/query.service";
 import {ConfigService} from "./core/basics/config.service";
 import {Config} from "./shared/model/config/config.model";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {EventBusService} from "./core/basics/event-bus.service";
+import {filter, map} from "rxjs/operators";
 @Component({
     moduleId: module.id,
     selector: 'vitrivr',
@@ -25,9 +26,12 @@ export class AppComponent {
      * @param _eventBusService Reference to the singleton EventBusService.
      */
     constructor(_queryService : QueryService, _configService: ConfigService, private _eventBusService: EventBusService) {
-        this._loading = _queryService.observable.filter(msg => ["STARTED","ENDED","ERROR"].indexOf(msg) > -1).map((msg: QueryChange) => {
-            return _queryService.running;
-        });
+        this._loading = _queryService.observable.pipe(
+            filter(msg => ["STARTED","ENDED","ERROR"].indexOf(msg) > -1),
+            map((msg: QueryChange) => {
+                return _queryService.running;
+            })
+        );
         this._config = _configService.asObservable();
     }
 
