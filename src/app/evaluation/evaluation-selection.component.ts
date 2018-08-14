@@ -8,55 +8,7 @@ import {Subscription} from "rxjs";
 @Component({
     moduleId: module.id,
     selector: 'evaluation-selection',
-    template: `
-        <mat-card class="evaluation-card">
-            <mat-card-header>
-                <mat-card-title>Vitrivr NG: Start New Evaluation</mat-card-title>
-                <mat-card-subtitle>Please elect an evaluation template and note down your ID.</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content [style.margin-top]="'20px;'" [style.margin-bottom]="'20px;'">
-                <p>
-                    <mat-form-field style="width:100%;">
-                        <input matInput placeholder="Evaluation ID (please keep)" [value]="randomId" disabled/>
-                    </mat-form-field>
-                </p>
-
-                <p>
-                    <mat-select placeholder="Template" [(ngModel)]="urlFieldValue" [style.width]="'100%'">
-                        <mat-option *ngFor="let template of templates" [value]="template.url">{{template.name}}
-                        </mat-option>
-                    </mat-select>
-                   
-                </p>
-
-                <p>
-                    <mat-form-field style="width:100%;">
-                        <input matInput placeholder="Your name" [(ngModel)]="nameFieldValue"/>
-                    </mat-form-field>
-                </p>
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-button (click)="onStartClick()">START EVALUATION</button>
-            </mat-card-actions>
-        </mat-card>
-
-        <mat-card class="evaluation-card">
-            <mat-card-header>
-                <mat-card-title>Vitrivr NG: Continue evaluation</mat-card-title>
-                <mat-card-subtitle>Please enter your evaluation ID in order to continue.</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content [style.margin-top]="'20px;'" [style.margin-bottom]="'20px;'">
-                <p>
-                    <mat-form-field style="width:100%;">
-                        <input matInput placeholder="Evaluation ID" [(ngModel)]="enteredId"/>
-                    </mat-form-field>
-                </p>
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-button (click)="onContinueClick()">CONTINUE EVALUATION</button>
-            </mat-card-actions>
-        </mat-card>
-    `
+    templateUrl: 'evaluation-selection.component.html'
 })
 export class EvaluationSelectionComponent implements OnInit, OnDestroy {
 
