@@ -12,7 +12,7 @@ export class CineastWebSocketFactoryService extends WebSocketFactoryService {
     constructor(@Inject(ConfigService) _configService : ConfigService) {
         super(null);
         _configService.pipe(
-            filter(c => c.endpoint_http != null)).subscribe((config) => {
+            filter(c => c.endpoint_ws != null)).subscribe((config) => {
             this.connect(config.endpoint_ws, 5000);
         });
     }

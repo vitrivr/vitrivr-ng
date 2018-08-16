@@ -1,6 +1,6 @@
-import {Observable, of, EMPTY, Subject} from "rxjs";
-import {retryWhen, flatMap, delay} from 'rxjs/operators';
-import {webSocket, WebSocketSubjectConfig} from 'rxjs/webSocket';
+import {Observable, Subject} from "rxjs";
+import {retryWhen, delay, catchError, tap, take} from 'rxjs/operators';
+import {webSocket, WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/webSocket';
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 
 /**
@@ -9,7 +9,10 @@ import {Message} from "../../shared/model/messages/interfaces/message.interface"
 export class WebSocketWrapper {
 
     /** Reference to the underlying WebSocket observable. */
-    private readonly _socket: Subject<Message>;
+    private readonly _socket: Observable<Message>;
+
+    /** */
+    private readonly _internalSocket: WebSocketSubject<Message>;
 
     /** Flag indicating whether the current WebSocketWrapper was disconnected (manually). */
     private _disconnected = false;
@@ -21,24 +24,28 @@ export class WebSocketWrapper {
      * @param {Subject<any>} _config Subject that is connected to the Socket.
      */
     constructor(private readonly _retryAfter: number = -1, private readonly _config: WebSocketSubjectConfig<Message>) {
+        this._internalSocket = webSocket(_config);
         if (this._retryAfter >= 0) {
-            this._socket = <Subject<Message>> (webSocket(_config).pipe(
+            this._socket = this._internalSocket.pipe(
                 retryWhen(error => {
                     return error.pipe(
-                        flatMap(e => {
-                            if (this._disconnected) {
+                        tap(e => {
+                            if (!this._disconnected) {
                                 console.log("Lost connection to " + _config.url + "; Retrying after " + _retryAfter + "ms");
-                                return of(e);
                             } else {
                                 console.log("Lost connection to " + _config.url + "; No retry since socket was invalidated.");
-                                return EMPTY;
                             }
-                        }))
-                }),
-                delay(_retryAfter)
-            ));
+                        }),
+                        delay(_retryAfter))
+                })
+            );
         } else {
-            this._socket = webSocket(_config);
+            this._socket = this._internalSocket.pipe(
+                catchError((err, observable) => {
+                    console.log("Lost connection to " + _config.url + "; Connection will not be re-established!");
+                    return observable;
+                })
+            );
         }
     }
 
@@ -56,7 +63,7 @@ export class WebSocketWrapper {
      */
     public disconnect() {
         this._disconnected = true;
-        this._socket.complete();
+        this._internalSocket.complete();
     }
 
     /**
@@ -67,6 +74,6 @@ export class WebSocketWrapper {
      * @param object Object to send.
      */
     public send(object: Message) {
-        this._socket.next(object);
+        this._internalSocket.next(object);
     }
 }
