@@ -50,7 +50,7 @@ export class PingComponent implements OnInit, OnDestroy {
         /* Subscribes to API changes. */
         this._apiSubscription = this._api.pipe(
             filter(c => c != null),
-            map(c => c.socket.filter(msg => msg.messageType == "PING")),
+            map(c => c.socket.pipe(filter(msg => msg.messageType == "PING"))),
             concatAll()
         ).subscribe((msg: Ping) => {
             this._apistatus = msg.status;

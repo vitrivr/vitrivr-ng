@@ -2,6 +2,7 @@ import {WebSocketSubjectConfig} from "rxjs/observable/dom/WebSocketSubject";
 import {NextObserver} from "rxjs/src/Observer";
 import {WebSocketWrapper} from "./web-socket-wrapper.model";
 import {BehaviorSubject} from "rxjs";
+import {Message} from "../../shared/model/messages/interfaces/message.interface";
 
 /**
  * Custom type used to indicate the status of the WebSocket status.
@@ -38,10 +39,17 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
         };
 
         /* Prepare config and create new WebSocket. */
-        let config: WebSocketSubjectConfig<any> = <WebSocketSubjectConfig<any>>{
+        let config: WebSocketSubjectConfig<Message> = <WebSocketSubjectConfig<Message>>{
             url: url,
             openObserver: openObserver,
-            closeObserver: closeObserver
+            closeObserver: closeObserver,
+            serializer: (m: Message) => JSON.stringify(m, (key, value) => {
+                if (key.startsWith("_")) {
+                    return undefined;
+                } else {
+                    return value
+                }
+            })
         };
         this.next(new WebSocketWrapper(_retryAfter, config));
     }

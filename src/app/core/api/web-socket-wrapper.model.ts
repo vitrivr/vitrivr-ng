@@ -1,6 +1,7 @@
-import {Observable, of, EMPTY} from "rxjs";
+import {Observable, of, EMPTY, Subject} from "rxjs";
 import {retryWhen, flatMap, delay} from 'rxjs/operators';
 import {webSocket, WebSocketSubjectConfig} from 'rxjs/webSocket';
+import {Message} from "../../shared/model/messages/interfaces/message.interface";
 
 /**
  * This class wraps a WebSocket connection. It is usually produced by an instance of WebSocketFactoryService.
@@ -8,7 +9,7 @@ import {webSocket, WebSocketSubjectConfig} from 'rxjs/webSocket';
 export class WebSocketWrapper {
 
     /** Reference to the underlying WebSocket observable. */
-    private readonly _socket;
+    private readonly _socket: Subject<Message>;
 
     /** Flag indicating whether the current WebSocketWrapper was disconnected (manually). */
     private _disconnected = false;
@@ -19,9 +20,9 @@ export class WebSocketWrapper {
      * @param {number} _retryAfter Time to wait until connection is re-established after inadvertent disconnect (values < 0 mean that no retry attempts will be made).
      * @param {Subject<any>} _config Subject that is connected to the Socket.
      */
-    constructor(private readonly _retryAfter: number = -1, private readonly _config: WebSocketSubjectConfig<any>) {
+    constructor(private readonly _retryAfter: number = -1, private readonly _config: WebSocketSubjectConfig<Message>) {
         if (this._retryAfter >= 0) {
-            this._socket = webSocket(_config).pipe(
+            this._socket = <Subject<Message>> (webSocket(_config).pipe(
                 retryWhen(error => {
                     return error.pipe(
                         flatMap(e => {
@@ -33,9 +34,9 @@ export class WebSocketWrapper {
                                 return EMPTY;
                             }
                         }))
-                    }),
-                    delay(_retryAfter)
-            );
+                }),
+                delay(_retryAfter)
+            ));
         } else {
             this._socket = webSocket(_config);
         }
@@ -65,23 +66,7 @@ export class WebSocketWrapper {
      *
      * @param object Object to send.
      */
-    public send(object: any) {
-        this.sendstr(JSON.stringify(object, (key, value) => {
-            if (key.startsWith("_")) {
-                return undefined;
-            } else {
-                return value
-            }
-        }));
-    }
-
-    /**
-     * Sends a raw string to the underlying WebSocket stream. This method re-connects the socket if it is
-     * currently disconnected.
-     *
-     * @param str String to write to the stream.
-     */
-    public sendstr(str: string) {
-        this._socket.next(str);
+    public send(object: Message) {
+        this._socket.next(object);
     }
 }

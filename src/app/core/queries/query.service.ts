@@ -59,7 +59,7 @@ export class QueryService {
     constructor(@Inject(CineastWebSocketFactoryService) private _api : CineastWebSocketFactoryService, @Inject(ConfigService) _config: ConfigService) {
         _api.pipe(
             filter(c => c != null),
-            flatMap(c => c.socket.filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1))
+            flatMap(c => c.socket.pipe(filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1)))
         ).subscribe((msg: Message) => this.onApiMessage(msg));
 
        this._config = _config.asObservable();
