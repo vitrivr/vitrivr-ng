@@ -1,3 +1,12 @@
+.mini-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,120px);
+    grid-template-rows: repeat(auto-fill,100px);
+    grid-auto-flow: row;
+    grid-row-gap: 5px;
+    grid-column-gap: 5px;
+}
+
 .segment {
     width: 120px;
     height: 100px;
@@ -15,7 +24,6 @@
     height: 100%;
     object-fit: contain;
 }
-
 
 .segment .header {
     position: absolute;
