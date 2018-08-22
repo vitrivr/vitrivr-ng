@@ -1,6 +1,6 @@
 <div [style.padding-left]="'10px'" [style.text-align]="'left'">
     <h5 [style.margin-top]="'0'" [style.margin-bottom]="'1em'">Categories:</h5>
-    <section fxLayout="row" fxLayoutWrap fxLayoutGap="15px">
+    <section class="options">
         <mat-checkbox *ngFor="let category of categories" [value]="category[0]" (change)="onCheckboxChange($event)">{{category[1]}}</mat-checkbox>
     </section>
 
