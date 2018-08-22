@@ -1,8 +1,7 @@
 import {Inject, Injectable} from "@angular/core";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {Subject} from "rxjs";
 
-import {CineastWebSocketFactoryService} from "../api/cineast-web-socket-factory.service";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {QueryStart} from "../../shared/model/messages/interfaces/responses/query-start.interface";
 import {SegmentQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-segment.interface";
@@ -11,7 +10,6 @@ import {ObjectQueryResult} from "../../shared/model/messages/interfaces/response
 import {SimilarityQuery} from "../../shared/model/messages/queries/similarity-query.model";
 import {MoreLikeThisQuery} from "../../shared/model/messages/queries/more-like-this-query.model";
 import {QueryError} from "../../shared/model/messages/interfaces/responses/query-error.interface";
-import {QueryContainer} from "../../shared/model/queries/query-container.model";
 import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {NeighboringSegmentQuery} from "../../shared/model/messages/queries/neighboring-segment-query.model";
 import {ReadableQueryConfig} from "../../shared/model/messages/queries/readable-query-config.model";
@@ -20,7 +18,9 @@ import {Config} from "../../shared/model/config/config.model";
 import {Hint} from "../../shared/model/messages/interfaces/requests/query-config.interface";
 import {FeatureCategories} from "../../shared/model/results/feature-categories.model";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
-import {filter, first, flatMap} from "rxjs/operators";
+import {filter, first, tap} from "rxjs/operators";
+import {WebSocketFactoryService} from "../api/web-socket-factory.service";
+import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -50,22 +50,31 @@ export class QueryService {
     /** The Vitrivr NG configuration as observable */
     private _config: Observable<Config>;
 
+    /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
+    private _socket: WebSocketWrapper;
+
+    /** Reference to the running subscription to the WebSocket. */
+    private _webSocketSubscription: Subscription;
+
     /**
      * Default constructor.
      *
-     * @param _api Reference to the CineastWebSocketFactoryService. Gets injected by DI.
+     * @param _factory Reference to the WebSocketFactoryService. Gets injected by DI.
      * @param _config
      */
-    constructor(@Inject(CineastWebSocketFactoryService) private _api : CineastWebSocketFactoryService, @Inject(ConfigService) _config: ConfigService) {
-        _api.pipe(
-            filter(c => c != null),
-            flatMap(c => c.socket.pipe(filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1)))
-        ).subscribe((msg: Message) => this.onApiMessage(msg));
-
-       this._config = _config.asObservable();
-       console.log("QueryService is up and running!");
+    constructor(@Inject(WebSocketFactoryService) _factory : WebSocketFactoryService, @Inject(ConfigService) _config: ConfigService) {
+        this._config = _config.asObservable();
+        _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
+            if (this._webSocketSubscription != null) {
+                this._webSocketSubscription.unsubscribe();
+            }
+            this._socket = ws;
+            this._webSocketSubscription = this._socket.socket.pipe(
+                filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1)
+            ).subscribe((msg: Message) => this.onApiMessage(msg));
+            console.log("QueryService is up and running! Endpoint: " + ws.endpoint);
+        })
     }
-
     /**
      * Starts a new similarity query. Success is indicated by the return value.
      *
@@ -76,9 +85,9 @@ export class QueryService {
      */
     public findSimilar(containers : QueryContainerInterface[]) : boolean {
         if (this._running > 0) return false;
-        if (!this._api.getValue()) return false;
+        if (!this._socket) return false;
         this._config.pipe(first()).subscribe(config => {
-            this._api.getValue().send(new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+            this._socket.send(new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
         });
     }
 
@@ -93,14 +102,14 @@ export class QueryService {
      */
     public findMoreLikeThis(segmentId: string, categories?: string[]) : boolean {
         if (this._running > 0) return false;
-        if (!this._api.getValue()) return false;
+        if (!this._socket) return false;
 
         /* Use categories from last query AND the default categories for MLT. */
         this._config.pipe(first()).subscribe(config => {
             let categories = this._results.features.map(f => f.name);
             config.get<FeatureCategories[]>('mlt').filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
             if (categories.length > 0) {
-                this._api.getValue().send(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+                this._socket.send(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
             }
         });
 
@@ -118,8 +127,8 @@ export class QueryService {
      */
     public findNeighboringSegments(segmentId: string, count?: number) {
         if (!this._results) return false;
-        if (!this._api.getValue()) return false;
-        this._api.getValue().send(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
+        if (!this._socket) return false;
+        this._socket.send(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
     }
 
     /**

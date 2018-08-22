@@ -1,8 +1,12 @@
 import {WebSocketSubjectConfig} from "rxjs/observable/dom/WebSocketSubject";
 import {NextObserver} from "rxjs/src/Observer";
 import {WebSocketWrapper} from "./web-socket-wrapper.model";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, NEVER, Observable} from "rxjs";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
+import {Inject, Injectable} from "@angular/core";
+import {ConfigService} from "../basics/config.service";
+import {delay, filter, map, retryWhen, tap} from "rxjs/operators";
+import {webSocket} from "rxjs/webSocket";
 
 /**
  * Custom type used to indicate the status of the WebSocket status.
@@ -10,22 +14,28 @@ import {Message} from "../../shared/model/messages/interfaces/message.interface"
 export type WebSocketStatus = "DISCONNECTED" | "CONNECTED" | "ERROR" ;
 
 /**
- * This class generates WebSocketWrapper classes that provide access to a WebSocket connection. Only one WebSocketWrapper can be active at a time per WebSocketFactoryService instance.
- * The class keeps track of the WebSocketWrapper's it creates and notifies the observers, if the current WebSocketWrapper changes.
+ * This class exposes an observable that generates WebSocketWrapper classes whenever the connection configuration changes. Since only one WebSocketWrapper can be active
+ * at a time per WebSocketFactoryService instance. The class keeps track of the WebSocketWrapper's and disconnects previous instances
  */
+@Injectable()
 export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
+
+    /** Default constructor. */
+    constructor(@Inject(ConfigService) private _configService : ConfigService) {
+        super(null);
+        this._configService.pipe(
+            filter(c => c.endpoint_ws != null),
+            map(c => this.create(c.endpoint_ws, 5000))
+        ).subscribe(ws => this.next(ws))
+    }
+
     /**
      * Establishes a connection to the provided endpoint and creates a new WebSocketWrapper. If the active WebSocketWrapper instance is
      * connected, that connection is dropped. Hence, it is advisable to check the WebSocketWrapper's status before using this method.
      *
      * @returns {any}
      */
-    public connect(url: string, _retryAfter: number = -1) {
-        /* Disconnect last connection if it exists. */
-        if (this.getValue()) {
-            this.getValue().disconnect();
-        }
-
+    private create(url: string, _retryAfter: number = -1): WebSocketWrapper {
         /* Create observers for WebSocket status. */
         let openObserver = <NextObserver<Event>>{
             next: (ev: Event) => {
@@ -51,6 +61,6 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
                 }
             })
         };
-        this.next(new WebSocketWrapper(_retryAfter, config));
+        return new WebSocketWrapper(_retryAfter, config);
     }
 }

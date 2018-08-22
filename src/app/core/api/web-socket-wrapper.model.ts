@@ -1,5 +1,5 @@
-import {Observable, Subject} from "rxjs";
-import {retryWhen, delay, catchError, tap, take} from 'rxjs/operators';
+import {NEVER, Observable, Subject} from "rxjs";
+import {retryWhen, delay, catchError} from 'rxjs/operators';
 import {webSocket, WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/webSocket';
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 
@@ -7,15 +7,11 @@ import {Message} from "../../shared/model/messages/interfaces/message.interface"
  * This class wraps a WebSocket connection. It is usually produced by an instance of WebSocketFactoryService.
  */
 export class WebSocketWrapper {
-
     /** Reference to the underlying WebSocket observable. */
     private readonly _socket: Observable<Message>;
 
-    /** */
+    /** Reference to the internal WebSocketSubject. */
     private readonly _internalSocket: WebSocketSubject<Message>;
-
-    /** Flag indicating whether the current WebSocketWrapper was disconnected (manually). */
-    private _disconnected = false;
 
     /**
      * Constructor for WebSocketWrapper class.
@@ -28,15 +24,8 @@ export class WebSocketWrapper {
         if (this._retryAfter >= 0) {
             this._socket = this._internalSocket.pipe(
                 retryWhen(error => {
-                    return error.pipe(
-                        tap(e => {
-                            if (!this._disconnected) {
-                                console.log("Lost connection to " + _config.url + "; Retrying after " + _retryAfter + "ms");
-                            } else {
-                                console.log("Lost connection to " + _config.url + "; No retry since socket was invalidated.");
-                            }
-                        }),
-                        delay(_retryAfter))
+                    console.log("Lost connection to " + _config.url + "; Retrying after " + _retryAfter + "ms");
+                    return error.pipe(delay(_retryAfter));
                 })
             );
         } else {
@@ -59,10 +48,16 @@ export class WebSocketWrapper {
     }
 
     /**
+     *
+     */
+    get endpoint() {
+        return this._config.url;
+    }
+
+    /**
      * Completes the Subject associated with the WebSocket and caps the connection.
      */
     public disconnect() {
-        this._disconnected = true;
         this._internalSocket.complete();
     }
 
