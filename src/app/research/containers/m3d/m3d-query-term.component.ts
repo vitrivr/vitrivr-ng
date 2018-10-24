@@ -6,9 +6,9 @@ import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.comp
 
 import Mesh = THREE.Mesh;
 import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
-import {QueryTermInterface} from "../../../shared/model/queries/interfaces/query-term.interface";
 import {Model3DFileLoader} from "../../../shared/util/m3d-file-loader.util";
 import {first} from "rxjs/operators";
+import {M3DQueryTerm} from "../../../shared/model/queries/m3d-query-term.model";
 
 @Component({
     selector: 'qt-m3d',
@@ -26,7 +26,7 @@ export class M3DQueryTermComponent {
 
     /** The M3DQueryTerm object associated with this M3DQueryTermComponent. That object holds all the query-settings. */
     @Input()
-    private m3dTerm: QueryTermInterface;
+    private m3dTerm: M3DQueryTerm;
 
     /** Value of the slider. */
     public sliderSetting : number;

@@ -10,11 +10,6 @@ export interface QueryTermInterface {
     categories : string[];
 
     /**
-     * String representation of the data. This could be a base64 encoded image or audio stream.
-     */
-    data: string;
-
-    /**
      * Type of QueryTerm. Must correspond to one the types defined above.
      */
     type: QueryTermType

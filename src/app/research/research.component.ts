@@ -65,10 +65,10 @@ export class ResearchComponent implements OnInit {
                     case "MODEL3D":
                         return new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context);
                     case "TEXT":
-                        context.set("q:value", t.data);
+                        //context.set("q:value", t.data);
                         return new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context);
                     case "TAG":
-                        context.set("q:value", t.data);
+                        //context.set("q:value", t.data);
                         return new InteractionEventComponent(InteractionEventType.QUERY_TAG, context);
                 }
             }),

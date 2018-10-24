@@ -2,9 +2,6 @@ import {QueryTermInterface} from "./interfaces/query-term.interface";
 import {QueryTermType} from "./interfaces/query-term-type.interface";
 
 export abstract class AbstractQueryTerm implements QueryTermInterface {
-    /** Base64 encoded audio data. */
-    public data: string;
-
     /**
      * Constructor for AbstractQueryTerm
      *

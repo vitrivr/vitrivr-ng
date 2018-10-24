@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from "@angular/core";
+import {Component, Input} from "@angular/core";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
 import {QueryTermType} from "../../shared/model/queries/interfaces/query-term-type.interface";
 import {ConfigService} from "../../core/basics/config.service";

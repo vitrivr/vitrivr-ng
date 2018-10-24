@@ -7,7 +7,7 @@ import {QueryTermType} from "./interfaces/query-term-type.interface";
 import {MotionQueryTerm} from "./motion-query-term.model";
 import {TextQueryTerm} from "./text-query-term.model";
 import {TagQueryTerm} from "./tag-query-term.model";
-
+import {SemanticQueryTerm} from "./semantic/semantic-query-term.model";
 export class QueryContainer implements QueryContainerInterface {
     /**
      * List of QueryTerms contained within this QueryContainer.
@@ -49,6 +49,9 @@ export class QueryContainer implements QueryContainerInterface {
                 break;
             case "TAG":
                 this._terms_map.set(type, new TagQueryTerm());
+                break;
+            case "SEMANTIC":
+                this._terms_map.set(type, new SemanticQueryTerm());
                 break;
             default:
                 return false;

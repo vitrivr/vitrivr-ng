@@ -5,6 +5,7 @@ import {HttpClient} from "@angular/common/http";
 import {QueryService} from "../core/queries/query.service";
 import {QueryContainer} from "../shared/model/queries/query-container.model";
 import {first} from "rxjs/operators";
+import {ImageQueryTerm} from "../shared/model/queries/image-query-term.model";
 
 @Component({
     moduleId: module.id,
@@ -74,7 +75,7 @@ export class ImagecropComponent implements OnInit {
     public onSearchClicked() {
         let qq = new QueryContainer();
         qq.addTerm("IMAGE");
-        qq.getTerm("IMAGE").data = this._data.image;
+        (<ImageQueryTerm>qq.getTerm("IMAGE")).data = this._data.image;
         qq.getTerm("IMAGE").setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
         this._query.findSimilar([qq]);
         this._ref.close(this._data.image);

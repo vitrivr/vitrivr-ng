@@ -1,0 +1,39 @@
+<mat-dialog-content>
+    <mat-toolbar color="primary">
+        <mat-icon matTooltip="Pencil size">border_color</mat-icon>
+        <span class="spacer-tiny"></span>
+        <mat-slider min="1" max="100" step="1" [(ngModel)]="linesize" [style.min-width]="'100px'" (change)="onLineSizeChange()" tickInterval="auto"></mat-slider>
+
+        <span class="spacer-flex"></span>
+
+        <button mat-icon-button (click)="onFillCanvasClicked()" matTooltip="Fill canvas">
+            <mat-icon>format_color_fill</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onClearCanvasClicked()" matTooltip="Clear canvas">
+            <mat-icon>clear</mat-icon>
+        </button>
+
+
+        <span class="spacer-flex"></span>
+
+
+        <span class="spacer-flex"></span>
+
+        <button mat-icon-button (click)="close()">
+            <mat-icon>save</mat-icon>
+        </button>
+    </mat-toolbar>
+
+
+    <div style="display: flex; margin-top: 5px;">
+        <sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
+
+
+        <div class="picker">
+            <div [class.item]="true" [class.selected]="category==selected" *ngFor="let category of categories" [style.background-color]="category.color" matTooltip="{{category.name}}" (click)="onItemSelected(category)">
+                <span>{{category.abbr(3)}}</span>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
