@@ -65,7 +65,7 @@ export class VbsSubmissionService {
      * @param {SegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
      */
     public submitSegment(segment: SegmentScoreContainer) {
-       return this.submit(segment, segment.starttime);
+       return this.submit(segment, segment.startabs);
     }
 
     /**

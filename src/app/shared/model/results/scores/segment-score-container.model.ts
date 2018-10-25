@@ -9,9 +9,33 @@ import {MediaObjectScoreContainer} from "./media-object-score-container.model";
  * a single segment (e.g. a shot of a video) and holds the score for that segment. That
  * score is determined by the actual scores of the segment (per category).
  */
-export class SegmentScoreContainer extends ScoreContainer {
+export class SegmentScoreContainer extends ScoreContainer implements MediaSegment {
     /** List of scores. Entries should correspond to those in the array categories. */
     private _scores : Map<WeightedFeatureCategory, number> = new Map();
+
+    /** Map containing the metadata that belongs to the segment. Can be empty! */
+    private _metadata: Map<string,string> = new Map();
+
+    /** ID of the object this SegmentScoreContainer belongsTo. */
+    public readonly objectId : string;
+
+    /** ID of the segment this SegmentScoreContainer belongsTo (objectId + segmentId = unique). */
+    public readonly segmentId : string;
+
+    /** Sequence number of the MediaSegment within the streams of segments (i.e. i-th segment in the video). */
+    public readonly sequenceNumber : number;
+
+    /** Start time of the MediaSegment in frames. */
+    public readonly start : number;
+
+    /** End time of the MediaSegment in frames. */
+    public readonly end : number;
+
+    /** Absolute start time of the MediaSegment in seconds. */
+    public readonly startabs : number;
+
+    /** Absolute end time of the MediaSegment in seconds. */
+    public readonly endabs : number;
 
     /**
      * Default constructor.
@@ -26,6 +50,15 @@ export class SegmentScoreContainer extends ScoreContainer {
         if (_mediaSegment.objectId != _objectScoreContainer.objectId) {
             throw new Error("You cannot associate a MediaObjectScoreContainer with ID '" + _objectScoreContainer.objectId + "' with a segment with objectId '" + _mediaSegment.objectId + "'.");
         }
+
+        /* Assign values from MediaSegment. */
+        this.segmentId = _mediaSegment.segmentId;
+        this.objectId = _mediaSegment.objectId;
+        this.sequenceNumber = _mediaSegment.sequenceNumber;
+        this.start = _mediaSegment.start;
+        this.end = _mediaSegment.end;
+        this.startabs = _mediaSegment.startabs;
+        this.endabs = _mediaSegment.endabs;
     }
 
     /**
@@ -56,7 +89,7 @@ export class SegmentScoreContainer extends ScoreContainer {
     }
 
     /**
-     * Returns the Map of scores
+     * Returns the map of scores
      *
      * @return {Map<WeightedFeatureCategory, number>}
      */
@@ -65,53 +98,21 @@ export class SegmentScoreContainer extends ScoreContainer {
     }
 
     /**
-     * Returns the ID of the MediaSegment.
+     * Returns the map of metadata.
      *
-     * @returns {string}
+     * @return {Map<string, string>}
      */
-    get segmentId() {
-        return this.mediaSegment.segmentId;
+    get metadata() {
+        return this._metadata;
     }
 
     /**
-     * Returns the ID of the MediaObject associated with the the MediaSegment.
+     * Returns a metadata entry for the given key.
      *
-     * @returns {string}
+     * @param key Key for the metadata entry to lookup.
      */
-    get objectId() {
-        if (!this._mediaSegment) return null;
-        return this._mediaSegment.objectId;
-    }
-
-    /**
-     * Returns the start time of the MediaSegment in seconds or 0, if segment does
-     * not have a start time.
-     *
-     * @returns {number}
-     */
-    get starttime() {
-        if (!this._mediaSegment) return 0;
-        return this._mediaSegment.startabs;
-    }
-
-    /**
-     * Returns the end time of the MediaSegment in seconds or 0, if segment does
-     * not have an end time.
-     *
-     * @returns {number}
-     */
-    get endtime() {
-        if (!this._mediaSegment) return 0;
-        return this._mediaSegment.endabs;
-    }
-
-    /**
-     * Getter for the actual MediaSegment.
-     *
-     * @return {MediaSegment}
-     */
-    get mediaSegment(): MediaSegment {
-        return this._mediaSegment;
+    public metadataForKey(key: string) {
+        return this._metadata.get(key);
     }
 
     /**

@@ -70,14 +70,6 @@ export class ResolverService {
     }
 
     /**
-     * Resolves and returns the absolute path / URL to a MediaObjectScoreContainer.
-     *
-     * @param object The MediaObjectScoreContainer for which to return the path.
-     */
-    public pathToObjectForContainer(object: MediaObjectScoreContainer) {
-       return this.pathToObject(object.object)
-    }
-    /**
      * Resolves and returns the absolute path / URL to a MediaObject.
      *
      * @param object The MediaObject for which to return the path.
@@ -91,15 +83,6 @@ export class ResolverService {
         rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
         rep[Token.SUFFIX] = this.suffices.get(object.mediatype);
         return this.host_objects.replace(this._regex, (match) => rep[match] || match);
-    }
-
-    /**
-     * Resolves and returns the absolute path / URL to the thumbnail of a given SegmentScoreContainer.
-     *
-     * @param segment The SegmentScoreContainer for which to resolve the thumbnail.
-     */
-    public pathToThumbnailForContainer(segment: SegmentScoreContainer) {
-        return this.pathToThumbnail(segment.objectScoreContainer.object, segment.mediaSegment);
     }
 
     /**

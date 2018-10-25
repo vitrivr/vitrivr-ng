@@ -24,7 +24,7 @@ export class MetadataLookupService extends CineastRestAPI {
     /**
      * This method returns a list of Metadata for the given objectId predicate.
      *
-     * @param {string} objectId ID of the MediaObject for which to lookup MediaMetadata.
+     * @param {string} objectId ID of the MediaObject for which to lookup MediaObjectMetadata.
      */
     public lookup(objectId: string): Observable<MetadataQueryResult> {
         return this.get<MetadataQueryResult>("find/metadata/by/id/" + objectId).pipe(first());

@@ -10,16 +10,16 @@ export class OrderBySegmentPipe implements PipeTransform {
      * Returns the provided array of SegmentScoreContainers sorted by temporal sequence of the segments.
      *
      * @param {Array<SegmentScoreContainer>} array
-     * @param {string} args
+     * @param {boolean} desc
      * @return {Array<SegmentScoreContainer>}
      */
     public transform(array: Array<SegmentScoreContainer>, desc: boolean = true): Array<SegmentScoreContainer> {
         if(!array || array === undefined || array.length === 0) return [];
         return array.slice().sort((a: SegmentScoreContainer, b: SegmentScoreContainer) => {
             if (desc) {
-                return a.starttime - b.starttime;
+                return a.startabs - b.startabs;
             } else {
-                return b.starttime - a.starttime;
+                return b.startabs - a.startabs;
             }
         });
     }

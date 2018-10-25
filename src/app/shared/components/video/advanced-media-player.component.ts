@@ -60,7 +60,7 @@ export class AdvancedMediaPlayerComponent {
         /* Adds a text track and creates a cue per segment in the media object. */
         this._api.addTextTrack("metadata", "Segments");
         for (let segment of this.mediaobject.segments) {
-            let cue = new VTTCue(segment.starttime, segment.endtime, "Segment: " + segment.segmentId);
+            let cue = new VTTCue(segment.startabs, segment.endabs, "Segment: " + segment.segmentId);
             cue.id = segment.segmentId;
             this._api.textTracks[0].addCue(cue)
         }
@@ -86,7 +86,7 @@ export class AdvancedMediaPlayerComponent {
      * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
      */
     public seekToFocusPosition() {
-        if (this.focus) this._api.seekTime(this.focus.starttime);
+        if (this.focus) this._api.seekTime(this.focus.startabs);
     }
 
     /**

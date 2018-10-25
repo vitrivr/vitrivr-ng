@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {MediaMetadata} from "../shared/model/media/media-metadata.model";
+import {MediaObjectMetadata} from "../shared/model/media/media-object-metadata.model";
 import {MetadataLookupService} from "../core/lookup/metadata-lookup.service";
 import {QueryService} from "../core/queries/query.service";
 import {MediaObject} from "../shared/model/media/media-object.model";
@@ -38,10 +38,10 @@ export class ObjectdetailsComponent {
     /** The observable that returns the objectID provided by the ActivatedRoute service. */
     private _objectIdObservable : Observable<string>;
 
-    /** The observable that provides the MediaMetadata for the active object. */
-    private _metadataObservable : Observable<MediaMetadata[]>;
+    /** The observable that provides the MediaObjectMetadata for the active object. */
+    private _metadataObservable : Observable<MediaObjectMetadata[]>;
 
-    /** The observable that provides the MediaMetadata for the active object. */
+    /** The observable that provides the MediaObjectMetadata for the active object. */
     private _mediaObjectObservable : Observable<MediaObjectScoreContainer>;
 
     /**
@@ -111,10 +111,10 @@ export class ObjectdetailsComponent {
      */
     public onPlayClick(segment: SegmentScoreContainer) {
         if (this.audioplayer !== undefined) {
-            this.audioplayer.nativeElement.currentTime = segment.starttime;
+            this.audioplayer.nativeElement.currentTime = segment.startabs;
             this.audioplayer.nativeElement.play();
         } else if (this.videoplayer !== undefined) {
-            this.videoplayer.nativeElement.currentTime = segment.starttime;
+            this.videoplayer.nativeElement.currentTime = segment.startabs;
             this.videoplayer.nativeElement.play();
         }
     }
@@ -138,7 +138,7 @@ export class ObjectdetailsComponent {
     }
 
     public onImageViewerClicked(object: MediaObjectScoreContainer) {
-        const imagePath = this._resolver.pathToObjectForContainer(object);
+        const imagePath = this._resolver.pathToObject(object);
         const dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
         dialogRef.afterClosed().pipe(first()).subscribe(() => {});
     }
@@ -164,9 +164,9 @@ export class ObjectdetailsComponent {
     /**
      * Getter for the local _metadataObservable.
      *
-     * @returns {MediaMetadata[]}
+     * @returns {MediaObjectMetadata[]}
      */
-    get metadata(): Observable<MediaMetadata[]> {
+    get metadata(): Observable<MediaObjectMetadata[]> {
         return this._metadataObservable;
     }
 

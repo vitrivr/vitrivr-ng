@@ -13,32 +13,43 @@ import {MediaType} from "../../media/media-type.model";
  * a single MediaObject (e.g. a video, audio or 3d-model file) and holds the score for that object. That
  * score is determined by the scores of the SegmentScoreContainers hosted by a concrete instance of this class.
  */
-export class MediaObjectScoreContainer extends ScoreContainer {
+export class MediaObjectScoreContainer extends ScoreContainer implements MediaObject {
     /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
     private _segmentScores : Map<string, SegmentScoreContainer> = new Map();
 
     /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
     private _segments : SegmentScoreContainer[] = [];
 
-    /** Reference to the actual MediaObject this container belongs to. */
-    private _object? : MediaObject;
+    /** Map containing the metadata that belongs to the object. Can be empty! */
+    private _metadata: Map<string,string> = new Map();
 
     /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet. */
     private _cache : Map<string,Array<[WeightedFeatureCategory,Similarity]>> = new Map();
 
+    /** Type of the MediaObject. */
+    public mediatype: MediaType;
+
+    /** Name of the MediaObject. */
+    public name : string;
+
+    /** Path of the MediaObject. */
+    public path : string;
+
+    /** Content URL pointing to the media file. */
+    public contentURL: string;
+
     /**
      * Default constructor.
      *
-     * @param _objectId
+     * @param objectId
      */
-    public constructor(private _objectId : string) {
+    public constructor(public readonly objectId: string) {
         super();
     }
 
     /**
-     * Adds a MediaSegment to the MediaObjectContainer. That Segment is actually not
-     * added to the container itself but to the respective SegmentScoreContainer (contained in
-     * {segmentScores})
+     * Adds a MediaSegment to the MediaObjectContainer. That Segment is actually not added to the container itself but
+     * to the respective SegmentScoreContainer (contained in {segmentScores})
      *
      * @param segment MediaSegment to add.
      */
@@ -80,65 +91,13 @@ export class MediaObjectScoreContainer extends ScoreContainer {
     }
 
     /**
-     * Setter for media object.
-     *
-     * @param value New value.
-     */
-    set object(value: MediaObject) {
-        if (this._objectId == value.objectId) this._object = value;
-    }
-
-    /**
-     * Getter for the media object
-     *
-     * @return {MediaObject | undefined}
-     */
-    get object() {
-        return this._object
-    }
-
-    /**
-     * Getter for the media object's ID.
-     *
-     * @return {string}
-     */
-    get objectId() : string {
-        return this._objectId;
-    }
-
-    /**
-     * Getter for media object's name.
-     *
-     * @return {string}
-     */
-    get name() : string {
-        return this._object.name;
-    }
-
-    /**
-     * Getter for the media object's ID.
-     *
-     * @return {string}
-     */
-    get mediatype() : MediaType {
-        return this._object.mediatype;
-    }
-
-    /**
-     * Getter for the media object's path.
-     */
-    get path() : string {
-        return this._object.path;
-    }
-
-    /**
-     * Method used by the UI/Template part. Can be used to determine whether this
-     * MediaObjectScoreContainer is ready to be displayed.
+     * Method used by the UI/Template part. Can be used to determine whether this MediaObjectScoreContainer
+     * is ready to be displayed.
      *
      * @returns {boolean} true if it can be displayed, false otherwise.
      */
     get show() : boolean {
-        return (this._object && this._segmentScores.size > 0);
+        return (this.mediatype && this._segmentScores.size > 0);
     }
 
     /**
@@ -165,6 +124,24 @@ export class MediaObjectScoreContainer extends ScoreContainer {
      */
     get representativeSegment() : SegmentScoreContainer {
         return this.segments.reduce((a,b) => { return a.score > b.score ? a : b});
+    }
+
+    /**
+     * Returns the map of metadata.
+     *
+     * @return {Map<string, string>}
+     */
+    get metadata() {
+        return this._metadata;
+    }
+
+    /**
+     * Returns a metadata entry for the given key.
+     *
+     * @param key Key for the metadata entry to lookup.
+     */
+    public metadataForKey(key: string) {
+        return this._metadata.get(key);
     }
 
     /**

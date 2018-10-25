@@ -10,6 +10,7 @@ import {SimilarityQueryResult} from "../../messages/interfaces/responses/query-r
 import {Observable} from "rxjs";
 import {BehaviorSubject} from "rxjs";
 import {FeatureCategories} from "../feature-categories.model";
+import {MediaObject} from "../../media/media-object.model";
 
 export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -30,12 +31,25 @@ export class ResultsContainer {
     /**
      * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
      * results have been returned yet OR that no query is running.
-     * results have been returned yet OR that no query is running.
      *
      * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
      * be filtered).
      */
     private _mediatypes: Map<MediaType,boolean> = new Map();
+
+    /**
+     * List of metadata filters that should be applied to segments. Each entry { key => value } causes a check as to
+     * whether the metadata item with the provided key has the provided value. In order to be displayed in the final
+     * result set, a MediaSegmentScoreContainer must pass at least one of these checks
+     */
+    private _segment_filters: [string, string][] = [];
+
+    /**
+     * List of metadata filters that should be applied to objects. Each entry { key => value } causes a check as to
+     * whether the metadata item with the provided key has the provided value. In order to be displayed in the final
+     * result set, a MediaObjectScoreContainer must pass at least one of these checks
+     */
+    private _object_filters: [string, string][] = [];
 
     /** A subject that can be used to publish changes to the results. */
     private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
@@ -171,8 +185,7 @@ export class ResultsContainer {
             if (!this._mediatypes.has(object.mediatype)) this._mediatypes.set(object.mediatype, true);
 
             /* Get unique MediaObjectScore container and apply MediaObject. */
-            let mosc = this.uniqueMediaObjectScoreContainer(object.objectId);
-            mosc.object = object;
+            this.uniqueMediaObjectScoreContainer(object.objectId, object);
         }
 
         /* Publish a change. */
@@ -252,8 +265,19 @@ export class ResultsContainer {
      * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
      */
     private next() {
-        this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show).filter(v => this._mediatypes.get(v.objectScoreContainer.mediatype) == true));
-        this._results_objects_subject.next(this._results_objects.filter(v => v.show).filter(v => this._mediatypes.get(v.mediatype) == true));
+        this._results_segments_subject.next(this._results_segments
+            .filter(v => v.objectScoreContainer.show) /* Filter segments that are not ready. */
+            .filter(v => this._mediatypes.get(v.objectScoreContainer.mediatype)) /* Filter segments of types that have been toggled by the user. */
+            //.filter(v => this._segment_filters.map(f => f[1] == v.metadataForKey(f[0])).reduce((v1,v2,idx) => (idx == 0 ? false : v1 || v2), true)) /* Filter segments that don't match any of the filter criteria. */
+        );
+
+        this._results_objects_subject.next(this._results_objects
+            .filter(v => v.show)
+            .filter(v => this._mediatypes.get(v.mediatype) == true)
+            //.filter(v => this._object_filters.map(f => f[1] == v.metadataForKey(f[0])).reduce((v1,v2,idx) => (idx == 0 ? false : v1 || v2), true)) /* Filter segments that don't match any of the filter criteria. */
+        );
+
+
         this._results_features_subject.next(this._features);
         this._results_types_subject.next(this._mediatypes);
     }
@@ -265,17 +289,28 @@ export class ResultsContainer {
      * a new instance is created and registered.
      *
      * @param {string} objectId ID of the MediaObject for which to create a MediaObjectScoreContainer.
+     * @param {MediaObject} object The optional MediaObject. If set, the properties of the unique MediaObjectScoreContainer are updated.
      * @return {MediaObjectScoreContainer}
      */
-    private uniqueMediaObjectScoreContainer(objectId: string): MediaObjectScoreContainer {
+    private uniqueMediaObjectScoreContainer(objectId: string, object?: MediaObject): MediaObjectScoreContainer {
+        let mosc;
         if (this._objectid_to_object_map.has(objectId)) {
-            return this._objectid_to_object_map.get(objectId);
+            mosc = this._objectid_to_object_map.get(objectId);
         } else {
-            let mosc = new MediaObjectScoreContainer(objectId);
+            mosc = new MediaObjectScoreContainer(objectId);
             this._objectid_to_object_map.set(objectId, mosc);
             this._results_objects.push(mosc);
-            return mosc;
         }
+
+        /* Optional: Update MediaObjectScoreContainer. */
+        if (object && object.objectId === object.objectId) {
+            mosc.mediatype = object.mediatype;
+            mosc.name = object.name;
+            mosc.path = object.path;
+            mosc.contentURL = object.contentURL;
+        }
+
+        return mosc;
     }
 
     /**

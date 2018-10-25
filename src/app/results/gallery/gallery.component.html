@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <img class="body" src="{{_resolver.pathToThumbnailForContainer(mediaobject.representativeSegment)}}" draggable="false" (click)="onDetailsButtonClicked(mediaobject.representativeSegment)"/>
+        <img class="body" src="{{_resolver.pathToThumbnail(mediaobject,mediaobject.representativeSegment)}}" draggable="false" (click)="onDetailsButtonClicked(mediaobject.representativeSegment)"/>
 
         <div *ngIf="inFocus(mediaobject)" class="footer" fxLayout="row-reverse" [style.background]="backgroundForSegment(mediaobject.representativeSegment)">
             <div><button mat-icon-button (click)="onMltButtonClicked(mediaobject.representativeSegment)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button></div>
