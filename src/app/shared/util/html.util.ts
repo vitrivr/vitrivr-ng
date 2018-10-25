@@ -5,16 +5,6 @@ export class HtmlUtil {
     static URL_PATTERN = new RegExp("((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%\\/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)",'ig');
 
     /**
-     * Calculates a best effort FPS value from the media segment's start and end. The resulting value ony makes sense for videos.
-     *
-     * @param {SegmentScoreContainer} _segment SegmentScoreContainer for whichto calculate the FPS value.
-     * @return {number} FPS value.
-     */
-    static bestEffortFPS(_segment: SegmentScoreContainer) {
-        return (_segment.mediaSegment.end - _segment.mediaSegment.start)/(_segment.mediaSegment.endabs - _segment.mediaSegment.startabs);
-    }
-
-    /**
      * Returns true if the passed string is a URL and false otherwise.
      *
      * @param {string} str String that should be tested.
