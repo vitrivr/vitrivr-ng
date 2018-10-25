@@ -37,7 +37,7 @@ export class SemanticQueryTermComponent {
      */
     public onViewerClicked() {
         if (this.semanticTerm.data &&  this.semanticTerm.map.length > 0) {
-            this.openSketchDialog(new SemanticMap(this.semanticTerm.data, this.semanticTerm.map));
+            this.openSketchDialog(new SemanticMap(this.semanticTerm.image, this.semanticTerm.map));
         } else {
             this.openSketchDialog();
         }
@@ -60,7 +60,7 @@ export class SemanticQueryTermComponent {
         /* Register the onClose callback. */
         dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if(result instanceof SemanticMap) {
-                this.semanticTerm.data = result.image;
+                this.semanticTerm.image = result.image;
                 this.semanticTerm.map = result.map;
                 this.previewimg.nativeElement.src = result.image;
             }

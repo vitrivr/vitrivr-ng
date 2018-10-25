@@ -11,6 +11,11 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
     constructor(public readonly type: QueryTermType, public readonly categories: string[] = []) {}
 
     /**
+     * The Base64 encoded data contained in this QueryTerm. This will be sent to the API.
+     */
+    data: string;
+
+    /**
      * Adds a named query category to the QueryTerm. The implementation must make sure, that
      * the category is unique.
      *

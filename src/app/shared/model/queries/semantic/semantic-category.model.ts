@@ -2,10 +2,10 @@ import {ColorUtil} from "../../../util/color.util";
 
 export class SemanticCategory {
 
-
+    /**
+     *
+     */
     public readonly color;
-
-
 
     /**
      *

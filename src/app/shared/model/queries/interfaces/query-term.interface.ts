@@ -15,6 +15,11 @@ export interface QueryTermInterface {
     type: QueryTermType
 
     /**
+     * The Base64 encoded data contained in this QueryTerm.
+     */
+    data: string;
+
+    /**
      * Adds a named query category to the QueryTerm. The implementation must make sure, that
      * the category is unique.
      *
