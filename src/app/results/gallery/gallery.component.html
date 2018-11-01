@@ -3,7 +3,7 @@
 <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
 <div class="gallery">
-    <div class="tile" *ngFor="let mediaobject of dataSource | async | OrderByScorePipe" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject.representativeSegment, mediaobject)">
+    <div class="tile" *ngFor="let mediaobject of (((dataSource | async) | FilterObjectAllPipe : (filters | async)) | OrderByScorePipe)" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject.representativeSegment, mediaobject)">
         <div class="header" fxLayout fxLayoutAlign="space-between start" [style.background]="backgroundForSegment(mediaobject.representativeSegment)">
             <div class="filename">
                 <div>
