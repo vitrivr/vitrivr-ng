@@ -8,16 +8,13 @@
         <span class="label constrained"> {{feature.weight}}%</span>
     </div>
     <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
-</div>
 
-<div *ngIf="(mediatypes | async)">
     <h4>Filters</h4>
     <section class="checkbox-group">
-        <mat-checkbox *ngFor="let type of (mediatypes | async).entries()" [name]="type[0]" [checked]="type[1]" labelPosition="before" (change)="onFilterChanged($event)">{{type[0]}}</mat-checkbox>
+        <mat-checkbox *ngFor="let type of mediatypes" [name]="type" [checked]="isTypeActive(type)" labelPosition="before" (change)="onFilterChanged($event)">{{type}}</mat-checkbox>
     </section>
 </div>
 
-
-<div *ngIf="!(features | async) && !(mediatypes | async) ">
+<div *ngIf="!(features | async)">
     <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>
 </div>

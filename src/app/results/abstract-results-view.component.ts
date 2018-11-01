@@ -17,6 +17,7 @@ import {MediaObjectDragContainer} from "../shared/model/internal/media-object-dr
 import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
 import {Router} from "@angular/router";
 import {filter} from "rxjs/operators";
+import {FilterService} from "../core/queries/filter.service";
 
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy  {
     /* Indicator whether the progress bar should be visible. */
@@ -24,6 +25,9 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
+
+    /** Local reference to the subscription to the FilterService. */
+    protected _filterServiceSubscription;
 
     /** Local reference to the subscription of the SelectionService. */
     protected _selectionServiceSubscription;
@@ -35,6 +39,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * Default constructor.
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
+     * @param _filterService
      * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
      * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
      * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
@@ -43,6 +48,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      */
     constructor(protected _cdr: ChangeDetectorRef,
                 protected _queryService : QueryService,
+                protected _filterService: FilterService,
                 protected _selectionService: SelectionService,
                 protected _eventBusService: EventBusService,
                 protected _router: Router,
@@ -76,6 +82,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
             filter(msg => ["STARTED", "ENDED", "ERROR", "CLEAR"].indexOf(msg) > -1)
         ).subscribe((msg) => this.onQueryStateChange(msg));
         this._selectionServiceSubscription = this._selectionService.subscribe(s => this._cdr.markForCheck());
+        this._filterServiceSubscription = this._filterService.objectFilters.subscribe(s => this._cdr.markForCheck());
         this.subscribe(this._queryService.results);
     }
 
@@ -84,9 +91,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      */
     public ngOnDestroy() {
         this._queryServiceSubscription.unsubscribe();
-        this._queryServiceSubscription = null;
         this._selectionServiceSubscription.unsubscribe();
-        this._selectionServiceSubscription = null
+        this._filterServiceSubscription.unsubscribe();
     }
 
     /**

@@ -8,6 +8,8 @@ import {MatSnackBar} from "@angular/material";
 import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {SelectionService} from "../../core/selection/selection.service";
 import {EventBusService} from "../../core/basics/event-bus.service";
+import {FilterService} from "../../core/queries/filter.service";
+import {Observable} from "rxjs";
 
 @Component({
     moduleId: module.id,
@@ -31,20 +33,15 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
      * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
+     * @param _filterService
      * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
      * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
      * @param _router The Router used for navigation
      * @param _snackBar The MatSnackBar component used to display the SnackBar.
      * @param _resolver
      */
-    constructor(_cdr: ChangeDetectorRef,
-                _queryService : QueryService,
-                _selectionService: SelectionService,
-                _eventBusService: EventBusService,
-                _router: Router,
-                _snackBar: MatSnackBar,
-                protected _resolver: ResolverService) {
-        super(_cdr, _queryService, _selectionService, _eventBusService, _router, _snackBar);
+    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, _filterService : FilterService, _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router, _snackBar: MatSnackBar, protected _resolver: ResolverService) {
+        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**
@@ -75,6 +72,13 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
      */
     get tilegap(): number {
         return this._tilegap;
+    }
+
+    /**
+     *
+     */
+    get filters(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
+        return this._filterService.objectFilters;
     }
 
     /**

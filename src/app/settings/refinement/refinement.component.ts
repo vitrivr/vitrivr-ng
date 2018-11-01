@@ -2,13 +2,14 @@ import {ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrategy
 import {MatCheckboxChange, MatSliderChange} from "@angular/material";
 import {QueryChange, QueryService} from "../../core/queries/query.service";
 import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
-import {MediaType} from "../../shared/model/media/media-type.model";
+import {MediaType, MediaTypes} from "../../shared/model/media/media-type.model";
 import {EMPTY, Observable} from "rxjs";
 import {EventBusService} from "../../core/basics/event-bus.service";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
 import {filter} from "rxjs/operators";
+import {FilterService} from "../../core/queries/filter.service";
 
 @Component({
     moduleId: module.id,
@@ -30,8 +31,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
     /** An observable for the current results. */
     private _features : Observable<WeightedFeatureCategory[]> = EMPTY;
 
-    /** An observable for the current results. */
-    private _mediatypes : Observable<Map<MediaType,boolean>> = EMPTY;
+    /** List of media types for filtering. */
+    private _mediatypes : MediaType[] = MediaTypes;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
@@ -42,9 +43,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
      *
      * @param _cdr Reference to the ChangeDetector (Angular JS)
      * @param _queryService Reference to the QueryService singleton instance.
+     * @param _filterService Reference to the FilterService singleton instance.
      * @param _eventBusService Reference to the EventBusService singleton instance.
      */
-    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService, private _eventBusService: EventBusService) {}
+    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService, private _filterService: FilterService, private _eventBusService: EventBusService) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
@@ -70,9 +72,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
     public onQueryStartEnd(msg: QueryChange) {
         if (msg == "STARTED") {
             this._features = this._queryService.results.featuresAsObservable;
-            this._mediatypes = this._queryService.results.mediatypesAsObservable;
         } else if (msg == "CLEAR"){
-            this._mediatypes = EMPTY;
             this._features = EMPTY;
         }
         this._cdr.markForCheck();
@@ -86,12 +86,13 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onFilterChanged(event: MatCheckboxChange) {
         if (!this._queryService.results) return;
+        if (!event.source.checked) {
+            this._filterService.addMediaType(<MediaType>event.source.name);
+        } else {
+            this._filterService.removeMediaType(<MediaType>event.source.name);
+        }
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
 
-        /* Filter objects asynchronously. */
-        Promise.resolve(this._queryService.results).then((results) => {
-            this._queryService.results.toggleMediatype(<MediaType>event.source.name, event.source.checked);
-            this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
-        });
     }
 
     /**
@@ -121,7 +122,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
      *
      * @return {MediaType[]}
      */
-    get mediatypes(): Observable<Map<MediaType,boolean>> {
+    get mediatypes(): MediaType[] {
         return this._mediatypes
     }
 
@@ -132,5 +133,13 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     get features(): Observable<WeightedFeatureCategory[]> {
         return this._features;
+    }
+
+    /**
+     *
+     * @param type
+     */
+    public isTypeActive(type: MediaType): boolean {
+        return this._filterService.mediatypes.indexOf(type) == -1
     }
 }

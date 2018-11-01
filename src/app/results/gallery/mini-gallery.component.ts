@@ -16,6 +16,7 @@ import {InteractionEventType} from "../../shared/model/events/interaction-event-
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
 import {map} from "rxjs/operators";
+import {FilterService} from "../../core/queries/filter.service";
 
 @Component({
     moduleId: module.id,
@@ -32,6 +33,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * Default constructor.
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
+     * @param _filterService
      * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
      * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
      * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
@@ -43,6 +45,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      */
     constructor(_cdr: ChangeDetectorRef,
                 _queryService : QueryService,
+                _filterService : FilterService,
                 _selectionService: SelectionService,
                 _eventBusService: EventBusService,
                 _router: Router,
@@ -50,7 +53,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
                 protected _resolver: ResolverService,
                 protected _dialog: MatDialog,
                 protected _vbs: VbsSubmissionService) {
-        super(_cdr, _queryService, _selectionService, _eventBusService, _router, _snackBar);
+        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**

@@ -18,6 +18,7 @@ import {SelectionService} from "../core/selection/selection.service";
 import {Config} from "../shared/model/config/config.model";
 import {EventBusService} from "../core/basics/event-bus.service";
 import {catchError, filter, first, flatMap, map} from "rxjs/operators";
+import {FilterService} from "../core/queries/filter.service";
 
 
 type DisplayType = "NONE" | "SCENARIO" | "GALLERY" | "HISTORY";
@@ -40,6 +41,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
      *
      * @param _cdr
      * @param _queryService
+     * @param _filterService
      * @param _selectionService
      * @param _evemtBusService
      * @param _resolver
@@ -53,6 +55,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     constructor(
         _cdr: ChangeDetectorRef,
         _queryService : QueryService,
+        _filterService : FilterService,
         _selectionService: SelectionService,
         _evemtBusService: EventBusService,
         _resolver: ResolverService,
@@ -62,7 +65,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         private _evaluation: EvaluationService,
         private _route: ActivatedRoute,
         private _dialog: MatDialog) {
-        super(_cdr, _queryService,_selectionService,_evemtBusService,_router,_snackBar,_resolver);
+        super(_cdr, _queryService,_filterService,_selectionService,_evemtBusService,_router,_snackBar,_resolver);
     }
 
     /**
