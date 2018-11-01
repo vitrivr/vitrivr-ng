@@ -11,13 +11,15 @@ import {Observable} from "rxjs";
 import {BehaviorSubject} from "rxjs";
 import {FeatureCategories} from "../feature-categories.model";
 import {MediaObject} from "../../media/media-object.model";
+import {SegmentMetadataQueryResult} from "../../messages/interfaces/responses/query-result-segment-metadata.interface";
+import {ObjectMetadataQueryResult} from "../../messages/interfaces/responses/query-result-object-metadata.interface";
 
 export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
     private _objectid_to_object_map : Map<string,MediaObjectScoreContainer> = new Map();
 
     /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
-    private _segmentid_to_objectid_map : Map<string,string> = new Map();
+    private _segmentid_to_segment_map : Map<string,SegmentScoreContainer> = new Map();
 
     /** Internal data structure that contains all MediaObjectScoreContainers. */
     private _results_objects: MediaObjectScoreContainer[] = [];
@@ -37,20 +39,6 @@ export class ResultsContainer {
      */
     private _mediatypes: Map<MediaType,boolean> = new Map();
 
-    /**
-     * List of metadata filters that should be applied to segments. Each entry { key => value } causes a check as to
-     * whether the metadata item with the provided key has the provided value. In order to be displayed in the final
-     * result set, a MediaSegmentScoreContainer must pass at least one of these checks
-     */
-    private _segment_filters: [string, string][] = [];
-
-    /**
-     * List of metadata filters that should be applied to objects. Each entry { key => value } causes a check as to
-     * whether the metadata item with the provided key has the provided value. In order to be displayed in the final
-     * result set, a MediaObjectScoreContainer must pass at least one of these checks
-     */
-    private _object_filters: [string, string][] = [];
-
     /** A subject that can be used to publish changes to the results. */
     private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
 
@@ -59,9 +47,6 @@ export class ResultsContainer {
 
     /** A subject that can be used to publish changes to the results. */
     private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
-
-    /** A subject that can be used to publish changes to the results. */
-    private _results_types_subject: BehaviorSubject<Map<MediaType,boolean>> = new BehaviorSubject(this._mediatypes);
 
     /**
      * Constructor for ResultsContainer.
@@ -128,13 +113,6 @@ export class ResultsContainer {
      */
     get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
         return this._results_features_subject.asObservable();
-    }
-
-    /**
-     *
-     */
-    get mediatypesAsObservable(): Observable<Map<MediaType,boolean>> {
-        return this._results_types_subject.asObservable();
     }
 
     /**
@@ -209,9 +187,9 @@ export class ResultsContainer {
         for (let segment of seg.content) {
             let mosc = this.uniqueMediaObjectScoreContainer(segment.objectId);
             let ssc = mosc.addMediaSegment(segment);
-            if (!this._segmentid_to_objectid_map.has(segment.segmentId)) {
+            if (!this._segmentid_to_segment_map.has(segment.segmentId)) {
                 this._results_segments.push(ssc);
-                this._segmentid_to_objectid_map.set(segment.segmentId, segment.objectId);
+                this._segmentid_to_segment_map.set(segment.segmentId, ssc);
             }
         }
 
@@ -220,6 +198,32 @@ export class ResultsContainer {
 
         /* Return true. */
         return true;
+    }
+
+    /**
+     * Processes a SegmentMetadataQueryResult message. Extracts the metadata and attaches it to the respective SegmentScoreContainer.
+     *
+     * @param met SegmentMetadataQueryResult that should be processed.
+     */
+    public processSegmentMetadataMessage(met: SegmentMetadataQueryResult): boolean {
+        if (met.queryId !== this.queryId) return false;
+        for (let metadata of met.content) {
+            let ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
+            if (ssc) ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+        }
+    }
+
+    /**
+     * Processes a ObjectMetadataQueryResult message. Extracts the metadata and attaches it to the respective MediaObjectScoreContainer.
+     *
+     * @param met ObjectMetadataQueryResult that should be processed.
+     */
+    public processObjectMetadataMessage(met: ObjectMetadataQueryResult): boolean {
+        if (met.queryId !== this.queryId) return false;
+        for (let metadata of met.content) {
+            let ssc = this._objectid_to_object_map.get(metadata.objectId);
+            if (ssc) ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+        }
     }
 
     /**
@@ -237,14 +241,13 @@ export class ResultsContainer {
 
         /* Updates the Similarity lines and re-calculates the scores.  */
         for (let similarity of sim.content) {
-            let objectId = this._segmentid_to_objectid_map.get(similarity.key);
-            if (objectId != undefined) {
-                let mosc = this.uniqueMediaObjectScoreContainer(objectId);
-                mosc.addSimilarity(feature, similarity);
+            let segment = this._segmentid_to_segment_map.get(similarity.key);
+            if (segment != undefined) {
+                segment.addSimilarity(feature, similarity);
             }
         }
 
-        /* Rerank the results (calling this method also causes an invokation of next(). */
+        /* Re-rank the results (calling this method also causes an invocation of next(). */
         this.rerank();
 
         /* Return true. */
@@ -258,28 +261,15 @@ export class ResultsContainer {
         this._results_objects_subject.complete();
         this._results_segments_subject.complete();
         this._results_features_subject.complete();
-        this._results_types_subject.complete();
     }
 
     /**
      * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
      */
     private next() {
-        this._results_segments_subject.next(this._results_segments
-            .filter(v => v.objectScoreContainer.show) /* Filter segments that are not ready. */
-            .filter(v => this._mediatypes.get(v.objectScoreContainer.mediatype)) /* Filter segments of types that have been toggled by the user. */
-            //.filter(v => this._segment_filters.map(f => f[1] == v.metadataForKey(f[0])).reduce((v1,v2,idx) => (idx == 0 ? false : v1 || v2), true)) /* Filter segments that don't match any of the filter criteria. */
-        );
-
-        this._results_objects_subject.next(this._results_objects
-            .filter(v => v.show)
-            .filter(v => this._mediatypes.get(v.mediatype) == true)
-            //.filter(v => this._object_filters.map(f => f[1] == v.metadataForKey(f[0])).reduce((v1,v2,idx) => (idx == 0 ? false : v1 || v2), true)) /* Filter segments that don't match any of the filter criteria. */
-        );
-
-
+        this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
+        this._results_objects_subject.next(this._results_objects.filter(v => v.show));
         this._results_features_subject.next(this._features);
-        this._results_types_subject.next(this._mediatypes);
     }
 
 

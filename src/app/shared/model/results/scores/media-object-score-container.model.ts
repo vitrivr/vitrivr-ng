@@ -9,9 +9,8 @@ import {FusionFunction} from "../fusion/weight-function.interface";
 import {MediaType} from "../../media/media-type.model";
 
 /**
- * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects. It is associated with
- * a single MediaObject (e.g. a video, audio or 3d-model file) and holds the score for that object. That
- * score is determined by the scores of the SegmentScoreContainers hosted by a concrete instance of this class.
+ * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects. It corresponds to a single MediaObject (e.g. a video, audio or 3d-model file)
+ * and holds the score for that object. That score is determined by the scores of the SegmentScoreContainers hosted by a concrete instance of this class.
  */
 export class MediaObjectScoreContainer extends ScoreContainer implements MediaObject {
     /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
@@ -65,9 +64,10 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     }
 
     /**
+     * Adds a similarity entry to the MediaObjectContainer.
      *
-     * @param category
-     * @param similarity
+     * @param category The category for which to add the similarity entry.
+     * @param similarity The actual similarity entry.
      */
     public addSimilarity(category : WeightedFeatureCategory, similarity : Similarity) {
         if (this._segmentScores.has(similarity.key)) {
