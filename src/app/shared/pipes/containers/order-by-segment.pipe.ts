@@ -15,7 +15,7 @@ export class OrderBySegmentPipe implements PipeTransform {
      */
     public transform(array: Array<SegmentScoreContainer>, desc: boolean = true): Array<SegmentScoreContainer> {
         if(!array || array === undefined || array.length === 0) return [];
-        return array.slice().sort((a: SegmentScoreContainer, b: SegmentScoreContainer) => {
+        return array.sort((a: SegmentScoreContainer, b: SegmentScoreContainer) => {
             if (desc) {
                 return a.startabs - b.startabs;
             } else {
