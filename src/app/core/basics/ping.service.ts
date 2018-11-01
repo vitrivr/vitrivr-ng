@@ -2,7 +2,7 @@ import {Inject, Injectable} from "@angular/core";
 import {BehaviorSubject, Observable, Subject, Subscription, timer} from "rxjs";
 import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
 import {WebSocketFactoryService} from "../api/web-socket-factory.service";
-import {ConfigService} from "../basics/config.service";
+import {ConfigService} from "./config.service";
 import {filter, flatMap, map} from "rxjs/operators";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {ApiStatus} from "../../shared/model/internal/api-status.model";

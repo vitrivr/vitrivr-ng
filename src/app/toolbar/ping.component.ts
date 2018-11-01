@@ -2,7 +2,7 @@
 import {Component} from '@angular/core';
 import {map} from "rxjs/operators";
 import {Observable, Subscription} from "rxjs";
-import {PingService} from "../core/queries/ping.service";
+import {PingService} from "../core/basics/ping.service";
 
 @Component({
     selector: 'api-status',

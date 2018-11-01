@@ -21,6 +21,8 @@ import {QueryContainerInterface} from "../../shared/model/queries/interfaces/que
 import {filter, first, tap} from "rxjs/operators";
 import {WebSocketFactoryService} from "../api/web-socket-factory.service";
 import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
+import {SegmentMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-segment-metadata.interface";
+import {ObjectMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-object-metadata.interface";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -182,6 +184,14 @@ export class QueryService {
             case "QR_SIMILARITY":
                 let sim = <SimilarityQueryResult>message;
                 if (this._results && this._results.processSimilarityMessage(sim)) this._subject.next("UPDATED");
+                break;
+            case "QR_METADATA_S":
+                let mets = <SegmentMetadataQueryResult>message;
+                if (this._results && this._results.processSegmentMetadataMessage(mets)) this._subject.next("UPDATED");
+                break;
+            case "QR_METADATA_O":
+                let meto = <ObjectMetadataQueryResult>message;
+                if (this._results && this._results.processObjectMetadataMessage(meto)) this._subject.next("UPDATED");
                 break;
             case "QR_ERROR":
                 this.errorOccurred(<QueryError>message);
