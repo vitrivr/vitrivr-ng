@@ -3,7 +3,7 @@
 <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
 <div class="mini-gallery">
-    <div class="{{segment.marked ? 'segment marked' : 'segment'}}" *ngFor="let segment of dataSource | async | OrderByScorePipe" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, segment.objectScoreContainer)" [style.background]="backgroundForSegment(segment)">
+    <div *ngFor="let segment of (((dataSource | async) | FilterSegmentAllPipe : (filters|async)) | OrderByScorePipe)" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, segment.objectScoreContainer)" [style.background]="backgroundForSegment(segment)">
         <img src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked(segment)"/>
 
         <div  *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">

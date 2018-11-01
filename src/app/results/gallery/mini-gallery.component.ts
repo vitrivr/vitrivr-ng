@@ -57,6 +57,13 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
     }
 
     /**
+     * Getter for the filters that should be applied to SegmentScoreContainer.
+     */
+    get filters(): Observable<((v: SegmentScoreContainer) => boolean)[]> {
+        return this._filterService.segmentFilter;
+    }
+
+    /**
      * Sets the focus to the provided SegmentScoreContainer.
      *
      * @param focus
