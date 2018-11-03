@@ -10,6 +10,7 @@ import {InteractionEvent} from "../../shared/model/events/interaction-event.mode
 import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
 import {filter} from "rxjs/operators";
 import {FilterService} from "../../core/queries/filter.service";
+import {ColorLabel, ColorLabels} from "../../shared/model/misc/colorlabel.model";
 
 @Component({
     moduleId: module.id,
@@ -31,11 +32,14 @@ export class RefinementComponent implements OnInit, OnDestroy {
     /** An observable for the current results. */
     private _features : Observable<WeightedFeatureCategory[]> = EMPTY;
 
-    /** List of media types for filtering. */
-    private _mediatypes : MediaType[] = MediaTypes;
-
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
+
+    /** List of media types for filtering. */
+    public readonly mediatypes : MediaType[] = MediaTypes;
+
+    /** List of media types for filtering. */
+    public readonly colors: ColorLabel[] = ColorLabels;
 
     /**
      * Constructor: Registers with the QueryService to be updated about changes
@@ -79,23 +83,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Triggered whenever the filter selection changes. Reports the change to the
-     * QueryService, which will update the filter settings accordingly.
-     *
-     * @param event
-     */
-    public onFilterChanged(event: MatCheckboxChange) {
-        if (!this._queryService.results) return;
-        if (!event.source.checked) {
-            this._filterService.addMediaType(<MediaType>event.source.name);
-        } else {
-            this._filterService.removeMediaType(<MediaType>event.source.name);
-        }
-        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
-
-    }
-
-    /**
      * Triggered whenever the value of one of the weight-sliders changes. Reports
      * the change to the QueryService, which will trigger a re-ranking of the results
      *
@@ -118,15 +105,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Getter for media types array.
-     *
-     * @return {MediaType[]}
-     */
-    get mediatypes(): MediaType[] {
-        return this._mediatypes
-    }
-
-    /**
      * Getter for refinement array.
      *
      * @return {WeightedFeatureCategory[]}
@@ -136,10 +114,50 @@ export class RefinementComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Triggered whenever the type filter selection changes. Reports the change to the FilterService,
+     * which will update the filter settings accordingly.
+     *
+     * @param event
+     */
+    public onTypeFilterChanged(event: MatCheckboxChange) {
+        if (!this._queryService.results) return;
+        if (!event.source.checked) {
+            this._filterService.addMediaType(<MediaType>event.source.name);
+        } else {
+            this._filterService.removeMediaType(<MediaType>event.source.name);
+        }
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
+    }
+
+    /**
+     * Triggered whenever the color filter selection changes. Reports the change to the FilterService,
+     * which will update the filter settings accordingly.
+     *
+     * @param event
+     */
+    public onColorFilterChanged(event: MatCheckboxChange) {
+        if (!this._queryService.results) return;
+        if (!event.source.checked) {
+            this._filterService.addDominantColor(<ColorLabel>event.source.name);
+        } else {
+            this._filterService.removeDominantColor(<ColorLabel>event.source.name);
+        }
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
+    }
+
+    /**
      *
      * @param type
      */
     public isTypeActive(type: MediaType): boolean {
-        return this._filterService.mediatypes.indexOf(type) == -1
+        return this._filterService.mediatypes.indexOf(type) > -1
+    }
+
+    /**
+     *
+     * @param type
+     */
+    public isColorActive(type: ColorLabel): boolean {
+        return this._filterService.dominant.indexOf(type) > -1
     }
 }

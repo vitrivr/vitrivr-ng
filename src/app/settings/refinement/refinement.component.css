@@ -5,11 +5,8 @@
 }
 
 .checkbox-group {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    align-items: center;
-    height: 60px;
+    display: grid;
+    grid-template-columns: repeat(2, 50% [col-start]);
 }
 
 .checkbox-group mat-checkbox {

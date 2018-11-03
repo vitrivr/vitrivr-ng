@@ -9,11 +9,24 @@
     </div>
     <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
 
-    <h4>Filters</h4>
-    <section class="checkbox-group">
-        <mat-checkbox *ngFor="let type of mediatypes" [name]="type" [checked]="isTypeActive(type)" labelPosition="before" (change)="onFilterChanged($event)">{{type}}</mat-checkbox>
-    </section>
+    <h4 class="mat-h4">Filters</h4>
+
+    <div>
+        <h5 class="mat-h5">Display only objects of type</h5>
+        <section class="checkbox-group">
+            <mat-checkbox *ngFor="let type of mediatypes" [name]="type" [checked]="isTypeActive(type)" (change)="onTypeFilterChanged($event)">{{type}}</mat-checkbox>
+        </section>
+    </div>
+
+    <div>
+        <h5 class="mat-h5">Display only objects of color</h5>
+        <section class="checkbox-group">
+            <mat-checkbox *ngFor="let color of colors" [name]="color" [checked]="isColorActive(type)" (change)="onColorFilterChanged($event)">{{color}}</mat-checkbox>
+        </section>
+    </div>
 </div>
+
+
 
 <div *ngIf="!(features | async)">
     <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>

@@ -1,0 +1,2 @@
+export type ColorLabel = "BLACKWHITE" | "CYAN" | "GREEN" | "ORANGE" | "YELLOW" | "BLUE" | "GRAY" | "MAGENTA" | "RED" | "VIOLET" | "UNDETERMINED";
+export let ColorLabels: ColorLabel[] = ["BLACKWHITE", "CYAN", "GREEN","ORANGE", "YELLOW", "BLUE", "GRAY",  "MAGENTA", "RED", "VIOLET", "UNDETERMINED"];

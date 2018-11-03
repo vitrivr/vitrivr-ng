@@ -3,6 +3,7 @@ import {MediaType} from "../../shared/model/media/media-type.model";
 import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
 import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
 import {BehaviorSubject, Observable} from "rxjs";
+import {ColorLabel} from "../../shared/model/misc/colorlabel.model";
 
 
 /**
@@ -22,7 +23,7 @@ export class FilterService {
      * A filter by dominant color. Affects only MediaSegmentScoreContainers. If non-empty, only segments
      * that match at least one of the dominant colors contained in this array will pass the filter.
      */
-    private _dominant: string[] = [];
+    private _dominant: ColorLabel[] = [];
 
     /** An internal BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
     private _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
@@ -46,7 +47,7 @@ export class FilterService {
     /**
      * Returns a copy of the list of colors that should be used for filtering.
      */
-    get dominant() : string[] {
+    get dominant() : ColorLabel[] {
         return this._dominant.slice();
     }
 
@@ -102,7 +103,7 @@ export class FilterService {
      *
      * @param colors Dominant color filter terms to add.
      */
-    public addDominantColor(...colors: string[]) {
+    public addDominantColor(...colors: ColorLabel[]) {
         let change = false;
         colors.forEach(v => {
             if (this._dominant.indexOf(v) == -1) {
@@ -118,7 +119,7 @@ export class FilterService {
      *
      * @param colors Dominant color filter terms to remove.
      */
-    public removeDominantColor(...colors: string[]) {
+    public removeDominantColor(...colors: ColorLabel[]) {
         let change = false;
         colors.forEach(v => {
             let index = this._dominant.indexOf(v);
@@ -150,7 +151,7 @@ export class FilterService {
         /* Prepare the media segment filters. */
         let segmentFilters: ((v: SegmentScoreContainer) => boolean)[]  = [];
         if (this._mediatypes.length > 0) segmentFilters.push((v) => this._mediatypes.indexOf(v.objectScoreContainer.mediatype) == -1);
-        if (this._dominant.length > 0) segmentFilters.push((v) => v.metadata.has("color.dominant") && this._dominant.indexOf(v.metadata.get("color.dominant")) == -1);
+        if (this._dominant.length > 0) segmentFilters.push((v) => v.metadata.has("color.dominant") && this._dominant.indexOf(<ColorLabel>v.metadata.get("color.dominant")) == -1);
 
         /* Publish changes. */
         this._objectFilters.next(objectFilters);
