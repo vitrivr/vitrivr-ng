@@ -8,8 +8,8 @@
   },
 
   "resources": {
-    "host_thumbnails" : "http://10.34.58.44/vitrivr/thumbnails/:t/:o/:s:x",
-    "host_objects": "http://10.34.58.44/vitrivr/objects/:t/:n",
+    "host_thumbnails" : "http://127.0.0.1/vitrivr/thumbnails/:t/:o/:s:x",
+    "host_objects": "http://127.0.0.1/vitrivr/objects/:t/:n",
     "suffix_default":".jpg",
     "suffix": {
       "IMAGE": "png",
