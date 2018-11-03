@@ -3,6 +3,10 @@ import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.component";
 import {SemanticCategory} from "../../../shared/model/queries/semantic/semantic-category.model";
 import {SemanticMap} from "../../../shared/model/queries/semantic/semantic-map.model";
+import {FormControl} from "@angular/forms";
+import {Observable} from "rxjs";
+import {startWith} from "rxjs/operators";
+import {map} from 'rxjs/internal/operators/map';
 
 @Component({
     moduleId: module.id,
@@ -14,6 +18,9 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
 
     /** Default linesize when opening the dialog. */
     public static readonly DEFAULT_LINESIZE = 10.0;
+
+    /** */
+    private readonly formCtrl = new FormControl();
 
     /** */
     private _categories: SemanticCategory[] = [
@@ -174,6 +181,11 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
         new SemanticCategory('Windowpane')
     ];
 
+
+    /** */
+    private _filteredCategories: Observable<SemanticCategory[]>;
+
+
     /** */
     public selected : SemanticCategory = this._categories[0];
 
@@ -193,7 +205,19 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
      * @param _dialogRef
      * @param _data
      */
-    constructor(private _dialogRef: MatDialogRef<SemanticSketchDialogComponent>, @Optional() @Inject(MAT_DIALOG_DATA) private _data : SemanticMap) {}
+    constructor(private _dialogRef: MatDialogRef<SemanticSketchDialogComponent>, @Optional() @Inject(MAT_DIALOG_DATA) private _data : SemanticMap) {
+        this._filteredCategories = this.formCtrl.valueChanges.pipe(
+            startWith(''),
+            map(filter => filter.toLowerCase()),
+            map(filter => {
+                if (filter) {
+                    return this._categories.filter(v => v.name.toLowerCase().indexOf(filter) === 0);
+                } else {
+                    return this._categories;
+                }
+            })
+        );
+    }
 
     /**
      * Lifecycle Hook (onInit): Loads the injected image data (if specified).
@@ -217,14 +241,15 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
     /**
      *
      */
-    get categories(): SemanticCategory[] {
-        return this._categories;
+    get categories(): Observable<SemanticCategory[]> {
+        return this._filteredCategories;
     }
 
     /**
      * Triggered when a color value is selected.
      *
-     * @param color
+     * @param public onItemSelected(selection: SemanticCategory) {
+
      */
     public onItemSelected(selection: SemanticCategory) {
         this.selected = selection;
@@ -254,6 +279,19 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
      */
     public onFillCanvasClicked() {
         this._sketchpad.fillCanvas();
+    }
+
+    /**
+     *
+     * @param selected
+     */
+    public onOptionSelected(selected: string) {
+        for (let category of this._categories) {
+            if (category.name == selected) {
+                this.onItemSelected(category);
+                break;
+            }
+        }
     }
 
     /**

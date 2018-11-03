@@ -29,11 +29,24 @@
     <div style="display: flex; margin-top: 5px;">
         <sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
 
-
-        <div class="picker">
-            <div [class.item]="true" [class.selected]="category==selected" *ngFor="let category of categories" [style.background-color]="category.color" matTooltip="{{category.name}}" (click)="onItemSelected(category)">
-                <span>{{category.abbr(3)}}</span>
+        <div [style.width]="'300px'" [style.margin-left]="'10px'">
+            <mat-form-field>
+                <input matInput placeholder="Select term" aria-label="Select term" [matAutocomplete]="auto" [formControl]="formCtrl" >
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
+                    <mat-option *ngFor="let category of (categories | async)" [value]="category.name">
+                        <span [style.color]="category.color"><strong>{{category.name}}</strong></span>
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <div class="picker">
+                <div [class.item]="true" [class.selected]="category==selected" *ngFor="let category of (categories | async)" [style.background-color]="category.color" matTooltip="{{category.name}}" (click)="onItemSelected(category)">
+                    <span>{{category.abbr(3)}}</span>
+                </div>
             </div>
         </div>
+
+
+
+
     </div>
 </mat-dialog-content>
