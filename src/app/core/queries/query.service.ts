@@ -72,7 +72,7 @@ export class QueryService {
             }
             this._socket = ws;
             this._webSocketSubscription = this._socket.socket.pipe(
-                filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT"].indexOf(msg.messageType) > -1)
+                filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT","QR_METADATA_S"].indexOf(msg.messageType) > -1)
             ).subscribe((msg: Message) => this.onApiMessage(msg));
             console.log("QueryService is up and running! Endpoint: " + ws.endpoint);
         })
