@@ -1,7 +1,7 @@
-<h3>Query refinement</h3>
+<h2 clasS="mat-h2">Query refinement</h2>
 
 <div *ngIf="(features | async)">
-    <h4>Weights</h4>
+    <h3 class="mat-h3">Weights</h3>
     <div *ngFor="let feature of features | async" class="slider-group" [style.color]="feature.color">
         <span class="label constrained">{{feature.name}}</span>
         <mat-slider min="0" max="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></mat-slider>
@@ -9,19 +9,19 @@
     </div>
     <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
 
-    <h4 class="mat-h4">Filters</h4>
+    <h3 class="mat-h3">Filters</h3>
 
     <div>
-        <h5 class="mat-h5">Display only objects of type</h5>
+        <h5 class="mat-h5">Display only objects of type:</h5>
         <section class="checkbox-group">
             <mat-checkbox *ngFor="let type of mediatypes" [name]="type" [checked]="isTypeActive(type)" (change)="onTypeFilterChanged($event)">{{type}}</mat-checkbox>
         </section>
     </div>
-
+    <br/>
     <div>
-        <h5 class="mat-h5">Display only objects of color</h5>
+        <h5 class="mat-h5">Display only objects of color:</h5>
         <section class="checkbox-group">
-            <mat-checkbox *ngFor="let color of colors" [name]="color" [checked]="isColorActive(type)" (change)="onColorFilterChanged($event)">{{color}}</mat-checkbox>
+            <mat-checkbox *ngFor="let color of colors" [name]="color" [checked]="isColorActive(color)" (change)="onColorFilterChanged($event)">{{color}}</mat-checkbox>
         </section>
     </div>
 </div>

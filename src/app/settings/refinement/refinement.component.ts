@@ -121,7 +121,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onTypeFilterChanged(event: MatCheckboxChange) {
         if (!this._queryService.results) return;
-        if (!event.source.checked) {
+        if (event.source.checked) {
             this._filterService.addMediaType(<MediaType>event.source.name);
         } else {
             this._filterService.removeMediaType(<MediaType>event.source.name);
@@ -137,7 +137,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onColorFilterChanged(event: MatCheckboxChange) {
         if (!this._queryService.results) return;
-        if (!event.source.checked) {
+        if (event.source.checked) {
             this._filterService.addDominantColor(<ColorLabel>event.source.name);
         } else {
             this._filterService.removeDominantColor(<ColorLabel>event.source.name);
