@@ -41,7 +41,7 @@
     "three-stl-loader": "1.0.x",
     "three-trackballcontrols": "0.0.7",
     "ts-md5": "1.2.x",
-    "typescript": "2.7.x",
+    "typescript": "2.8.x",
     "videogular2": "6.3.x",
     "zone.js": "0.8.x"
   },
