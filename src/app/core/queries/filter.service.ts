@@ -146,12 +146,12 @@ export class FilterService {
     private update() {
         /* Prepares the media object filters. */
         let objectFilters: ((v: MediaObjectScoreContainer) => boolean)[]  = [];
-        if (this._mediatypes.length > 0) objectFilters.push((v) => this._mediatypes.indexOf(v.mediatype) == -1);
+        if (this._mediatypes.length > 0) objectFilters.push((v) => this._mediatypes.indexOf(v.mediatype) != -1);
 
         /* Prepare the media segment filters. */
         let segmentFilters: ((v: SegmentScoreContainer) => boolean)[]  = [];
-        if (this._mediatypes.length > 0) segmentFilters.push((v) => this._mediatypes.indexOf(v.objectScoreContainer.mediatype) == -1);
-        if (this._dominant.length > 0) segmentFilters.push((v) => v.metadata.has("color.dominant") && this._dominant.indexOf(<ColorLabel>v.metadata.get("color.dominant")) == -1);
+        if (this._mediatypes.length > 0) segmentFilters.push((v) => this._mediatypes.indexOf(v.objectScoreContainer.mediatype) != -1);
+        if (this._dominant.length > 0) segmentFilters.push((v) => v.metadata.has("dominantcolor.color") && this._dominant.indexOf(<ColorLabel>v.metadata.get("dominantcolor.color").toUpperCase()) != -1);
 
         /* Publish changes. */
         this._objectFilters.next(objectFilters);
