@@ -4,7 +4,7 @@
     <h3 class="mat-h3">Weights</h3>
     <div *ngFor="let feature of features | async" class="slider-group" [style.color]="feature.color">
         <span class="label constrained">{{feature.name}}</span>
-        <mat-slider min="0" max="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></mat-slider>
+        <mat-slider [min]="0" [max]="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></mat-slider>
         <span class="label constrained"> {{feature.weight}}%</span>
     </div>
     <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
@@ -14,19 +14,24 @@
     <div>
         <h5 class="mat-h5">Display only objects of type:</h5>
         <section class="checkbox-group">
-            <mat-checkbox *ngFor="let type of mediatypes" [name]="type" [checked]="isTypeActive(type)" (change)="onTypeFilterChanged($event)">{{type}}</mat-checkbox>
+            <mat-checkbox *ngFor="let type of filter.mediatypeKeys" [name]="type" [checked]="filter.mediatypes.get(type)" (change)="onTypeFilterChanged(type,$event)">{{type}}</mat-checkbox>
         </section>
     </div>
     <br/>
     <div>
         <h5 class="mat-h5">Display only objects of color:</h5>
         <section class="checkbox-group">
-            <mat-checkbox *ngFor="let color of colors" [name]="color" [checked]="isColorActive(color)" (change)="onColorFilterChanged($event)">{{color}}</mat-checkbox>
+            <mat-checkbox *ngFor="let color of filter.dominantKeys" [name]="color" [checked]="filter.mediatypes.get(color)" (change)="onColorFilterChanged(color,$event)">{{color}}</mat-checkbox>
         </section>
     </div>
+    <br/>
+    <div>
+        <h5 class="mat-h5">Display only objects with score above:</h5>
+        <span class="label constrained">Threshold</span>
+        <mat-slider [min]="0" [max]="1.0" [step]="0.01" [(value)]="filter.threshold" (change)="onThresholdValueChanges($event)"></mat-slider>
+        <span class="label constrained">{{filter.threshold * 100}}%</span>
+    </div>
 </div>
-
-
 
 <div *ngIf="!(features | async)">
     <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>

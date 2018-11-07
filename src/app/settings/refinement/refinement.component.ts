@@ -1,8 +1,7 @@
-import {ChangeDetectorRef, Component, OnInit, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {MatCheckboxChange, MatSliderChange} from "@angular/material";
 import {QueryChange, QueryService} from "../../core/queries/query.service";
 import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
-import {MediaType, MediaTypes} from "../../shared/model/media/media-type.model";
 import {EMPTY, Observable} from "rxjs";
 import {EventBusService} from "../../core/basics/event-bus.service";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
@@ -10,7 +9,8 @@ import {InteractionEvent} from "../../shared/model/events/interaction-event.mode
 import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
 import {filter} from "rxjs/operators";
 import {FilterService} from "../../core/queries/filter.service";
-import {ColorLabel, ColorLabels} from "../../shared/model/misc/colorlabel.model";
+import {ColorLabel} from "../../shared/model/misc/colorlabel.model";
+import {MediaType} from "../../shared/model/media/media-type.model";
 
 @Component({
     moduleId: module.id,
@@ -33,12 +33,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
-
-    /** List of media types for filtering. */
-    public readonly mediatypes : MediaType[] = MediaTypes;
-
-    /** List of media types for filtering. */
-    public readonly colors: ColorLabel[] = ColorLabels;
 
     /**
      * Constructor: Registers with the QueryService to be updated about changes
@@ -101,28 +95,18 @@ export class RefinementComponent implements OnInit, OnDestroy {
         });
     }
 
-    /**
-     * Getter for refinement array.
-     *
-     * @return {WeightedFeatureCategory[]}
-     */
-    get features(): Observable<WeightedFeatureCategory[]> {
-        return this._features;
-    }
 
     /**
      * Triggered whenever the type filter selection changes. Reports the change to the FilterService,
      * which will update the filter settings accordingly.
      *
+     * @param type
      * @param event
      */
-    public onTypeFilterChanged(event: MatCheckboxChange) {
+    public onTypeFilterChanged(type: MediaType, event: MatCheckboxChange) {
         if (!this._queryService.results) return;
-        if (event.source.checked) {
-            this._filterService.addMediaType(<MediaType>event.source.name);
-        } else {
-            this._filterService.removeMediaType(<MediaType>event.source.name);
-        }
+        this._filterService.mediatypes.set(type, event.checked);
+        this._filterService.update();
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
     }
 
@@ -132,29 +116,35 @@ export class RefinementComponent implements OnInit, OnDestroy {
      *
      * @param event
      */
-    public onColorFilterChanged(event: MatCheckboxChange) {
+    public onColorFilterChanged(color: ColorLabel, event: MatCheckboxChange) {
         if (!this._queryService.results) return;
-        if (event.source.checked) {
-            this._filterService.addDominantColor(<ColorLabel>event.source.name);
-        } else {
-            this._filterService.removeDominantColor(<ColorLabel>event.source.name);
-        }
+        this._filterService.dominant.set(color, event.checked);
+        this._filterService.update();
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
     }
 
     /**
      *
-     * @param type
+     * @param event
      */
-    public isTypeActive(type: MediaType): boolean {
-        return this._filterService.mediatypes.indexOf(type) > -1
+    public onThresholdValueChanges(event: MatSliderChange) {
+        this._filterService.update();
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
     }
 
     /**
      *
-     * @param type
      */
-    public isColorActive(type: ColorLabel): boolean {
-        return this._filterService.dominant.indexOf(type) > -1
+    get filter(): FilterService {
+        return this._filterService;
+    }
+
+    /**
+     * Getter for refinement array.
+     *
+     * @return {WeightedFeatureCategory[]}
+     */
+    get features(): Observable<WeightedFeatureCategory[]> {
+        return this._features;
     }
 }
