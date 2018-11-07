@@ -4,9 +4,6 @@ import {ChangeDetectionStrategy, Component} from "@angular/core";
     moduleId: module.id,
     selector: 'settings',
     templateUrl: './settings.component.html',
-    styleUrls: ['./settings.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent {
-
-}
+export class SettingsComponent {}
