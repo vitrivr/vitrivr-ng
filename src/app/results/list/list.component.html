@@ -3,9 +3,9 @@
 
     <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
-    <div class="list">
-        <div *ngFor="let mediaobject of (dataSource | async | OrderByScorePipe); trackBy: trackByFunction" class="object"  fxLayout="row" fxLayoutWrap fxLayoutGap="4px">
-            <div *ngFor="let segment of mediaobject.segments | OrderBySegmentPipe" class="{{segment.marked ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, mediaobject)" [style.background]="backgroundForSegment(segment)">
+    <div class="list" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
+        <div *ngFor="let mediaobject of ((((dataSource | async) | OrderByScorePipe) | FilterPipe : (objectFilter|async)) | LimitPipe : count); trackBy: trackByFunction" class="object" fxLayout="row" fxLayoutWrap fxLayoutGap="4px">
+            <div *ngFor="let segment of (mediaobject.segments | OrderBySegmentPipe | FilterPipe : (segmentFilter|async))" class="{{segment.marked ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, mediaobject)" [style.background]="backgroundForSegment(segment)">
 
                 <img src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked(segment)"/>
 

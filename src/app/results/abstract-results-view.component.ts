@@ -35,6 +35,9 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     /** Local reference to the data source holding the query results.*/
     protected _dataSource : Observable<T> = EMPTY;
 
+    /** The number of items that should be displayed. */
+    protected _count: number = 500;
+
     /**
      * Default constructor.
      *
@@ -93,6 +96,13 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._queryServiceSubscription.unsubscribe();
         this._selectionServiceSubscription.unsubscribe();
         this._filterServiceSubscription.unsubscribe();
+    }
+
+    /**
+     * Getter for count property (for limiting the result set)
+     */
+    get count(): number {
+        return this._count;
     }
 
     /**
@@ -215,6 +225,26 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     public onTileDrag(event, segment?: SegmentScoreContainer, object?: MediaObjectScoreContainer) {
        if (segment) event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
        if (object) event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
+    }
+
+    /**
+     * Increments the start value by the count value. Should be called by some kind of pagination control.
+     */
+    public incrementCount() {
+        this._count += 500;
+        this._cdr.markForCheck();
+    }
+
+    /**
+     * Decrements the start value by the count value. Should be called by some kind of pagination control.
+     */
+    public decrementCount() {
+        if (this._count - 500 >= 500) {
+            this._count -= 500;
+        } else {
+            this._count = 500;
+        }
+        this._cdr.markForCheck();
     }
 
     /**

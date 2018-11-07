@@ -7,9 +7,10 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {ListComponent} from "./list.component";
 import {ContainerPipesModule} from "../../shared/pipes/containers/container-pipes.module";
 import {VbsModule} from "../../core/vbs/vbs.module";
+import {InfiniteScrollModule} from "ngx-infinite-scroll";
 
 @NgModule({
-    imports:      [ MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule ],
+    imports:      [ MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule, InfiniteScrollModule ],
     declarations: [ ListComponent ],
     exports: [ ListComponent ]
 })

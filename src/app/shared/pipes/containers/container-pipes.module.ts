@@ -1,11 +1,11 @@
 import {NgModule}      from '@angular/core';
 import {OrderBySegmentPipe} from "./order-by-segment.pipe";
 import {OrderByScorePipe} from "./order-by-score.pipe";
-import {FilterObjectAllPipe} from "./filter-object-all-pipe";
-import {FilterSegmentAllPipe} from "./filter-segment-all-pipe";
+import {FilterPipe} from "./filter.pipe";
+import {LimitPipe} from "./limit.pipe";
 @NgModule({
     imports:      [  ],
-    declarations: [ OrderBySegmentPipe, OrderByScorePipe, FilterObjectAllPipe, FilterSegmentAllPipe ],
-    exports: [ OrderBySegmentPipe, OrderByScorePipe, FilterObjectAllPipe, FilterSegmentAllPipe]
+    declarations: [ OrderBySegmentPipe, OrderByScorePipe, FilterPipe, LimitPipe ],
+    exports: [ OrderBySegmentPipe, OrderByScorePipe, FilterPipe, LimitPipe]
 })
 export class ContainerPipesModule { }

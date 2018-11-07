@@ -2,8 +2,8 @@
 
 <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
-<div class="gallery">
-    <div class="tile" *ngFor="let mediaobject of (((dataSource | async) | FilterObjectAllPipe : (filters | async)) | OrderByScorePipe)" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject.representativeSegment, mediaobject)">
+<div class="gallery" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
+    <div class="tile" *ngFor="let mediaobject of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject.representativeSegment, mediaobject)">
         <div class="header" fxLayout fxLayoutAlign="space-between start" [style.background]="backgroundForSegment(mediaobject.representativeSegment)">
             <div class="filename">
                 <div>
