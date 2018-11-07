@@ -16,8 +16,7 @@ import {ColorLabel, ColorLabels} from "../../shared/model/misc/colorlabel.model"
     moduleId: module.id,
     selector: 'refinement',
     templateUrl: './refinement.component.html',
-    styleUrls: ['./refinement.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['./refinement.component.css']
 })
 /**
  * Component that can be used to refine an already executed query. Refinement options currently include
@@ -45,12 +44,11 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * Constructor: Registers with the QueryService to be updated about changes
      * in the refinement.
      *
-     * @param _cdr Reference to the ChangeDetector (Angular JS)
      * @param _queryService Reference to the QueryService singleton instance.
      * @param _filterService Reference to the FilterService singleton instance.
      * @param _eventBusService Reference to the EventBusService singleton instance.
      */
-    constructor(private _cdr: ChangeDetectorRef, private _queryService : QueryService, private _filterService: FilterService, private _eventBusService: EventBusService) {}
+    constructor(private _queryService : QueryService, private _filterService: FilterService, private _eventBusService: EventBusService) {}
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
@@ -79,7 +77,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
         } else if (msg == "CLEAR"){
             this._features = EMPTY;
         }
-        this._cdr.markForCheck();
     }
 
     /**
