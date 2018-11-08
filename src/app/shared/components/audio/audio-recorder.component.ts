@@ -273,7 +273,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
         if (this.isPlaying() || this.isRecording()) this.stop();
         let reader = new FileReader();
         reader.addEventListener("load", () => {
-            this.loadAudioFromBuffer(reader.result);
+            this.loadAudioFromBuffer(<ArrayBuffer>reader.result);
         });
         reader.readAsArrayBuffer(file);
     }

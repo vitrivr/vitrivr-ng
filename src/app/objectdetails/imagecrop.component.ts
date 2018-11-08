@@ -62,7 +62,7 @@ export class ImagecropComponent implements OnInit {
               this.isLoaded = true;
             };
 
-            image.src = reader.result;
+            image.src = <string>reader.result;
         });
         this._http.get(this._src, {responseType: 'blob'}).pipe(first()).subscribe(data => {
             reader.readAsDataURL(data);

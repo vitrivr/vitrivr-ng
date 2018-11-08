@@ -117,7 +117,7 @@ export class ImageQueryTermComponent {
         /* Prepare file reader (just in case). */
         let reader = new FileReader();
         reader.addEventListener("load", () => {
-            this.applyImageData(reader.result);
+            this.applyImageData(<string>reader.result);
         });
 
         /**

@@ -130,7 +130,7 @@ export class AudioQueryTermComponent {
                     this.player.nativeElement.src = URL.createObjectURL(data);
                     let reader = new FileReader();
                     reader.onloadend = () => {
-                        this.audioTerm.data = reader.result;
+                        this.audioTerm.data = <string>reader.result;
                     };
                     reader.readAsDataURL(data);
                 })
