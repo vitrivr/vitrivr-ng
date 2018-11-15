@@ -20,7 +20,7 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
     public static readonly DEFAULT_LINESIZE = 10.0;
 
     /** */
-    private readonly formCtrl = new FormControl();
+    public readonly formCtrl = new FormControl();
 
     /** */
     private _categories: SemanticCategory[] = [
