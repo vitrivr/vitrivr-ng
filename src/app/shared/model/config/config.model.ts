@@ -75,6 +75,9 @@ export class Config {
             config: {
                 queryId: null,
                 hints: ["exact"]
+            },
+            text: {
+                categories : []
             }
         }
     };
