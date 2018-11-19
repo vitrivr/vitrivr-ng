@@ -23,6 +23,7 @@ import {WebSocketFactoryService} from "../api/web-socket-factory.service";
 import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
 import {SegmentMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-segment-metadata.interface";
 import {ObjectMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-object-metadata.interface";
+import {QueryEnd} from "../../shared/model/messages/interfaces/responses/query-end.interface";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -171,6 +172,7 @@ export class QueryService {
         switch (message.messageType) {
             case "QR_START":
                 let qs = <QueryStart>message;
+                console.time(`Query (${qs.queryId}`);
                 this.startNewQuery(qs.queryId);
                 break;
             case "QR_OBJECT":
@@ -194,9 +196,11 @@ export class QueryService {
                 if (this._results && this._results.processObjectMetadataMessage(meto)) this._subject.next("UPDATED");
                 break;
             case "QR_ERROR":
+                console.timeEnd(`Query (${(<QueryError>message).queryId}`);
                 this.errorOccurred(<QueryError>message);
                 break;
             case "QR_END":
+                console.timeEnd(`Query (${(<QueryError>message).queryId}`);
                 this.finalizeQuery();
                 break;
         }
