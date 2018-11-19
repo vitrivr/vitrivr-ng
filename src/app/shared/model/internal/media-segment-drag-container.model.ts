@@ -42,7 +42,7 @@ export class MediaSegmentDragContainer {
      * @return {string} JSON string representing the MediaSegmentDragContainer
      */
     public toJSON() {
-        return JSON.stringify({object: this._object, segment: this._segment})
+        return JSON.stringify({object: this._object, segment: this._segment}, ['object', 'segment', 'objectId', 'mediatype', 'name', 'path', 'contentURL', 'segmentId', 'sequenceNumber', 'start', 'end', 'startabs', 'endabs'])
     }
 
     /**

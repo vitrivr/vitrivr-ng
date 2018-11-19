@@ -41,7 +41,7 @@ export class MediaObjectDragContainer {
      * @return {string} JSON string representing the MediaObjectDragContainer
      */
     public toJSON() {
-        return JSON.stringify({mediatype: this._mediatype, object: this._object})
+        return JSON.stringify({mediatype: this._mediatype, object: this._object},['mediatype', 'object', 'objectId', 'mediatype', 'name', 'path', 'contentURL']);
     }
 
     /**
