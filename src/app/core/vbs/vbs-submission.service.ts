@@ -10,7 +10,7 @@ import {Config} from "../../shared/model/config/config.model";
 import {EventBusService} from "../basics/event-bus.service";
 import {Subject} from "rxjs";
 import {VbsAction} from "./vbs-action.model";
-import {buffer, defaultIfEmpty, filter, first, flatMap, map, tap, withLatestFrom} from "rxjs/operators";
+import {buffer, catchError, defaultIfEmpty, filter, first, flatMap, map, tap, withLatestFrom} from "rxjs/operators";
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -136,7 +136,9 @@ export class VbsSubmissionService {
                     observable = this._http.get(String(endpoint), {responseType: 'text', params: params});
                 }
                 console.log(`Submitting video to VBS; id: ${segment.objectId}, frame: ${frame}, sequence: ${iseq}`.toString());
-                return observable.catch((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`));
+                return observable.pipe(
+                    catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
+                );
             }),
             map((msg: string) => {
                 if (msg.indexOf("Correct") > -1) {
