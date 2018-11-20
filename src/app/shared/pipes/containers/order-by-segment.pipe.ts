@@ -15,12 +15,15 @@ export class OrderBySegmentPipe implements PipeTransform {
      */
     public transform(array: Array<SegmentScoreContainer>, desc: boolean = true): Array<SegmentScoreContainer> {
         if(!array || array === undefined || array.length === 0) return [];
-        return array.sort((a: SegmentScoreContainer, b: SegmentScoreContainer) => {
+        console.time("UI (Sort by Segment)");
+        let results = array.sort((a: SegmentScoreContainer, b: SegmentScoreContainer) => {
             if (desc) {
                 return a.startabs - b.startabs;
             } else {
                 return b.startabs - a.startabs;
             }
         });
+        console.timeEnd("UI (Sort by Segment)");
+        return results;
     }
 }

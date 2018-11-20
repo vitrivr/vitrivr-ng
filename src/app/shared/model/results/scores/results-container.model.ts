@@ -143,10 +143,10 @@ export class ResultsContainer {
     public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
         if (!features) features = this.features;
         if (!weightFunction) weightFunction = this.weightFunction;
+        console.time(`Rerank (${this.queryId})`);
         this._results_objects.forEach((value) => { value.update(features, weightFunction); });
-
-        /* Publish a change. */
         this.next();
+        console.timeEnd(`Rerank (${this.queryId})`);
     }
 
     /**

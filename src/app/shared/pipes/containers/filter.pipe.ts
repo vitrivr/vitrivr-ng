@@ -14,6 +14,9 @@ export class FilterPipe implements PipeTransform {
      */
     public transform<T extends ScoreContainer>(array: Array<T>, filter: ((value:T) => boolean)[]): Array<T> {
         if(!array || array === undefined || array.length === 0) return [];
-        return array.filter(v => filter.every(f => f(v)));
+        console.time("UI (Filter)");
+        let results = array.filter(v => filter.every(f => f(v)));
+        console.timeEnd("UI (Filter)");
+        return results;
     }
 }
