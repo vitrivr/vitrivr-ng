@@ -4,58 +4,22 @@ mat-slider {
 
 .picker {
     width: 300px;
-    height: 300px;
-
-    display: grid;
-
-    grid-template-columns: repeat(auto-fill,32px);
-    grid-template-rows: repeat(auto-fill,32px);
-    grid-auto-flow: row;
-
-    grid-column-gap: 10px;
-    grid-row-gap: 10px;
-
+    height: 250px;
     overflow: scroll;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 .picker .item {
-    border-radius: 50%;
-}
-
-
-.picker-item {
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-}
-
-.picker-item span {
-    height: 14px;
-    width: 32px;
-    display: inline-block;
-
-    padding: 9px 0px 9px 0px;
+    height: 20px;
+    margin: 5px;
 
     font-weight: bold;
     text-align: center;
-}
-
-
-.picker .item  span {
-    height: 14px;
-    width: 32px;
-    display: inline-block;
-
-    padding: 9px 0px 9px 0px;
-
-    font-weight: bold;
-    text-align: center;
+    vertical-align: center;
 }
 
 .picker .item.selected {
     border: 1px solid;
-}
-
-.picker .item.selected span {
-    padding: 8px 0px 8px 0px;
 }
