@@ -90,6 +90,28 @@ export class AdvancedMediaPlayerComponent {
     }
 
     /**
+     * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
+     */
+    public seekToNext() {
+        let time = this._api.time.current/1000;
+        let times = this.mediaobject.segments.map(s => s.startabs).filter(t => t > time).sort((a,b) => a-b);
+        if (times.length > 0) {
+            this._api.seekTime(times[0])
+        }
+    }
+
+    /**
+     * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
+     */
+    public seekToPrevious() {
+        let time = this._api.time.current/1000;
+        let times = this.mediaobject.segments.map(s => s.startabs).filter(t => t < time).sort((a,b) => b-a);
+        if (times.length > 0) {
+            this._api.seekTime(times[0])
+        }
+    }
+
+    /**
      * Getter for the track object.
      *
      * @return {TextTrack}

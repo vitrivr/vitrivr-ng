@@ -3,7 +3,9 @@
         <vg-play-pause></vg-play-pause>
         <vg-playback-button [playbackValues]="[0.5, 1.0, 2.0, 4.0, 8.0]"></vg-playback-button>
 
+        <mat-icon (click)="seekToPrevious()" class="player-button" matTooltip="Seek to the begin of the segment preceding the current position in time.">fast_rewind</mat-icon>
         <mat-icon (click)="seekToFocusPosition()" class="player-button" matTooltip="Seek to position of focused segment.">replay</mat-icon>
+        <mat-icon (click)="seekToNext()" class="player-button" matTooltip="Seek to the begin of the segment succeeding this position in time.">fast_forward</mat-icon>
 
         <vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>
 
