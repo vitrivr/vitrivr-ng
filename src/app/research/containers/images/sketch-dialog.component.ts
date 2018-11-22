@@ -28,11 +28,14 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
     public linesize: number = SketchDialogComponent.DEFAULT_LINESIZE;
 
     /**
+     * Constructor for SketchDialogComponent.
      *
      * @param _dialogRef
      * @param _data
      */
-    constructor(private _dialogRef: MatDialogRef<SketchDialogComponent>, @Inject(MAT_DIALOG_DATA) private _data : any) {}
+    constructor(private _dialogRef: MatDialogRef<SketchDialogComponent>, @Inject(MAT_DIALOG_DATA) private _data : any) {
+        _dialogRef.disableClose = true;
+    }
 
     /**
      * Lifecycle Hook (onInit): Loads the injected image data (if specified).

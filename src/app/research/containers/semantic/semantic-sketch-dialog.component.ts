@@ -206,6 +206,7 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
      * @param _data
      */
     constructor(private _dialogRef: MatDialogRef<SemanticSketchDialogComponent>, @Optional() @Inject(MAT_DIALOG_DATA) private _data : SemanticMap) {
+        _dialogRef.disableClose = true;
         let filtered =  this.formCtrl.valueChanges.pipe(
             startWith(''),
             map(filter => filter.toLowerCase()),
