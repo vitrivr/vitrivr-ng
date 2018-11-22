@@ -3,7 +3,6 @@ import {ConfigService} from "../basics/config.service";
 import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
 import {HistoryContainer} from "../../shared/model/internal/history-container.model";
 import Dexie from "dexie";
-import {Config} from "../../shared/model/config/config.model";
 import {fromPromise} from "rxjs-compat/observable/fromPromise";
 import {flatMap} from "rxjs/operators";
 import {EMPTY, Observable} from "rxjs";
@@ -56,8 +55,15 @@ export class HistoryService {
     /**
      * Returns a copy of the HistoryContainer[] array.
      */
-    get history(): Observable<HistoryContainer[]> {
+    get list(): Observable<HistoryContainer[]> {
         return fromPromise(this._historyTable.toArray());
+    }
+
+    /**
+     * Returns the number of items in the history.
+     */
+    get count(): Observable<number> {
+        return fromPromise(this._historyTable.count());
     }
 
     /**
@@ -67,9 +73,18 @@ export class HistoryService {
      */
     public append(container: ResultsContainer) {
         if (this._keep > 0) {
-            fromPromise(this._historyTable.add(new HistoryContainer(container.serialize()))).subscribe();
+            fromPromise(this._historyTable.add(new HistoryContainer(container))).subscribe();
             this.ommitOldest();
         }
+    }
+
+    /**
+     * Deletes a HistoryContainer entry from the database.
+     *
+     * @param key ID of the HistoryContainer to delete.
+     */
+    public delete(key: number) {
+        fromPromise(this._historyTable.delete(key)).subscribe();
     }
 
     /**
