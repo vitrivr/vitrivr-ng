@@ -18,10 +18,9 @@ import {QueryService} from "../core/queries/query.service";
         <mat-nav-list *ngIf="(count|async) > 0">
             <a *ngFor="let result of (history|async)" mat-list-item (click)="load(result)">
                 <mat-icon mat-list-icon>change_history</mat-icon>
-                <span mat-line>
-                    <strong>{{format(result.timestamp)}} (ID={{result.id}})</strong>
-                </span>
+                <span mat-line><strong>ID: {{result.id}}, {{format(result.timestamp)}}</strong></span>
                 <span mat-line>Objects: {{result.objects}}, Segments: {{result.segments}}</span>
+                <span mat-line>Features: {{result.features.join(", ")}}</span>
             </a>
         </mat-nav-list>
         <p *ngIf="(count|async) == 0">No history available!</p>
