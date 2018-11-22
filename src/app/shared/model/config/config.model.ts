@@ -1,27 +1,20 @@
 import {Tag} from "../../../core/selection/tag.model";
 import {FeatureCategories} from "../results/feature-categories.model";
 import {QuerySettings} from "./query-settings.model";
+import Dexie from "dexie";
 
 export class Config {
     /** Context of the Cineast API. */
-    public static CONTEXT = "api";
+    public static readonly CONTEXT = "api";
 
     /** Version of the Cineast API. */
-    public static VERSION = "v1";
-
-    /** The name of the IndexedDB used to store Vitrivr NG related objects. */
-    public static DB_NAME = "vitrivrng";
+    public static readonly VERSION = "v1";
 
     /** The key under which the main configuration will be saved. */
     public static DB_KEY = "main";
 
     /** Default display duration for Snackbar messages. */
     public static SNACKBAR_DURATION = 2500;
-
-    /** The constant id of the Config object (for DB storage). */
-    private readonly id = Config.DB_KEY;
-
-
 
     private _config = {
         api : {
@@ -64,6 +57,7 @@ export class Config {
             "edge"
         ],
         query: {
+            history: -1,
             options: {
                 image: true,
                 audio: true,

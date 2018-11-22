@@ -4,10 +4,11 @@ import {BehaviorSubject, combineLatest} from "rxjs";
 import {Config} from "../../shared/model/config/config.model";
 import {Observable} from "rxjs";
 import {UUIDGenerator} from "../../shared/util/uuid-generator.util";
-
-import Dexie from "dexie";
 import {fromPromise} from "rxjs/internal-compatibility";
 import {first, flatMap, map, tap} from "rxjs/operators";
+import {DatabaseService} from "./database.service";
+
+import Dexie from "dexie";
 
 /**
  * This service provides access to the application's configuration. It extends a BehaviorSubject i.e. whenever someone subscribes
@@ -16,9 +17,6 @@ import {first, flatMap, map, tap} from "rxjs/operators";
  */
 @Injectable()
 export class ConfigService extends BehaviorSubject<Config> {
-    /** Dexie instance used to access the local configuration version. */
-    private _db : Dexie = new Dexie(Config.DB_NAME);
-
     /** The table used to store Vitrivr NG configuration.*/
     private _configTable: Dexie.Table<any, string>;
 
@@ -26,11 +24,11 @@ export class ConfigService extends BehaviorSubject<Config> {
      * Default constructor.
      *
      * @param _http
+     * @param _db
      */
-    constructor(private _http: HttpClient) {
+    constructor(private _http: HttpClient, _db: DatabaseService) {
         super(new Config());
-        this._db.version(1).stores({config: 'id'});
-        this._configTable = this._db.table('config');
+        this._configTable = _db.db.table('config');
         this.reload();
     }
 
