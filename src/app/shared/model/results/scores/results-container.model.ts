@@ -357,7 +357,7 @@ export class ResultsContainer {
                 let metadata : MediaSegmentMetadata[] = [];
                 seg.metadata.forEach((k,v) => {
                     metadata.push({segmentId: seg.segmentId, domain: k.split(".")[0], key: k.split(".")[1], value: v})
-                })
+                });
                 return metadata;
             }).reduce((x,y) => x.concat(y)),
             similarity : this.features.map(f => {
@@ -377,9 +377,11 @@ export class ResultsContainer {
         container.processObjectMessage(<ObjectQueryResult>{queryId : container.queryId, content: <MediaObject[]>data["objects"]});
         container.processSegmentMessage(<SegmentQueryResult>{queryId : container.queryId, content: <MediaSegment[]>data["segments"]});
         container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{queryId : container.queryId, content: <MediaObjectMetadata[]>data["objectMetadata"]});
-        container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{queryId : container.queryId, content: <MediaSegmentMetadata[]>data["similarity"]});
+        container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{queryId : container.queryId, content: <MediaSegmentMetadata[]>data["segmentMetadata"]});
         for (let similiarity of data["similarity"]) {
-            container.processSimilarityMessage(<SimilarityQueryResult>{queryId : container.queryId, content: similiarity});
+            if (similiarity.length > 0) {
+                container.processSimilarityMessage(<SimilarityQueryResult>{queryId : container.queryId, category: similiarity[0].category, content: similiarity});
+            }
         }
         return container;
     }
