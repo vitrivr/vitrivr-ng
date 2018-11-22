@@ -1,6 +1,8 @@
 import {ResultsContainer} from "../results/scores/results-container.model";
 
 export class HistoryContainer {
+    /** */
+    public id : number;
 
     /** The serialized contained in this HistoryContainer. */
     public readonly results;
