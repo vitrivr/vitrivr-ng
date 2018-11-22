@@ -22,7 +22,7 @@ export class WeightedFeatureCategory {
     }
 
     /**
-     *  Calculates and returns the total weight of a list of FeatureCategory objects.
+     * Calculates and returns the total weight of a list of FeatureCategory objects.
      *
      * @param features The list of results.
      */

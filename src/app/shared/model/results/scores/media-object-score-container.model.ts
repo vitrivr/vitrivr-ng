@@ -145,6 +145,19 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     }
 
     /**
+     * Serializes this MediaObjectScoreContainer into a plan JavaScript object.
+     */
+    public serialize(): MediaObject {
+        return <MediaObject> {
+            objectId : this.objectId,
+            mediatype : this.mediatype,
+            name : this.name,
+            path : this.path,
+            contentURL : this.contentURL
+        }
+    }
+
+    /**
      * Returns a unique SegmentScoreContainer instance for the provided segmentId. That is, if a SegmentScoreContainer
      * has been created and registered with the MediaObjectScoreContainer for the provided segmentId, that instance is returned.
      * Otherwise, a new instance is created and registered.

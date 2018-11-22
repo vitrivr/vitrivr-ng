@@ -13,6 +13,10 @@ import {FeatureCategories} from "../feature-categories.model";
 import {MediaObject} from "../../media/media-object.model";
 import {SegmentMetadataQueryResult} from "../../messages/interfaces/responses/query-result-segment-metadata.interface";
 import {ObjectMetadataQueryResult} from "../../messages/interfaces/responses/query-result-object-metadata.interface";
+import {MediaSegment} from "../../media/media-segment.model";
+import {Similarity} from "../../media/similarity.model";
+import {MediaObjectMetadata} from "../../media/media-object-metadata.model";
+import {MediaSegmentMetadata} from "../../media/media-segment-metadata.model";
 
 export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -55,6 +59,20 @@ export class ResultsContainer {
      * @param {FusionFunction} weightFunction Function that should be used to calculate the scores.
      */
     constructor(public readonly queryId: string, private weightFunction : FusionFunction = new DefaultFusionFunction()) {}
+
+    /**
+     * Returns the number of objects contained in this ResultsContainer
+     */
+    get objectCount() : number {
+        return this._results_objects.length;
+    }
+
+    /**
+     * Returns the number of segments contained in this ResultsContainer
+     */
+    get segmentCount() : number {
+        return this._results_segments.length;
+    }
 
     /**
      *
@@ -317,5 +335,52 @@ export class ResultsContainer {
         let feature = new WeightedFeatureCategory(category, category, 100);
         this._features.push(feature);
         return feature;
+    }
+
+
+    /**
+     * Serializes this ResultsContainer into a plain JavaScript object.
+     */
+    public serialize() {
+        return {
+            queryId : this.queryId,
+            objects : this._results_objects.map(obj => obj.serialize()),
+            segments : this._results_segments.map(seg => seg.serialize()),
+            objectMetadata : this._results_objects.map(obj => {
+                let metadata : MediaObjectMetadata[] = [];
+                obj.metadata.forEach((k,v) => {
+                    metadata.push({objectId: obj.objectId, domain: k.split(".")[0], key: k.split(".")[1], value: v})
+                });
+                return metadata;
+            }).reduce((x,y) => x.concat(y)),
+            segmentMetadata : this._results_segments.map(seg => {
+                let metadata : MediaSegmentMetadata[] = [];
+                seg.metadata.forEach((k,v) => {
+                    metadata.push({segmentId: seg.segmentId, domain: k.split(".")[0], key: k.split(".")[1], value: v})
+                })
+                return metadata;
+            }).reduce((x,y) => x.concat(y)),
+            similarity : this.features.map(f => {
+                return this._results_segments.filter(seg => seg.scores.has(f)).map(seg => {
+                    return <Similarity>{category: f.name, key: seg.segmentId, value: seg.scores.get(f)};
+                });
+            })
+        };
+    }
+
+    /**
+     * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
+     * ResultsContainer#serialize().
+     */
+    public static deserialize(data : any) : ResultsContainer {
+        let container = new ResultsContainer(data["queryId"]);
+        container.processObjectMessage(<ObjectQueryResult>{queryId : container.queryId, content: <MediaObject[]>data["objects"]});
+        container.processSegmentMessage(<SegmentQueryResult>{queryId : container.queryId, content: <MediaSegment[]>data["segments"]});
+        container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{queryId : container.queryId, content: <MediaObjectMetadata[]>data["objectMetadata"]});
+        container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{queryId : container.queryId, content: <MediaSegmentMetadata[]>data["similarity"]});
+        for (let similiarity of data["similarity"]) {
+            container.processSimilarityMessage(<SimilarityQueryResult>{queryId : container.queryId, content: similiarity});
+        }
+        return container;
     }
 }

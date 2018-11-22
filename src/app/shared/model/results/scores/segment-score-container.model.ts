@@ -41,7 +41,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
      * Default constructor.
      *
      * @param {MediaSegment} _mediaSegment Reference to the MediaSegment this container has been created for.
-     * @param {MediaObjectScoreContainer} _object Reference to the MediaObjectScoreContainer that contains this SegmentScoreContainer.
+     * @param {MediaObjectScoreContainer} _objectScoreContainer Reference to the MediaObjectScoreContainer that contains this SegmentScoreContainer.
      */
     public constructor(private readonly _mediaSegment: MediaSegment, private readonly _objectScoreContainer: MediaObjectScoreContainer) {
         super();
@@ -121,5 +121,20 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
      */
     get objectScoreContainer(): MediaObjectScoreContainer {
         return this._objectScoreContainer;
+    }
+
+    /**
+     * Serializes this SegmentScoreContainer into a plain JavaScript object.
+     */
+    public serialize() {
+        return {
+            objectId : this.objectId,
+            segmentId : this.segmentId,
+            sequenceNumber : this.sequenceNumber,
+            start : this.start,
+            end : this.end,
+            startabs : this.startabs,
+            endabs : this.endabs
+        }
     }
 }
