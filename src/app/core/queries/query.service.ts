@@ -25,6 +25,7 @@ import {SegmentMetadataQueryResult} from "../../shared/model/messages/interfaces
 import {ObjectMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-object-metadata.interface";
 import {QueryEnd} from "../../shared/model/messages/interfaces/responses/query-end.interface";
 import {HistoryService} from "./history.service";
+import {HistoryContainer} from "../../shared/model/internal/history-container.model";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -136,6 +137,20 @@ export class QueryService {
         if (!this._results) return false;
         if (!this._socket) return false;
         this._socket.send(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
+    }
+
+    /**
+     * Loads a HistoryContainer and replaces the current snapshot.
+     *
+     * @param snapshot HistoryContainer that should be loaded.
+     */
+    public load(snapshot: HistoryContainer) {
+        let deserialized = ResultsContainer.deserialize(snapshot.results);
+        if (deserialized) {
+            this._results = deserialized;
+            this._subject.next("STARTED");
+            this._subject.next("ENDED");
+        }
     }
 
     /**

@@ -3,13 +3,37 @@ import 'hammerjs';
 import {NgModule} from "@angular/core";
 import {HttpClientModule} from "@angular/common/http";
 import {
-    MatAutocompleteModule, MatSliderModule, MatChipsModule, MatDialogModule, MatCardModule, MatSidenavModule, MatSelectModule, MatTabsModule,
-    MatRadioModule, MatIconModule, MatMenuModule, MatInputModule, MatToolbarModule, MatTooltipModule, MatSnackBarModule, MatCheckboxModule, MatButtonModule,
-    MatCommonModule, MatGridListModule, MatProgressBarModule, MatRippleModule, MatProgressSpinnerModule, MatSlideToggleModule, MatIconRegistry, MatListModule
+    MatAutocompleteModule,
+    MatSliderModule,
+    MatChipsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatSidenavModule,
+    MatSelectModule,
+    MatTabsModule,
+    MatRadioModule,
+    MatIconModule,
+    MatMenuModule,
+    MatInputModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatCommonModule,
+    MatGridListModule,
+    MatProgressBarModule,
+    MatRippleModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
+    MatIconRegistry,
+    MatListModule,
+    MatBottomSheetModule
 } from "@angular/material";
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
+    MatBottomSheetModule,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,

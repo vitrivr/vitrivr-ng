@@ -5,6 +5,8 @@ import {Config} from "./shared/model/config/config.model";
 import {Observable} from "rxjs";
 import {EventBusService} from "./core/basics/event-bus.service";
 import {filter, map} from "rxjs/operators";
+import {MatBottomSheet} from "@angular/material";
+import {HistoryComponent} from "./results/history.component";
 @Component({
     moduleId: module.id,
     selector: 'vitrivr',
@@ -25,7 +27,10 @@ export class AppComponent {
      * @param _configService Reference to the singleton ConfigService.
      * @param _eventBusService Reference to the singleton EventBusService.
      */
-    constructor(_queryService : QueryService, _configService: ConfigService, private _eventBusService: EventBusService) {
+    constructor(_queryService : QueryService,
+                _configService: ConfigService,
+                private _eventBusService: EventBusService,
+                private _bottomSheet: MatBottomSheet) {
         this._loading = _queryService.observable.pipe(
             filter(msg => ["STARTED","ENDED","ERROR"].indexOf(msg) > -1),
             map((msg: QueryChange) => {
@@ -51,5 +56,14 @@ export class AppComponent {
      */
     get loading(): Observable<boolean> {
         return this._loading;
+    }
+
+    /**
+     *
+     */
+    public showHistory() {
+        const bottomSheetRef = this._bottomSheet.open(HistoryComponent, {
+            ariaLabel: 'Share on social media'
+        });
     }
 }

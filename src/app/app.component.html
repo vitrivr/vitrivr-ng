@@ -23,7 +23,9 @@
 
     <span *ngIf="(config|async).get('evaluation.active')" class="spacer-medium"></span>
 
-    <button mat-icon-button  (click)="featuressidenav.toggle()" matTooltip="Toggle query refinement sidebar"><mat-icon>storage</mat-icon></button>
+    <button mat-icon-button (click)="showHistory()" matTooltip="Show query history."><mat-icon>history</mat-icon></button>
+
+    <button mat-icon-button (click)="featuressidenav.toggle()" matTooltip="Toggle query refinement sidebar"><mat-icon>storage</mat-icon></button>
 
     <span class="spacer-flex"></span>
 
