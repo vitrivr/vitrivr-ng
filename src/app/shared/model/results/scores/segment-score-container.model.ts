@@ -126,10 +126,10 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
     /**
      * Serializes this SegmentScoreContainer into a plain JavaScript object.
      */
-    public serialize() {
-        return {
-            objectId : this.objectId,
+    public serialize(): MediaSegment {
+        return <MediaSegment>{
             segmentId : this.segmentId,
+            objectId : this.objectId,
             sequenceNumber : this.sequenceNumber,
             start : this.start,
             end : this.end,
