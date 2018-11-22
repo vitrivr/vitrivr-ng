@@ -24,6 +24,7 @@ import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
 import {SegmentMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-segment-metadata.interface";
 import {ObjectMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-object-metadata.interface";
 import {QueryEnd} from "../../shared/model/messages/interfaces/responses/query-end.interface";
+import {HistoryService} from "./history.service";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -62,10 +63,13 @@ export class QueryService {
     /**
      * Default constructor.
      *
+     * @param _history
      * @param _factory Reference to the WebSocketFactoryService. Gets injected by DI.
      * @param _config
      */
-    constructor(@Inject(WebSocketFactoryService) _factory : WebSocketFactoryService, @Inject(ConfigService) _config: ConfigService) {
+    constructor(@Inject(HistoryService) private _history,
+                @Inject(WebSocketFactoryService) _factory : WebSocketFactoryService,
+                @Inject(ConfigService) _config: ConfigService) {
         this._config = _config.asObservable();
         _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
             if (this._webSocketSubscription != null) {
@@ -226,6 +230,7 @@ export class QueryService {
     private finalizeQuery() {
         this._running -= 1;
         this._subject.next("ENDED" as QueryChange);
+        this._history.append(this._results);
     }
 
     /**
