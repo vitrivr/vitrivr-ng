@@ -33,7 +33,7 @@
             <mat-form-field>
                 <input matInput placeholder="Select term" aria-label="Select term" [matAutocomplete]="auto" [formControl]="formCtrl" >
                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
-                    <mat-option *ngFor="let category of (filteredCategories | async)" [value]="category.name">
+                    <mat-option *ngFor="let category of (categories | async)" [value]="category.name">
                         <span [style.color]="category.color"><strong>{{category.name}}</strong></span>
                     </mat-option>
                 </mat-autocomplete>
