@@ -42,7 +42,7 @@
                 <li *ngFor="let category of (categories | async)"
                     [class.item]="true"
                     [class.selected]="category==selected"
-                    [style.background-color]="inUse(category) ? category.color : '#000000'"
+                    [style.background-color]="(inUse(category) | async) ? category.color : '#000000'"
                     [style.color]="(inUse(category) | async) ? '#000000' : '#FFFFFF'"
                     matTooltip="{{category.name}}" (click)="onItemSelected(category)">
                     {{category.name}}
