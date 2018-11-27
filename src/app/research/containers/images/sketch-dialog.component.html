@@ -6,22 +6,22 @@
 
         <span class="spacer-flex"></span>
 
-        <button mat-icon-button (click)="onFillCanvasClicked()" matTooltip="Fill canvas">
+        <button mat-icon-button (click)="onFillCanvasClicked()" matTooltip="Fill canvas with color.">
             <mat-icon>format_color_fill</mat-icon>
         </button>
 
-        <button mat-icon-button (click)="onClearCanvasClicked()" matTooltip="Clear canvas">
-            <mat-icon>clear</mat-icon>
+        <button mat-icon-button (click)="onClearCanvasClicked()" matTooltip="Clear canvas.">
+            <mat-icon>delete</mat-icon>
         </button>
 
         <span class="spacer-flex"></span>
 
-        <button mat-icon-button (click)="onLoadImage()"  matTooltip="Load image">
+        <button mat-icon-button (click)="onLoadImage()"  matTooltip="Load image from computer.">
             <mat-icon>file_upload</mat-icon>
         </button>
 
         <button mat-icon-button (click)="close()">
-            <mat-icon>save</mat-icon>
+            <mat-icon matTooltip="Close window and save.">close</mat-icon>
         </button>
     </mat-toolbar>
 

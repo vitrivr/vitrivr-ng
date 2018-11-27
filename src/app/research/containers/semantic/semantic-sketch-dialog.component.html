@@ -6,22 +6,21 @@
 
         <span class="spacer-flex"></span>
 
-        <button mat-icon-button (click)="onFillCanvasClicked()" matTooltip="Fill canvas">
+        <button mat-icon-button (click)="onFillCanvasClicked()" matTooltip="Fill canvas with concept.">
             <mat-icon>format_color_fill</mat-icon>
         </button>
 
-        <button mat-icon-button (click)="onClearCanvasClicked()" matTooltip="Clear canvas">
-            <mat-icon>clear</mat-icon>
+        <button mat-icon-button (click)="onClearCanvasClicked()" matTooltip="Clear canvas.">
+            <mat-icon>delete</mat-icon>
         </button>
 
 
         <span class="spacer-flex"></span>
-
 
         <span class="spacer-flex"></span>
 
         <button mat-icon-button (click)="close()">
-            <mat-icon>save</mat-icon>
+            <mat-icon matTooltip="Close window and save.">close</mat-icon>
         </button>
     </mat-toolbar>
 
@@ -31,7 +30,7 @@
 
         <div [style.width]="'300px'" [style.margin-left]="'10px'">
             <mat-form-field>
-                <input matInput placeholder="Select term" aria-label="Select term" [matAutocomplete]="auto" [formControl]="formCtrl" >
+                <input matInput placeholder="Select a concept" aria-label="Select a concept" [matAutocomplete]="auto" [formControl]="formCtrl" >
                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
                     <mat-option *ngFor="let category of (categories | async)" [value]="category.name">
                         <span [style.color]="category.color"><strong>{{category.name}}</strong></span>
