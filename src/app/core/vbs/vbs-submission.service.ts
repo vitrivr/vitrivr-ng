@@ -122,7 +122,8 @@ export class VbsSubmissionService {
             ),
             withLatestFrom(events,([segment,frame]) => [segment,frame]),
             flatMap(([segment,frame]:[SegmentScoreContainer,number]) => {
-                let params = new HttpParams().set('video', segment.objectId).set('team', String(team)).set('frame', String(frame));
+                let videoId = parseInt(segment.objectId.replace("v_","")).toString();
+                let params = new HttpParams().set('video',videoId).set('team', String(team)).set('frame', String(frame));
                 let iseq = VbsAction.TOOL_ID_PREFIX + tool + VbsAction.SEPARATOR + this._seqBuffer.join(VbsAction.SEPARATOR);
                 let observable = null;
                 if (iseq.length > 0 && iseq.length < 255) {
@@ -135,7 +136,7 @@ export class VbsSubmissionService {
                 } else {
                     observable = this._http.get(String(endpoint), {responseType: 'text', params: params});
                 }
-                console.log(`Submitting video to VBS; id: ${segment.objectId}, frame: ${frame}, sequence: ${iseq}`.toString());
+                console.log(`Submitting video to VBS; id: ${videoId}, frame: ${frame}, sequence: ${iseq}`.toString());
                 return observable.pipe(
                     catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
                 );
