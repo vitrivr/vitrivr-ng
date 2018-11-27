@@ -1,28 +1,32 @@
 <vg-player (onPlayerReady)="onPlayerReady($event)" [style.width]="width + 'px'">
-    <vg-controls>
-        <vg-play-pause></vg-play-pause>
-        <vg-playback-button [playbackValues]="[0.5, 1.0, 2.0, 4.0, 8.0]"></vg-playback-button>
+    <vg-controls [style.display]="'block'" [style.height]="'100px'">
+        <div [style.display]="'flex'">
+            <vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>
 
-        <mat-icon (click)="seekToPrevious()" class="player-button" matTooltip="Seek to the begin of the segment preceding the current position in time.">fast_rewind</mat-icon>
-        <mat-icon (click)="seekToFocusPosition()" class="player-button" matTooltip="Seek to position of focused segment.">replay</mat-icon>
-        <mat-icon (click)="seekToNext()" class="player-button" matTooltip="Seek to the begin of the segment succeeding this position in time.">fast_forward</mat-icon>
+            <vg-scrub-bar>
+                <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                <vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
+                <vg-scrub-bar-cue-points *ngIf="(track|async)" [vgCuePoints]="(track|async).cues"></vg-scrub-bar-cue-points>
+            </vg-scrub-bar>
 
-        <vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>
+            <vg-time-display vgProperty="total" vgFormat="mm:ss"></vg-time-display>
+        </div>
+        <div [style.display]="'flex'" [style.align-content]="'space-between'">
+            <vg-play-pause></vg-play-pause>
+            <vg-playback-button [playbackValues]="[0.5, 1.0, 2.0, 4.0, 8.0]"></vg-playback-button>
 
-        <vg-scrub-bar>
-            <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
-            <vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
-            <vg-scrub-bar-cue-points *ngIf="(track|async)" [vgCuePoints]="(track|async).cues"></vg-scrub-bar-cue-points>
-        </vg-scrub-bar>
+            <div class="spacer-flex"></div>
 
-        <vg-time-display vgProperty="total" vgFormat="mm:ss"></vg-time-display>
+            <mat-icon (click)="seekToPrevious()" class="player-button" matTooltip="Seek to the begin of the segment preceding the current position in time.">fast_rewind</mat-icon>
+            <mat-icon (click)="seekToFocusPosition()" class="player-button" matTooltip="Seek to position of focused segment.">replay</mat-icon>
+            <mat-icon (click)="seekToNext()" class="player-button" matTooltip="Seek to the begin of the segment succeeding this position in time.">fast_forward</mat-icon>
 
-        <vg-mute></vg-mute>
+            <div class="spacer-flex"></div>
 
-        <vg-fullscreen></vg-fullscreen>
+            <vg-mute></vg-mute>
 
-        <mat-icon *ngIf="(showVbsSubmitButton|async)" class="player-button" matTooltip="Submit current position to VBS API." (click)="onSubmitPressed()">send</mat-icon>
-
+            <vg-fullscreen></vg-fullscreen>
+        </div>
     </vg-controls>
 
     <video id="videoplayer" *ngIf="mediaobject.mediatype == 'VIDEO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
