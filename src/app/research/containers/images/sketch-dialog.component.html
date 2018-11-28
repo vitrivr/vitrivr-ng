@@ -25,12 +25,19 @@
         </button>
     </mat-toolbar>
 
-    <div style="display: flex; margin-top: 5px;">
-        <sketch-canvas #sketch [width]="300" [height]="300"></sketch-canvas>
-        <input #imageloader type="file" (change)="onFileAvailable($event)" hidden>
-        
-        <span class="spacer-tiny"></span>
 
-        <span [(colorPicker)]="color" (colorPickerChange)="onColorChange()" [cpToggle]="true" [cpDialogDisplay]="'inline'" [cpAlphaChannel]="'disabled'"></span>
+    <sketch-canvas #sketch [width]="450" [height]="450"></sketch-canvas>
+    <input #imageloader type="file" (change)="onFileAvailable($event)" hidden>
+
+    <div class="picker">
+        <span [style.display] = "'none'"
+              [(colorPicker)]="color"
+              (colorPickerChange)="onColorChange()"
+              [cpDialogDisplay]="'inline'"
+              [cpUseRootViewContainer]="true"
+              [cpToggle]="true"
+              [cpAlphaChannel]="'disabled'"
+              [cpPresetColors]="preset">
+        </span>
     </div>
 </mat-dialog-content>

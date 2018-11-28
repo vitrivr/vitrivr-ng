@@ -155,9 +155,7 @@ export class ImageQueryTermComponent {
      */
     private openSketchDialog(data? : any) {
         /* Initialize the correct dialog-component. */
-        let dialogRef = this._dialog.open(SketchDialogComponent, {data : data, height:'450px'});
-
-        /* Register the onClose callback. */
+        let dialogRef = this._dialog.open(SketchDialogComponent, {data : data, width: '750px', height:'750px'});
         dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if (result) this.applyImageData(result);
         });
