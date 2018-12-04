@@ -42,7 +42,10 @@ export class Config {
             toolid: null,
 
             /* URL to the VBS endpoint. */
-            endpoint: null
+            endpoint: null,
+
+            /* URL to the Collabordinator endpoint. */
+            collabordinator: null
         },
         tags : [
             new Tag("Red", 0),

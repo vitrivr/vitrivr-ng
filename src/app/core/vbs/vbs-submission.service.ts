@@ -11,6 +11,7 @@ import {EventBusService} from "../basics/event-bus.service";
 import {Subject} from "rxjs";
 import {VbsAction} from "./vbs-action.model";
 import {buffer, catchError, defaultIfEmpty, filter, first, flatMap, map, tap, withLatestFrom} from "rxjs/operators";
+import {CollabordinatorService} from "./collabordinator.service";
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -42,7 +43,12 @@ export class VbsSubmissionService {
      * @param {HttpClient} _http
      * @param {MatSnackBar} _snackBar
      */
-    constructor(_config: ConfigService, private _eventBusService: EventBusService, private _metadata: MetadataLookupService, private _http: HttpClient, private _snackBar: MatSnackBar) {
+    constructor(_config: ConfigService,
+                private _eventbus: EventBusService,
+                private _collabordinator: CollabordinatorService,
+                private _metadata: MetadataLookupService,
+                private _http: HttpClient,
+                private _snackBar: MatSnackBar) {
         this._config = _config.asObservable().pipe(
             map(c => <[string,string, string]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<string>('vbs.toolid')])
         );
@@ -65,7 +71,7 @@ export class VbsSubmissionService {
      * @param {SegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
      */
     public submitSegment(segment: SegmentScoreContainer) {
-       return this.submit(segment, segment.startabs);
+       this.submit(segment, segment.startabs);
     }
 
     /**
@@ -76,6 +82,7 @@ export class VbsSubmissionService {
      */
     public submit(segment: SegmentScoreContainer, time: number) {
         this._submitSubject.next([segment, time]);
+        this._collabordinator.add(segment.segmentId);
     }
 
     /**
@@ -95,7 +102,7 @@ export class VbsSubmissionService {
         }
 
         let time = Date.now(); /* Time of the reset. */
-        let events = VbsAction.mapEventStream(this._eventBusService.observable()).pipe(
+        let events = VbsAction.mapEventStream(this._eventbus.observable()).pipe(
             buffer(this._submitSubject),
             map(ev => ev.map(e => e.map(a => `${a.action}(${Math.round((a.timestamp-time)/1000)}s${a.context ? "," + a.context : ""})`.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR)),
             tap(seq => {
