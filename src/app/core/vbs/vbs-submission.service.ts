@@ -38,7 +38,8 @@ export class VbsSubmissionService {
      * Constructor for VbsSubmissionService.
      *
      * @param {ConfigService} _config
-     * @param {EventBusService} _eventBusService Reference to the singleton EventBusService instance.
+     * @param {EventBusService} _eventbus Reference to the singleton EventBusService instance.
+     * @param {CollabordinatorService} _collabordinator Reference to the singleton CollabordinatorService instance.
      * @param {MetadataLookupService} _metadata
      * @param {HttpClient} _http
      * @param {MatSnackBar} _snackBar
@@ -99,6 +100,10 @@ export class VbsSubmissionService {
         if (this._vbsSubscription != null) {
             this._vbsSubscription.unsubscribe();
             this._vbsSubscription = null;
+        }
+
+        if (this._collabordinator != null) {
+            this._collabordinator.clear();
         }
 
         let time = Date.now(); /* Time of the reset. */

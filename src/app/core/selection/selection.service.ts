@@ -2,6 +2,7 @@ import {Injectable} from "@angular/core";
 import {ConfigService} from "../basics/config.service";
 import {Tag} from "./tag.model";
 import {BehaviorSubject} from "rxjs";
+import {CollabordinatorService} from "../vbs/collabordinator.service";
 
 /**
  * This service orchestrates similarity requests using the Cineast API (WebSocket). The service is responsible for
@@ -19,19 +20,35 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
      * Constructor; injects the ConfigService.
      *
      * @param {ConfigService} _config
+     * @param {CollabordinatorService} _collabordinator
      */
-    constructor(_config: ConfigService) {
+    constructor(_config: ConfigService, _collabordinator: CollabordinatorService) {
         super(new Map());
         _config.subscribe(c => {
             this._available.clear();
-            c.get<Tag[]>('tags').forEach(t => this.registerTag(t))
+            c.get<Tag[]>('tags').forEach(t => this._available.add(t));
+        });
+
+        /* Register listener for Collabordinator. */
+        _collabordinator.subscribe(next => {
+            this._selections.forEach((v,k) => {
+                v.delete(CollabordinatorService.COLLABORDINATOR_TAG)
+            });
+            next.forEach(s => {
+                if (this._selections.has(s)){
+                    this._selections.get(s).add(CollabordinatorService.COLLABORDINATOR_TAG);
+                } else {
+                    this._selections.set(s, new Set([CollabordinatorService.COLLABORDINATOR_TAG]))
+                }
+            });
+            this.next(this._selections);
         });
     }
 
     /**
      * Adds a Tag to the provided identifier.
      *
-     * @param {identifier} string The identifier for which to add the tag.
+     * @param {string} identifier The identifier for which to add the tag.
      * @param {Tag} tag The tag to add to the identifier. Must be contained in the AVAILABLE_TAGS set.
      */
     public add(identifier: string, tag: Tag) {
@@ -137,23 +154,11 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
     }
 
     /**
+     * Returns all the available tags.
      *
      * @return {Tag[]}
      */
     get availableTags(): Tag[] {
-        let tags: Tag[] = [];
-        this._available.forEach(v1 => {
-            tags.push(v1);
-        });
-        return tags;
-    }
-
-    /**
-     * Registers the provided tag, thereby making it an available tag.
-     *
-     * @param {Tag} tag
-     */
-    public registerTag(tag: Tag) {
-        this._available.add(tag);
+        return Array.from(this._available.values());
     }
 }

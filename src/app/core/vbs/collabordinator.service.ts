@@ -4,6 +4,7 @@ import {filter} from "rxjs/operators";
 import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {CollabordinatorMessage} from "../../shared/model/messages/collaboration/collabordinator-message.model";
 import {BehaviorSubject} from "rxjs";
+import {Tag} from "../selection/tag.model";
 
 
 /**
@@ -15,6 +16,9 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
 
     /** The Vitrivr NG configuration as observable */
     private _webSocket: WebSocketSubject<CollabordinatorMessage>;
+
+    /** */
+    public static readonly COLLABORDINATOR_TAG = new Tag("Submitted (Colab)", 0);
 
     /**
      * Constructor for the CollabordinatorService.
