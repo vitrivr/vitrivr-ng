@@ -23,6 +23,7 @@
 
             <div class="spacer-flex"></div>
 
+            <mat-icon *ngIf="(showVbsSubmitButton|async)" class="player-button" matTooltip="Submit current position to VBS API." (click)="onSubmitPressed()">send</mat-icon>
             <vg-mute></vg-mute>
 
             <vg-fullscreen></vg-fullscreen>
