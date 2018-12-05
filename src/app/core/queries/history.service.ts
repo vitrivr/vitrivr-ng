@@ -56,7 +56,7 @@ export class HistoryService {
      * Returns a copy of the HistoryContainer[] array.
      */
     get list(): Observable<HistoryContainer[]> {
-        return fromPromise(this._historyTable.toArray());
+        return fromPromise(this._historyTable.orderBy('id').reverse().toArray());
     }
 
     /**
