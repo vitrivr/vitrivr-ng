@@ -3,12 +3,26 @@ import {Component} from '@angular/core';
 import {map} from "rxjs/operators";
 import {Observable, Subscription} from "rxjs";
 import {PingService} from "../core/basics/ping.service";
+import {CollabordinatorService} from "../core/vbs/collabordinator.service";
+import {WebSocketFactoryService} from "../core/api/web-socket-factory.service";
 
 @Component({
     selector: 'api-status',
     template:`
-        <span >
-            <mat-icon style="vertical-align:text-bottom;">{{icon | async}}</mat-icon>&nbsp;{{(latency | async) < 100000 ? '(' + (latency | async) + 'ms)' : "(&#x221e;)"}}
+        <span>
+            <button mat-button [matMenuTriggerFor]="appMenu">
+                 <mat-icon>{{icon | async}}</mat-icon>&nbsp;{{(latency | async) < 100000 ? '(' + (latency | async) + 'ms)' : "(&#x221e;)"}}
+            </button>
+            <mat-menu #appMenu="matMenu">
+                <button (click)="reconnectCineast()" mat-menu-item>Reconnect</button>
+                <mat-divider *ngIf="collabordinatorAvailable"></mat-divider>
+                <button *ngIf="collabordinatorAvailable" mat-menu-item [matMenuTriggerFor]="collabordinator">Collabordinator</button>
+            </mat-menu>
+            
+            <mat-menu #collabordinator="matMenu">
+                <button mat-menu-item (click)="clearCollabordinator()">Clear</button>
+                <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect</button>
+            </mat-menu>
         </span>
     `
 })
@@ -18,8 +32,9 @@ export class PingComponent {
      * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
      *
      * @param _ping
+     * @param _collabordinator CollabordinatorService reference.
      */
-    constructor(private _ping : PingService) {}
+    constructor(private _ping : PingService, private _collabordinator: CollabordinatorService, private _factory: WebSocketFactoryService) {}
 
     /**
      * Returns the icon name based on the current API status.
@@ -41,6 +56,34 @@ export class PingComponent {
                 }
             })
         )
+    }
+
+    /**
+     * Tries to re-connect to the Cineast service.
+     */
+    public reconnectCineast() {
+        this._factory.connect();
+    }
+
+    /**
+     * Tries to re-connect to the Collabordinator service.
+     */
+    public reconnectCollabordinator() {
+        this._collabordinator.connect();
+    }
+
+    /**
+     * Sends a CLEAR signal to the Collabordinator service.
+     */
+    public clearCollabordinator() {
+        this._collabordinator.clear();
+    }
+
+    /**
+     * Returns true, if the Collabordinator service is available and false otherwise.
+     */
+    get collabordinatorAvailable() : boolean {
+        return this._collabordinator.available();
     }
 
     /**
