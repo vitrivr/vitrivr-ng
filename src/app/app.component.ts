@@ -27,10 +27,7 @@ export class AppComponent {
      * @param _configService Reference to the singleton ConfigService.
      * @param _eventBusService Reference to the singleton EventBusService.
      */
-    constructor(_queryService : QueryService,
-                _configService: ConfigService,
-                private _eventBusService: EventBusService,
-                private _bottomSheet: MatBottomSheet) {
+    constructor(_queryService : QueryService, _configService: ConfigService, private _eventBusService: EventBusService, private _bottomSheet: MatBottomSheet) {
         this._loading = _queryService.observable.pipe(
             filter(msg => ["STARTED","ENDED","ERROR"].indexOf(msg) > -1),
             map((msg: QueryChange) => {
@@ -59,11 +56,11 @@ export class AppComponent {
     }
 
     /**
-     *
+     * Displays the query history panel.
      */
     public showHistory() {
-        const bottomSheetRef = this._bottomSheet.open(HistoryComponent, {
-            ariaLabel: 'Share on social media'
+        this._bottomSheet.open(HistoryComponent, {
+            ariaLabel: 'Show query history.'
         });
     }
 }
