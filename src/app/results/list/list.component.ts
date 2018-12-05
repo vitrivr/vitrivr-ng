@@ -29,6 +29,9 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
     /** Reference to the SegmentScoreContainer that is currently in focus. */
     private _focus: SegmentScoreContainer;
 
+    /** The number of items that should be displayed. */
+    protected _count: number = 100;
+
     /**
      * Default constructor.
      *
@@ -162,6 +165,28 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      */
     public trackByFunction(index, item: MediaObjectScoreContainer) {
         return item.objectId + "_" + item.numberOfSegments;
+    }
+
+    /**
+     * Increments the start value by the count value. Should be called by some kind of pagination control.
+     */
+    public incrementCount() {
+        this._count += 100;
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.BROWSE)));
+        this._cdr.markForCheck();
+    }
+
+    /**
+     * Decrements the start value by the count value. Should be called by some kind of pagination control.
+     */
+    public decrementCount() {
+        if (this._count - 100 >= 100) {
+            this._count -= 100;
+        } else {
+            this._count = 100;
+        }
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.BROWSE)));
+        this._cdr.markForCheck();
     }
 
     /**
