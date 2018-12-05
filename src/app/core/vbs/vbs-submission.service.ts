@@ -102,10 +102,6 @@ export class VbsSubmissionService {
             this._vbsSubscription = null;
         }
 
-        if (this._collabordinator != null) {
-            this._collabordinator.clear();
-        }
-
         let time = Date.now(); /* Time of the reset. */
         let events = VbsAction.mapEventStream(this._eventbus.observable()).pipe(
             buffer(this._submitSubject),
