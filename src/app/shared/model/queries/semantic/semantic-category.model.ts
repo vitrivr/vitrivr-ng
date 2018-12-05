@@ -144,7 +144,7 @@ export class SemanticCategory {
         new SemanticCategory('Waterfall'),
         new SemanticCategory('Windowpane')
     ];
-    
+
     /** The color of this SemanticCategory. */
     public readonly color;
 

@@ -5,7 +5,7 @@ import {SemanticCategory} from "../../../shared/model/queries/semantic/semantic-
 import {SemanticMap} from "../../../shared/model/queries/semantic/semantic-map.model";
 import {FormControl} from "@angular/forms";
 import {BehaviorSubject, combineLatest, Observable, Subject} from "rxjs";
-import {flatMap, startWith} from "rxjs/operators";
+import {startWith} from "rxjs/operators";
 import {map} from 'rxjs/internal/operators/map';
 
 @Component({
