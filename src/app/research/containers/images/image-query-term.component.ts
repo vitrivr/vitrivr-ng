@@ -1,4 +1,4 @@
-import {Component, ViewChild, Input} from "@angular/core";
+import {Component, ViewChild, Input, OnInit} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
 import {MatDialog} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
@@ -12,7 +12,7 @@ import {first} from "rxjs/operators";
     templateUrl: 'image-query-term.component.html',
     styleUrls: ['image-query-term.component.css']
 })
-export class ImageQueryTermComponent {
+export class ImageQueryTermComponent implements OnInit {
 
     /** Component used to display a preview of the selected AND/OR sketched image. */
     @ViewChild('previewimg')
@@ -23,7 +23,7 @@ export class ImageQueryTermComponent {
     private imageTerm: ImageQueryTerm;
 
     /** Slider to adjust the query-term settings; i.e. to select the refinement used for image-queries. */
-    public sliderSetting : number = 2;
+    public sliderSetting : number = 1;
 
     /**
      * Default constructor.
@@ -33,6 +33,13 @@ export class ImageQueryTermComponent {
      * @param _http
      */
     constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {}
+
+    /**
+     * Update settings based on preset.
+     */
+    ngOnInit(): void {
+        this.onSettingsChanged(null);
+    }
 
     /**
      * Triggered whenever either the slider for the category settings is used. Adjusts the feature categories
@@ -58,7 +65,7 @@ export class ImageQueryTermComponent {
                 this.imageTerm.setCategories(['localcolor', 'localfeatures', 'edge']);
                 break;
             default:
-                this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized', 'edge']);
+                this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized']);
                 break;
         }
     }
@@ -155,7 +162,7 @@ export class ImageQueryTermComponent {
      */
     private openSketchDialog(data? : any) {
         /* Initialize the correct dialog-component. */
-        let dialogRef = this._dialog.open(SketchDialogComponent, {data : data, width: '750px', height:'750px'});
+        let dialogRef = this._dialog.open(SketchDialogComponent, {data : data, width: '750px', height:'690px'});
         dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if (result) this.applyImageData(result);
         });
