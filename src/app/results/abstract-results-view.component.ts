@@ -232,6 +232,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      */
     public incrementCount() {
         this._count += 500;
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.BROWSE)));
         this._cdr.markForCheck();
     }
 
@@ -244,6 +245,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         } else {
             this._count = 500;
         }
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.BROWSE)));
         this._cdr.markForCheck();
     }
 
