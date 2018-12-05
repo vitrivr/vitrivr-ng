@@ -48,9 +48,9 @@ export class Config {
             collabordinator: null
         },
         tags : [
-            new Tag("Red", 0),
+            new Tag("Orange", 30),
             new Tag("Blue", 240),
-            new Tag("Yellow", 60),
+            new Tag("Violet", 270),
             new Tag("Magenta", 300),
         ],
         mlt : [
