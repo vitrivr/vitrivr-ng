@@ -1,6 +1,6 @@
 import {Inject, Injectable} from "@angular/core";
 import {ConfigService} from "../basics/config.service";
-import {filter} from "rxjs/operators";
+import {filter, retryWhen} from "rxjs/operators";
 import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {CollabordinatorMessage} from "../../shared/model/messages/collaboration/collabordinator-message.model";
 import {BehaviorSubject} from "rxjs";
@@ -35,8 +35,18 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
                 this.next([]);
             }
             this._webSocket = webSocket<CollabordinatorMessage>(c.get<string>("vbs.collabordinator"));
-            this._webSocket.subscribe(v => this.synchronize(v));
-        })
+            this._webSocket.subscribe(
+                v => this.synchronize(v),
+                e => {
+                    console.log("Error occurred while communicating with Collabordinator web service");
+                    this.next([]);
+                },
+                () => {
+                    console.log("Connection to Collabordinator web service was closed.");
+                    this.next([]);
+                }
+            )
+        });
     }
 
     /**
@@ -45,7 +55,11 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
      * @param id List of ids to add.
      */
     public add(...id: string[]) {
-       this._webSocket.next({action: "ADD", key : "vitrivr", attribute: id})
+        if (this._webSocket) {
+            this._webSocket.next({action: "ADD", key : "vitrivr", attribute: id})
+        } else {
+            console.log("Collabordinator service is currently not available.")
+        }
     }
 
     /**
@@ -54,14 +68,22 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
      * @param id List of ids to remove.
      */
     public remove(...id: string[]) {
-        this._webSocket.next({action: "REMOVE", key : "vitrivr", attribute: id})
+        if (this._webSocket) {
+            this._webSocket.next({action: "REMOVE", key : "vitrivr", attribute: id})
+        } else {
+            console.log("Collabordinator service is currently not available.")
+        }
     }
 
     /**
      * Sends a signal to the Collabordinator endpoint that tells it to clear the list.
      */
     public clear() {
-        this._webSocket.next({action: "CLEAR", key : "vitrivr", attribute: []})
+        if (this._webSocket) {
+            this._webSocket.next({action: "CLEAR", key: "vitrivr", attribute: []})
+        } else {
+            console.log("Collabordinator service is currently not available.")
+        }
     }
 
     /**
