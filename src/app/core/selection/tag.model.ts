@@ -17,7 +17,7 @@ export class Tag {
      * @return A hex string with the colour value.
      */
     public colorForRelevance(relevance: number) {
-        let rgb = ColorUtil.hsvToRgb(this.hue, relevance, 1.0);
+        let rgb = ColorUtil.hsvToRgb(this.hue, Math.min(relevance + 0.1, 1.0), 1.0);
         return ColorUtil.rgbToHex(rgb[0],rgb[1],rgb[2]);
     }
 }
