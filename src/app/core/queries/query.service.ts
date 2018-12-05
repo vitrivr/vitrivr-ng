@@ -145,6 +145,7 @@ export class QueryService {
      * @param snapshot HistoryContainer that should be loaded.
      */
     public load(snapshot: HistoryContainer) {
+        if (this._running > 0) return false;
         let deserialized = ResultsContainer.deserialize(snapshot.results);
         if (deserialized) {
             this._results = deserialized;
