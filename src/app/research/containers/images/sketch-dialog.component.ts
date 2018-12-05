@@ -35,8 +35,8 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
         '#E0FFFF', '#AFEEEE', '#00FFFF', '#7FFFD4','#40E0D0' ,'#00CED1', /* Cyan colors */
         '#DDA0DD', '#EE82EE', '#FF00FF', '#BA55D3','#9400D3' ,'#800080', /* Magenta colors */
         '#FFFFE0', '#FAFACD', '#FFFF00', '#F0E68C','#FFE4B5' ,'#FFD700', /* Yellow colors */
-        '#FFFFFF', '#DCDCDC', '#C0C0C0', '#808080', '#696969', '#000000', /* B & W. */
-        '#8D5524', '#C68642', '#E0AC69', '#F1C27D', '#FFDBAC', '#FFD9C2' /* Skin tones. */
+        '#FFD9C2', '#FFDBAC', '#F1C27D', '#E0AC69', '#C68642','#8D5524', /* Skin tones. */
+        '#FFFFFF', '#DCDCDC', '#C0C0C0', '#808080', '#696969','#000000' /* B & W. */
     ];
 
     /**
