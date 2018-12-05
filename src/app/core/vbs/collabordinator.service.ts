@@ -1,10 +1,11 @@
 import {Inject, Injectable} from "@angular/core";
 import {ConfigService} from "../basics/config.service";
-import {filter, retryWhen} from "rxjs/operators";
+import {filter} from "rxjs/operators";
 import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {CollabordinatorMessage} from "../../shared/model/messages/collaboration/collabordinator-message.model";
 import {BehaviorSubject} from "rxjs";
 import {Tag} from "../selection/tag.model";
+import {Config} from "../../shared/model/config/config.model";
 
 
 /**
@@ -17,7 +18,10 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
     /** The Vitrivr NG configuration as observable */
     private _webSocket: WebSocketSubject<CollabordinatorMessage>;
 
-    /** */
+    /** The current instance of the loaded Config. */
+    private _config: Config;
+
+    /** The default Collabordinator tag. */
     public static readonly COLLABORDINATOR_TAG = new Tag("Submitted (Colab)", 0);
 
     /**
@@ -30,22 +34,8 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
         _config.pipe(
             filter(c => c.get<string>("vbs.collabordinator") != null)
         ).subscribe(c => {
-            if (this._webSocket) {
-                this._webSocket.complete();
-                this.next([]);
-            }
-            this._webSocket = webSocket<CollabordinatorMessage>(c.get<string>("vbs.collabordinator"));
-            this._webSocket.subscribe(
-                v => this.synchronize(v),
-                e => {
-                    console.log("Error occurred while communicating with Collabordinator web service");
-                    this.next([]);
-                },
-                () => {
-                    console.log("Connection to Collabordinator web service was closed.");
-                    this.next([]);
-                }
-            )
+            this._config = c;
+            this.connect();
         });
     }
 
@@ -84,6 +74,37 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
         } else {
             console.log("Collabordinator service is currently not available.")
         }
+    }
+
+    /**
+     * Connects to the Collabordinator service. If an existing connection is open, that connection will be closed.
+     */
+    public connect(): boolean {
+        if (!this._config) return false;
+        if (this._webSocket) {
+            this._webSocket.complete();
+            this.next([]);
+        }
+        this._webSocket = webSocket<CollabordinatorMessage>(this._config.get<string>("vbs.collabordinator"));
+        this._webSocket.subscribe(
+            v => this.synchronize(v),
+            e => {
+                console.log("Error occurred while communicating with Collabordinator web service");
+                this.next([]);
+            },
+            () => {
+                console.log("Connection to Collabordinator web service was closed.");
+                this.next([]);
+            }
+        );
+        return true;
+    }
+
+    /**
+     * Returns true if the Collabordinator service is available and false otherwise.
+     */
+    public available(): boolean {
+        return this._webSocket != null;
     }
 
     /**

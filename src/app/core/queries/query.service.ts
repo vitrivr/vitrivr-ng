@@ -18,14 +18,13 @@ import {Config} from "../../shared/model/config/config.model";
 import {Hint} from "../../shared/model/messages/interfaces/requests/query-config.interface";
 import {FeatureCategories} from "../../shared/model/results/feature-categories.model";
 import {QueryContainerInterface} from "../../shared/model/queries/interfaces/query-container.interface";
-import {filter, first, tap} from "rxjs/operators";
+import {filter, first} from "rxjs/operators";
 import {WebSocketFactoryService} from "../api/web-socket-factory.service";
-import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
 import {SegmentMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-segment-metadata.interface";
 import {ObjectMetadataQueryResult} from "../../shared/model/messages/interfaces/responses/query-result-object-metadata.interface";
-import {QueryEnd} from "../../shared/model/messages/interfaces/responses/query-end.interface";
 import {HistoryService} from "./history.service";
 import {HistoryContainer} from "../../shared/model/internal/history-container.model";
+import {WebSocketSubject} from "rxjs/webSocket";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -56,10 +55,7 @@ export class QueryService {
     private _config: Observable<Config>;
 
     /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
-    private _socket: WebSocketWrapper;
-
-    /** Reference to the running subscription to the WebSocket. */
-    private _webSocketSubscription: Subscription;
+    private _socket: WebSocketSubject<Message>;
 
     /**
      * Default constructor.
@@ -73,14 +69,10 @@ export class QueryService {
                 @Inject(ConfigService) _config: ConfigService) {
         this._config = _config.asObservable();
         _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
-            if (this._webSocketSubscription != null) {
-                this._webSocketSubscription.unsubscribe();
-            }
             this._socket = ws;
-            this._webSocketSubscription = this._socket.socket.pipe(
+            this._socket.pipe(
                 filter(msg => ["QR_START","QR_END","QR_ERROR","QR_SIMILARITY","QR_OBJECT","QR_SEGMENT","QR_METADATA_S"].indexOf(msg.messageType) > -1)
             ).subscribe((msg: Message) => this.onApiMessage(msg));
-            console.log("QueryService is up and running! Endpoint: " + ws.endpoint);
         })
     }
     /**
@@ -95,7 +87,7 @@ export class QueryService {
         if (this._running > 0) return false;
         if (!this._socket) return false;
         this._config.pipe(first()).subscribe(config => {
-            this._socket.send(new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+            this._socket.next(new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
         });
     }
 
@@ -117,7 +109,7 @@ export class QueryService {
             let categories = this._results.features.map(f => f.name);
             config.get<FeatureCategories[]>('mlt').filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
             if (categories.length > 0) {
-                this._socket.send(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+                this._socket.next(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
             }
         });
 
@@ -136,7 +128,7 @@ export class QueryService {
     public findNeighboringSegments(segmentId: string, count?: number) {
         if (!this._results) return false;
         if (!this._socket) return false;
-        this._socket.send(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
+        this._socket.next(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
     }
 
     /**

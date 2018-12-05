@@ -1,32 +1,32 @@
-import {WebSocketSubjectConfig} from "rxjs/observable/dom/WebSocketSubject";
+import {WebSocketSubject, WebSocketSubjectConfig} from "rxjs/observable/dom/WebSocketSubject";
 import {NextObserver} from "rxjs/src/Observer";
-import {WebSocketWrapper} from "./web-socket-wrapper.model";
-import {BehaviorSubject, NEVER, Observable} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {Inject, Injectable} from "@angular/core";
 import {ConfigService} from "../basics/config.service";
-import {delay, filter, map, retryWhen, tap} from "rxjs/operators";
+import {filter, map} from "rxjs/operators";
+import {Config} from "../../shared/model/config/config.model";
 import {webSocket} from "rxjs/webSocket";
-
-/**
- * Custom type used to indicate the status of the WebSocket status.
- */
-export type WebSocketStatus = "DISCONNECTED" | "CONNECTED" | "ERROR" ;
 
 /**
  * This class exposes an observable that generates WebSocketWrapper classes whenever the connection configuration changes. Since only one WebSocketWrapper can be active
  * at a time per WebSocketFactoryService instance. The class keeps track of the WebSocketWrapper's and disconnects previous instances
  */
 @Injectable()
-export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
+export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Message>> {
+
+    /** Reference to the current Config held by WebSocketFactoryService. */
+    private _config: Config;
 
     /** Default constructor. */
     constructor(@Inject(ConfigService) private _configService : ConfigService) {
         super(null);
         this._configService.pipe(
             filter(c => c.endpoint_ws != null),
-            map(c => this.create(c.endpoint_ws, 5000))
-        ).subscribe(ws => this.next(ws))
+            map(c => {
+                this._config = c;
+            })
+        ).subscribe(ws => this.connect())
     }
 
     /**
@@ -35,22 +35,29 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
      *
      * @returns {any}
      */
-    private create(url: string, _retryAfter: number = -1): WebSocketWrapper {
+    public connect(): boolean {
+        if (!this._config) return false;
+
+        /* If there is an active WebSocketSubject then disconnect it. */
+        if (this.getValue() != null) {
+            this.getValue().complete();
+        }
+
         /* Create observers for WebSocket status. */
         let openObserver = <NextObserver<Event>>{
             next: (ev: Event) => {
-                console.log("WebSocket connected to " + url + ".");
+                console.log(`WebSocket connected to Cineast (${this._config.endpoint_ws}).`);
             }
         };
         let closeObserver = <NextObserver<CloseEvent>>{
             next: (ev: CloseEvent) => {
-                console.log("WebSocket disconnected from " + url + ". (Code: " + ev.code +")");
+                console.log(`WebSocket disconnected from Cineast (${this._config.endpoint_ws}, Code: ${ev.code}).`);
             }
         };
 
         /* Prepare config and create new WebSocket. */
         let config: WebSocketSubjectConfig<Message> = <WebSocketSubjectConfig<Message>>{
-            url: url,
+            url: this._config.endpoint_ws,
             openObserver: openObserver,
             closeObserver: closeObserver,
             serializer: (m: Message) => JSON.stringify(m, (key, value) => {
@@ -61,6 +68,9 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketWrapper> {
                 }
             })
         };
-        return new WebSocketWrapper(_retryAfter, config);
+
+        /* Publish next WebSocketSubject. */
+        this.next(webSocket(config));
+        return true;
     }
 }

@@ -1,12 +1,12 @@
 import {Inject, Injectable} from "@angular/core";
-import {BehaviorSubject, Observable, Subject, Subscription, timer} from "rxjs";
-import {WebSocketWrapper} from "../api/web-socket-wrapper.model";
+import {BehaviorSubject, timer} from "rxjs";
 import {WebSocketFactoryService} from "../api/web-socket-factory.service";
 import {ConfigService} from "./config.service";
-import {filter, flatMap, map} from "rxjs/operators";
+import {filter, flatMap} from "rxjs/operators";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {ApiStatus} from "../../shared/model/internal/api-status.model";
 import {Ping} from "../../shared/model/messages/interfaces/responses/ping.interface";
+import {WebSocketSubject} from "rxjs/webSocket";
 
 @Injectable()
 export class PingService extends BehaviorSubject<ApiStatus> {
@@ -17,10 +17,7 @@ export class PingService extends BehaviorSubject<ApiStatus> {
     private _transit: number = 0;
 
     /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
-    private _socket: WebSocketWrapper;
-
-    /** Reference to the running subscription to the WebSocket. */
-    private _webSocketSubscription: Subscription;
+    private _socket: WebSocketSubject<Message>;
 
     /**
      * Default constructor.
@@ -33,11 +30,8 @@ export class PingService extends BehaviorSubject<ApiStatus> {
         _factory.asObservable()
             .pipe(filter(ws => ws != null))
             .subscribe(ws => {
-            if (this._webSocketSubscription != null) {
-                this._webSocketSubscription.unsubscribe();
-            }
             this._socket = ws;
-            this._webSocketSubscription = this._socket.socket.pipe(
+            this._socket.pipe(
                 filter(msg => ["PING"].indexOf(msg.messageType) > -1)
             ).subscribe((msg: Message) => this.onPingResponse(<Ping>msg));
         });
@@ -56,7 +50,7 @@ export class PingService extends BehaviorSubject<ApiStatus> {
         if (this._socket) {
             this._last = Date.now();
             this._transit += 1;
-            this._socket.send(<Message>{messageType: "PING"});
+            this._socket.next(<Message>{messageType: "PING"});
             if (this._transit > 1) {
                 this.next(new ApiStatus(Date.now(), "DISCONNECTED", Number.MAX_VALUE));
                 this._transit = 0;
