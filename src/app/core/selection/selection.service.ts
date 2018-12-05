@@ -32,14 +32,10 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
         /* Register listener for Collabordinator. */
         _collabordinator.subscribe(next => {
             this._selections.forEach((v,k) => {
-                v.delete(CollabordinatorService.COLLABORDINATOR_TAG)
+                this.remove(k, CollabordinatorService.COLLABORDINATOR_TAG);
             });
             next.forEach(s => {
-                if (this._selections.has(s)){
-                    this._selections.get(s).add(CollabordinatorService.COLLABORDINATOR_TAG);
-                } else {
-                    this._selections.set(s, new Set([CollabordinatorService.COLLABORDINATOR_TAG]))
-                }
+                this.add(s, CollabordinatorService.COLLABORDINATOR_TAG);
             });
             this.next(this._selections);
         });
@@ -52,7 +48,6 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
      * @param {Tag} tag The tag to add to the identifier. Must be contained in the AVAILABLE_TAGS set.
      */
     public add(identifier: string, tag: Tag) {
-        if (!this._available.has(tag)) throw new Error("The provided Tag is not valid.");
         if (this._selections.has(identifier)) {
             this._selections.get(identifier).add(tag);
         } else {
@@ -93,7 +88,6 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
             this.add(identifier, tag);
         }
     }
-
 
     /**
      * Removes all tags for the provided identifier.
@@ -154,7 +148,7 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
     }
 
     /**
-     * Returns all the available tags.
+     * Returns all the available (registered) tags.
      *
      * @return {Tag[]}
      */
