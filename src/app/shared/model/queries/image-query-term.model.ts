@@ -4,6 +4,6 @@ export class ImageQueryTerm extends AbstractQueryTerm {
      * Default constructor.
      */
     constructor() {
-        super("IMAGE", ['globalcolor', 'localcolor', 'quantized', 'edge'])
+        super("IMAGE", [])
     }
 }
