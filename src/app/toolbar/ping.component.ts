@@ -14,13 +14,9 @@ import {WebSocketFactoryService} from "../core/api/web-socket-factory.service";
                  <mat-icon>{{icon | async}}</mat-icon>&nbsp;{{(latency | async) < 100000 ? '(' + (latency | async) + 'ms)' : "(&#x221e;)"}}
             </button>
             <mat-menu #appMenu="matMenu">
-                <button (click)="reconnectCineast()" mat-menu-item>Reconnect</button>
+                <button (click)="reconnectCineast()" mat-menu-item>Reconnect to Cineast</button>
                 <mat-divider *ngIf="collabordinatorAvailable"></mat-divider>
-                <button *ngIf="collabordinatorAvailable" mat-menu-item [matMenuTriggerFor]="collabordinator">Collabordinator</button>
-            </mat-menu>
-            
-            <mat-menu #collabordinator="matMenu">
-                <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect</button>
+                <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect to Collabordinator</button>
             </mat-menu>
         </span>
     `
