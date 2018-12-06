@@ -66,6 +66,18 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
     }
 
     /**
+     * Adjusts the size of the gap between tiles. That value must be greater than 2px. Calling this
+     * method triggers an update of the component tree.
+     *
+     * @param {number} value
+     */
+    set tilegap(value: number) {
+        if (value > 2) {
+            this._tilegap = value;
+        }
+    }
+
+    /**
      * Getter for gap between two individual tiles in pixels.
      *
      * @return {number}
@@ -81,17 +93,7 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
         return this._filterService.objectFilters;
     }
 
-    /**
-     * Adjusts the size of the gap between tiles. That value must be greater than 2px. Calling this
-     * method triggers an update of the component tree.
-     *
-     * @param {number} value
-     */
-    set tilegap(value: number) {
-        if (value > 2) {
-            this._tilegap = value;
-        }
-    }
+
 
     /**
      * Sets the focus to the provided MediaObjectScoreContainer.

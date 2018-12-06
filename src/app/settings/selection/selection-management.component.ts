@@ -27,7 +27,7 @@ export class SelectionManagementComponent {
      * Invoked when a user clicks the 'Remove tag' button. Removes the selected tag from the selected item.
      */
     public onTagButtonClicked(selection: string, tag: Tag) {
-        this._selectionService.remove(selection, tag);
+        this._selectionService.remove(tag, selection);
     }
 
     /**

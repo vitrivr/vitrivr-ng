@@ -3,17 +3,16 @@ import {ConfigService} from "../basics/config.service";
 import {filter} from "rxjs/operators";
 import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {CollabordinatorMessage} from "../../shared/model/messages/collaboration/collabordinator-message.model";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 import {Tag} from "../selection/tag.model";
 import {Config} from "../../shared/model/config/config.model";
-
 
 /**
  * The {@link CollabordinatorService} is a {@link BehaviorSubject} that interacts with the Collabordinator web service via
  * WebSocket an publishes changes to subscribers of the {@link CollabordinatorService}.
  */
 @Injectable()
-export class CollabordinatorService extends BehaviorSubject<string[]> {
+export class CollabordinatorService extends Subject<CollabordinatorMessage> {
 
     /** The Vitrivr NG configuration as observable */
     private _webSocket: WebSocketSubject<CollabordinatorMessage>;
@@ -21,16 +20,13 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
     /** The current instance of the loaded Config. */
     private _config: Config;
 
-    /** The default Collabordinator tag. */
-    public static readonly COLLABORDINATOR_TAG = new Tag("Submitted (Colab)", 0);
-
     /**
      * Constructor for the CollabordinatorService.
      *
      * @param _config ConfigService instance that serves the recent config.
      */
     constructor(@Inject(ConfigService) _config: ConfigService) {
-        super([]);
+        super();
         _config.pipe(
             filter(c => c.get<string>("vbs.collabordinator") != null)
         ).subscribe(c => {
@@ -42,11 +38,12 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
     /**
      * Sends a signal to the Collabordinator endpoint that tells it to add items to its list.
      *
+     * @param tag The Tag for which to add a Collabordinator entry.
      * @param id List of ids to add.
      */
-    public add(...id: string[]) {
+    public add(tag: Tag, ...id: string[]) {
         if (this._webSocket) {
-            this._webSocket.next({action: "ADD", key : "vitrivr", attribute: id})
+            this._webSocket.next({action: "ADD", key :`vitrivr~${tag.name.toLowerCase()}`, attribute: id})
         } else {
             console.log("Collabordinator service is currently not available.")
         }
@@ -55,11 +52,12 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
     /**
      * Sends a signal to the Collabordinator endpoint that tells it to remove items from its list.
      *
+     * @param tag The Tag for which to remove a Collabordinator entry.
      * @param id List of ids to remove.
      */
-    public remove(...id: string[]) {
+    public remove(tag: Tag, ...id: string[]) {
         if (this._webSocket) {
-            this._webSocket.next({action: "REMOVE", key : "vitrivr", attribute: id})
+            this._webSocket.next({action: "REMOVE", key : `vitrivr~${tag.name.toLowerCase()}`, attribute: id})
         } else {
             console.log("Collabordinator service is currently not available.")
         }
@@ -68,9 +66,9 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
     /**
      * Sends a signal to the Collabordinator endpoint that tells it to clear the list.
      */
-    public clear() {
+    public clear(tag: Tag) {
         if (this._webSocket) {
-            this._webSocket.next({action: "CLEAR", key: "vitrivr", attribute: []})
+            this._webSocket.next({action: "CLEAR", key: `vitrivr~${tag.name.toLowerCase()}`, attribute: []})
         } else {
             console.log("Collabordinator service is currently not available.")
         }
@@ -83,18 +81,15 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
         if (!this._config) return false;
         if (this._webSocket) {
             this._webSocket.complete();
-            this.next([]);
         }
         this._webSocket = webSocket<CollabordinatorMessage>(this._config.get<string>("vbs.collabordinator"));
         this._webSocket.subscribe(
-            v => this.synchronize(v),
+            v => this.next(v),
             e => {
                 console.log("Error occurred while communicating with Collabordinator web service");
-                this.next([]);
             },
             () => {
                 console.log("Connection to Collabordinator web service was closed.");
-                this.next([]);
             }
         );
         return true;
@@ -105,32 +100,5 @@ export class CollabordinatorService extends BehaviorSubject<string[]> {
      */
     public available(): boolean {
         return this._webSocket != null;
-    }
-
-    /**
-     * Synchronizes the state of the local list according to the Collabordinator message received.
-     *
-     * @param msg Collabordinator message to process.
-     */
-    private synchronize(msg: CollabordinatorMessage) {
-        let current = this.getValue().slice();
-        switch (msg.action) {
-            case "ADD":
-                for (let v of msg.attribute) {
-                    if (current.indexOf(v) == -1) current.push(v)
-                }
-                break;
-            case "REMOVE":
-                msg.attribute.forEach(v => {
-                    let index = current.indexOf(v);
-                    if (index > -1) current.splice(index,1)
-                });
-
-                break;
-            case "CLEAR":
-                current.length = 0;
-                break;
-        }
-        this.next(current);
     }
 }

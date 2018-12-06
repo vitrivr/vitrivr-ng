@@ -20,7 +20,6 @@ import {WebSocketFactoryService} from "../core/api/web-socket-factory.service";
             </mat-menu>
             
             <mat-menu #collabordinator="matMenu">
-                <button mat-menu-item (click)="clearCollabordinator()">Clear</button>
                 <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect</button>
             </mat-menu>
         </span>
@@ -33,6 +32,7 @@ export class PingComponent {
      *
      * @param _ping
      * @param _collabordinator CollabordinatorService reference.
+     * @param _factory WebSocketFactoryService reference.
      */
     constructor(private _ping : PingService, private _collabordinator: CollabordinatorService, private _factory: WebSocketFactoryService) {}
 
@@ -70,13 +70,6 @@ export class PingComponent {
      */
     public reconnectCollabordinator() {
         this._collabordinator.connect();
-    }
-
-    /**
-     * Sends a CLEAR signal to the Collabordinator service.
-     */
-    public clearCollabordinator() {
-        this._collabordinator.clear();
     }
 
     /**

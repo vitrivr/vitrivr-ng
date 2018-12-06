@@ -179,7 +179,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param {Tag} tag The tag that should be toggled.
      */
     public onHighlightButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
-        this._selectionService.toggle(segment.segmentId,tag);
+        this._selectionService.toggle(tag, segment.segmentId);
 
         /* Emit a HIGHLIGHT event on the bus. */
         let context: Map<ContextKey,any> = new Map();
@@ -195,20 +195,13 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param {Tag} tag The tag that should be toggled.
      */
     public onHighlightButtonRightClicked(event: Event, segment: SegmentScoreContainer, tag: Tag) {
-        let segments = segment.objectScoreContainer.segments;
+        let segments = segment.objectScoreContainer.segments.map(v => v.segmentId);
         if (segments.length > 0) {
-            let highlight = !this._selectionService.hasTag(segment.segmentId, tag);
-            for (let s of segments) {
-                if (highlight) {
-                    this._selectionService.add(s.segmentId,tag);
-                } else {
-                    this._selectionService.remove(s.segmentId,tag);
-                }
-            }
+            this._selectionService.toggle(tag, ...segments);
 
             /* Emit a HIGHLIGHT event on the bus. */
             let context: Map<ContextKey,any> = new Map();
-            context.set("i:mediasegment", segments.map(s => s.segmentId).join(","));
+            context.set("i:mediasegment", segments.join(","));
             this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)));
         }
         event.preventDefault();
