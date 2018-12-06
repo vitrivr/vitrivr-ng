@@ -12,6 +12,7 @@ import {Subject} from "rxjs";
 import {VbsAction} from "./vbs-action.model";
 import {buffer, catchError, defaultIfEmpty, filter, first, flatMap, map, tap, withLatestFrom} from "rxjs/operators";
 import {CollabordinatorService} from "./collabordinator.service";
+import {SelectionService} from "../selection/selection.service";
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -39,14 +40,14 @@ export class VbsSubmissionService {
      *
      * @param {ConfigService} _config
      * @param {EventBusService} _eventbus Reference to the singleton EventBusService instance.
-     * @param {CollabordinatorService} _collabordinator Reference to the singleton CollabordinatorService instance.
+     * @param {SelectionService} _selection Reference to the singleton SelectionService instance.
      * @param {MetadataLookupService} _metadata
      * @param {HttpClient} _http
      * @param {MatSnackBar} _snackBar
      */
     constructor(_config: ConfigService,
                 private _eventbus: EventBusService,
-                private _collabordinator: CollabordinatorService,
+                private _selection: SelectionService,
                 private _metadata: MetadataLookupService,
                 private _http: HttpClient,
                 private _snackBar: MatSnackBar) {
@@ -83,7 +84,7 @@ export class VbsSubmissionService {
      */
     public submit(segment: SegmentScoreContainer, time: number) {
         this._submitSubject.next([segment, time]);
-        this._collabordinator.add(segment.segmentId);
+        this._selection.add(this._selection.availableTags[0],segment.segmentId);
     }
 
     /**
