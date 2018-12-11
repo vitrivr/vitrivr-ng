@@ -61,14 +61,14 @@ export class ResultsContainer {
     constructor(public readonly queryId: string, private weightFunction : FusionFunction = new DefaultFusionFunction()) {}
 
     /**
-     * Returns the number of objects contained in this ResultsContainer
+     * Returns the number of objects contained in this ResultsContainer.
      */
     get objectCount() : number {
         return this._results_objects.length;
     }
 
     /**
-     * Returns the number of segments contained in this ResultsContainer
+     * Returns the number of segments contained in this ResultsContainer.
      */
     get segmentCount() : number {
         return this._results_segments.length;
@@ -352,14 +352,14 @@ export class ResultsContainer {
                     metadata.push({objectId: obj.objectId, domain: k.split(".")[0], key: k.split(".")[1], value: v})
                 });
                 return metadata;
-            }).reduce((x,y) => x.concat(y)),
+            }).reduce((x,y) => x.concat(y), []),
             segmentMetadata : this._results_segments.map(seg => {
                 let metadata : MediaSegmentMetadata[] = [];
                 seg.metadata.forEach((k,v) => {
                     metadata.push({segmentId: seg.segmentId, domain: k.split(".")[0], key: k.split(".")[1], value: v})
                 });
                 return metadata;
-            }).reduce((x,y) => x.concat(y)),
+            }).reduce((x,y) => x.concat(y), []),
             similarity : this.features.map(f => {
                 return this._results_segments.filter(seg => seg.scores.has(f)).map(seg => {
                     return <Similarity>{category: f.name, key: seg.segmentId, value: seg.scores.get(f)};
