@@ -7,7 +7,7 @@
 
     <span class="spacer-xlarge"></span>
 
-    <a mat-icon-button routerLink="/gallery" routerLinkActive="active" matTooltip="Gallery view"><mat-icon>grid_on</mat-icon></a>
+    <a *ngIf="!(config|async).get('vbs.teamid')" mat-icon-button routerLink="/gallery" routerLinkActive="active" matTooltip="Gallery view"><mat-icon>grid_on</mat-icon></a>
 
     <span class="spacer-medium"></span>
 
