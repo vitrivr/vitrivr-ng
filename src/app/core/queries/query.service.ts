@@ -238,7 +238,9 @@ export class QueryService {
     private finalizeQuery() {
         this._running -= 1;
         this._subject.next("ENDED" as QueryChange);
-        this._history.append(this._results);
+        if (this._results.segmentCount > 0) {
+            this._history.append(this._results);
+        }
     }
 
     /**
