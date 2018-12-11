@@ -1,5 +1,12 @@
-<vg-player (onPlayerReady)="onPlayerReady($event)" [style.width]="width + 'px'">
-    <vg-controls [style.display]="'block'" [style.height]="'100px'">
+<vg-player (onPlayerReady)="onPlayerReady($event)" [style.width]="width + 'px'" [style.display]="'block'">
+
+    <video id="videoplayer" *ngIf="mediaobject.mediatype == 'VIDEO'" #media [vgMedia]="media" preload="auto" [autoplay]="auto" src="{{_resolver.pathToObject(mediaobject)}}">
+    </video>
+
+    <audio id="audioplayer" *ngIf="mediaobject.mediatype == 'AUDIO'" #media [vgMedia]="media" preload="auto" [autoplay]="auto" src="{{_resolver.pathToObject(mediaobject)}}">
+    </audio>
+    
+    <vg-controls [style.display]="'block'" [style.height]="'100px'" [style.position]="'relative'">
         <div [style.display]="'flex'">
             <vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>
 
@@ -29,12 +36,6 @@
             <vg-fullscreen></vg-fullscreen>
         </div>
     </vg-controls>
-
-    <video id="videoplayer" *ngIf="mediaobject.mediatype == 'VIDEO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
-    </video>
-
-    <audio id="audioplayer" *ngIf="mediaobject.mediatype == 'AUDIO'" #media [vgMedia]="media" preload="auto" autoplay="{{auto}}" src="{{_resolver.pathToObject(mediaobject)}}">
-    </audio>
 </vg-player>
 
 
