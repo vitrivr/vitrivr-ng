@@ -114,7 +114,7 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @param {Config} config The configuration object that should be saved.
      */
     private saveToDatabase(config: Config) {
-        return fromPromise(this._configTable.put(config)).pipe(first()).subscribe();
+        return fromPromise(this._configTable.put(config,Config.DB_KEY)).pipe(first()).subscribe();
     }
 
     /**

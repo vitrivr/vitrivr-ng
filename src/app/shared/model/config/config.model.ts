@@ -1,7 +1,6 @@
 import {Tag} from "../../../core/selection/tag.model";
 import {FeatureCategories} from "../results/feature-categories.model";
 import {QuerySettings} from "./query-settings.model";
-import Dexie from "dexie";
 
 export class Config {
     /** Context of the Cineast API. */
@@ -11,7 +10,7 @@ export class Config {
     public static readonly VERSION = "v1";
 
     /** The key under which the main configuration will be saved. */
-    public static DB_KEY = "main";
+    public static readonly DB_KEY = "main";
 
     /** Default display duration for Snackbar messages. */
     public static SNACKBAR_DURATION = 2500;
