@@ -13,11 +13,10 @@ if [ ! -d $deploy ]; then
 fi
 
 # Begin...
-echo "Deploying Vitrivr NG to $deploy"
+echo "Deploying Vitrivr NG to $deploy. Did you update your project (GitHub)?"
 
-# Update project and build
-echo "Step 1: Updating project..."
-git pull &> deploy.log
+# Building project
+echo "Step 1: Updating dependencies..."
 npm install &>> deploy.log
 
 if [ $? -ne 0 ]; then
