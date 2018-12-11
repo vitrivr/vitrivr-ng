@@ -5,6 +5,7 @@ import {EMPTY, Observable} from "rxjs";
 import {Tag} from "../../../shared/model/misc/tag.model";
 import {TagsLookupService} from "../../../core/lookup/tags-lookup.service";
 import {debounceTime, map, mergeAll, startWith} from "rxjs/operators";
+import {MatAutocompleteSelectedEvent} from "@angular/material";
 
 @Component({
     selector: 'qt-tag',
@@ -16,8 +17,6 @@ export class TagQueryTermComponent {
     /** The TagQueryTerm object associated with this TagQueryTermComponent. That object holds all the query settings. */
     @Input()
     private tagTerm: TagQueryTerm;
-
-    private _inputValue: string;
 
     /** List of tag fields  currently displayed. */
     private _field: FieldGroup;
@@ -53,34 +52,17 @@ export class TagQueryTermComponent {
     }
 
     /**
-     * Getter for the input value.
-     *
-     * @return {string}
-     */
-    get inputValue(): string {
-        return this._inputValue;
-    }
-
-    /**
-     * Setter for the input value.
-     * 
-     * @param {string} value
-     */
-    set inputValue(value: string) {
-        this._inputValue = value;
-    }
-
-    /**
      * Invoked whenever the user selects a Tag from the list.
      *
-     * @param {Tag} tag The selected tag.
+     * @param {MatAutocompleteSelectedEvent} event The selection event.
      */
-    public onTagSelected(tag: Tag) {
+    public onTagSelected(event: MatAutocompleteSelectedEvent) {
         for (let existing of this._tags) {
-            if (existing.id == tag.id) return;
+            if (existing.id == event.option.value) {
+            }
         }
-        this.addTag(tag);
-        this._inputValue = "";
+        this.addTag(event.option.value);
+        this.field.formControl.setValue("");
         this.tagTerm.data = "data:application/json;base64," + btoa(JSON.stringify(this._tags.map(v => {return v;})));
     }
 
@@ -111,7 +93,7 @@ export class TagQueryTermComponent {
  */
 export class FieldGroup {
     /** The FormControl used to control the tag field. */
-    public readonly formControl: FormControl;
+    public readonly formControl: FormControl = new FormControl();
 
     /** The Observable that acts as data source for the field. */
     public readonly filteredTags: Observable<Tag[]>;
@@ -125,7 +107,6 @@ export class FieldGroup {
      * @param {TagsLookupService} _tags
      */
     constructor(private _tags: TagsLookupService) {
-        this.formControl = new FormControl();
         this.filteredTags = this.formControl.valueChanges.pipe(
             debounceTime(250),
             startWith(''),
