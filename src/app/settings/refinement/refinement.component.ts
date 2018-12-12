@@ -114,13 +114,16 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * Triggered whenever the color filter selection changes. Reports the change to the FilterService,
      * which will update the filter settings accordingly.
      *
+     * @param color
      * @param event
      */
     public onColorFilterChanged(color: ColorLabel, event: MatCheckboxChange) {
         if (!this._queryService.results) return;
         this._filterService.dominant.set(color, event.checked);
         this._filterService.update();
-        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
+        let context: Map<ContextKey,string> = new Map();
+        context.set("f:type","dominantColor");
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER, context)));
     }
 
     /**
@@ -129,7 +132,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onThresholdValueChanges(event: MatSliderChange) {
         this._filterService.update();
-        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
+        let context: Map<ContextKey,string> = new Map();
+        context.set("f:type","scoreThreshold");
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER, context)));
     }
 
     /**
