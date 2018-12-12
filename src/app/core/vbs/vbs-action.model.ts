@@ -2,7 +2,7 @@ import {Observable} from "rxjs";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
-import {catchError, map} from "rxjs/operators";
+import {catchError, filter, map} from "rxjs/operators";
 import {Submission, SubmissionType} from "../../shared/model/vbs/interfaces/submission.model";
 import {SubmittedEvent} from "../../shared/model/vbs/interfaces/event.model";
 import {AtomicEvent} from "../../shared/model/vbs/interfaces/atomic-event.model";
@@ -46,7 +46,8 @@ export class VbsSubmission implements Submission {
             catchError((e,o) => {
                 console.log("An error occurred when mapping an event from the event stream to a VbsSubmission: " +  e.message);
                 return o;
-            })
+            }),
+            filter(e => e != null)
         );
     }
 
@@ -61,7 +62,7 @@ export class VbsSubmission implements Submission {
             case InteractionEventType.QUERY_MOTION:
                 return <AtomicEvent>{category: "Sketch", type: ['motion'], timestamp: timestamp};
             case InteractionEventType.QUERY_SEMANTIC:
-                return <AtomicEvent>{category: "Sketch", type: ['segmanticSegmentation'], timestamp: timestamp};
+                return <AtomicEvent>{category: "Sketch", type: ['semanticSegmentation'], timestamp: timestamp};
             case InteractionEventType.MLT:
                 return <AtomicEvent>{category: "Image", type: ['globalFeatures'], attributes: 'mlt', timestamp: timestamp};
             case InteractionEventType.QUERY_TAG:
@@ -95,7 +96,7 @@ export class VbsSubmission implements Submission {
             case InteractionEventType.EXAMINE:
                 return <AtomicEvent>{category: "Browsing", type: ['videoPlayer'], value: `play ${component.context.get("i:mediasegment")}`, timestamp: timestamp};
             case InteractionEventType.SCROLL:
-                return <AtomicEvent>{category: "Browsing", type: ['rankedList"'], timestamp: timestamp};
+                return <AtomicEvent>{category: "Browsing", type: ['rankedList'], timestamp: timestamp};
             case InteractionEventType.CLEAR:
                 return <AtomicEvent>{category: "Browsing", type: ['resetAll'], timestamp: timestamp};
             default:
