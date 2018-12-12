@@ -84,7 +84,7 @@ export class VbsSubmission implements Submission {
                 break;
             }
             case InteractionEventType.FILTER:
-                return <AtomicEvent>{category: "Filter", type: component.context.get("f:type"), timestamp: timestamp};
+                return <AtomicEvent>{category: "Filter", type: [component.context.get("f:type")], timestamp: timestamp};
             case InteractionEventType.EXPAND:
                 return <AtomicEvent>{category: "Browsing", type: ['temporalContext'], timestamp: timestamp};
             case InteractionEventType.REFINE:
