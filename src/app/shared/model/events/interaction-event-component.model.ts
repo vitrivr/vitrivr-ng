@@ -2,7 +2,8 @@ import {InteractionEventType} from "./interaction-event-type.model";
 
 /** Context keys used to access context information. */
 export type ContextKey =
-        "q:categories" /* Query categories submitted with a query. */
+        "f:type" /* Filter types used. */
+    |   "q:categories" /* Query categories submitted with a query. */
     |   "q:value" /* Value  submitted with a query. */
     |   "i:mediaobject" /* The item that was interacted with (mediaobject). */
     |   "i:mediasegment" /* The item that was interacted with (mediasegment). */

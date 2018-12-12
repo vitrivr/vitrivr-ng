@@ -2,109 +2,102 @@ import {Observable} from "rxjs";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
-import {catchError, filter, map} from "rxjs/operators";
+import {catchError, map} from "rxjs/operators";
+import {Submission, SubmissionType} from "../../shared/model/vbs/interfaces/submission.model";
+import {SubmittedEvent} from "../../shared/model/vbs/interfaces/event.model";
+import {AtomicEvent} from "../../shared/model/vbs/interfaces/atomic-event.model";
+import {InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
+import {CompositEvent} from "../../shared/model/vbs/interfaces/composit-event.model";
 
-export enum VbsActionType {
-    KEYWORD = "K",
-    AUDIO = "A",
-    OCR = "O",
-    COLORSKETCH = "C",
-    EDGESKETCH = "E",
-    MOTIONSKETCH = "M",
-    SIMILARITY = "S",
-    FILTERING = "F",
-    PAGING = "P",
-    EXTERNAL = "T",
-    BROWSING = "B",
-    RESET = "X",
-    LOADFRAMES = "V"
-}
+export class VbsSubmission implements Submission {
 
+    /** Timestam of the VbsSubmission. */
+    public readonly timestamp: number = Date.now();
 
-export class VbsAction {
+    /** Type of the VbsSubmission. */
+    public readonly type: SubmissionType = 'submission';
 
-    /** Separator used to connect two VbsActions. */
-    public static SEPARATOR = ";";
-
-    /** Prefix used for the tool ID. */
-    public static TOOL_ID_PREFIX = "VTR";
+    /** List of submitted events. */
+    public readonly events: SubmittedEvent[] = [];
 
     /**
-     * Default constructor for VbsAction.
      *
-     * @param {VbsActionType} action The type of action.
-     * @param {number} timestamp The timestamp of the VbsAction.
-     * @param {string} context Optional context information.
+     * @param teamId
+     * @param memberId
      */
-    constructor(public readonly action: VbsActionType, public readonly timestamp: number, public readonly context?: string) {}
+    constructor(public readonly teamId: string, public readonly memberId: number) {}
 
     /**
      * This method maps the events emitted on the Vitrivr NG EventBusService to VbsActions.
      *
      * @param {Observable<InteractionEvent>} stream The observable of the InteractionEvents as exposed by the EventBusService
      */
-    public static mapEventStream(stream: Observable<InteractionEvent>): Observable<VbsAction[]> {
+    public static mapEventStream(stream: Observable<InteractionEvent>): Observable<SubmittedEvent> {
         return stream.pipe(
             map(e => {
-                let actions: VbsAction[] = [];
-                e.components.forEach(c => {
-                    switch (c.type) {
-                        case InteractionEventType.QUERY_AUDIO:
-                            actions.push(new VbsAction(VbsActionType.AUDIO, e.timestamp));
-                            break;
-                        case InteractionEventType.QUERY_MOTION:
-                            actions.push(new VbsAction(VbsActionType.MOTIONSKETCH, e.timestamp));
-                            break;
-                        case InteractionEventType.MLT:
-                            actions.push(new VbsAction(VbsActionType.SIMILARITY, e.timestamp, c.context.get("q:value")));
-                            break;
-                        case InteractionEventType.QUERY_TAG:
-                            actions.push(new VbsAction(VbsActionType.KEYWORD, e.timestamp, c.context.get("q:value")));
-                            break;
-                        case InteractionEventType.QUERY_FULLTEXT: {
-                            let categories = c.context.get("q:categories");
-                            if (categories.indexOf("tagsft") > -1 || categories.indexOf("meta") > -1) actions.push(new VbsAction(VbsActionType.KEYWORD, e.timestamp, c.context.get("q:value")));
-                            if (categories.indexOf("ocr") > -1) actions.push(new VbsAction(VbsActionType.OCR, e.timestamp, c.context.get("q:value")));
-                            if (categories.indexOf("asr") > -1) actions.push(new VbsAction(VbsActionType.AUDIO, e.timestamp, c.context.get("q:value") + ",asr"));
-                            break;
-                        }
-                        case InteractionEventType.QUERY_IMAGE: {
-                            let categories = c.context.get("q:categories");
-                            if (categories.indexOf("globalcolor") > -1 || c.context.get("q:categories").indexOf("localcolor") > -1) actions.push(new VbsAction(VbsActionType.COLORSKETCH, e.timestamp));
-                            if (categories.indexOf("edge") > -1) actions.push(new VbsAction(VbsActionType.EDGESKETCH, e.timestamp));
-                            if (categories.indexOf("localfeatures") > -1) actions.push(new VbsAction(VbsActionType.SIMILARITY, e.timestamp));
-                            break;
-                        }
-                        case InteractionEventType.FILTER:
-                            actions.push(new VbsAction(VbsActionType.FILTERING, e.timestamp));
-                            break;
-                        case InteractionEventType.EXPAND:
-                            actions.push(new VbsAction(VbsActionType.LOADFRAMES, e.timestamp, c.context.get("i:mediasegment")));
-                            break;
-                        case InteractionEventType.REFINE:
-                            let weights = c.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weight / 100).join(",");
-                            actions.push(new VbsAction(VbsActionType.BROWSING, e.timestamp, "adjust weights," + weights));
-                            break;
-                        case InteractionEventType.EXAMINE:
-                            actions.push(new VbsAction(VbsActionType.BROWSING, e.timestamp, c.context.get("i:mediasegment") + ",examine"));
-                            break;
-                        case InteractionEventType.BROWSE:
-                            actions.push(new VbsAction(VbsActionType.BROWSING, e.timestamp, "browse results"));
-                            break;
-                        case InteractionEventType.CLEAR:
-                            actions.push(new VbsAction(VbsActionType.RESET, e.timestamp));
-                            break;
-                        default:
-                            break;
-                    }
-                });
-                return actions;
+                if (e.components.length > 1) {
+                    let composit = <CompositEvent>{timestamp: e.timestamp, actions: []};
+                    e.components.forEach(c => composit.actions.push(VbsSubmission.mapAtomicEvent(c, e.timestamp)));
+                    return composit;
+                } else if (e.components.length === 1) {
+                    return VbsSubmission.mapAtomicEvent(e.components[0], e.timestamp);
+                }
             }),
             catchError((e,o) => {
-                console.log("An error occurred when mapping an event from the event stream to a VbsAction: " +  e.message);
+                console.log("An error occurred when mapping an event from the event stream to a VbsSubmission: " +  e.message);
                 return o;
-            }),
-            filter(e => e.length > 0)
-        )
+            })
+        );
+    }
+
+    /**
+     * Maps a single InteractionEventComponent to an AtomicEvent.
+     *
+     * @param component InteractionEventComponent
+     * @param timestamp Timestamp of the event.
+     */
+    private static mapAtomicEvent(component: InteractionEventComponent, timestamp: number): AtomicEvent {
+        switch (component.type) {
+            case InteractionEventType.QUERY_MOTION:
+                return <AtomicEvent>{category: "Sketch", type: ['motion'], timestamp: timestamp};
+            case InteractionEventType.MLT:
+                return <AtomicEvent>{category: "Image", type: ['globalFeatures'], attributes: 'mlt', timestamp: timestamp};
+            case InteractionEventType.QUERY_TAG:
+                return <AtomicEvent>{category: "Text", type: ['concept'], value: component.context.get("q:value"), timestamp: timestamp};
+            case InteractionEventType.QUERY_FULLTEXT: {
+                const event = <AtomicEvent>{category: "Image", type: []};
+                const c = component.context.get("q:categories");
+                if (c === 'ocr') event.type.push('OCR');
+                if (c === 'asr') event.type.push('ASR');
+                if (c === 'meta') event.type.push('metadata');
+                if (c === 'tagsft') event.type.push('concept');
+                if (c === 'captioning') event.type.push('caption');
+                if (c === 'audio') event.type.push('custom');
+                break;
+            }
+            case InteractionEventType.QUERY_IMAGE: {
+                const event = <AtomicEvent>{category: "Image", type: ['globalFeatures'], attributes: "", timestamp: timestamp};
+                const c = component.context.get("q:categories");
+                if (c.indexOf("globalcolor") > -1 || c.context.get("q:categories").indexOf("localcolor") > -1) event.attributes += ("color;");
+                if (c.indexOf("edge") > -1) event.attributes += ("edge;");
+                if (c.indexOf("localfeatures") > -1) event.attributes += ("keypoints;");
+                break;
+            }
+            case InteractionEventType.FILTER:
+                return <AtomicEvent>{category: "Filter", type: component.context.get("f:type"), timestamp: timestamp};
+            case InteractionEventType.EXPAND:
+                return <AtomicEvent>{category: "Browsing", type: ['temporalContext'], timestamp: timestamp};
+            case InteractionEventType.REFINE:
+                let weights = component.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weight / 100).join(",");
+                return <AtomicEvent>{category: "Browsing", type: ['explicitSort'], attributes: "adjust weights," + weights, timestamp: timestamp};
+            case InteractionEventType.EXAMINE:
+                return <AtomicEvent>{category: "Browsing", type: ['videoPlayer'], value: `play ${component.context.get("i:mediasegment")}`, timestamp: timestamp};
+            case InteractionEventType.SCROLL:
+                return <AtomicEvent>{category: "Browsing", type: ['rankedList"'], timestamp: timestamp};
+            case InteractionEventType.CLEAR:
+                return <AtomicEvent>{category: "Browsing", type: ['resetAll'], timestamp: timestamp};
+            default:
+                break;
+        }
     }
 }

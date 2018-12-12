@@ -9,10 +9,10 @@ import {MatSnackBar} from "@angular/material";
 import {Config} from "../../shared/model/config/config.model";
 import {EventBusService} from "../basics/event-bus.service";
 import {Subject} from "rxjs";
-import {VbsAction} from "./vbs-action.model";
+import {VbsSubmission} from "./vbs-action.model";
 import {buffer, catchError, defaultIfEmpty, filter, first, flatMap, map, tap, withLatestFrom} from "rxjs/operators";
-import {CollabordinatorService} from "./collabordinator.service";
 import {SelectionService} from "../selection/selection.service";
+import {SubmittedEvent} from "../../shared/model/vbs/interfaces/event.model";
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -21,10 +21,10 @@ import {SelectionService} from "../selection/selection.service";
 @Injectable()
 export class VbsSubmissionService {
     /** The observable used to react to changes to the Vitrivr NG configuration. */
-    private _config: Observable<[string,string, string]>;
+    private _config: Observable<[string, string, number]>;
 
     /** A buffer of old, already submitted sequences. */
-    private _seqBuffer: string[] = [];
+    private _seqBuffer: SubmittedEvent[] = [];
 
     /** The subject used to submit segments to the VBS service. */
     private _submitSubject = new Subject<[SegmentScoreContainer, number]>();
@@ -52,7 +52,7 @@ export class VbsSubmissionService {
                 private _http: HttpClient,
                 private _snackBar: MatSnackBar) {
         this._config = _config.asObservable().pipe(
-            map(c => <[string,string, string]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<string>('vbs.toolid')])
+            map(c => <[string, string, number]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<number>('vbs.toolid')])
         );
 
 
@@ -97,25 +97,15 @@ export class VbsSubmissionService {
     /**
      * Resets the VBSSubmissionService, re-initiating
      */
-    public reset(endpoint?: string, team?: string, tool?: string) {
+    public reset(endpoint?: string, team?: string, tool?: number) {
         if (this._vbsSubscription != null) {
             this._vbsSubscription.unsubscribe();
             this._vbsSubscription = null;
         }
 
-        let time = Date.now(); /* Time of the reset. */
-        let events = VbsAction.mapEventStream(this._eventbus.observable()).pipe(
+        let events = VbsSubmission.mapEventStream(this._eventbus.observable()).pipe(
             buffer(this._submitSubject),
-            map(ev => ev.map(e => e.map(a => `${a.action}(${Math.round((a.timestamp-time)/1000)}s${a.context ? "," + a.context : ""})`.toString()).reduce((a1,a2) => a1 + a2)).join(VbsAction.SEPARATOR)),
-            tap(seq => {
-                let date = new Date();
-                let time = `time ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
-                if (seq && seq.length > 0) {
-                    this._seqBuffer.push(seq + VbsAction.SEPARATOR + time);
-                } else {
-                    this._seqBuffer.push(time);
-                }
-            })
+            tap(seq => this._seqBuffer.push(...seq))
         );
 
         this._vbsSubscription = this._submitSubject.pipe(
@@ -133,18 +123,15 @@ export class VbsSubmissionService {
             flatMap(([segment,frame]:[SegmentScoreContainer,number]) => {
                 let videoId = parseInt(segment.objectId.replace("v_","")).toString();
                 let params = new HttpParams().set('video',videoId).set('team', String(team)).set('frame', String(frame));
-                let iseq = VbsAction.TOOL_ID_PREFIX + tool + VbsAction.SEPARATOR + this._seqBuffer.join(VbsAction.SEPARATOR);
-                let observable = null;
-                if (iseq.length > 0 && iseq.length < 255) {
-                    params = params.set('iseq', iseq);
-                    observable = this._http.get(String(endpoint),{responseType: 'text', params: params});
-                } else if (iseq.length >= 255) {
-                    params = params.set('iseq', iseq);
-                    let headers = new HttpHeaders().append("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
-                    observable = this._http.post(String(endpoint), params.toString(), {responseType: 'text', headers: headers})
-                } else {
-                    observable = this._http.get(String(endpoint), {responseType: 'text', params: params});
-                }
+                let iseq = new VbsSubmission(team, tool);
+                iseq.events.push(...this._seqBuffer);
+
+
+                /* Prepare VBS submission. */
+                params = params.set('iseq', JSON.stringify(iseq));
+                let headers = new HttpHeaders().append("Content-Type","application/json; charset=UTF-8");
+                let observable = this._http.post(String(endpoint), params.toString(), {responseType: 'text', headers: headers})
+
                 console.log(`Submitting video to VBS; id: ${videoId}, frame: ${frame}, sequence: ${iseq}`.toString());
                 return observable.pipe(
                     catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
