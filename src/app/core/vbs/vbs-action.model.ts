@@ -60,6 +60,8 @@ export class VbsSubmission implements Submission {
         switch (component.type) {
             case InteractionEventType.QUERY_MOTION:
                 return <AtomicEvent>{category: "Sketch", type: ['motion'], timestamp: timestamp};
+            case InteractionEventType.QUERY_SEMANTIC:
+                return <AtomicEvent>{category: "Sketch", type: ['segmanticSegmentation'], timestamp: timestamp};
             case InteractionEventType.MLT:
                 return <AtomicEvent>{category: "Image", type: ['globalFeatures'], attributes: 'mlt', timestamp: timestamp};
             case InteractionEventType.QUERY_TAG:

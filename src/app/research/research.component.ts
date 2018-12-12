@@ -64,6 +64,8 @@ export class ResearchComponent implements OnInit {
                         return new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context);
                     case "MODEL3D":
                         return new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context);
+                    case "SEMANTIC":
+                       return new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context);
                     case "TEXT":
                         context.set("q:value", t.data);
                         return new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context);

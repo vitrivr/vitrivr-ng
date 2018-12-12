@@ -6,6 +6,7 @@ export enum InteractionEventType {
     QUERY_MODEL3D,
     QUERY_FULLTEXT,
     QUERY_TAG,
+    QUERY_SEMANTIC,
     MLT,
     CLEAR,
     REFINE,
