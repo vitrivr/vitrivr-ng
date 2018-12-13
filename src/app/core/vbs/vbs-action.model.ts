@@ -76,7 +76,7 @@ export class VbsSubmission implements Submission {
                 if (c === 'tagsft') event.type.push('concept');
                 if (c === 'captioning') event.type.push('caption');
                 if (c === 'audio') event.type.push('custom');
-                break;
+                return event;
             }
             case InteractionEventType.QUERY_IMAGE: {
                 const event = <AtomicEvent>{category: "Image", type: ['globalFeatures'], attributes: "", timestamp: timestamp};
@@ -84,7 +84,7 @@ export class VbsSubmission implements Submission {
                 if (c.indexOf("globalcolor") > -1 || c.context.get("q:categories").indexOf("localcolor") > -1) event.attributes += ("color;");
                 if (c.indexOf("edge") > -1) event.attributes += ("edge;");
                 if (c.indexOf("localfeatures") > -1) event.attributes += ("keypoints;");
-                break;
+                return event;
             }
             case InteractionEventType.FILTER:
                 return <AtomicEvent>{category: "Filter", type: [component.context.get("f:type")], timestamp: timestamp};
