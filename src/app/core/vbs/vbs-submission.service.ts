@@ -129,7 +129,7 @@ export class VbsSubmissionService {
 
                 /* Prepare VBS submission. */
                 params = params.set('iseq', JSON.stringify(iseq));
-                let headers = new HttpHeaders().append("Content-Type","application/json; charset=UTF-8");
+                let headers = new HttpHeaders().append("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
                 let observable = this._http.post(String(endpoint), params.toString(), {responseType: 'text', headers: headers});
 
                 console.log(`Submitting video to VBS; id: ${videoId}, frame: ${frame}`);
