@@ -121,15 +121,20 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
     /**
      * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
      *
+     * @param {MouseEvent} event
      * @param {SegmentScoreContainer} segment
      */
-    public onTileClicked(segment: SegmentScoreContainer) {
-        let dialogRef = this._dialog.open(QuickViewerComponent, {data: segment});
-
-        /* Emit an EXAMINE event on the bus. */
-        let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediasegment", segment.segmentId);
-        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
+    public onTileClicked(event: MouseEvent, segment: SegmentScoreContainer) {
+        if (event.shiftKey) {
+            /* Shift-Click will trigger VBS submit. */
+            this._vbs.submitSegment(segment);
+        } else {
+            /* Normal click will display item. */
+            this._dialog.open(QuickViewerComponent, {data: segment});
+            let context: Map<ContextKey, any> = new Map();
+            context.set("i:mediasegment", segment.segmentId);
+            this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
+        }
     }
     
     /**

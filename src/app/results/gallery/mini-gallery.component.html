@@ -4,7 +4,7 @@
 
 <div class="mini-gallery" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
     <div class="segment" *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, segment.objectScoreContainer)" [style.background]="backgroundForSegment(segment)">
-        <img src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked(segment)"/>
+        <img src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked($event, segment)"/>
 
         <div  *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
             <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(segment,tag)" (contextmenu)="onHighlightButtonRightClicked($event, segment,tag)">
