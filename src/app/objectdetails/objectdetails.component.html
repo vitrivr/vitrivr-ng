@@ -25,8 +25,6 @@
                 <dd><a href="{{_resolver.pathToObject((mediaobject|async))}}" download>{{((mediaobject|async)).path}}</a></dd>
                 <dt>Mediatype</dt>
                 <dd>{{(mediaobject|async).mediatype}}</dd>
-                <!-- <dt style="margin-top: 16px" *ngIf="(mediaobject|async).mediatype == 'IMAGE'">Tools</dt>-->
-                <!--<dd *ngIf="(mediaobject|async).mediatype == 'IMAGE'"><button mat-icon-button  matTooltip="Crop Image"><mat-icon>crop</mat-icon></button></dd>-->
             </dl>
         </div>
     </div>
@@ -34,7 +32,7 @@
     <mat-tab-group>
         <mat-tab label="Segments ({{(mediaobject|async).segments.length}})">
             <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
-                <div *ngFor="let segment of (mediaobject|async).segments | OrderByScorePipe" fxFlex="200px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
+                <div *ngFor="let segment of ((mediaobject|async).segments | OrderByScorePipe)" fxFlex="200px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
                     <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                         <p [style.margin]="'0'">{{segment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
                         <p [style.margin]="'0'" *ngIf="segment.endabs > 0">{{segment.startabs.toFixed(2)}}-{{segment.endabs.toFixed(2)}}</p>
@@ -49,7 +47,7 @@
                 </div>
             </div>
         </mat-tab>
-        <mat-tab label="Metadata ({{(metadata|async) ? (metadata|async).length : 0}})">
+        <mat-tab label="Metadata ({{(metadata|async).length}})">
             <mat-list>
                 <mat-list-item *ngFor="let metadatum of (metadata|async)">
                     <h4 mat-line><strong>{{metadatum.domain}}:{{metadatum.key}}</strong></h4>

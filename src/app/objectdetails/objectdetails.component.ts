@@ -9,10 +9,9 @@ import {SegmentScoreContainer} from "../shared/model/results/scores/segment-scor
 import {Location} from "@angular/common";
 import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-object-score-container.model";
-import {ImagecropComponent} from "./imagecrop.component";
 import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
 import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
-import {EMPTY, Observable, of} from "rxjs";
+import {EMPTY, Observable} from "rxjs";
 import {HtmlUtil} from "../shared/util/html.util";
 import {catchError, filter, first, flatMap, map, tap} from "rxjs/operators";
 
@@ -34,9 +33,6 @@ export class ObjectdetailsComponent {
     /* */
     @ViewChild('imageviewer')
     private imageviewer: any;
-
-    /** The observable that returns the objectID provided by the ActivatedRoute service. */
-    private _objectIdObservable : Observable<string>;
 
     /** The observable that provides the MediaObjectMetadata for the active object. */
     private _metadataObservable : Observable<MediaObjectMetadata[]>;
@@ -67,8 +63,9 @@ export class ObjectdetailsComponent {
 
 
         /** Generate observables required to create the view. */
-        this._objectIdObservable = _route.params.pipe(
+        let objectIdObservable = _route.params.pipe(
             map(p => p['objectId']),
+            filter(p => p != null),
             tap(objectID => {
                 if (!_query.results || !_query.results.hasObject(objectID)) {
                     throw new Error(`The provided objectId ${objectID} does not exist in the results. Returning to gallery...`);
@@ -76,18 +73,15 @@ export class ObjectdetailsComponent {
             }),
             catchError((err, obs) => {
                 _snackBar.open(err.message,'',<MatSnackBarConfig>{duration: 2500});
-                _router.navigate(['/gallery']);
+                _router.navigate(['/mini-gallery']);
                 return EMPTY;
-            }),
-            first()
+            })
         );
-        this._metadataObservable = this._objectIdObservable.pipe(
-            filter(objectId => objectId != null),
+        this._metadataObservable = objectIdObservable.pipe(
             flatMap(objectId => _metadataLookup.lookup(objectId)),
             map(v => v.content)
         );
-        this._mediaObjectObservable = this._objectIdObservable.pipe(
-            filter(objectId => objectId != null),
+        this._mediaObjectObservable = objectIdObservable.pipe(
             map(objectId => _query.results.getObject(objectId))
         );
     }
@@ -135,21 +129,6 @@ export class ObjectdetailsComponent {
      */
     public onBackClick() {
         this._location.back()
-    }
-
-    public onImageViewerClicked(object: MediaObjectScoreContainer) {
-        const imagePath = this._resolver.pathToObject(object);
-        const dialogRef = this._dialog.open(ImagecropComponent, {data : imagePath});
-        dialogRef.afterClosed().pipe(first()).subscribe(() => {});
-    }
-
-    /**
-     * Getter for the local _objectIdObservable.
-     *
-     * @returns {MediaObject}
-     */
-    get objectId(): Observable<string> {
-        return this._objectIdObservable;
     }
 
     /**
