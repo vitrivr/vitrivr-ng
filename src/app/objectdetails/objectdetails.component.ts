@@ -1,6 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {MediaObjectMetadata} from "../shared/model/media/media-object-metadata.model";
 import {MetadataLookupService} from "../core/lookup/metadata-lookup.service";
 import {QueryService} from "../core/queries/query.service";
 import {MediaObject} from "../shared/model/media/media-object.model";
@@ -13,7 +12,7 @@ import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-
 import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
 import {EMPTY, Observable} from "rxjs";
 import {HtmlUtil} from "../shared/util/html.util";
-import {catchError, filter, first, flatMap, map, tap} from "rxjs/operators";
+import {catchError, filter, map, tap} from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
@@ -33,9 +32,6 @@ export class ObjectdetailsComponent {
     /* */
     @ViewChild('imageviewer')
     private imageviewer: any;
-
-    /** The observable that provides the MediaObjectMetadata for the active object. */
-    private _metadataObservable : Observable<MediaObjectMetadata[]>;
 
     /** The observable that provides the MediaObjectMetadata for the active object. */
     private _mediaObjectObservable : Observable<MediaObjectScoreContainer>;
@@ -76,10 +72,6 @@ export class ObjectdetailsComponent {
                 _router.navigate(['/mini-gallery']);
                 return EMPTY;
             })
-        );
-        this._metadataObservable = objectIdObservable.pipe(
-            flatMap(objectId => _metadataLookup.lookup(objectId)),
-            map(v => v.content)
         );
         this._mediaObjectObservable = objectIdObservable.pipe(
             map(objectId => _query.results.getObject(objectId))
@@ -138,15 +130,6 @@ export class ObjectdetailsComponent {
      */
     get mediaobject(): Observable<MediaObjectScoreContainer> {
         return this._mediaObjectObservable;
-    }
-
-    /**
-     * Getter for the local _metadataObservable.
-     *
-     * @returns {MediaObjectMetadata[]}
-     */
-    get metadata(): Observable<MediaObjectMetadata[]> {
-        return this._metadataObservable;
     }
 
     /**

@@ -47,10 +47,10 @@
                 </div>
             </div>
         </mat-tab>
-        <mat-tab label="Metadata ({{(metadata|async).length}})">
+        <mat-tab label="Metadata ({{(mediaobject|async).metadata.size}})">
             <mat-list>
-                <mat-list-item *ngFor="let metadatum of (metadata|async)">
-                    <h4 mat-line><strong>{{metadatum.domain}}:{{metadatum.key}}</strong></h4>
+                <mat-list-item *ngFor="let metadatum of (mediaobject|async).metadata | keyvalue">
+                    <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
                     <p mat-line style="white-space: pre-wrap;" [innerHTML]="textWithLink(metadatum.value)"></p>
                 </mat-list-item>
             </mat-list>
