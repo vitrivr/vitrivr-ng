@@ -69,7 +69,7 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @param {Config} config
      */
     public apply(config: Config) {
-        fromPromise(this._configTable.put(config)).subscribe(c => this.next(config))
+        fromPromise(this._configTable.put(config,Config.DB_KEY)).subscribe(c => this.next(config))
     }
 
     /**
@@ -80,8 +80,8 @@ export class ConfigService extends BehaviorSubject<Config> {
     private loadFromDatabase(): Observable<Config> {
         return fromPromise(this._configTable.get(Config.DB_KEY)).pipe(
             map((r: Object) => {
-                if (r) {
-                    return Config.deserialize(r)
+                if (r["_config"]) {
+                    return Config.deserialize(r["_config"])
                 } else {
                     return null;
                 }
