@@ -97,7 +97,7 @@ export class Config {
         if (evaluation) Config.merge(this._config.evaluation, evaluation);
         if (query) Config.merge(this._config.query, query);
         if (vbs) Config.merge(this._config.vbs, vbs);
-        if (tags) this._config.tags = tags;
+        if (tags) Config.merge(this._config.tags, tags);
         if (mlt) this._config.mlt = mlt;
     }
 

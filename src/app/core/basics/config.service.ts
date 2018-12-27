@@ -5,7 +5,7 @@ import {Config} from "../../shared/model/config/config.model";
 import {Observable} from "rxjs";
 import {UUIDGenerator} from "../../shared/util/uuid-generator.util";
 import {fromPromise} from "rxjs/internal-compatibility";
-import {first, flatMap, map, tap} from "rxjs/operators";
+import {filter, first, flatMap, map, tap} from "rxjs/operators";
 import {DatabaseService} from "./database.service";
 
 import Dexie from "dexie";
@@ -79,13 +79,8 @@ export class ConfigService extends BehaviorSubject<Config> {
      */
     private loadFromDatabase(): Observable<Config> {
         return fromPromise(this._configTable.get(Config.DB_KEY)).pipe(
-            map((r: Object) => {
-                if (r["_config"]) {
-                    return Config.deserialize(r["_config"])
-                } else {
-                    return null;
-                }
-            }),
+            filter(r => r && r["_config"]),
+            map((r: Object) => Config.deserialize(r["_config"])),
             first()
         );
     }
