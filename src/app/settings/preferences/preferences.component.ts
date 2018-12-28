@@ -50,6 +50,33 @@ export class PreferencesComponent {
     }
 
     /**
+     * Getter for Cineast endpoint
+     *
+     * @return {Observable<string>}
+     */
+    get cineastEndpoint(): Observable<string> {
+        return this._config.pipe(map(c => c.endpoint_ws));
+    }
+
+    /**
+     * Getter for thumbnail host.
+     *
+     * @return {Observable<string>}
+     */
+    get hostThumbnails(): Observable<string> {
+        return this._config.pipe(map(c => c.get<string>('resources.host_thumbnails')));
+    }
+
+    /**
+     * Getter for media object host
+     *
+     * @return {Observable<string>}
+     */
+    get hostObjects(): Observable<string> {
+        return this._config.pipe(map(c => c.get<string>('resources.host_objects')));
+    }
+
+    /**
      * Getter for whether or not the inexact-hint in the current QueryConfig is active.
      *
      * @return {Observable<boolean>}
