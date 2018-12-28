@@ -105,8 +105,8 @@ export class FilterService {
      * Clears all filters. Causes an update to be published.
      */
     public clear() {
-        this._mediatypes.forEach((v,k) => this._mediatypes.set(k, true));
-        this._dominant.forEach((v,k) => this._dominant.set(k, true));
+        this._mediatypes.forEach((v,k) => this._mediatypes.set(k, false));
+        this._dominant.forEach((v,k) => this._dominant.set(k, false));
         this._threshold = 0.0;
         this.update()
     }
