@@ -4,7 +4,7 @@ import {BehaviorSubject} from "rxjs";
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
 import {Inject, Injectable} from "@angular/core";
 import {ConfigService} from "../basics/config.service";
-import {filter, map} from "rxjs/operators";
+import {filter, tap} from "rxjs/operators";
 import {Config} from "../../shared/model/config/config.model";
 import {webSocket} from "rxjs/webSocket";
 
@@ -23,10 +23,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
         super(null);
         this._configService.pipe(
             filter(c => c.endpoint_ws != null),
-            map(c => {
-                this._config = c;
-            })
-        ).subscribe(ws => this.connect())
+        ).subscribe(c => this.connect(c))
     }
 
     /**
@@ -35,8 +32,15 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
      *
      * @returns {any}
      */
-    public connect(): boolean {
-        if (!this._config) return false;
+    public connect(c: Config): boolean {
+
+        /* Check if connection has changed. */
+        if (this._config && this._config.endpoint_ws == c.endpoint_ws) {
+            return false;
+        }
+
+        /* Update local config instance. */
+        this._config = c;
 
         /* If there is an active WebSocketSubject then disconnect it. */
         if (this.getValue() != null) {
