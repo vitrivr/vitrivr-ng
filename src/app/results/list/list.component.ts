@@ -98,7 +98,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @param {SegmentScoreContainer} segment
      */
     public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
-        this._queryService.findNeighboringSegments(segment.segmentId);
+        this._queryService.lookupNeighboringSegments(segment.segmentId);
         let context: Map<ContextKey,any> = new Map();
         context.set("i:mediasegment", segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
@@ -112,7 +112,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @param {SegmentScoreContainer} segment
      */
     public onNeighborsButtonRightClicked(event: Event, segment: SegmentScoreContainer) {
-        this._queryService.findNeighboringSegments(segment.segmentId, 500);
+        this._queryService.lookupNeighboringSegments(segment.segmentId, 500);
         let context: Map<ContextKey,any> = new Map();
         context.set("i:mediasegment", segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
