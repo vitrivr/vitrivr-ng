@@ -1,5 +1,5 @@
 import {Inject, Injectable} from "@angular/core";
-import {Observable, Subscription} from "rxjs";
+import {Observable} from "rxjs";
 import {Subject} from "rxjs";
 
 import {Message} from "../../shared/model/messages/interfaces/message.interface";
@@ -25,6 +25,7 @@ import {ObjectMetadataQueryResult} from "../../shared/model/messages/interfaces/
 import {HistoryService} from "./history.service";
 import {HistoryContainer} from "../../shared/model/internal/history-container.model";
 import {WebSocketSubject} from "rxjs/webSocket";
+import {SegmentQuery} from "../../shared/model/messages/queries/segment-query.model";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -92,9 +93,9 @@ export class QueryService {
     }
 
     /**
-     * Starts a new MoreLikeThis query. Success is indicated by the return value.
+     * Starts a new More-Like-This query. Success is indicated by the return value.
      *
-     * Note: Similarity queries can only be started if no query is currently running.
+     * Note: More-Like-This queries can only be started if no query is currently running.
      *
      * @param segmentId The ID of the segment that should serve as example.
      * @param categories Optional list of category names that should be used for More-Like-This.
@@ -117,18 +118,36 @@ export class QueryService {
     }
 
     /**
-     * Starts a new MoreLikeThis query. Success is indicated by the return value. The results of this query will always
-     * be appended to the existing result set!
+     * Performs a lookup for the (temporal) neighbours of a specific segment. Success is indicated by the return value.
      *
-     * Note: Queries can only be started if no query is currently ongoing.
+     * Note: It is always possible to perform a lookup, as long a query has already been issued. Result of the lookup
+     * will be added to the current results.
      *
      * @param {string} segmentId The ID of the segment for which neighbors should be fetched.
-     * @param {number} count Number of segments on each side.
+     * @param {number} count Number of segments on EACH side.
+     * @returns {boolean} true if query was issued, false otherwise.
      */
-    public findNeighboringSegments(segmentId: string, count?: number) {
+    public lookupNeighboringSegments(segmentId: string, count?: number) {
         if (!this._results) return false;
         if (!this._socket) return false;
         this._socket.next(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
+        return true;
+    }
+
+    /**
+     * Performs a lookup for a specific segment.
+     *
+     * Note: It is always possible to perform a lookup, as long a query has already been issued. Result of the lookup
+     * will be added to the current results.
+     *
+     * @param segmentId The segmentId of the segment that is required.
+     * @returns {boolean} true if query was issued, false otherwise.
+     */
+    public lookupSegment(segmentId: string) {
+        if (!this._results) return false;
+        if (!this._socket) return false;
+        this._socket.next(new SegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId)));
+        return true;
     }
 
     /**
