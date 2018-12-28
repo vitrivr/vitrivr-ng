@@ -27,12 +27,10 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
     }
 
     /**
-     * Establishes a connection to the provided endpoint and creates a new WebSocketWrapper. If the active WebSocketWrapper instance is
-     * connected, that connection is dropped. Hence, it is advisable to check the WebSocketWrapper's status before using this method.
-     *
-     * @returns {any}
+     * Establishes a connection to the provided endpoint using the provided config. Connection is only established if
+     * endpoint config has changed.
      */
-    public connect(c: Config): boolean {
+    private connect(c: Config){
 
         /* Check if connection has changed. */
         if (this._config && this._config.endpoint_ws == c.endpoint_ws) {
@@ -42,6 +40,14 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
         /* Update local config instance. */
         this._config = c;
 
+        /* Reconnect. */
+        this.reconnect()
+    }
+
+    /**
+     * Reconnects the WebSocket using the current settings. If the active WebSocket instance is connected, that connection is dropped.
+     */
+    public reconnect(){
         /* If there is an active WebSocketSubject then disconnect it. */
         if (this.getValue() != null) {
             this.getValue().complete();
@@ -75,6 +81,5 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
 
         /* Publish next WebSocketSubject. */
         this.next(webSocket(config));
-        return true;
     }
 }

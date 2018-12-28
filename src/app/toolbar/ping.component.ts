@@ -58,7 +58,7 @@ export class PingComponent {
      * Tries to re-connect to the Cineast service.
      */
     public reconnectCineast() {
-        this._factory.connect();
+        this._factory.reconnect();
     }
 
     /**
@@ -81,8 +81,6 @@ export class PingComponent {
      * @returns {number}
      */
     get latency() {
-        return this._ping.asObservable().pipe(
-            map(s => s.latency)
-        )
+        return this._ping.asObservable().pipe(map(s => s.latency))
     }
 }
