@@ -7,7 +7,7 @@
 <div *ngIf="(selection | async).size > 0">
     <mat-list>
         <mat-list-item *ngFor="let current of (selection | async).entries()">
-           {{current[0]}}
+            <button mat-flat-button (click)="onSegmentClicked(current[0])">{{current[0]}}</button>
             <button mat-icon-button *ngFor="let tag of current[1].entries()" (click)="onTagButtonClicked(current[0],tag[0])">
                 <mat-icon [style.color]="tag[0].colorForRelevance(1.0)">album</mat-icon>
             </button>
