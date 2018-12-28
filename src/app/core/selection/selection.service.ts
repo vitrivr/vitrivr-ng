@@ -27,7 +27,7 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
         super(new Map());
         _config.subscribe(c => {
             this._available.length = 0;
-            c.get<Tag[]>('tags').forEach(t => this._available.push(t));
+            c.get<Tag[]>('tags').forEach(t => this._available.push(new Tag(t.name, t.hue)));
         });
 
         /* Register listener for Collabordinator. */
