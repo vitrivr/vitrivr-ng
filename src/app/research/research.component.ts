@@ -8,6 +8,7 @@ import {InteractionEventType} from "../shared/model/events/interaction-event-typ
 import {InteractionEvent} from "../shared/model/events/interaction-event.model";
 import {from} from "rxjs";
 import {bufferCount, flatMap, map} from "rxjs/operators";
+import {FilterService} from "../core/queries/filter.service";
 
 
 @Component({
@@ -26,9 +27,10 @@ export class ResearchComponent implements OnInit {
      * Constructor for ResearchComponent. Injects the gloal QueryService and EventBusService instance.
      *
      * @param _queryService QueryService instance (Singleton) used to issue queries.
+     * @param _filterService FilterService instance (Singleton) used for when user hits the clear all button.
      * @param _eventBus EventBusService instance (Singleton) used to publish user interaction information.
      */
-    constructor(private _queryService: QueryService, private _eventBus: EventBusService) {}
+    constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService) {}
 
     /**
      * Lifecycle Callback (OnInit): Adds a new QueryTermContainer.
@@ -83,6 +85,7 @@ export class ResearchComponent implements OnInit {
      */
     public onClearAllClicked() {
         this._queryService.clear();
+        this._filterService.clear();
         this.containers.length = 0;
         this.addQueryTermContainer();
         this._eventBus.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.CLEAR)));
