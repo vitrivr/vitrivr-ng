@@ -107,6 +107,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
         if (!this._queryService.results) return;
         this._filterService.mediatypes.set(type, event.checked);
         this._filterService.update();
+        let context: Map<ContextKey,string> = new Map();
+        context.set("f:type","mediaType");
+        context.set("f:value", `${event.checked ? '+' : '-'}${type.toLowerCase()}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
     }
 
@@ -123,6 +126,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
         this._filterService.update();
         let context: Map<ContextKey,string> = new Map();
         context.set("f:type","dominantColor");
+        context.set("f:value", `${event.checked ? '+' : '-'}${color.toLowerCase()}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER, context)));
     }
 
@@ -134,6 +138,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
         this._filterService.update();
         let context: Map<ContextKey,string> = new Map();
         context.set("f:type","scoreThreshold");
+        context.set("f:value", `${event.value}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER, context)));
     }
 
