@@ -68,33 +68,37 @@ export class VbsSubmission implements Submission {
             case InteractionEventType.QUERY_TAG:
                 return <AtomicEvent>{category: "Text", type: ['concept'], value: component.context.get("q:value"), timestamp: timestamp};
             case InteractionEventType.QUERY_FULLTEXT: {
-                const event = <AtomicEvent>{category: "Text", type: []};
+                const event = <AtomicEvent>{category: "Text", type: [], value: component.context.get("q:value")};
                 const c = component.context.get("q:categories");
-                if (c === 'ocr') event.type.push('ocr');
-                if (c === 'asr') event.type.push('asr');
-                if (c === 'meta') event.type.push('metadata');
-                if (c === 'tagsft') event.type.push('concept');
-                if (c === 'captioning') event.type.push('caption');
-                if (c === 'audio') event.type.push('custom');
+                if (c.indexOf('ocr') > -1) event.type.push('ocr');
+                if (c.indexOf('asr') > -1) event.type.push('asr');
+                if (c.indexOf('meta') > -1) event.type.push('metadata');
+                if (c.indexOf('tagsft') > -1) event.type.push('concept');
+                if (c.indexOf('captioning') > -1) event.type.push('caption');
+                if (c.indexOf('audio') > -1) event.type.push('custom');
                 return event;
             }
             case InteractionEventType.QUERY_IMAGE: {
-                const event = <AtomicEvent>{category: "Image", type: ['globalFeatures'], attributes: "", timestamp: timestamp};
                 const c = component.context.get("q:categories");
-                if (c.indexOf("globalcolor") > -1 || c.context.get("q:categories").indexOf("localcolor") > -1) event.attributes += ("color;");
-                if (c.indexOf("edge") > -1) event.attributes += ("edge;");
-                if (c.indexOf("localfeatures") > -1) event.attributes += ("keypoints;");
+                const event = <AtomicEvent>{category: "Sketch", type: [], timestamp: timestamp};
+                if ((c.indexOf("localfeatures") === -1)) {
+                    if (c.indexOf("globalcolor") > -1 || c.context.get("q:categories").indexOf("localcolor") > -1) event.type.push("color");
+                    if (c.indexOf("edge") > -1) event.type.push("edge");
+                } else {
+                    event.category = "Image";
+                    event.type.push("localFeatures", "globalFeatures");
+                }
                 return event;
             }
             case InteractionEventType.FILTER:
-                return <AtomicEvent>{category: "Filter", type: [component.context.get("f:type")], timestamp: timestamp};
+                return <AtomicEvent>{category: "Filter", type: [component.context.get("f:type")], value: component.context.get("f:value"), timestamp: timestamp};
             case InteractionEventType.EXPAND:
                 return <AtomicEvent>{category: "Browsing", type: ['temporalContext'], timestamp: timestamp};
             case InteractionEventType.REFINE:
                 let weights = component.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weight / 100).join(",");
                 return <AtomicEvent>{category: "Browsing", type: ['explicitSort'], attributes: "adjust weights," + weights, timestamp: timestamp};
             case InteractionEventType.EXAMINE:
-                return <AtomicEvent>{category: "Browsing", type: ['videoPlayer'], value: `play ${component.context.get("i:mediasegment")}`, timestamp: timestamp};
+                return <AtomicEvent>{category: "Browsing", type: ['videoPlayer'], value: component.context.get("i:mediasegment"), timestamp: timestamp};
             case InteractionEventType.SCROLL:
                 return <AtomicEvent>{category: "Browsing", type: ['rankedList'], timestamp: timestamp};
             case InteractionEventType.CLEAR:
