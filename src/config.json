@@ -6,31 +6,53 @@
     "protocol_ws": "ws",
     "ping_interval": 10000
   },
-
   "resources": {
-    "host_thumbnails" : "http://127.0.0.1/vitrivr/thumbnails/:t/:o/:s:x",
-    "host_objects": "http://127.0.0.1/vitrivr/objects/:t/:n",
-    "suffix_default":".jpg",
+    "host_thumbnails" : "http://127.0.0.1/thumbnails/:o/:s:x",
+    "host_objects": "http://127.0.0.1/videos/:o.mp4",
+    "suffix_default":"jpg",
     "suffix": {
-      "IMAGE": "png",
-      "VIDEO": "png"
+      "IMAGE": "jpg",
+      "VIDEO": "jpg"
     }
   },
+  "vbs": {
+    "teamid": null,
+    "toolid": null,
+    "endpoint": null,
+    "collabordinator": null
+  },
   "evaluation": {
-    "active":false
+    "active":false,
+    "templates": [
+      {
+        "name": "Test","url": "http://localhost:4200/evaluation.json"
+      }
+    ]
   },
   "mlt" : ["globalcolor", "localcolor", "edge"],
   "query": {
+    "history": 5,
     "options": {
       "image": true,
-      "audio": true,
-      "model3d": true,
-      "motion": true,
+      "audio": false,
+      "model3d": false,
+      "motion": false,
       "text": true,
-      "tag": true
+      "tag": false,
+      "semantic": true
     },
     "config": {
       "hints": ["exact"]
+    },
+    "text": {
+      "categories": [
+        ["ocr", "Text on Screen"],
+        ["asr", "Subtitles"],
+        ["meta", "Metadata"],
+        ["tagsft", "Tags"],
+        ["captioning", "Captioning"],
+        ["audio", "Audio"]
+      ]
     }
   }
 }
