@@ -20,7 +20,7 @@ import {filter} from "rxjs/operators";
 import {FilterService} from "../core/queries/filter.service";
 
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy  {
-    /* Indicator whether the progress bar should be visible. */
+    /** Indicator whether the progress bar should be visible. */
     private _loading : boolean = false;
 
     /** Local reference to the subscription to the QueryService. */
