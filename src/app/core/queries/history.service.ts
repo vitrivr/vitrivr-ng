@@ -4,9 +4,11 @@ import {ResultsContainer} from "../../shared/model/results/scores/results-contai
 import {HistoryContainer} from "../../shared/model/internal/history-container.model";
 import Dexie from "dexie";
 import {fromPromise} from "rxjs-compat/observable/fromPromise";
-import {flatMap} from "rxjs/operators";
+import {first, flatMap, map} from "rxjs/operators";
 import {EMPTY, Observable} from "rxjs";
 import {DatabaseService} from "../basics/database.service";
+import {Config} from "../../shared/model/config/config.model";
+import * as JSZip from "jszip";
 
 /**
  * This service keeps a history of query results and persists them event across session. It allows the user to
@@ -92,6 +94,30 @@ export class HistoryService {
      */
     public clear() {
         fromPromise(this._historyTable.clear()).subscribe();
+    }
+
+    /**
+     * Downloads the entire history.
+     */
+    public download() {
+        fromPromise(this._historyTable.orderBy('id').toArray())
+        .pipe(
+            first(),
+            map(h => {
+                let zip = new JSZip();
+                let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
+                zip.file("vitrivrng-history.json", JSON.stringify(h, null, 2), options)
+                return zip
+            })
+        )
+        .subscribe(zip => {
+            zip.generateAsync({type:"blob"}).then(
+            (result) => {
+                window.open(window.URL.createObjectURL(result));
+            },
+            (error) => {
+                console.log(error);}
+        )});
     }
 
     /**

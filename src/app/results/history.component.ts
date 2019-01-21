@@ -11,8 +11,11 @@ import {QueryService} from "../core/queries/query.service";
         <div [style.display]="'flex'">
             <h2 class="mat-h2">Query history</h2>
             <span class="spacer-flex"></span>
-            <button mat-icon-button>
-                <mat-icon matTooltip="Clears the query history." (click)="clear()">delete</mat-icon>
+            <button mat-icon-button matTooltip="Clears the query history." (click)="clear()">
+                <mat-icon >delete</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Downloads the entire history as ZIP file." (click)="download()" >
+                <mat-icon>cloud_download</mat-icon>
             </button>
         </div>
         <mat-nav-list *ngIf="(count|async) > 0">
@@ -75,6 +78,13 @@ export class HistoryComponent {
         this._service.clear();
         this._count = this._service.count;
         this._history = this._service.list;
+    }
+
+    /**
+     * Downloads the history as a ZIP file.
+     */
+    public download() {
+        this._service.download();
     }
 
     /**
