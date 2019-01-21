@@ -256,22 +256,4 @@ export class Config {
     get suffix(): any {
         return this._config.resources.suffix;
     }
-
-    /**
-     * Returns true, if the evaluation modules is on and false otherwise.
-     *
-     * @return {boolean}
-     * @deprecated
-     */
-    get evaluationOn(): boolean {
-        return this._config.evaluation.active;
-    }
-    /**
-     *
-     * @return {Array}
-     * @deprecated
-     */
-    get evaluationTemplates(): any {
-        return this._config.evaluation.templates;
-    }
 }
