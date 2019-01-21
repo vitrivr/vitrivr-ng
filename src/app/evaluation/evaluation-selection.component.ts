@@ -1,16 +1,16 @@
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component} from "@angular/core";
 import {Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material";
 import {ConfigService} from "../core/basics/config.service";
 import {UUIDGenerator} from "../shared/util/uuid-generator.util";
-import {Subscription} from "rxjs";
+import {first} from "rxjs/operators";
 
 @Component({
     moduleId: module.id,
     selector: 'evaluation-selection',
     templateUrl: 'evaluation-selection.component.html'
 })
-export class EvaluationSelectionComponent implements OnInit, OnDestroy {
+export class EvaluationSelectionComponent {
 
     /** Model for the URL field. Contains the URL to the evaluation template. */
     public urlFieldValue : string;
@@ -27,9 +27,6 @@ export class EvaluationSelectionComponent implements OnInit, OnDestroy {
     /** Evaluation ID generated when loading this component. This ID will be used to identify a participant. */
     public readonly randomId;
 
-    /** Reference to the ConfigService subscription. */
-    private _configServiceSubscription: Subscription;
-
     /**
      *
      * @param _configService
@@ -38,25 +35,11 @@ export class EvaluationSelectionComponent implements OnInit, OnDestroy {
      */
     constructor(private _configService: ConfigService, private _router: Router, private snackBar: MatSnackBar) {
         this.randomId = UUIDGenerator.suid();
-    }
-
-    /**
-     * Lifecycle Hook (onInit): Subscribes to the ConfigService.
-     */
-    public ngOnInit(): void {
-        this._configServiceSubscription = this._configService.observable.subscribe((config) => {
-            if (config.evaluationOn == true) {
-                this.templates = config.evaluationTemplates;
+        this._configService.pipe(first()).subscribe((config) => {
+            if (config.get<boolean>('evaluation.active') == true) {
+                this.templates = config.get<string[]>('evaluation.templates');
             }
         });
-    }
-
-    /**
-     * Lifecycle Hook (onDestroy): Unsubscribes from the ConfigService.
-     */
-    public ngOnDestroy(): void {
-        this._configServiceSubscription.unsubscribe();
-        this._configServiceSubscription = null;
     }
 
     /**

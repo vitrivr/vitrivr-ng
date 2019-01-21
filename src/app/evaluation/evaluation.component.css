@@ -1,3 +1,5 @@
+
+
 .bar {
     position: sticky;
     background-color: #ffffff;
@@ -16,12 +18,21 @@
     margin-top: 45px;
 }
 
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,250px);
+    grid-template-rows: repeat(auto-fill,250px);
+    grid-auto-flow: row;
+    grid-row-gap: 10px;
+    grid-column-gap: 10px;
+}
+
 .tile {
-    width: 250px;
-    height: 250px;
-    margin-bottom: 25px;
     box-shadow: 0.15em 0.15em 0.05em 0 rgba(0, 0, 0, 0.4); /* The top layer shadow */
     position: relative;
+    background: url('../../assets/images/loading.png') no-repeat center;
+    height: 250px;
+    width: 250px;
 }
 
 .tile .tile-header {

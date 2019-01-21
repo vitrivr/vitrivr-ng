@@ -54,12 +54,12 @@
     <!-- For ongoing evaluations, display the default gallery. -->
     <div *ngIf="display() == 'GALLERY'" style="padding:10px;">
 
-        <p class="background-prompt" *ngIf="mediaobjects.length == 0 && !loading">No results available. Please start a search...</p>
+        <p class="background-prompt" *ngIf="!(dataSource | async) && !loading">No results available. Please start a search...</p>
 
-        <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><mat-spinner></mat-spinner></p>
+        <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
-        <div class="gallery" xLayout="row" fxLayoutWrap fxLayoutGap="15px" fxLayoutAlign="space-between start">
-            <div  *ngFor="let mediaobject of mediaobjects" fxFlex="250px" class="tile" draggable="true" (mouseenter)="setFocus(mediaobject)" (mouseleave)="setFocus(null)" (dragstart)="onTileDrag($event, mediaobject)">
+        <div class="gallery" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
+            <div  *ngFor="let mediaobject of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count" class="tile" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject)">
                 <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                     <div class="filename" [attr.class]="objectCanBeRated(mediaobject) ? 'filename-rateable' : 'filename'">{{mediaobject.name}}</div>
                     <div class="score">
@@ -71,14 +71,14 @@
                     </div>
                 </div>
 
-                <img src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, mediaobject.representativeSegment.mediaSegment)}}" [style.width]="'100%'" [style.height]="'100%'" (click)="onDetailsButtonClicked(mediaobject)"/>
+                <img src="{{_resolver.pathToThumbnail(mediaobject, mediaobject.representativeSegment)}}" [style.width]="'100%'" [style.height]="'100%'" (click)="onDetailsButtonClicked(mediaobject)"/>
 
                 <div class="tile-footer" *ngIf="inFocus(mediaobject)" fxLayout fxLayoutAlign="space-between start">
                     <div *ngIf="objectCanBeRated(mediaobject)"  fxLayout fxLayoutAlign="start start">
-                        <div><button mat-icon-button (click)="onRateButtonClick(mediaobject, 0)" matTooltip="Not relevant"><mat-icon [style.color]="colorForButton(mediaobject, 0)">star_rate</mat-icon></button></div>
-                        <div><button mat-icon-button (click)="onRateButtonClick(mediaobject, 1)" matTooltip="Slightly relevant"><mat-icon [style.color]="colorForButton(mediaobject, 1)">star_rate</mat-icon></button></div>
-                        <div><button mat-icon-button (click)="onRateButtonClick(mediaobject, 2)" matTooltip="Very relevant"><mat-icon [style.color]="colorForButton(mediaobject, 2)">star_rate</mat-icon></button></div>
-                        <div><button mat-icon-button (click)="onRateButtonClick(mediaobject, 3)" matTooltip="Highly relevant"><mat-icon [style.color]="colorForButton(mediaobject, 3)">star_rate</mat-icon></button></div>
+                        <div><button mat-icon-button (click)="onRateButtonClick(mediaobject, 0)" matTooltip="Not relevant"><mat-icon [style.color]="colorForButton(mediaobject, 0) | async">star_rate</mat-icon></button></div>
+                        <div><button mat-icon-button (click)="onRateButtonClick(mediaobject, 1)" matTooltip="Slightly relevant"><mat-icon [style.color]="colorForButton(mediaobject, 1) | async">star_rate</mat-icon></button></div>
+                        <div><button mat-icon-button (click)="onRateButtonClick(mediaobject, 2)" matTooltip="Very relevant"><mat-icon [style.color]="colorForButton(mediaobject, 2) | async">star_rate</mat-icon></button></div>
+                        <div><button mat-icon-button (click)="onRateButtonClick(mediaobject, 3)" matTooltip="Highly relevant"><mat-icon [style.color]="colorForButton(mediaobject, 3) | async">star_rate</mat-icon></button></div>
                     </div>
 
                     <div *ngIf="!canBeRated()"><button mat-icon-button (click)="onMltButtonClicked(mediaobject.representativeSegment)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button></div>
