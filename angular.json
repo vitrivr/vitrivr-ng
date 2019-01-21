@@ -19,7 +19,8 @@
             "assets": [
               "src/assets",
               "src/favicon.ico",
-              "src/config.json"
+              "src/config.json",
+              "src/evaluation.json"
             ],
             "styles": [
               "src/vitrivr-theme.scss",
@@ -79,7 +80,8 @@
             "assets": [
               "src/assets",
               "src/favicon.ico",
-              "src/config.json"
+              "src/config.json",
+              "src/evaluation.json"
             ]
           }
         },
