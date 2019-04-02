@@ -4,6 +4,7 @@ import {ImageQueryTerm} from "./image-query-term.model";
 import {AudioQueryTerm} from "./audio-query-term.model";
 import {M3DQueryTerm} from "./m3d-query-term.model";
 import {QueryTermType} from "./interfaces/query-term-type.interface";
+import {BoolQueryTerm} from "./bool-query-term.model";
 import {MotionQueryTerm} from "./motion-query-term.model";
 import {TextQueryTerm} from "./text-query-term.model";
 import {TagQueryTerm} from "./tag-query-term.model";
@@ -52,6 +53,9 @@ export class QueryContainer implements QueryContainerInterface {
                 break;
             case "SEMANTIC":
                 this._terms_map.set(type, new SemanticQueryTerm());
+                break;
+            case "BOOL":
+                this._terms_map.set(type, new BoolQueryTerm());
                 break;
             default:
                 return false;

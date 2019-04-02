@@ -12,6 +12,7 @@ import {TextQueryTermModule} from "./text/text-query-term.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {TagQueryTermModule} from "./tag/tag-query-term.module";
 import {SemanticQueryTermModule} from "./semantic/semantic-query-term.module";
+import {BoolQueryTermModule} from './bool/bool-query-term.module';
 
 @NgModule({
     imports: [
@@ -25,7 +26,8 @@ import {SemanticQueryTermModule} from "./semantic/semantic-query-term.module";
         MotionQueryTermModule,
         TextQueryTermModule,
         TagQueryTermModule,
-        SemanticQueryTermModule
+        SemanticQueryTermModule,
+        BoolQueryTermModule
     ],
     declarations: [ QueryContainerComponent ],
     exports:      [ QueryContainerComponent ]

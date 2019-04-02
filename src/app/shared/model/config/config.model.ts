@@ -67,7 +67,8 @@ export class Config {
                 model3d: true,
                 motion: true,
                 text: true,
-                tag: true
+                tag: true,
+                bool: true
             },
             config: {
                 queryId: null,

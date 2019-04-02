@@ -39,7 +39,8 @@
       "motion": false,
       "text": true,
       "tag": false,
-      "semantic": true
+      "semantic": true,
+      "bool": true
     },
     "config": {
       "hints": ["exact"]

@@ -29,6 +29,10 @@
             <button *ngIf="(config|async).get('query.options.semantic')" (click)="onToggleButtonClicked('SEMANTIC')" class="icon-button" matTooltip="Toggle semantic sketch query term">
                 <mat-icon [attr.class]="containerModel.hasTerm('SEMANTIC') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">toys</mat-icon>
             </button>
+
+            <button *ngIf="true" (click)="onToggleButtonClicked('BOOL')" class="icon-button" matTooltip="Toggle boolean query term">
+                <mat-icon [attr.class]="containerModel.hasTerm('BOOL') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">code</mat-icon>
+            </button>
         </div>
         <div style="width:10%;">
             <button class="icon-button" (click)="onRemoveButtonClicked()" matTooltip="Remove query container"><mat-icon>close</mat-icon></button>
@@ -42,5 +46,6 @@
         <qt-text *ngIf="containerModel.hasTerm('TEXT')" [textTerm]="containerModel.getTerm('TEXT')"></qt-text>
         <qt-tag *ngIf="containerModel.hasTerm('TAG')" [tagTerm]="containerModel.getTerm('TAG')"></qt-tag>
         <qt-semantic *ngIf="containerModel.hasTerm('SEMANTIC')" [semanticTerm]="containerModel.getTerm('SEMANTIC')"></qt-semantic>
+        <app-qt-bool *ngIf="containerModel.hasTerm('BOOL')" [boolTerm]="containerModel.getTerm('BOOL')"></app-qt-bool>
     </mat-card-content>
 </mat-card>

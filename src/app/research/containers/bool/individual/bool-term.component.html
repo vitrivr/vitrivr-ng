@@ -1,0 +1,33 @@
+<div [style.padding-left]="'10px'" [style.text-align]="'left'" class="options" [style.width]="'100%'" [style.display]="'flex'">
+    <mat-select class="options">
+        <mat-option (onSelectionChange)="onChange($event)" *ngFor="let attr of possibleAttributes"
+                    [value]="attr.attribute">{{attr.attribute}}</mat-option>
+    </mat-select>
+    <ng-container *ngIf="(currentAttribute | async) as currentAttrAsync" class="options">
+
+        <mat-select class="options">
+            <mat-option *ngFor="let operator of currentAttrAsync.operators" [value]="operator.toString()" class="options" style="width:100%">
+                {{operator.toString()}}
+            </mat-option>
+        </mat-select>
+
+        <mat-form-field class="options"
+                        *ngIf="currentAttrAsync.valueType.valueOf()==2 || currentAttrAsync.valueType.valueOf()==3"
+                        class="textinput">
+            <input matInput placeholder="Search text" [(ngModel)]="inputValue">
+        </mat-form-field>
+
+        <mat-select class="options" *ngIf="currentAttrAsync.valueType.valueOf()==0">
+            <mat-option *ngFor="let option of currentAttrAsync.options" [value]="option">
+                {{option}}
+            </mat-option>
+        </mat-select>
+
+        <mat-form-field class="options" *ngIf="currentAttrAsync.valueType.valueOf()==1" class="textinput">
+            <input matInput placeholder="This will be a date selector later" [(ngModel)]="inputValue">
+        </mat-form-field>
+    </ng-container>
+    <div style="width:10%;">
+        <button class="icon-button" (click)="onRemoveButtonClicked()" matTooltip="Remove query term"><mat-icon>remove</mat-icon></button>
+    </div>
+</div>
