@@ -38,7 +38,8 @@
             <button class="icon-button" (click)="onRemoveButtonClicked()" matTooltip="Remove query container"><mat-icon>close</mat-icon></button>
         </div>
     </mat-card-header>
-    <mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-content style="padding-top:10px;">
         <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
         <qt-audio *ngIf="containerModel.hasTerm('AUDIO')" [audioTerm]="containerModel.getTerm('AUDIO')"></qt-audio>
         <qt-m3d *ngIf="containerModel.hasTerm('MODEL3D')" [m3dTerm]="containerModel.getTerm('MODEL3D')"></qt-m3d>

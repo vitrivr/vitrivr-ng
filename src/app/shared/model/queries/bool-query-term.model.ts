@@ -5,7 +5,6 @@ export class BoolQueryTerm extends AbstractQueryTerm {
 
     public readonly terms: BoolTerm[] = [];
 
-    data = this.terms.toString();   // TODO
     constructor() {
         super('BOOL', []);
     }

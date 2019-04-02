@@ -1,9 +1,7 @@
 .options {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-    width: 30%
+    flex-wrap: nowrap
 }
 
 .textinput {

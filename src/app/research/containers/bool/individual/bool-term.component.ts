@@ -1,9 +1,10 @@
-import {Component, Injectable, Input} from '@angular/core';
+import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.model';
 import {MatOptionSelectionChange} from '@angular/material/typings/core';
 import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {BoolTerm} from './bool-term';
+import { Options } from 'ng5-slider';
 
 @Component({
     selector: 'app-qt-bool-component',
@@ -11,7 +12,7 @@ import {BoolTerm} from './bool-term';
     styleUrls: ['bool-term.component.css']
 })
 @Injectable()
-export class BoolTermComponent {
+export class BoolTermComponent implements OnInit {
 
     // TODO add logic to store multiple queries with an OR
     /** This object holds all the query settings. */
@@ -28,22 +29,12 @@ export class BoolTermComponent {
     private readonly possibleAttributes: BoolAttribute[];
     /** Current selection */
     private currentAttributeObservable: BehaviorSubject<BoolAttribute> =
-        new BehaviorSubject<BoolAttribute>(new BoolAttribute('Select an attribute', [BoolOperator.EQ], ValueType.TEXT));
+        new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', [BoolOperator.EQ], ValueType.TEXT));
     /** Current BoolTerm */
     private term: BoolTerm;
     /** Currently selected operator */
     currentOperator: BoolOperator;
-
-    /** User changes selection in dropdown */
-    public onChange(event: MatOptionSelectionChange) {
-        if (!event.isUserInput) {
-            // Information about what is no longer selected
-            return;
-        }
-        const next = this.possibleAttributes.find((value => value.attribute === event.source.value));
-        // TODO store in query container
-        this.currentAttributeObservable.next(next);
-    }
+    // TODO Currently slider values are not stored anywhere
 
     get currentAttribute(): Observable<BoolAttribute> {
         return this.currentAttributeObservable;
@@ -59,11 +50,54 @@ export class BoolTermComponent {
         if (this.term == null) {
             return;
         }
+        this.removeTermFromData();
+    }
+
+    private removeTermFromData() {
         const termIdx = this.boolTerm.terms.indexOf(this.term);
         if (termIdx > -1) {
             console.log('found query term to remove at index ' + termIdx + ', removing');
-            this.boolTerm.terms.splice(termIdx, 1)
+            this.boolTerm.terms.splice(termIdx, 1);
+            this.boolTerm.data = JSON.stringify(this.boolTerm.terms);
         }
+    }
+
+    private addTermToData(value?: string) {
+        this.term = new BoolTerm(this.currentAttributeObservable.getValue().attribute, this.currentOperator,
+            value == null ? (this.term == null ? '' : this.term.value) : value);
+        console.log('Adding new term: ' + JSON.stringify(this.term));
+        this.boolTerm.terms.push(this.term);
+        this.boolTerm.data = JSON.stringify(this.boolTerm.terms);
+        console.log(JSON.stringify(this.boolTerm.data));
+    }
+
+    private updateTerms(value?: string) {
+        if (this.term != null) {
+            this.removeTermFromData();
+        }
+        this.addTermToData(value);
+    }
+
+    set attribute(value: BoolAttribute) {
+        this.currentAttributeObservable.next(value);
+        this.currentOperator = value.operators[0];
+        this.updateTerms();
+    }
+
+    get attribute(): BoolAttribute {
+        return this.currentAttributeObservable.getValue();
+    }
+
+    set operatorValue(value: BoolOperator) {
+        this.currentOperator = value;
+        this.updateTerms();
+    }
+
+    get operatorValue(): BoolOperator {
+        if (this.currentOperator == null) {
+            return BoolOperator.EQ;
+        }
+        return this.currentOperator;
     }
 
     /**
@@ -73,16 +107,7 @@ export class BoolTermComponent {
      */
     set inputValue(value: string) {
         console.log('new input value: ' + value);
-        if (this.term != null) {
-            const index = this.boolTerm.terms.indexOf(this.term);
-            if (index > -1) {
-                console.log('found term to remove at index ' + index + ', removing');
-                this.boolTerm.terms.splice(index, 1)
-            }
-        }
-        this.term = new BoolTerm(this.currentAttributeObservable.getValue().attribute, this.currentOperator, value);
-        console.log('Adding new term: ' + JSON.stringify(this.term));
-        this.boolTerm.terms.push(this.term)
+        this.updateTerms(value)
     }
 
     /**
@@ -94,5 +119,9 @@ export class BoolTermComponent {
             return '';
         }
         return this.term.value;
+    }
+
+    ngOnInit(): void {
+        this.attribute = this.possibleAttributes[0];
     }
 }

@@ -13,7 +13,7 @@ import {QueryContainer} from '../../../shared/model/queries/query-container.mode
     styleUrls: ['bool-query-term.component.css']
 })
 @Injectable()
-export class BoolQueryTermComponent implements OnInit{
+export class BoolQueryTermComponent implements OnInit {
 
     // TODO add logic to store multiple queries with a combination. 1) the BoolQueryTerm should support it, 2) we need + / - logic
     /** This object holds all the query settings. */
@@ -22,7 +22,7 @@ export class BoolQueryTermComponent implements OnInit{
     // @Input()
     private possibleAttributes: BoolAttribute[] = [
         new BoolAttribute('heartrate', [BoolOperator.BIGGER, BoolOperator.SMALLER, BoolOperator.EQ], ValueType.NUMERIC),
-        new BoolAttribute('description', [BoolOperator.LIKE], ValueType.TEXT),
+        new BoolAttribute('weight', [BoolOperator.BETWEEN], ValueType.RANGE, undefined, [0, 200]),
         new BoolAttribute('weekday', [BoolOperator.EQ], ValueType.OPTIONS, ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])
     ];
 
@@ -31,6 +31,7 @@ export class BoolQueryTermComponent implements OnInit{
     public ngOnInit() {
         this.addBoolTermComponent();
     }
+
     public addBoolTermComponent() {
         this.containers.push(new BoolTermComponent())
     }

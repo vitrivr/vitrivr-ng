@@ -44,7 +44,8 @@
     "ts-md5": "1.2.x",
     "typescript": "3.1.6",
     "videogular2": "6.3.x",
-    "zone.js": "0.8.x"
+    "zone.js": "0.8.x",
+    "ng5-slider": "1.1.*"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.7.0",
