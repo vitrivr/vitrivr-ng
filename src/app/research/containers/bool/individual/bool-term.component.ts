@@ -3,6 +3,7 @@ import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.mo
 import {MatOptionSelectionChange} from '@angular/material/typings/core';
 import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {BoolTerm} from './bool-term';
 
 @Component({
     selector: 'app-qt-bool-component',
@@ -28,7 +29,12 @@ export class BoolTermComponent {
     /** Current selection */
     private currentAttributeObservable: BehaviorSubject<BoolAttribute> =
         new BehaviorSubject<BoolAttribute>(new BoolAttribute('Select an attribute', [BoolOperator.EQ], ValueType.TEXT));
+    /** Current BoolTerm */
+    private term: BoolTerm;
+    /** Currently selected operator */
+    currentOperator: BoolOperator;
 
+    /** User changes selection in dropdown */
     public onChange(event: MatOptionSelectionChange) {
         if (!event.isUserInput) {
             // Information about what is no longer selected
@@ -50,6 +56,14 @@ export class BoolTermComponent {
             console.log('found at index ' + index);
             this.containers.splice(index, 1)
         }
+        if (this.term == null) {
+            return;
+        }
+        const termIdx = this.boolTerm.terms.indexOf(this.term);
+        if (termIdx > -1) {
+            console.log('found query term to remove at index ' + termIdx + ', removing');
+            this.boolTerm.terms.splice(termIdx, 1)
+        }
     }
 
     /**
@@ -58,7 +72,17 @@ export class BoolTermComponent {
      * @param {string} value
      */
     set inputValue(value: string) {
-        this.boolTerm.data = value;
+        console.log('new input value: ' + value);
+        if (this.term != null) {
+            const index = this.boolTerm.terms.indexOf(this.term);
+            if (index > -1) {
+                console.log('found term to remove at index ' + index + ', removing');
+                this.boolTerm.terms.splice(index, 1)
+            }
+        }
+        this.term = new BoolTerm(this.currentAttributeObservable.getValue().attribute, this.currentOperator, value);
+        console.log('Adding new term: ' + JSON.stringify(this.term));
+        this.boolTerm.terms.push(this.term)
     }
 
     /**
@@ -66,6 +90,9 @@ export class BoolTermComponent {
      * @return {string}
      */
     get inputValue(): string {
-        return this.boolTerm.data;
+        if (this.term == null) {
+            return '';
+        }
+        return this.term.value;
     }
 }

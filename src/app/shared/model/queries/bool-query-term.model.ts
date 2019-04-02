@@ -1,11 +1,12 @@
-import {AbstractQueryTerm} from "./abstract-query-term.model";
+import {AbstractQueryTerm} from './abstract-query-term.model';
+import {BoolTerm} from '../../../research/containers/bool/individual/bool-term';
 
 export class BoolQueryTerm extends AbstractQueryTerm {
 
-    /**
-     * Default constructor. TODO Does this need anything else?
-     */
+    public readonly terms: BoolTerm[] = [];
+
+    data = this.terms.toString();   // TODO
     constructor() {
-        super("TEXT", []);
+        super('BOOL', []);
     }
 }
