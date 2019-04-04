@@ -1,4 +1,4 @@
-<h2 clasS="mat-h2">Query refinement</h2>
+<h2 class="mat-h2">Query refinement</h2>
 
 <div *ngIf="(features | async)">
     <h3 class="mat-h3">Weights</h3>
@@ -34,5 +34,32 @@
 </div>
 
 <div *ngIf="!(features | async)">
+    <h3>Annotations</h3>
+    <div style="" class="scrolling-checkbox-list">
+        <mat-checkbox class="scrolling-checkbox-item">in kitchen</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">Using laptop at work</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">brushing teeth</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">in hotel room</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">relaxing in hotel room in Norway</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">drinking tea</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">in garden</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">overlooking airplane</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">travelling in bus </mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">travelling in car</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">using laptop</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">overlooking sea and sunrise</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">eating food at work</mat-checkbox>
+        <mat-checkbox class="scrolling-checkbox-item">checkin black baggage</mat-checkbox>
+    </div>
+
+    <h3>Steps</h3>
+    <!-- Slider for Range -->
+    <div class="options">
+        <ng5-slider [(value)]="minValue" [(highValue)]="maxValue"
+                    [options]="options"></ng5-slider>
+    </div>
+
+    <!-- Temporarily replaced with LSC paper-ready screenshot
     <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>
+    -->
 </div>

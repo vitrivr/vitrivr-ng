@@ -1,10 +1,8 @@
 import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.model';
-import {MatOptionSelectionChange} from '@angular/material/typings/core';
 import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {BoolTerm} from './bool-term';
-import { Options } from 'ng5-slider';
 
 @Component({
     selector: 'app-qt-bool-component',
@@ -34,6 +32,7 @@ export class BoolTermComponent implements OnInit {
     private term: BoolTerm;
     /** Currently selected operator */
     currentOperator: BoolOperator;
+
     // TODO Currently slider values are not stored anywhere
 
     get currentAttribute(): Observable<BoolAttribute> {

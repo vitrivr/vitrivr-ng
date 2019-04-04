@@ -8,10 +8,11 @@ import {SettingsComponent} from "./settings.component";
 import {SelectionManagementComponent} from "./selection/selection-management.component";
 import {PreferencesComponent} from "./preferences/preferences.component";
 import {FlexLayoutModule} from "@angular/flex-layout";
+import {Ng5SliderModule} from 'ng5-slider';
 @NgModule({
-    imports:      [ MaterialModule, BrowserModule, FormsModule, FlexLayoutModule],
+    imports:      [ MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, Ng5SliderModule],
     declarations: [ RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent ],
-    exports:      [ RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, ]
+    exports:      [ RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent]
 })
 export class SettingsModule {
 

@@ -12,3 +12,13 @@
 .checkbox-group mat-checkbox {
     width: 100px;
 }
+
+.scrolling-checkbox-list {
+    height: 200px;
+    overflow-y:scroll;
+}
+
+.scrolling-checkbox-item{
+    padding-left:10px;
+    padding-right:10px;
+}

@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Injectable} from '@angular/core';
 import {MatCheckboxChange, MatSliderChange} from '@angular/material';
 import {QueryChange, QueryService} from '../../core/queries/query.service';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
@@ -11,12 +11,13 @@ import {filter} from 'rxjs/operators';
 import {FilterService} from '../../core/queries/filter.service';
 import {ColorLabel} from '../../shared/model/misc/colorlabel.model';
 import {MediaType} from '../../shared/model/media/media-type.model';
+import {Options} from 'ng5-slider';
 
 @Component({
-    moduleId: module.id,
+    // moduleId: module.id,
     selector: 'app-refinement',
-    templateUrl: './refinement.component.html',
-    styleUrls: ['./refinement.component.css']
+    templateUrl: 'refinement.component.html',
+    styleUrls: ['refinement.component.css']
 })
 /**
  * Component that can be used to refine an already executed query. Refinement options currently include
@@ -26,7 +27,16 @@ import {MediaType} from '../../shared/model/media/media-type.model';
  *
  * The component allows the user to changes these settings and update the QueryService accordingly.
  */
+@Injectable()
 export class RefinementComponent implements OnInit, OnDestroy {
+
+    minValue: number = 0;
+    maxValue: number = 20000;
+    options: Options = {
+        floor: 0,
+        ceil: 20000,
+        step: 100,
+    };
 
     /** An observable for the current results. */
     private _features: Observable<WeightedFeatureCategory[]> = EMPTY;
