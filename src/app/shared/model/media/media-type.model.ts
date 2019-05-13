@@ -1,7 +1,7 @@
 /**
  * Defines the MediaTypes used by VitrivrNG. Feel free to add new types.
  */
-export type MediaType = "IMAGE" | "VIDEO" | "AUDIO" | "MODEL3D";
+export type MediaType = "IMAGE" | "VIDEO" | "AUDIO" | "MODEL3D" | "IMAGE_SEQUENCE";
 
 /**
  * Array containing all defined media types. This is for convenience only! The values in this
@@ -9,4 +9,4 @@ export type MediaType = "IMAGE" | "VIDEO" | "AUDIO" | "MODEL3D";
  *
  * @type {[MediaType,MediaType,MediaType,MediaType]}
  */
-export let MediaTypes : MediaType[] = ["IMAGE", "VIDEO", "AUDIO", "MODEL3D"];
+export let MediaTypes : MediaType[] = ["IMAGE", "VIDEO", "AUDIO", "MODEL3D", "IMAGE_SEQUENCE"];
