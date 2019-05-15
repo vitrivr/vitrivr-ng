@@ -125,7 +125,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @param {SegmentScoreContainer} segment
      */
     public onSubmitButtonClicked(segment: SegmentScoreContainer) {
-        this._vbs.submitSegment(segment);
+        this._vbs.submit(segment);
     }
 
     /**
@@ -137,7 +137,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
     public onTileClicked(event: MouseEvent, segment: SegmentScoreContainer) {
         if (event.shiftKey) {
             /* Shift-Click will trigger VBS submit. */
-            this._vbs.submitSegment(segment);
+            this._vbs.submit(segment);
         } else {
             /* Normal click will display item. */
             this._dialog.open(QuickViewerComponent, {data: segment});
@@ -155,7 +155,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @return {boolean} True if submit button should be displayed, false otherwise.
      */
     public showVbsSubmitButton(segment: SegmentScoreContainer): Observable<boolean> {
-        return this._vbs.isOn.pipe(map(v => v && segment.objectScoreContainer.mediatype == 'VIDEO'));
+        return this._vbs.isOn;
     }
 
     /**
