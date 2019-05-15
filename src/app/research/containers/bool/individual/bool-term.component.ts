@@ -3,6 +3,7 @@ import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.mo
 import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {BoolTerm} from './bool-term';
+import {Base64Util} from '../../../../shared/util/base64.util';
 
 @Component({
     selector: 'app-qt-bool-component',
@@ -24,10 +25,10 @@ export class BoolTermComponent implements OnInit {
     private readonly self: BoolTermComponent;
 
     @Input()
-    private readonly possibleAttributes: BoolAttribute[];
+    private readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
     /** Current selection */
     private currentAttributeObservable: BehaviorSubject<BoolAttribute> =
-        new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', [BoolOperator.EQ], ValueType.TEXT));
+        new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT));
     /** Current BoolTerm */
     private term: BoolTerm;
     /** Currently selected operator */
@@ -57,17 +58,24 @@ export class BoolTermComponent implements OnInit {
         if (termIdx > -1) {
             console.log('found query term to remove at index ' + termIdx + ', removing');
             this.boolTerm.terms.splice(termIdx, 1);
-            this.boolTerm.data = JSON.stringify(this.boolTerm.terms);
+            this.updateData();
         }
     }
 
+    private updateData() {
+        this.boolTerm.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.boolTerm.terms));
+    }
+
+    /**
+     * @param value input value for the term (e.g. 150 or 'basel')
+     */
     private addTermToData(value?: string) {
-        this.term = new BoolTerm(this.currentAttributeObservable.getValue().attribute, this.currentOperator,
-            value == null ? (this.term == null ? '' : this.term.value) : value);
+        this.term = new BoolTerm(this.currentAttributeObservable.getValue().featureName,
+            BoolAttribute.getOperatorName(this.currentOperator),
+            value == null ? (this.term == null ? '' : this.term.values) : value);
         console.log('Adding new term: ' + JSON.stringify(this.term));
         this.boolTerm.terms.push(this.term);
-        this.boolTerm.data = JSON.stringify(this.boolTerm.terms);
-        console.log(JSON.stringify(this.boolTerm.data));
+        this.updateData()
     }
 
     private updateTerms(value?: string) {
@@ -117,10 +125,10 @@ export class BoolTermComponent implements OnInit {
         if (this.term == null) {
             return '';
         }
-        return this.term.value;
+        return this.term.values;
     }
 
     ngOnInit(): void {
-        this.attribute = this.possibleAttributes[0];
+        this.attribute = this.possibleAttributes.getValue()[0];
     }
 }

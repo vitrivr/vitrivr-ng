@@ -1,9 +1,9 @@
-import {Injectable} from "@angular/core";
-import {MediaType, MediaTypes} from "../../shared/model/media/media-type.model";
-import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
-import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
-import {BehaviorSubject, Observable} from "rxjs";
-import {ColorLabel, ColorLabels} from "../../shared/model/misc/colorlabel.model";
+import {Injectable} from '@angular/core';
+import {MediaType, MediaTypes} from '../../shared/model/media/media-type.model';
+import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
+import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {ColorLabel, ColorLabels} from '../../shared/model/misc/colorlabel.model';
 
 
 /**
@@ -26,7 +26,7 @@ export class FilterService {
     private _dominant: Map<ColorLabel, boolean> = new Map();
 
     /** Threshold for score filtering. */
-    private _threshold: number = 0.0;
+    private _threshold = 0.0;
 
     /** An internal BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
     private _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
@@ -34,26 +34,15 @@ export class FilterService {
     /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
     private _segmentFilters: BehaviorSubject<((v: SegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
-    /**
-     *
-     * @param _query
-     */
     constructor() {
         MediaTypes.forEach(v => this._mediatypes.set(v, false));
         ColorLabels.forEach(v => this._dominant.set(v, false));
     }
 
-    /**
-     *
-     */
     get threshold(): number {
         return this._threshold;
     }
 
-    /**
-     *
-     * @param value
-     */
     set threshold(value: number) {
         if (value >= 0.0 && value <= 1.0) {
             this._threshold = value;
@@ -63,28 +52,28 @@ export class FilterService {
     /**
      * Returns a copy of the list of MediaTypes that should be used for filtering.
      */
-    get mediatypes() : Map<MediaType, boolean> {
+    get mediatypes(): Map<MediaType, boolean> {
         return this._mediatypes;
     }
 
     /**
      * Returns a copy of the list of colors that should be used for filtering.
      */
-    get dominant() :  Map<ColorLabel, boolean> {
+    get dominant():  Map<ColorLabel, boolean> {
         return this._dominant;
     }
 
     /**
      * Returns a copy of the list of MediaTypes that should be used for filtering.
      */
-    get mediatypeKeys() : MediaType[] {
+    get mediatypeKeys(): MediaType[] {
         return Array.from(this._mediatypes.keys());
     }
 
     /**
      * Returns a copy of the list of colors that should be used for filtering.
      */
-    get dominantKeys() :  ColorLabel[] {
+    get dominantKeys():  ColorLabel[] {
         return Array.from(this._dominant.keys());
     }
 
@@ -105,8 +94,8 @@ export class FilterService {
      * Clears all filters. Causes an update to be published.
      */
     public clear() {
-        this._mediatypes.forEach((v,k) => this._mediatypes.set(k, false));
-        this._dominant.forEach((v,k) => this._dominant.set(k, false));
+        this._mediatypes.forEach((v, k) => this._mediatypes.set(k, false));
+        this._dominant.forEach((v, k) => this._dominant.set(k, false));
         this._threshold = 0.0;
         this.update()
     }
@@ -116,8 +105,8 @@ export class FilterService {
      */
     public update() {
         /* Prepares the media object and media segment filters. */
-        let objectFilters: ((v: MediaObjectScoreContainer) => boolean)[]  = [];
-        let segmentFilters: ((v: SegmentScoreContainer) => boolean)[]  = [];
+        const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[]  = [];
+        const segmentFilters: ((v: SegmentScoreContainer) => boolean)[]  = [];
 
         if (!this.mediatypeKeys.every(v => this._mediatypes.get(v) == false)) {
             objectFilters.push((obj) => this._mediatypes.get(obj.mediatype) == true);
@@ -125,7 +114,7 @@ export class FilterService {
         }
 
         if (!this.dominantKeys.every(v => this._dominant.get(v) == false)) {
-            segmentFilters.push((seg) => seg.metadata.has("dominantcolor.color") && this._dominant.get(<ColorLabel>seg.metadata.get("dominantcolor.color").toUpperCase()) == true);
+            segmentFilters.push((seg) => seg.metadata.has('dominantcolor.color') && this._dominant.get(<ColorLabel>seg.metadata.get('dominantcolor.color').toUpperCase()) == true);
         }
 
         /* Filter for score threshold. */

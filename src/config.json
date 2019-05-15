@@ -54,6 +54,16 @@
         ["captioning", "Captioning"],
         ["audio", "Audio"]
       ]
-    }
+    },
+    "boolean": [
+      ["Location", "TEXT", "features_daily.location"],
+      ["Skin Temperature", "NUMERIC", "features_daily.skin_temp"],
+      ["Heart Rate", "NUMERIC", "features_daily.heart_rate"],
+      ["Calories", "NUMERIC", "features_daily.calories"],
+      ["GSR", "NUMERIC", "features_daily.gsr"],
+      ["Steps", "NUMERIC", "features_daily.steps"],
+      ["Annotation", "TEXT", "features_wsdmtiannotations.annotation"],
+      ["Object", "TEXT", "features_wsdmtiannotations.object"]
+    ]
   }
 }

@@ -2,8 +2,8 @@
      [style.display]="'flex'">
     <!-- Attribute Dropdown -->
     <mat-select required class="options" [(ngModel)]="attribute">
-        <mat-option *ngFor="let attr of possibleAttributes"
-                    [value]="attr">{{attr.attribute}}</mat-option>
+        <mat-option *ngFor="let attr of possibleAttributes | async"
+                    [value]="attr">{{attr.displayName}}</mat-option>
     </mat-select>
 
     <!-- Remove query button-->

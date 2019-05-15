@@ -1,29 +1,29 @@
-import {MediaType} from "../../media/media-type.model";
-import {FusionFunction} from "../fusion/weight-function.interface";
-import {DefaultFusionFunction} from "../fusion/default-fusion-function.model";
-import {MediaObjectScoreContainer} from "./media-object-score-container.model";
-import {SegmentScoreContainer} from "./segment-score-container.model";
-import {WeightedFeatureCategory} from "../weighted-feature-category.model";
-import {ObjectQueryResult} from "../../messages/interfaces/responses/query-result-object.interface";
-import {SegmentQueryResult} from "../../messages/interfaces/responses/query-result-segment.interface";
-import {SimilarityQueryResult} from "../../messages/interfaces/responses/query-result-similarty.interface";
-import {Observable} from "rxjs";
-import {BehaviorSubject} from "rxjs";
-import {FeatureCategories} from "../feature-categories.model";
-import {MediaObject} from "../../media/media-object.model";
-import {SegmentMetadataQueryResult} from "../../messages/interfaces/responses/query-result-segment-metadata.interface";
-import {ObjectMetadataQueryResult} from "../../messages/interfaces/responses/query-result-object-metadata.interface";
-import {MediaSegment} from "../../media/media-segment.model";
-import {Similarity} from "../../media/similarity.model";
-import {MediaObjectMetadata} from "../../media/media-object-metadata.model";
-import {MediaSegmentMetadata} from "../../media/media-segment-metadata.model";
+import {MediaType} from '../../media/media-type.model';
+import {FusionFunction} from '../fusion/weight-function.interface';
+import {DefaultFusionFunction} from '../fusion/default-fusion-function.model';
+import {MediaObjectScoreContainer} from './media-object-score-container.model';
+import {SegmentScoreContainer} from './segment-score-container.model';
+import {WeightedFeatureCategory} from '../weighted-feature-category.model';
+import {ObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
+import {SegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
+import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
+import {Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
+import {FeatureCategories} from '../feature-categories.model';
+import {MediaObject} from '../../media/media-object.model';
+import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
+import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
+import {MediaSegment} from '../../media/media-segment.model';
+import {Similarity} from '../../media/similarity.model';
+import {MediaObjectMetadata} from '../../media/media-object-metadata.model';
+import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
 
 export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
-    private _objectid_to_object_map : Map<string,MediaObjectScoreContainer> = new Map();
+    private _objectid_to_object_map: Map<string, MediaObjectScoreContainer> = new Map();
 
     /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
-    private _segmentid_to_segment_map : Map<string,SegmentScoreContainer> = new Map();
+    private _segmentid_to_segment_map: Map<string, SegmentScoreContainer> = new Map();
 
     /** Internal data structure that contains all MediaObjectScoreContainers. */
     private _results_objects: MediaObjectScoreContainer[] = [];
@@ -41,7 +41,7 @@ export class ResultsContainer {
      * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
      * be filtered).
      */
-    private _mediatypes: Map<MediaType,boolean> = new Map();
+    private _mediatypes: Map<MediaType, boolean> = new Map();
 
     /** A subject that can be used to publish changes to the results. */
     private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
@@ -58,19 +58,19 @@ export class ResultsContainer {
      * @param {string} queryId Unique ID of the query. Used to filter messages!
      * @param {FusionFunction} weightFunction Function that should be used to calculate the scores.
      */
-    constructor(public readonly queryId: string, private weightFunction : FusionFunction = new DefaultFusionFunction()) {}
+    constructor(public readonly queryId: string, private weightFunction: FusionFunction = new DefaultFusionFunction()) {}
 
     /**
      * Returns the number of objects contained in this ResultsContainer.
      */
-    get objectCount() : number {
+    get objectCount(): number {
         return this._results_objects.length;
     }
 
     /**
      * Returns the number of segments contained in this ResultsContainer.
      */
-    get segmentCount() : number {
+    get segmentCount(): number {
         return this._results_segments.length;
     }
 
@@ -106,7 +106,7 @@ export class ResultsContainer {
      *
      * @return {Map<MediaType, boolean>}
      */
-    get mediatypes() : Map<MediaType,boolean> {
+    get mediatypes(): Map<MediaType, boolean> {
         return this._mediatypes;
     }
 
@@ -176,7 +176,7 @@ export class ResultsContainer {
      */
     public processObjectMessage(obj: ObjectQueryResult): boolean {
         if (obj.queryId !== this.queryId) return false;
-        for (let object of obj.content) {
+        for (const object of obj.content) {
             /* Add mediatype of object to list of available mediatypes (if new). */
             if (!this._mediatypes.has(object.mediatype)) this._mediatypes.set(object.mediatype, true);
 
@@ -202,9 +202,9 @@ export class ResultsContainer {
      */
     public processSegmentMessage(seg: SegmentQueryResult): boolean {
         if (seg.queryId !== this.queryId) return false;
-        for (let segment of seg.content) {
-            let mosc = this.uniqueMediaObjectScoreContainer(segment.objectId);
-            let ssc = mosc.addMediaSegment(segment);
+        for (const segment of seg.content) {
+            const mosc = this.uniqueMediaObjectScoreContainer(segment.objectId);
+            const ssc = mosc.addMediaSegment(segment);
             if (!this._segmentid_to_segment_map.has(segment.segmentId)) {
                 this._results_segments.push(ssc);
                 this._segmentid_to_segment_map.set(segment.segmentId, ssc);
@@ -225,8 +225,8 @@ export class ResultsContainer {
      */
     public processSegmentMetadataMessage(met: SegmentMetadataQueryResult): boolean {
         if (met.queryId !== this.queryId) return false;
-        for (let metadata of met.content) {
-            let ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
+        for (const metadata of met.content) {
+            const ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
             if (ssc) ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
         }
     }
@@ -238,8 +238,8 @@ export class ResultsContainer {
      */
     public processObjectMetadataMessage(met: ObjectMetadataQueryResult): boolean {
         if (met.queryId !== this.queryId) return false;
-        for (let metadata of met.content) {
-            let ssc = this._objectid_to_object_map.get(metadata.objectId);
+        for (const metadata of met.content) {
+            const ssc = this._objectid_to_object_map.get(metadata.objectId);
             if (ssc) ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
         }
     }
@@ -251,15 +251,15 @@ export class ResultsContainer {
      * @param sim SimilarityQueryResult message
      * @return {boolean} True, if SimilarityQueryResult was processed i.e. queryId corresponded with that of the message.
      */
-    public processSimilarityMessage(sim : SimilarityQueryResult) {
+    public processSimilarityMessage(sim: SimilarityQueryResult) {
         if (sim.queryId !== this.queryId) return false;
 
         /* Get and (if missing) add a unique feature. */
-        let feature = this.uniqueFeature(sim.category);
+        const feature = this.uniqueFeature(sim.category);
 
         /* Updates the Similarity lines and re-calculates the scores.  */
-        for (let similarity of sim.content) {
-            let segment = this._segmentid_to_segment_map.get(similarity.key);
+        for (const similarity of sim.content) {
+            const segment = this._segmentid_to_segment_map.get(similarity.key);
             if (segment != undefined) {
                 segment.addSimilarity(feature, similarity);
             }
@@ -329,10 +329,10 @@ export class ResultsContainer {
      * @return {WeightedFeatureCategory}
      */
     private uniqueFeature(category: FeatureCategories): WeightedFeatureCategory {
-        for (let feature of this._features) {
+        for (const feature of this._features) {
             if (feature.name == category) return feature;
         }
-        let feature = new WeightedFeatureCategory(category, category, 100);
+        const feature = new WeightedFeatureCategory(category, category, 100);
         this._features.push(feature);
         return feature;
     }
@@ -347,19 +347,19 @@ export class ResultsContainer {
             objects : this._results_objects.map(obj => obj.serialize()),
             segments : this._results_segments.map(seg => seg.serialize()),
             objectMetadata : this._results_objects.map(obj => {
-                let metadata : MediaObjectMetadata[] = [];
-                obj.metadata.forEach((k,v) => {
-                    metadata.push({objectId: obj.objectId, domain: k.split(".")[0], key: k.split(".")[1], value: v})
+                const metadata: MediaObjectMetadata[] = [];
+                obj.metadata.forEach((k, v) => {
+                    metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
                 });
                 return metadata;
-            }).reduce((x,y) => x.concat(y), []),
+            }).reduce((x, y) => x.concat(y), []),
             segmentMetadata : this._results_segments.map(seg => {
-                let metadata : MediaSegmentMetadata[] = [];
-                seg.metadata.forEach((k,v) => {
-                    metadata.push({segmentId: seg.segmentId, domain: k.split(".")[0], key: k.split(".")[1], value: v})
+                const metadata: MediaSegmentMetadata[] = [];
+                seg.metadata.forEach((k, v) => {
+                    metadata.push({segmentId: seg.segmentId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
                 });
                 return metadata;
-            }).reduce((x,y) => x.concat(y), []),
+            }).reduce((x, y) => x.concat(y), []),
             similarity : this.features.map(f => {
                 return this._results_segments.filter(seg => seg.scores.has(f)).map(seg => {
                     return <Similarity>{category: f.name, key: seg.segmentId, value: seg.scores.get(f)};
@@ -372,13 +372,13 @@ export class ResultsContainer {
      * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
      * ResultsContainer#serialize().
      */
-    public static deserialize(data : any) : ResultsContainer {
-        let container = new ResultsContainer(data["queryId"]);
-        container.processObjectMessage(<ObjectQueryResult>{queryId : container.queryId, content: <MediaObject[]>data["objects"]});
-        container.processSegmentMessage(<SegmentQueryResult>{queryId : container.queryId, content: <MediaSegment[]>data["segments"]});
-        container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{queryId : container.queryId, content: <MediaObjectMetadata[]>data["objectMetadata"]});
-        container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{queryId : container.queryId, content: <MediaSegmentMetadata[]>data["segmentMetadata"]});
-        for (let similiarity of data["similarity"]) {
+    public static deserialize(data: any): ResultsContainer {
+        const container = new ResultsContainer(data['queryId']);
+        container.processObjectMessage(<ObjectQueryResult>{queryId : container.queryId, content: <MediaObject[]>data['objects']});
+        container.processSegmentMessage(<SegmentQueryResult>{queryId : container.queryId, content: <MediaSegment[]>data['segments']});
+        container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{queryId : container.queryId, content: <MediaObjectMetadata[]>data['objectMetadata']});
+        container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{queryId : container.queryId, content: <MediaSegmentMetadata[]>data['segmentMetadata']});
+        for (const similiarity of data['similarity']) {
             if (similiarity.length > 0) {
                 container.processSimilarityMessage(<SimilarityQueryResult>{queryId : container.queryId, category: similiarity[0].category, content: similiarity});
             }

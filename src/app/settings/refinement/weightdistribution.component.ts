@@ -5,8 +5,9 @@ import {WeightedFeatureCategory} from "../../shared/model/results/weighted-featu
     selector: 'weight-distribution',
     template: `
         <div class="weight-distribution">
-            <div *ngFor="let feature of features" [style.width]="getWidth(feature)" [style.height]="'10px'" [style.background-color]="feature.color"></div>
-        </div>   
+            <div *ngFor="let feature of features" [style.width]="getWidth(feature)" [style.height]="'10px'"
+                 [style.background-color]="feature.displayColor"></div>
+        </div>
     `
     
 })

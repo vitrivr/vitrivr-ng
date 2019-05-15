@@ -1,9 +1,9 @@
-import {ScoreContainer} from "./compound-score-container.model";
-import {FusionFunction} from "../fusion/weight-function.interface";
-import {WeightedFeatureCategory} from "../weighted-feature-category.model";
-import {Similarity} from "../../media/similarity.model";
-import {MediaSegment} from "../../media/media-segment.model";
-import {MediaObjectScoreContainer} from "./media-object-score-container.model";
+import {ScoreContainer} from './compound-score-container.model';
+import {FusionFunction} from '../fusion/weight-function.interface';
+import {WeightedFeatureCategory} from '../weighted-feature-category.model';
+import {Similarity} from '../../media/similarity.model';
+import {MediaSegment} from '../../media/media-segment.model';
+import {MediaObjectScoreContainer} from './media-object-score-container.model';
 /**
  * The SegmentScoreContainer is a ScoreContainer for MediaSegments. It is associated with
  * a single segment (e.g. a shot of a video) and holds the score for that segment. That
@@ -11,31 +11,31 @@ import {MediaObjectScoreContainer} from "./media-object-score-container.model";
  */
 export class SegmentScoreContainer extends ScoreContainer implements MediaSegment {
     /** List of scores. Entries should correspond to those in the array categories. */
-    private _scores : Map<WeightedFeatureCategory, number> = new Map();
+    private _scores: Map<WeightedFeatureCategory, number> = new Map();
 
     /** Map containing the metadata that belongs to the segment. Can be empty! */
-    private _metadata: Map<string,string> = new Map();
+    private _metadata: Map<string, string> = new Map();
 
     /** ID of the object this SegmentScoreContainer belongsTo. */
-    public readonly objectId : string;
+    public readonly objectId: string;
 
     /** ID of the segment this SegmentScoreContainer belongsTo (objectId + segmentId = unique). */
-    public readonly segmentId : string;
+    public readonly segmentId: string;
 
     /** Sequence number of the MediaSegment within the streams of segments (i.e. i-th segment in the video). */
-    public readonly sequenceNumber : number;
+    public readonly sequenceNumber: number;
 
     /** Start time of the MediaSegment in frames. */
-    public readonly start : number;
+    public readonly start: number;
 
     /** End time of the MediaSegment in frames. */
-    public readonly end : number;
+    public readonly end: number;
 
     /** Absolute start time of the MediaSegment in seconds. */
-    public readonly startabs : number;
+    public readonly startabs: number;
 
     /** Absolute end time of the MediaSegment in seconds. */
-    public readonly endabs : number;
+    public readonly endabs: number;
 
     /**
      * Default constructor.
@@ -48,7 +48,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
 
         /* Make a logic check: objectId of MediaSegment must match that of the MediaObjectScoreContainer. */
         if (_mediaSegment.objectId != _objectScoreContainer.objectId) {
-            throw new Error("You cannot associate a MediaObjectScoreContainer with ID '" + _objectScoreContainer.objectId + "' with a segment with objectId '" + _mediaSegment.objectId + "'.");
+            throw new Error('You cannot associate a MediaObjectScoreContainer with ID \'' + _objectScoreContainer.objectId + '\' with a segment with objectId \'' + _mediaSegment.objectId + '\'.');
         }
 
         /* Assign values from MediaSegment. */
@@ -71,7 +71,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
      * @param category
      * @param similarity
      */
-    public addSimilarity(category : WeightedFeatureCategory, similarity : Similarity): boolean {
+    public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity): boolean {
         if (similarity.key !== this._mediaSegment.segmentId) return false;
         this.scores.set(category, similarity.value);
         return true;

@@ -1,19 +1,20 @@
-import {QueryTermInterface} from "./interfaces/query-term.interface";
-import {QueryTermType} from "./interfaces/query-term-type.interface";
+import {QueryTermInterface} from './interfaces/query-term.interface';
+import {QueryTermType} from './interfaces/query-term-type.interface';
 
 export abstract class AbstractQueryTerm implements QueryTermInterface {
+    /**
+     * The Base64 encoded data contained in this QueryTerm. This will be sent to the API.
+     */
+    data: string;
+
     /**
      * Constructor for AbstractQueryTerm
      *
      * @param type Type of the QueryTerm
      * @param categories Default categories
      */
-    constructor(public readonly type: QueryTermType, public readonly categories: string[] = []) {}
+    protected constructor(public readonly type: QueryTermType, public readonly categories: string[] = []) {}
 
-    /**
-     * The Base64 encoded data contained in this QueryTerm. This will be sent to the API.
-     */
-    data: string;
 
     /**
      * Adds a named query category to the QueryTerm. The implementation must make sure, that
@@ -22,7 +23,7 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
      * @param {string} category
      */
     public pushCategory(category: string) {
-        let index : number = this.categories.indexOf(category);
+        const index: number = this.categories.indexOf(category);
         if (index == -1) {
             this.categories.push(category);
         }
@@ -45,7 +46,7 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
      * @param {string} category
      */
     public removeCategory(category: string) {
-        let index : number = this.categories.indexOf(category);
+        const index: number = this.categories.indexOf(category);
         if (index > -1) {
             this.categories.splice(index, 1);
         }
@@ -58,7 +59,7 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
      */
     public setCategories(categories: string[]) {
         this.categories.splice(0, this.categories.length);
-        for (let category of categories) {
+        for (const category of categories) {
             this.categories.push(category);
         }
     }

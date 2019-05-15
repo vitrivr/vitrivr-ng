@@ -1,38 +1,39 @@
 
-import {ScoreContainer} from "./compound-score-container.model";
-import {SegmentScoreContainer} from "./segment-score-container.model";
-import {MediaObject} from "../../media/media-object.model";
-import {MediaSegment} from "../../media/media-segment.model";
-import {WeightedFeatureCategory} from "../weighted-feature-category.model";
-import {Similarity} from "../../media/similarity.model";
-import {FusionFunction} from "../fusion/weight-function.interface";
-import {MediaType} from "../../media/media-type.model";
+import {ScoreContainer} from './compound-score-container.model';
+import {SegmentScoreContainer} from './segment-score-container.model';
+import {MediaObject} from '../../media/media-object.model';
+import {MediaSegment} from '../../media/media-segment.model';
+import {WeightedFeatureCategory} from '../weighted-feature-category.model';
+import {Similarity} from '../../media/similarity.model';
+import {FusionFunction} from '../fusion/weight-function.interface';
+import {MediaType} from '../../media/media-type.model';
 
 /**
- * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects. It corresponds to a single MediaObject (e.g. a video, audio or 3d-model file)
- * and holds the score for that object. That score is determined by the scores of the SegmentScoreContainers hosted by a concrete instance of this class.
+ * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects.
+ * It corresponds to a single MediaObject (e.g. a video, audio or 3d-model file) and holds the score for that object.
+ * That score is determined by the scores of the SegmentScoreContainers hosted by a concrete instance of this class.
  */
 export class MediaObjectScoreContainer extends ScoreContainer implements MediaObject {
     /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
-    private _segmentScores : Map<string, SegmentScoreContainer> = new Map();
+    private _segmentScores: Map<string, SegmentScoreContainer> = new Map();
 
     /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
-    private _segments : SegmentScoreContainer[] = [];
+    private _segments: SegmentScoreContainer[] = [];
 
     /** Map containing the metadata that belongs to the object. Can be empty! */
-    private _metadata: Map<string,string> = new Map();
+    private _metadata: Map<string, string> = new Map();
 
     /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet. */
-    private _cache : Map<string,Array<[WeightedFeatureCategory,Similarity]>> = new Map();
+    private _cache: Map<string, Array<[WeightedFeatureCategory, Similarity]>> = new Map();
 
     /** Type of the MediaObject. */
     public mediatype: MediaType;
 
     /** Name of the MediaObject. */
-    public name : string;
+    public name: string;
 
     /** Path of the MediaObject. */
-    public path : string;
+    public path: string;
 
     /** Content URL pointing to the media file. */
     public contentURL: string;
@@ -52,8 +53,8 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      *
      * @param segment MediaSegment to add.
      */
-    public addMediaSegment(segment : MediaSegment) : SegmentScoreContainer {
-        let ssc = this.uniqueSegmentScoreContainer(segment);
+    public addMediaSegment(segment: MediaSegment): SegmentScoreContainer {
+        const ssc = this.uniqueSegmentScoreContainer(segment);
         if (this._cache.has(ssc.segmentId)) {
             this._cache.get(ssc.segmentId).forEach(v => {
                 this.addSimilarity(v[0], v[1])
@@ -69,13 +70,13 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      * @param category The category for which to add the similarity entry.
      * @param similarity The actual similarity entry.
      */
-    public addSimilarity(category : WeightedFeatureCategory, similarity : Similarity) {
+    public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity) {
         if (this._segmentScores.has(similarity.key)) {
             this._segmentScores.get(similarity.key).addSimilarity(category, similarity);
         } else if (this._cache.has(similarity.key)) {
             this._cache.get(similarity.key).push([category, similarity]);
         } else {
-            this._cache.set(similarity.key,[]);
+            this._cache.set(similarity.key, []);
             this._cache.get(similarity.key).push([category, similarity]);
         }
     }
@@ -96,7 +97,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      *
      * @returns {boolean} true if it can be displayed, false otherwise.
      */
-    get show() : boolean {
+    get show(): boolean {
         return (this.mediatype && this._segmentScores.size > 0);
     }
 
@@ -113,7 +114,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      *
      * @returns {MediaObject}
      */
-    get numberOfSegments() : number {
+    get numberOfSegments(): number {
         return this._segmentScores.size;
     }
 
@@ -122,8 +123,8 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      *
      * @returns {SegmentScoreContainer}
      */
-    get representativeSegment() : SegmentScoreContainer {
-        return this.segments.reduce((a,b) => { return a.score > b.score ? a : b});
+    get representativeSegment(): SegmentScoreContainer {
+        return this.segments.reduce((a, b) => { return a.score > b.score ? a : b});
     }
 
     /**
@@ -167,7 +168,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      */
     private uniqueSegmentScoreContainer(segment: MediaSegment): SegmentScoreContainer {
         if (!this._segmentScores.has(segment.segmentId)) {
-            let ssc = new SegmentScoreContainer(segment, this);
+            const ssc = new SegmentScoreContainer(segment, this);
             this._segmentScores.set(segment.segmentId, ssc);
             this._segments.push(ssc);
         }

@@ -1,16 +1,16 @@
-import {Tag} from "../../../core/selection/tag.model";
-import {FeatureCategories} from "../results/feature-categories.model";
-import {QuerySettings} from "./query-settings.model";
+import {Tag} from '../../../core/selection/tag.model';
+import {FeatureCategories} from '../results/feature-categories.model';
+import {QuerySettings} from './query-settings.model';
 
 export class Config {
     /** Context of the Cineast API. */
-    public static readonly CONTEXT = "api";
+    public static readonly CONTEXT = 'api';
 
     /** Version of the Cineast API. */
-    public static readonly VERSION = "v1";
+    public static readonly VERSION = 'v1';
 
     /** The key under which the main configuration will be saved. */
-    public static readonly DB_KEY = "main";
+    public static readonly DB_KEY = 'main';
 
     /** Default display duration for Snackbar messages. */
     public static SNACKBAR_DURATION = 2500;
@@ -24,9 +24,9 @@ export class Config {
             ping_interval: 10000 /* Default ping interval in milliseconds. */
         },
         resources : {
-            host_thumbnails: window.location.protocol + "//" + window.location.hostname + "/vitrivr/thumbnails",  /** Path / URL to location where media object thumbnails will be stored. */
-            host_objects: window.location.protocol + "//" + window.location.hostname + "/vitrivr/objects", /** Path / URL to location where media object's will be stored. */
-            suffix_default: ".jpg", /** Default suffix for thumbnails. */
+            host_thumbnails: window.location.protocol + '//' + window.location.hostname + '/vitrivr/thumbnails',  /** Path / URL to location where media object thumbnails will be stored. */
+            host_objects: window.location.protocol + '//' + window.location.hostname + '/vitrivr/objects', /** Path / URL to location where media object's will be stored. */
+            suffix_default: '.jpg', /** Default suffix for thumbnails. */
             suffix: {} /** Per-mediatype suffix definition for thumbnails. */
         },
         evaluation : {
@@ -47,17 +47,17 @@ export class Config {
             collabordinator: null
         },
         tags : [
-            new Tag("Red", 0),
-            new Tag("Orange", 30),
-            new Tag("Blue", 240),
-            new Tag("Violet", 270),
-            new Tag("Magenta", 300),
+            new Tag('Red', 0),
+            new Tag('Orange', 30),
+            new Tag('Blue', 240),
+            new Tag('Violet', 270),
+            new Tag('Magenta', 300),
         ],
         mlt : [
-            "globalcolor",
-            "localcolor",
-            "quantized",
-            "edge"
+            'globalcolor',
+            'localcolor',
+            'quantized',
+            'edge'
         ],
         query: {
             history: -1,
@@ -72,11 +72,12 @@ export class Config {
             },
             config: {
                 queryId: null,
-                hints: ["exact"]
+                hints: ['exact']
             },
             text: {
                 categories : []
-            }
+            },
+            boolean: []
         }
     };
 
@@ -110,8 +111,8 @@ export class Config {
      */
     public static deserialize(object: {} | string): Config {
         if (typeof object == 'string') object = JSON.parse(object);
-        if (object["api"] || object["resources"] || object["evaluation"] || object["query"]  || object["vbs"] || object["tags"] || object["mlt"]) {
-            return new Config(object["api"], object["resources"], object["evaluation"], object["query"], object["vbs"], object["tags"], object["mlt"]);
+        if (object['api'] || object['resources'] || object['evaluation'] || object['query']  || object['vbs'] || object['tags'] || object['mlt']) {
+            return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['vbs'], object['tags'], object['mlt']);
         } else {
             return null;
         }
@@ -124,7 +125,7 @@ export class Config {
      * @param loadedProperty The loaded property.
      */
     private static merge(defaultProperty, loadedProperty) {
-        for (let property in loadedProperty) {
+        for (const property in loadedProperty) {
             if (loadedProperty.hasOwnProperty(property) && defaultProperty.hasOwnProperty(property)) {
                 defaultProperty[property] = loadedProperty[property];
             }
@@ -140,8 +141,8 @@ export class Config {
      */
     public get<T>(path: string): T {
         try {
-            let separator =  '.';
-            let components = path.replace('[', separator).replace(']','').split(separator);
+            const separator =  '.';
+            const components = path.replace('[', separator).replace(']', '').split(separator);
             return components.reduce((obj, property) => obj[property], this._config);
         } catch (err) {
             return null;
@@ -149,7 +150,7 @@ export class Config {
     }
 
     /**
-     * Teplaces the config value specified by the given path by the value provided. Path components are separated by a '.'
+     * Replaces the config value specified by the given path by the value provided. Path components are separated by a '.'
      *
      * @param {string} path Path relative to this._config; components separated by '.'
      * @param {T} value New value
@@ -157,10 +158,10 @@ export class Config {
      */
     public set<T>(path: string, value: T): boolean {
         try {
-            let separator =  '.';
-            let components = path.replace('[', separator).replace(']','').split(separator);
-            let last = components[components.length-1];
-            let obj = components.reduce((obj, property) => {
+            const separator =  '.';
+            const components = path.replace('[', separator).replace(']', '').split(separator);
+            const last = components[components.length - 1];
+            const obj = components.reduce((obj, property) => {
                 if (property === last) {
                     return obj
                 } else {
@@ -185,9 +186,9 @@ export class Config {
      * @return {string}
      */
     get endpoint_ws(): string {
-        let scheme = this._config.api.ws_secure ? "wss://" : "ws://";
+        const scheme = this._config.api.ws_secure ? 'wss://' : 'ws://';
         if (this._config.api.host && this._config.api.port) {
-            return scheme + this._config.api.host + ":" + this._config.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/websocket";
+            return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/websocket';
         } else {
             return null;
         }
@@ -200,9 +201,9 @@ export class Config {
      *
      */
     get endpoint_http(): string {
-        let scheme = this._config.api.ws_secure ? "https://" : "http://";
+        const scheme = this._config.api.ws_secure ? 'https://' : 'http://';
         if (this._config.api.host && this._config.api.port) {
-            return scheme + this._config.api.host + ":" + this._config.api.port + "/" + Config.CONTEXT + "/" + Config.VERSION + "/";
+            return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/';
         } else {
             return null;
         }
