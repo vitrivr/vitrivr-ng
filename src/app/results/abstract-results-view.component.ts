@@ -1,27 +1,27 @@
-import {ChangeDetectorRef, OnDestroy, OnInit} from "@angular/core";
-import {ResultsContainer} from "../shared/model/results/scores/results-container.model";
-import {QueryChange, QueryService} from "../core/queries/query.service";
-import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
-import {EMPTY, Observable} from "rxjs";
-import {SelectionService} from "../core/selection/selection.service";
-import {Tag} from "../core/selection/tag.model";
-import {ColorUtil} from "../shared/util/color.util";
-import {EventBusService} from "../core/basics/event-bus.service";
-import {MatSnackBar, MatSnackBarConfig} from "@angular/material";
-import {InteractionEvent} from "../shared/model/events/interaction-event.model";
-import {InteractionEventType} from "../shared/model/events/interaction-event-type.model";
-import {FeatureDetailsComponent} from "./feature-details.component";
-import {ContextKey, InteractionEventComponent} from "../shared/model/events/interaction-event-component.model";
-import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-object-score-container.model";
-import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
-import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
-import {Router} from "@angular/router";
-import {filter} from "rxjs/operators";
-import {FilterService} from "../core/queries/filter.service";
+import {ChangeDetectorRef, OnDestroy, OnInit} from '@angular/core';
+import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
+import {QueryChange, QueryService} from '../core/queries/query.service';
+import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {EMPTY, Observable} from 'rxjs';
+import {SelectionService} from '../core/selection/selection.service';
+import {Tag} from '../core/selection/tag.model';
+import {ColorUtil} from '../shared/util/color.util';
+import {EventBusService} from '../core/basics/event-bus.service';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import {InteractionEvent} from '../shared/model/events/interaction-event.model';
+import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
+import {FeatureDetailsComponent} from './feature-details.component';
+import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
+import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
+import {MediaObjectDragContainer} from '../shared/model/internal/media-object-drag-container.model';
+import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
+import {Router} from '@angular/router';
+import {filter} from 'rxjs/operators';
+import {FilterService} from '../core/queries/filter.service';
 
-export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy  {
+export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
     /** Indicator whether the progress bar should be visible. */
-    private _loading : boolean = false;
+    private _loading: boolean = false;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
@@ -33,7 +33,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     protected _selectionServiceSubscription;
 
     /** Local reference to the data source holding the query results.*/
-    protected _dataSource : Observable<T> = EMPTY;
+    protected _dataSource: Observable<T> = EMPTY;
 
     /** The number of items that should be displayed. */
     protected _count: number = 500;
@@ -50,12 +50,13 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param _snackBar The MatSnackBar component used to display the SnackBar.
      */
     constructor(protected _cdr: ChangeDetectorRef,
-                protected _queryService : QueryService,
+                protected _queryService: QueryService,
                 protected _filterService: FilterService,
                 protected _selectionService: SelectionService,
                 protected _eventBusService: EventBusService,
                 protected _router: Router,
-                protected _snackBar: MatSnackBar) {}
+                protected _snackBar: MatSnackBar) {
+    }
 
     /**
      * Calculates and returns a green colour with a varying intensity based on the provided score.
@@ -68,12 +69,12 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         let tags: Tag[] = this._selectionService.getTags(segment.segmentId);
         if (tags.length == 0) {
             let v = Math.round(255.0 - (score * 255.0));
-            return ColorUtil.rgbToHex(v,255, v);
+            return ColorUtil.rgbToHex(v, 255, v);
         } else if (tags.length == 1) {
             return tags[0].colorForRelevance(score);
         } else {
-            let width = 100.0/tags.length;
-            return "repeating-linear-gradient(90deg," + tags.map((t,i) => t.colorForRelevance(score) + " " + i*width + "%," + t.colorForRelevance(score)+ " " + (i+1)*width + "%").join(",") + ")";
+            let width = 100.0 / tags.length;
+            return 'repeating-linear-gradient(90deg,' + tags.map((t, i) => t.colorForRelevance(score) + ' ' + i * width + '%,' + t.colorForRelevance(score) + ' ' + (i + 1) * width + '%').join(',') + ')';
         }
     }
 
@@ -82,10 +83,12 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      */
     public ngOnInit(): void {
         this._queryServiceSubscription = this._queryService.observable.pipe(
-            filter(msg => ["STARTED", "ENDED", "ERROR", "CLEAR"].indexOf(msg) > -1)
+            filter(msg => ['STARTED', 'ENDED', 'ERROR', 'CLEAR'].indexOf(msg) > -1)
         ).subscribe((msg) => this.onQueryStateChange(msg));
         this._selectionServiceSubscription = this._selectionService.subscribe(s => this._cdr.markForCheck());
-        this._filterServiceSubscription = this._filterService.objectFilters.subscribe(s => this._cdr.markForCheck());
+        this._filterServiceSubscription = this._filterService.objectFilters.subscribe(s => {
+            this._cdr.markForCheck()
+        });
         this.subscribe(this._queryService.results);
     }
 
@@ -139,8 +142,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._router.navigate(['/mediaobject/' + segment.objectId]);
 
         /* Emit an EXAMINE event on the bus. */
-        let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediasegment", segment.objectId);
+        let context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.objectId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
 
@@ -153,8 +156,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._queryService.findMoreLikeThis(segment.segmentId);
 
         /* Emit a MLT event on the bus. */
-        let context: Map<ContextKey,any> = new Map();
-        context.set("q:value", segment.segmentId);
+        let context: Map<ContextKey, any> = new Map();
+        context.set('q:value', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
     }
 
@@ -167,8 +170,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
 
         /* Emit an EXAMINE event on the bus. */
-        let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediasegment", segment.segmentId);
+        let context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
 
@@ -182,8 +185,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._selectionService.toggle(tag, segment.segmentId);
 
         /* Emit a HIGHLIGHT event on the bus. */
-        let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediasegment", segment.segmentId);
+        let context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)))
     }
 
@@ -200,8 +203,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
             this._selectionService.toggle(tag, ...segments);
 
             /* Emit a HIGHLIGHT event on the bus. */
-            let context: Map<ContextKey,any> = new Map();
-            context.set("i:mediasegment", segments.join(","));
+            let context: Map<ContextKey, any> = new Map();
+            context.set('i:mediasegment', segments.join(','));
             this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)));
         }
         event.preventDefault();
@@ -216,8 +219,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param object MediaObjectScoreContainer that is being dragged.
      */
     public onTileDrag(event, segment?: SegmentScoreContainer, object?: MediaObjectScoreContainer) {
-       if (segment) event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
-       if (object) event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
+        if (segment) event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
+        if (object) event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
     }
 
     /**
