@@ -25,6 +25,13 @@ export class FilterService {
      */
     private _dominant: Map<ColorLabel, boolean> = new Map();
 
+    /**
+     * A filter by metadata. For each metadata category (e.g. day), a list of allowed values is kept.
+     * If empty, all results are displayed. If non-empty, only results are displayed where for every key in the filter, the metadata value of the object matches an allowed value in the list.
+     * If the object does not have one of the metadata keys, it is filtered.
+     */
+    private _metadata: Map<string, Set<string>> = new Map();
+
     /** Threshold for score filtering. */
     private _threshold = 0.0;
 
@@ -50,6 +57,13 @@ export class FilterService {
     }
 
     /**
+     * Returns a copy of the list of Metadata that should be used for filtering.
+     */
+    get metadata(): Map<string, Set<string>> {
+        return this._metadata
+    }
+
+    /**
      * Returns a copy of the list of MediaTypes that should be used for filtering.
      */
     get mediatypes(): Map<MediaType, boolean> {
@@ -59,7 +73,7 @@ export class FilterService {
     /**
      * Returns a copy of the list of colors that should be used for filtering.
      */
-    get dominant():  Map<ColorLabel, boolean> {
+    get dominant(): Map<ColorLabel, boolean> {
         return this._dominant;
     }
 
@@ -73,14 +87,14 @@ export class FilterService {
     /**
      * Returns a copy of the list of colors that should be used for filtering.
      */
-    get dominantKeys():  ColorLabel[] {
+    get dominantKeys(): ColorLabel[] {
         return Array.from(this._dominant.keys());
     }
 
     /**
      * Getter for BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers.
      */
-    get objectFilters(): Observable<((v: MediaObjectScoreContainer) => boolean)[]>  {
+    get objectFilters(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
         return this._objectFilters.asObservable();
     }
 
@@ -90,12 +104,14 @@ export class FilterService {
     get segmentFilter(): Observable<((v: SegmentScoreContainer) => boolean)[]> {
         return this._segmentFilters.asObservable();
     }
+
     /**
      * Clears all filters. Causes an update to be published.
      */
     public clear() {
         this._mediatypes.forEach((v, k) => this._mediatypes.set(k, false));
         this._dominant.forEach((v, k) => this._dominant.set(k, false));
+        this._metadata.clear();
         this._threshold = 0.0;
         this.update()
     }
@@ -105,8 +121,35 @@ export class FilterService {
      */
     public update() {
         /* Prepares the media object and media segment filters. */
-        const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[]  = [];
-        const segmentFilters: ((v: SegmentScoreContainer) => boolean)[]  = [];
+        const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[] = [];
+        const segmentFilters: ((v: SegmentScoreContainer) => boolean)[] = [];
+
+        if (this._metadata.size > 0) {
+            objectFilters.push((obj) => {
+                let filter = true;
+                this._metadata.forEach((mdAllowedValuesSet, mdKey) => {
+                    if (!obj.metadata.has(mdKey)) {
+                        filter = false;
+                    }
+                    if (!mdAllowedValuesSet.has(obj.metadata.get(mdKey))) {
+                        filter = false;
+                    }
+                });
+                return filter;
+            });
+            segmentFilters.push((seg) => {
+                let filter = true;
+                this._metadata.forEach((mdAllowedValuesSet, mdKey) => {
+                    if (!seg.metadata.has(mdKey) && !seg.objectScoreContainer.metadata.has(mdKey)) {
+                        filter = false;
+                    }
+                    if (!mdAllowedValuesSet.has(seg.metadata.get(mdKey)) && !mdAllowedValuesSet.has(seg.objectScoreContainer.metadata.get(mdKey))) {
+                        filter = false;
+                    }
+                });
+                return filter;
+            });
+        }
 
         if (!this.mediatypeKeys.every(v => this._mediatypes.get(v) == false)) {
             objectFilters.push((obj) => this._mediatypes.get(obj.mediatype) == true);

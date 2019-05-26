@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Injectable} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatCheckboxChange, MatSliderChange} from '@angular/material';
 import {QueryChange, QueryService} from '../../core/queries/query.service';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
@@ -11,13 +11,12 @@ import {filter} from 'rxjs/operators';
 import {FilterService} from '../../core/queries/filter.service';
 import {ColorLabel} from '../../shared/model/misc/colorlabel.model';
 import {MediaType} from '../../shared/model/media/media-type.model';
-import {Options} from 'ng5-slider';
 
 @Component({
-    // moduleId: module.id,
+    moduleId: module.id,
     selector: 'app-refinement',
-    templateUrl: 'refinement.component.html',
-    styleUrls: ['refinement.component.css']
+    templateUrl: './refinement.component.html',
+    styleUrls: ['./refinement.component.css']
 })
 /**
  * Component that can be used to refine an already executed query. Refinement options currently include
@@ -27,19 +26,13 @@ import {Options} from 'ng5-slider';
  *
  * The component allows the user to changes these settings and update the QueryService accordingly.
  */
-@Injectable()
 export class RefinementComponent implements OnInit, OnDestroy {
-
-    minValue: number = 0;
-    maxValue: number = 20000;
-    options: Options = {
-        floor: 0,
-        ceil: 20000,
-        step: 100,
-    };
 
     /** An observable for the current results. */
     private _features: Observable<WeightedFeatureCategory[]> = EMPTY;
+
+    /** An observable for all possible metadatavalues */
+    private _metadata: Observable<Map<string, Set<string>>>;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
@@ -52,14 +45,17 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param _filterService Reference to the FilterService singleton instance.
      * @param _eventBusService Reference to the EventBusService singleton instance.
      */
-    constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBusService: EventBusService) {}
+    constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBusService: EventBusService) {
+    }
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
      */
     public ngOnInit(): void {
         this._queryServiceSubscription = this._queryService.observable.pipe(
-            filter(msg => {return ['STARTED', 'CLEAR'].indexOf(msg) > -1})
+            filter(msg => {
+                return ['STARTED', 'CLEAR'].indexOf(msg) > -1
+            })
         ).subscribe((msg) => this.onQueryStartEnd(msg));
     }
 
@@ -76,10 +72,12 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * refinement array to be updated and the view to be changed.
      */
     public onQueryStartEnd(msg: QueryChange) {
-        if (msg == 'STARTED') {
+        if (msg === 'STARTED') {
             this._features = this._queryService.results.featuresAsObservable;
-        } else if (msg == 'CLEAR'){
+            this._metadata = this._queryService.results.metadataAsObservable;
+        } else if (msg === 'CLEAR') {
             this._features = EMPTY;
+            this._metadata = EMPTY;
         }
     }
 
@@ -94,7 +92,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
         if (!this._queryService.results) return;
 
         /* Re-rank all objects asynchronously. */
-        Promise.resolve(this._queryService.results).then((results)  => {
+        Promise.resolve(this._queryService.results).then((results) => {
             feature.weight = event.value;
             this._queryService.results.rerank();
 
@@ -140,6 +138,36 @@ export class RefinementComponent implements OnInit, OnDestroy {
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER, context)));
     }
 
+    public onMetadataFilterChanged(category: string, key: string, event: MatCheckboxChange) {
+        if (!this._queryService.results) return;
+        if (this._filterService.metadata.has(category)) {
+            if (event.checked) {
+                this._filterService.metadata.get(category).add(key)
+            } else {
+                this._filterService.metadata.get(category).delete(key);
+                if (this._filterService.metadata.get(category).size === 0) {
+                    this._filterService.metadata.delete(category);
+                }
+            }
+        } else {
+            if (event.checked) {
+                this._filterService.metadata.set(category, new Set<string>().add(key))
+            }
+        }
+        console.log(this.filter.metadata);
+        this._filterService.update();
+        // TODO no clue what this is useful for. but it mirrors the filter code above.
+        const context: Map<ContextKey, string> = new Map();
+        context.set('f:type', 'metadata');
+        context.set('f:value', `${event.checked ? '+' : '-'}${category.toLowerCase()}:${key.toLowerCase()}`);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
+
+    }
+
+    public isChecked(category, value): boolean {
+        return this._filterService.metadata.has(category) ? (this._filterService.metadata.get(category).has(value)) : false
+    }
+
     /**
      *
      * @param event
@@ -157,6 +185,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     get filter(): FilterService {
         return this._filterService;
+    }
+
+    get metadata(): Observable<Map<string, Set<string>>> {
+        return this._metadata
     }
 
     /**
