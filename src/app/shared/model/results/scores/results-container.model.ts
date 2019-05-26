@@ -7,8 +7,7 @@ import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {ObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
 import {SegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
-import {Observable} from 'rxjs';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {FeatureCategories} from '../feature-categories.model';
 import {MediaObject} from '../../media/media-object.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
@@ -17,6 +16,10 @@ import {MediaSegment} from '../../media/media-segment.model';
 import {Similarity} from '../../media/similarity.model';
 import {MediaObjectMetadata} from '../../media/media-object-metadata.model';
 import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
+import 'rxjs-compat/add/operator/map';
+import 'rxjs-compat/add/operator/merge';
+import 'rxjs-compat/add/operator/concat';
+import 'rxjs-compat/add/operator/zip';
 
 export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -58,7 +61,8 @@ export class ResultsContainer {
      * @param {string} queryId Unique ID of the query. Used to filter messages!
      * @param {FusionFunction} weightFunction Function that should be used to calculate the scores.
      */
-    constructor(public readonly queryId: string, private weightFunction: FusionFunction = new DefaultFusionFunction()) {}
+    constructor(public readonly queryId: string, private weightFunction: FusionFunction = new DefaultFusionFunction()) {
+    }
 
     /**
      * Returns the number of objects contained in this ResultsContainer.
@@ -127,8 +131,25 @@ export class ResultsContainer {
     }
 
     /**
-     *
+     * @return a map of all metadata keys with all possible values
      */
+    get metadataAsObservable(): Observable<Map<string, Set<string>>> {
+        return this._results_segments_subject.asObservable().map(resultList => {
+            const map: Map<string, Set<string>> = new Map();
+            resultList.forEach(res => {
+                res.metadata.forEach(((mdValue, mdKey) => map.has(mdKey) ? map.set(mdKey, new Set<string>().add(mdValue)) : map.get(mdKey).add(mdValue)))
+            });
+            return map;
+        }).zip(this._results_objects_subject.asObservable(), function (o1, o2) {
+            o2.forEach(res => {
+                res.metadata.forEach((mdValue, mdKey) => {
+                    o1.has(mdKey) ? o1.get(mdKey).add(mdValue) : o1.set(mdKey, new Set<string>().add(mdValue))
+                })
+            });
+            return o1;
+        })
+    }
+
     get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
         return this._results_features_subject.asObservable();
     }
@@ -162,7 +183,9 @@ export class ResultsContainer {
         if (!features) features = this.features;
         if (!weightFunction) weightFunction = this.weightFunction;
         console.time(`Rerank (${this.queryId})`);
-        this._results_objects.forEach((value) => { value.update(features, weightFunction); });
+        this._results_objects.forEach((value) => {
+            value.update(features, weightFunction);
+        });
         this.next();
         console.timeEnd(`Rerank (${this.queryId})`);
     }
@@ -229,6 +252,8 @@ export class ResultsContainer {
             const ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
             if (ssc) ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
         }
+
+        this.next()
     }
 
     /**
@@ -242,6 +267,8 @@ export class ResultsContainer {
             const ssc = this._objectid_to_object_map.get(metadata.objectId);
             if (ssc) ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
         }
+
+        this.next()
     }
 
     /**
@@ -343,24 +370,24 @@ export class ResultsContainer {
      */
     public serialize() {
         return {
-            queryId : this.queryId,
-            objects : this._results_objects.map(obj => obj.serialize()),
-            segments : this._results_segments.map(seg => seg.serialize()),
-            objectMetadata : this._results_objects.map(obj => {
+            queryId: this.queryId,
+            objects: this._results_objects.map(obj => obj.serialize()),
+            segments: this._results_segments.map(seg => seg.serialize()),
+            objectMetadata: this._results_objects.map(obj => {
                 const metadata: MediaObjectMetadata[] = [];
                 obj.metadata.forEach((k, v) => {
                     metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
                 });
                 return metadata;
             }).reduce((x, y) => x.concat(y), []),
-            segmentMetadata : this._results_segments.map(seg => {
+            segmentMetadata: this._results_segments.map(seg => {
                 const metadata: MediaSegmentMetadata[] = [];
                 seg.metadata.forEach((k, v) => {
                     metadata.push({segmentId: seg.segmentId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
                 });
                 return metadata;
             }).reduce((x, y) => x.concat(y), []),
-            similarity : this.features.map(f => {
+            similarity: this.features.map(f => {
                 return this._results_segments.filter(seg => seg.scores.has(f)).map(seg => {
                     return <Similarity>{category: f.name, key: seg.segmentId, value: seg.scores.get(f)};
                 });
@@ -374,13 +401,23 @@ export class ResultsContainer {
      */
     public static deserialize(data: any): ResultsContainer {
         const container = new ResultsContainer(data['queryId']);
-        container.processObjectMessage(<ObjectQueryResult>{queryId : container.queryId, content: <MediaObject[]>data['objects']});
-        container.processSegmentMessage(<SegmentQueryResult>{queryId : container.queryId, content: <MediaSegment[]>data['segments']});
-        container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{queryId : container.queryId, content: <MediaObjectMetadata[]>data['objectMetadata']});
-        container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{queryId : container.queryId, content: <MediaSegmentMetadata[]>data['segmentMetadata']});
+        container.processObjectMessage(<ObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
+        container.processSegmentMessage(<SegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
+        container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
+            queryId: container.queryId,
+            content: <MediaObjectMetadata[]>data['objectMetadata']
+        });
+        container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{
+            queryId: container.queryId,
+            content: <MediaSegmentMetadata[]>data['segmentMetadata']
+        });
         for (const similiarity of data['similarity']) {
             if (similiarity.length > 0) {
-                container.processSimilarityMessage(<SimilarityQueryResult>{queryId : container.queryId, category: similiarity[0].category, content: similiarity});
+                container.processSimilarityMessage(<SimilarityQueryResult>{
+                    queryId: container.queryId,
+                    category: similiarity[0].category,
+                    content: similiarity
+                });
             }
         }
         return container;
