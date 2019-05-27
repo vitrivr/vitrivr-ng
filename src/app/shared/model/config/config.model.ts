@@ -72,7 +72,8 @@ export class Config {
             },
             config: {
                 queryId: null,
-                hints: ['exact']
+                hints: ['exact'],
+                neighboringSegmentLookupCount: 500
             },
             text: {
                 categories : []
