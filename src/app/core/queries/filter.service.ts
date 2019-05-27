@@ -128,6 +128,9 @@ export class FilterService {
             objectFilters.push((obj) => {
                 let filter = true;
                 this._metadata.forEach((mdAllowedValuesSet, mdKey) => {
+                    if (obj.segments.findIndex(seg => seg.metadata.has(mdKey) ? mdAllowedValuesSet.has(seg.metadata.get(mdKey)) : false) >= 0) {
+                        return;
+                    }
                     if (!obj.metadata.has(mdKey)) {
                         filter = false;
                     }
