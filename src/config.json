@@ -8,7 +8,7 @@
   },
   "resources": {
     "host_thumbnails" : "http://dmi-p10.dmi.unibas.ch/thumbnails/:o/:s:x",
-    "host_objects": "http://dmi-p10.dmi.unibas.ch/videos/:o.mp4",
+    "host_objects": "http://dmi-p10.dmi.unibas.ch/LSC_DATA/:o/:s_000.jpg",
     "suffix_default":"jpg",
     "suffix": {
       "IMAGE": "jpg",
