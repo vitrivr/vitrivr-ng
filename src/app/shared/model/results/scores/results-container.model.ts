@@ -137,7 +137,7 @@ export class ResultsContainer {
         return this._results_segments_subject.asObservable().map(resultList => {
             const map: Map<string, Set<string>> = new Map();
             resultList.forEach(res => {
-                res.metadata.forEach(((mdValue, mdKey) => map.has(mdKey) ? map.set(mdKey, new Set<string>().add(mdValue)) : map.get(mdKey).add(mdValue)))
+                res.metadata.forEach(((mdValue, mdKey) => map.has(mdKey) ? map.get(mdKey).add(mdValue) : map.set(mdKey, new Set<string>().add(mdValue))))
             });
             return map;
         }).zip(this._results_objects_subject.asObservable(), function (o1, o2) {
