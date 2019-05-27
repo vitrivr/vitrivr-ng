@@ -83,7 +83,7 @@ export class VbsSubmissionService {
 
         this._vbsSubscription = this._submitSubject.pipe(
              flatMap((segment) => {
-                let image = segment.segmentId + ".jpg";
+                let image = segment.segmentId + "_000.jpg";
                 let params = new HttpParams().set('team', String(team)).set('image', image);
 
                 /* Prepare VBS submission. */
