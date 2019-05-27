@@ -7,8 +7,8 @@
     "ping_interval": 10000
   },
   "resources": {
-    "host_thumbnails" : "http://127.0.0.1/thumbnails/:o/:s:x",
-    "host_objects": "http://127.0.0.1/videos/:o.mp4",
+    "host_thumbnails" : "http://dmi-p10.dmi.unibas.ch/thumbnails/:o/:s:x",
+    "host_objects": "http://dmi-p10.dmi.unibas.ch/videos/:o.mp4",
     "suffix_default":"jpg",
     "suffix": {
       "IMAGE": "jpg",
@@ -16,9 +16,9 @@
     }
   },
   "vbs": {
-    "teamid": null,
+    "teamid": 1,
     "toolid": null,
-    "endpoint": null,
+    "endpoint": "http://131.152.54.37:3100/lsc/submit",
     "collabordinator": null
   },
   "evaluation": {
