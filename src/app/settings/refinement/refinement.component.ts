@@ -154,7 +154,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
                 this._filterService.metadata.set(category, new Set<string>().add(key))
             }
         }
-        console.log(this.filter.metadata);
         this._filterService.update();
         // TODO no clue what this is useful for. but it mirrors the filter code above.
         const context: Map<ContextKey, string> = new Map();

@@ -19,13 +19,6 @@
     </div>
     <br/>
     <div>
-        <h5 class="mat-h5">Display only objects of color:</h5>
-        <section class="checkbox-group">
-            <mat-checkbox *ngFor="let color of filter.dominantKeys" [name]="color" [checked]="filter.mediatypes.get(color)" (change)="onColorFilterChanged(color,$event)">{{color}}</mat-checkbox>
-        </section>
-    </div>
-    <br/>
-    <div>
         <h5 class="mat-h5">Display only objects with score above:</h5>
         <span class="label constrained">Threshold</span>
         <mat-slider [min]="0" [max]="1.0" [step]="0.01" [(value)]="filter.threshold" (change)="onThresholdValueChanges($event)"></mat-slider>
@@ -36,9 +29,10 @@
 
     <div *ngFor="let entry of metadata | async | keyvalue">
         <h5 class="mat-h5">Display only the following values for {{entry.key}}:</h5>
-        <section class="checkbox-group">
-            <mat-checkbox *ngFor="let mdVal of entry.value" (change)="onMetadataFilterChanged(entry.key, mdVal,$event)">{{mdVal}}</mat-checkbox>
-        </section>
+        <div class="scrolling-checkbox-list">
+            <mat-checkbox *ngFor="let mdVal of entry.value | sortStringSet" (change)="onMetadataFilterChanged(entry.key, mdVal,$event)" class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
+        </div>
+        <br/>
     </div>
 </div>
 

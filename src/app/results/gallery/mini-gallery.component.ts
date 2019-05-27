@@ -1,22 +1,22 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from "@angular/core";
-import {AbstractResultsViewComponent} from "../abstract-results-view.component";
-import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
-import {QueryService} from "../../core/queries/query.service";
-import {ResolverService} from "../../core/basics/resolver.service";
-import {Router} from "@angular/router";
-import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
-import {MatDialog, MatSnackBar} from "@angular/material";
-import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
-import {VbsSubmissionService} from "../../core/vbs/vbs-submission.service";
-import {Observable} from "rxjs";
-import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
-import {SelectionService} from "../../core/selection/selection.service";
-import {EventBusService} from "../../core/basics/event-bus.service";
-import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
-import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
-import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
-import {map} from "rxjs/operators";
-import {FilterService} from "../../core/queries/filter.service";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {AbstractResultsViewComponent} from '../abstract-results-view.component';
+import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
+import {QueryService} from '../../core/queries/query.service';
+import {ResolverService} from '../../core/basics/resolver.service';
+import {Router} from '@angular/router';
+import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MatDialog, MatSnackBar} from '@angular/material';
+import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
+import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {Observable} from 'rxjs';
+import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
+import {SelectionService} from '../../core/selection/selection.service';
+import {EventBusService} from '../../core/basics/event-bus.service';
+import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
+import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
+import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
+import {FilterService} from '../../core/queries/filter.service';
+import {ConfigService} from '../../core/basics/config.service';
 
 @Component({
     moduleId: module.id,
@@ -39,17 +39,19 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
      * @param _router The Router used for navigation
      * @param _snackBar The MatSnackBar component used to display the SnackBar.
+     * @param _configService
      * @param _resolver
      * @param _dialog
      * @param _vbs
      */
     constructor(_cdr: ChangeDetectorRef,
-                _queryService : QueryService,
-                _filterService : FilterService,
+                _queryService: QueryService,
+                _filterService: FilterService,
                 _selectionService: SelectionService,
                 _eventBusService: EventBusService,
                 _router: Router,
                 _snackBar: MatSnackBar,
+                protected _configService: ConfigService,
                 protected _resolver: ResolverService,
                 protected _dialog: MatDialog,
                 protected _vbs: VbsSubmissionService) {
@@ -88,9 +90,9 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * @param {SegmentScoreContainer} segment
      */
     public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
-        this._queryService.lookupNeighboringSegments(segment.segmentId);
-        let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediasegment", segment.segmentId);
+        this._queryService.lookupNeighboringSegments(segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupCount'));
+        let context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
     }
 
@@ -102,9 +104,9 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * @param {SegmentScoreContainer} segment
      */
     public onNeighborsButtonRightClicked(event: Event, segment: SegmentScoreContainer) {
-        this._queryService.lookupNeighboringSegments(segment.segmentId, 500);
-        let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediasegment", segment.segmentId);
+        this._queryService.lookupNeighboringSegments(segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupAllCount'));
+        let context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
         event.preventDefault();
     }
@@ -132,11 +134,11 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
             /* Normal click will display item. */
             this._dialog.open(QuickViewerComponent, {data: segment});
             let context: Map<ContextKey, any> = new Map();
-            context.set("i:mediasegment", segment.segmentId);
+            context.set('i:mediasegment', segment.segmentId);
             this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
         }
     }
-    
+
     /**
      * Returns true, if the submit (to VBS) button should be displayed for the given segment and false otherwise. This depends on the configuration and
      * the media type of the object.

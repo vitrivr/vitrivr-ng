@@ -44,7 +44,7 @@
     },
     "config": {
       "hints": ["exact"],
-      "neighboringSegmentLookupCount": 3000
+      "neighboringSegmentLookupCount": 500
     },
     "text": {
       "categories": [

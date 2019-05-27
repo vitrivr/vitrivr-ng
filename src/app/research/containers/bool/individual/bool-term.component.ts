@@ -16,21 +16,21 @@ export class BoolTermComponent implements OnInit {
     // TODO add logic to store multiple queries with an OR
     /** This object holds all the query settings. */
     @Input()
-    private boolTerm: BoolQueryTerm;
+    public boolTerm: BoolQueryTerm;
 
     @Input()
     public readonly containers: BoolTermComponent[];
 
     @Input()
-    private readonly self: BoolTermComponent;
+    public readonly self: BoolTermComponent;
 
     @Input()
-    private readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
+    public readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
     /** Current selection */
-    private currentAttributeObservable: BehaviorSubject<BoolAttribute> =
+    public currentAttributeObservable: BehaviorSubject<BoolAttribute> =
         new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT));
     /** Current BoolTerm */
-    private term: BoolTerm;
+    public term: BoolTerm;
     /** Currently selected operator */
     currentOperator: BoolOperator;
 
@@ -53,7 +53,7 @@ export class BoolTermComponent implements OnInit {
         this.removeTermFromData();
     }
 
-    private removeTermFromData() {
+    public removeTermFromData() {
         const termIdx = this.boolTerm.terms.indexOf(this.term);
         if (termIdx > -1) {
             console.log('found query term to remove at index ' + termIdx + ', removing');
@@ -62,14 +62,15 @@ export class BoolTermComponent implements OnInit {
         }
     }
 
-    private updateData() {
+    public updateData() {
+        console.log('current terms: ' + JSON.stringify(this.boolTerm.terms));
         this.boolTerm.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.boolTerm.terms));
     }
 
     /**
      * @param value input value for the term (e.g. 150 or 'basel')
      */
-    private addTermToData(value?: string) {
+    public addTermToData(value?: string) {
         this.term = new BoolTerm(this.currentAttributeObservable.getValue().featureName,
             BoolAttribute.getOperatorName(this.currentOperator),
             value == null ? (this.term == null ? '' : this.term.values) : value);
@@ -78,7 +79,7 @@ export class BoolTermComponent implements OnInit {
         this.updateData()
     }
 
-    private updateTerms(value?: string) {
+    public updateTerms(value?: string) {
         if (this.term != null) {
             this.removeTermFromData();
         }
