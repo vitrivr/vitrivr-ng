@@ -20,6 +20,9 @@ import 'rxjs-compat/add/operator/map';
 import 'rxjs-compat/add/operator/merge';
 import 'rxjs-compat/add/operator/concat';
 import 'rxjs-compat/add/operator/zip';
+import {FilterService} from '../../../../core/queries/filter.service';
+import 'rxjs-compat/add/operator/filter';
+import 'rxjs-compat/add/operator/combineLatest';
 
 export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -60,6 +63,7 @@ export class ResultsContainer {
      *
      * @param {string} queryId Unique ID of the query. Used to filter messages!
      * @param {FusionFunction} weightFunction Function that should be used to calculate the scores.
+     * @param _filterService used to check which metadata should be displayed
      */
     constructor(public readonly queryId: string, private weightFunction: FusionFunction = new DefaultFusionFunction()) {
     }
@@ -131,22 +135,25 @@ export class ResultsContainer {
     }
 
     /**
+     * @param _filterService only get metadata which are even possible after applying the filters
      * @return a map of all metadata keys with all possible values
      */
-    get metadataAsObservable(): Observable<Map<string, Set<string>>> {
-        return this._results_segments_subject.asObservable().map(resultList => {
+    public metadataAsObservable(_filterService: FilterService): Observable<Map<string, Set<string>>> {
+        return this.segmentsAsObservable.combineLatest(_filterService.segmentFilter, function (segments, filter) {
+            return segments.filter(seg => filter.every(f => f(seg)))
+        }).map(resultList => {
             const map: Map<string, Set<string>> = new Map();
             resultList.forEach(res => {
                 res.metadata.forEach(((mdValue, mdKey) => map.has(mdKey) ? map.get(mdKey).add(mdValue) : map.set(mdKey, new Set<string>().add(mdValue))))
             });
             return map;
-        }).zip(this._results_objects_subject.asObservable(), function (o1, o2) {
-            o2.forEach(res => {
+        }).combineLatest(this._results_objects_subject, _filterService.objectFilters, function (map, objects, filter) {
+            objects.filter(obj => filter.every(f => f(obj))).forEach(res => {
                 res.metadata.forEach((mdValue, mdKey) => {
-                    o1.has(mdKey) ? o1.get(mdKey).add(mdValue) : o1.set(mdKey, new Set<string>().add(mdValue))
+                    map.has(mdKey) ? map.get(mdKey).add(mdValue) : map.set(mdKey, new Set<string>().add(mdValue))
                 })
             });
-            return o1;
+            return map;
         })
     }
 
@@ -180,12 +187,17 @@ export class ResultsContainer {
      * @param {FusionFunction} weightFunction
      */
     public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
-        if (!features) features = this.features;
-        if (!weightFunction) weightFunction = this.weightFunction;
+        if (!features) {
+            features = this.features;
+        }
+        if (!weightFunction) {
+            weightFunction = this.weightFunction;
+        }
         console.time(`Rerank (${this.queryId})`);
         this._results_objects.forEach((value) => {
             value.update(features, weightFunction);
         });
+        /* Other methods calling rerank() depend on this next() call */
         this.next();
         console.timeEnd(`Rerank (${this.queryId})`);
     }
@@ -198,17 +210,21 @@ export class ResultsContainer {
      * @return {boolean} True, if ObjectQueryResult was processed i.e. queryId corresponded with that of the score container.
      */
     public processObjectMessage(obj: ObjectQueryResult): boolean {
-        if (obj.queryId !== this.queryId) return false;
+        if (obj.queryId !== this.queryId) {
+            return false;
+        }
         for (const object of obj.content) {
             /* Add mediatype of object to list of available mediatypes (if new). */
-            if (!this._mediatypes.has(object.mediatype)) this._mediatypes.set(object.mediatype, true);
+            if (!this._mediatypes.has(object.mediatype)) {
+                this._mediatypes.set(object.mediatype, true);
+            }
 
             /* Get unique MediaObjectScore container and apply MediaObject. */
             this.uniqueMediaObjectScoreContainer(object.objectId, object);
         }
 
-        /* Publish a change. */
-        this.next();
+        /* Re-rank on the UI side - this also invokes next(). */
+        this.rerank();
 
         /* Return true. */
         return true;
@@ -224,7 +240,10 @@ export class ResultsContainer {
      * @return {boolean} True, if SegmentQueryResult was processed i.e. queryId corresponded with that of the message.
      */
     public processSegmentMessage(seg: SegmentQueryResult): boolean {
-        if (seg.queryId !== this.queryId) return false;
+        if (seg.queryId !== this.queryId) {
+            console.warn('query result id ' + seg.queryId + ' does not match query id ' + this.queryId);
+            return false;
+        }
         for (const segment of seg.content) {
             const mosc = this.uniqueMediaObjectScoreContainer(segment.objectId);
             const ssc = mosc.addMediaSegment(segment);
@@ -234,8 +253,8 @@ export class ResultsContainer {
             }
         }
 
-        /* Publish a change. */
-        this.next();
+        /* Re-rank on the UI side - this also invokes next(). */
+        this.rerank();
 
         /* Return true. */
         return true;
@@ -247,10 +266,15 @@ export class ResultsContainer {
      * @param met SegmentMetadataQueryResult that should be processed.
      */
     public processSegmentMetadataMessage(met: SegmentMetadataQueryResult): boolean {
-        if (met.queryId !== this.queryId) return false;
+        if (met.queryId !== this.queryId) {
+            console.warn('segment metadata result id ' + met.queryId + ' does not match query id ' + this.queryId);
+            return false;
+        }
         for (const metadata of met.content) {
             const ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
-            if (ssc) ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+            if (ssc) {
+                ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+            }
         }
 
         this.next()
@@ -262,10 +286,15 @@ export class ResultsContainer {
      * @param met ObjectMetadataQueryResult that should be processed.
      */
     public processObjectMetadataMessage(met: ObjectMetadataQueryResult): boolean {
-        if (met.queryId !== this.queryId) return false;
+        if (met.queryId !== this.queryId) {
+            console.warn('object metadata result id ' + met.queryId + ' does not match query id ' + this.queryId);
+            return false;
+        }
         for (const metadata of met.content) {
             const ssc = this._objectid_to_object_map.get(metadata.objectId);
-            if (ssc) ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+            if (ssc) {
+                ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+            }
         }
 
         this.next()
@@ -279,7 +308,10 @@ export class ResultsContainer {
      * @return {boolean} True, if SimilarityQueryResult was processed i.e. queryId corresponded with that of the message.
      */
     public processSimilarityMessage(sim: SimilarityQueryResult) {
-        if (sim.queryId !== this.queryId) return false;
+        if (sim.queryId !== this.queryId) {
+            console.warn('similarity query result id ' + sim.queryId + ' does not match query id ' + this.queryId);
+            return false;
+        }
 
         /* Get and (if missing) add a unique feature. */
         const feature = this.uniqueFeature(sim.category);
@@ -312,6 +344,7 @@ export class ResultsContainer {
      * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
      */
     private next() {
+        console.debug('publishing next round of changes with ' + this._results_segments.length + ' segments and ' + this._results_objects.length + ' objects');
         this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
         this._results_objects_subject.next(this._results_objects.filter(v => v.show));
         this._results_features_subject.next(this._features);
@@ -357,7 +390,9 @@ export class ResultsContainer {
      */
     private uniqueFeature(category: FeatureCategories): WeightedFeatureCategory {
         for (const feature of this._features) {
-            if (feature.name == category) return feature;
+            if (feature.name === category) {
+                return feature;
+            }
         }
         const feature = new WeightedFeatureCategory(category, category, 100);
         this._features.push(feature);

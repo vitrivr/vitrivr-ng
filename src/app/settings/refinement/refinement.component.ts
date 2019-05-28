@@ -74,7 +74,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
     public onQueryStartEnd(msg: QueryChange) {
         if (msg === 'STARTED') {
             this._features = this._queryService.results.featuresAsObservable;
-            this._metadata = this._queryService.results.metadataAsObservable;
+            this._metadata = this._queryService.results.metadataAsObservable(this._filterService);
         } else if (msg === 'CLEAR') {
             this._features = EMPTY;
             this._metadata = EMPTY;
@@ -89,7 +89,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param event MatSliderChange event that contains the new value.
      */
     public onValueChanged(feature: WeightedFeatureCategory, event: MatSliderChange) {
-        if (!this._queryService.results) return;
+        if (!this._queryService.results) {
+            return;
+        }
 
         /* Re-rank all objects asynchronously. */
         Promise.resolve(this._queryService.results).then((results) => {
@@ -112,7 +114,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param event
      */
     public onTypeFilterChanged(type: MediaType, event: MatCheckboxChange) {
-        if (!this._queryService.results) return;
+        if (!this._queryService.results) {
+            return;
+        }
         this._filterService.mediatypes.set(type, event.checked);
         this._filterService.update();
         const context: Map<ContextKey, string> = new Map();
@@ -129,7 +133,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param event
      */
     public onColorFilterChanged(color: ColorLabel, event: MatCheckboxChange) {
-        if (!this._queryService.results) return;
+        if (!this._queryService.results) {
+            return;
+        }
         this._filterService.dominant.set(color, event.checked);
         this._filterService.update();
         const context: Map<ContextKey, string> = new Map();
@@ -139,7 +145,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
     }
 
     public onMetadataFilterChanged(category: string, key: string, event: MatCheckboxChange) {
-        if (!this._queryService.results) return;
+        if (!this._queryService.results) {
+            return;
+        }
         if (this._filterService.metadata.has(category)) {
             if (event.checked) {
                 this._filterService.metadata.get(category).add(key)
