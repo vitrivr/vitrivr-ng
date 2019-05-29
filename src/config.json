@@ -16,7 +16,7 @@
     }
   },
   "vbs": {
-    "teamid": 1,
+    "teamid": 6,
     "toolid": null,
     "endpoint": "http://131.152.54.37:3100/lsc/submit",
     "collabordinator": null
