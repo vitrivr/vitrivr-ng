@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "127.0.0.1",
+    "host" : "dmi-p10.dmi.unibas.ch",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
@@ -49,11 +49,7 @@
     "text": {
       "categories": [
         ["ocr", "Text on Screen"],
-        ["asr", "Subtitles"],
-        ["meta", "Metadata"],
-        ["tagsft", "Tags"],
-        ["captioning", "Captioning"],
-        ["audio", "Audio"]
+        ["tagsft", "Tags"]
       ]
     },
     "boolean": [
