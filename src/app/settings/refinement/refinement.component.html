@@ -25,12 +25,16 @@
         <span class="label constrained">{{filter.threshold * 100}}%</span>
     </div>
 
+    <h3 class="mat-h3">Metadata Filter Configuration</h3>
+
+    <mat-checkbox [checked]="mdCatOperatorChecked()" (change)="onMdCatOperatorChange($event)">Use OR for multiple categories</mat-checkbox>
+
     <h3 class="mat-h3">Metadata Filters</h3>
 
     <div *ngFor="let entry of metadata | async | keyvalue">
         <h5 class="mat-h5">Display only the following values for {{entry.key}}:</h5>
         <div class="scrolling-checkbox-list">
-            <mat-checkbox *ngFor="let mdVal of entry.value | sortStringSet" [checked]="isChecked(entry.key, mdVal)" (change)="onMetadataFilterChanged(entry.key, mdVal,$event)" class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
+            <mat-checkbox *ngFor="let mdVal of entry.value | sortStringSet" [checked]="mdFilterChecked(entry.key, mdVal)" (change)="onMetadataFilterChanged(entry.key, mdVal,$event)" class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
         </div>
         <br/>
     </div>
