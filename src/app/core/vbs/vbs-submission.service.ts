@@ -97,7 +97,7 @@ export class VbsSubmissionService {
             map((msg: string) => {
                 if (msg.indexOf("Correct") > -1) {
                     return [msg,"snackbar-success"];
-                }else if (msg.indexOf("Failed") > -1) {
+                } else if (msg.indexOf("Wrong") > -1) {
                     return [msg,"snackbar-error"];
                 } else {
                     return [msg,"snackbar-warning"];
