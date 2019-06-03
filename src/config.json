@@ -16,9 +16,9 @@
     }
   },
   "vbs": {
-    "teamid": 6,
+    "teamid": 2,
     "toolid": null,
-    "endpoint": "http://131.152.54.37:3100/lsc/submit",
+    "endpoint": "http://10.34.58.82:3100/lsc/submit",
     "collabordinator": null
   },
   "evaluation": {
@@ -43,8 +43,7 @@
       "bool": true
     },
     "config": {
-      "hints": ["exact"],
-      "neighboringSegmentLookupCount": 500
+      "hints": ["exact"]
     },
     "text": {
       "categories": [

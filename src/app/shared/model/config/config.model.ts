@@ -73,8 +73,8 @@ export class Config {
             config: {
                 queryId: null,
                 hints: ['exact'],
-                neighboringSegmentLookupCount: 500,
-                neighboringSegmentLookupAllCount: 24000
+                neighboringSegmentLookupCount: 10000,
+                neighboringSegmentLookupAllCount: 240000
             },
             text: {
                 categories : []
