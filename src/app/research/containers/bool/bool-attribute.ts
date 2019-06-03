@@ -44,19 +44,16 @@ export class BoolAttribute {
     switch (type) {
       case ValueType.DATE:
         return [BoolOperator.EQ, BoolOperator.NEQ, BoolOperator.BETWEEN,
-          BoolOperator.LEQ, BoolOperator.GEQ, BoolOperator.GREATER, BoolOperator.LESS,
-          BoolOperator.ISNULL, BoolOperator.ISNOTNULL];
+          BoolOperator.LEQ, BoolOperator.GEQ, BoolOperator.GREATER, BoolOperator.LESS];
       case ValueType.NUMERIC:
         return [BoolOperator.NEQ, BoolOperator.EQ,
-          BoolOperator.GEQ, BoolOperator.LEQ, BoolOperator.GREATER, BoolOperator.LESS,
-          BoolOperator.ISNULL, BoolOperator.ISNOTNULL, BoolOperator.IN];
+          BoolOperator.GEQ, BoolOperator.LEQ, BoolOperator.GREATER, BoolOperator.LESS];
       case ValueType.OPTIONS:
-        return [BoolOperator.EQ, BoolOperator.NEQ, BoolOperator.ISNOTNULL, BoolOperator.ISNULL];
+        return [BoolOperator.EQ, BoolOperator.NEQ];
       case ValueType.RANGE:
         return [BoolOperator.BETWEEN];
       case ValueType.TEXT:
-        return [BoolOperator.LIKE, BoolOperator.ILIKE, BoolOperator.RLIKE, BoolOperator.NLIKE,
-          BoolOperator.EQ, BoolOperator.NEQ, BoolOperator.ISNULL, BoolOperator.ISNOTNULL, BoolOperator.IN];
+        return [BoolOperator.LIKE, BoolOperator.EQ];
       default:
         console.error('type ' + type + ' not known');
         return undefined;
