@@ -23,12 +23,12 @@ export class OrderBySegmentPipe implements PipeTransform {
              * This logic is ok even if a.startabs or b.startabs is 0. This is because sorting by sequence number still work.
              */
             if (desc) {
-                if (!a.startabs && !b.startabs) {
+                if (!a.startabs || !b.startabs) {
                     return a.sequenceNumber - b.sequenceNumber
                 }
                 return a.startabs - b.startabs;
             } else {
-                if (!a.startabs && !b.startabs) {
+                if (!a.startabs || !b.startabs) {
                     return b.sequenceNumber - a.sequenceNumber
                 }
                 return b.startabs - a.startabs;

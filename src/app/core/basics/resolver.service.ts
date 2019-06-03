@@ -103,4 +103,16 @@ export class ResolverService {
         rep[Token.SEGMENT_ID] = segment.segmentId;
         return this.host_thumbnails.replace(this._regex, (match) => rep[match] || match);
     }
+
+    public pathToSegment(segment: SegmentScoreContainer) {
+        let rep = {};
+        rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
+        rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;
+        rep[Token.OBJECT_PATH] = segment.objectScoreContainer.path;
+        rep[Token.OBJECT_TYPE_LOWER] = segment.objectScoreContainer.mediatype.toLowerCase();
+        rep[Token.OBJECT_TYPE_UPPER] = segment.objectScoreContainer.mediatype;
+        rep[Token.SUFFIX] = this.suffices.get(segment.objectScoreContainer.mediatype);
+        rep[Token.SEGMENT_ID] = segment.segmentId;
+        return this.host_objects.replace(this._regex, (match) => rep[match] || match);
+    }
 }
