@@ -99,26 +99,27 @@ export class Config {
      */
     constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, vbs?: any, tags?: Tag[], mlt?: FeatureCategories[]) {
         console.log(this._config);
+        const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
         if (api) {
-            this._config.api = DEEPMERGE(this._config.api, api);
+            this._config.api = DEEPMERGE(this._config.api, api, {arrayMerge: overwriteMerge});
         }
         if (resources) {
-            this._config.resources = DEEPMERGE(this._config.resources, resources);
+            this._config.resources = DEEPMERGE(this._config.resources, resources, {arrayMerge: overwriteMerge});
         }
         if (evaluation) {
-            this._config.evaluation = DEEPMERGE(this._config.evaluation, evaluation);
+            this._config.evaluation = DEEPMERGE(this._config.evaluation, evaluation, {arrayMerge: overwriteMerge});
         }
         if (query) {
-            this._config.query = DEEPMERGE(this._config.query, query);
+            this._config.query = DEEPMERGE(this._config.query, query, {arrayMerge: overwriteMerge});
         }
         if (vbs) {
-            this._config.vbs = DEEPMERGE(this._config.vbs, vbs);
+            this._config.vbs = DEEPMERGE(this._config.vbs, vbs, {arrayMerge: overwriteMerge});
         }
         if (tags) {
-            this._config.tags = DEEPMERGE(this._config.tags, tags);
+            this._config.tags = DEEPMERGE(this._config.tags, tags, {arrayMerge: overwriteMerge});
         }
         if (mlt) {
-            this._config.mlt = DEEPMERGE(this._config.mlt, mlt);
+            this._config.mlt = DEEPMERGE(this._config.mlt, mlt, {arrayMerge: overwriteMerge});
         }
         console.log(this._config)
     }
