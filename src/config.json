@@ -40,7 +40,7 @@
       "text": true,
       "tag": false,
       "semantic": true,
-      "bool": true
+      "boolean": true
     },
     "config": {
       "hints": ["exact"]

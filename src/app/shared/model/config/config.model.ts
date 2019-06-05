@@ -70,7 +70,7 @@ export class Config {
                 motion: true,
                 text: true,
                 tag: true,
-                bool: true
+                boolean: true
             },
             config: {
                 queryId: null,
