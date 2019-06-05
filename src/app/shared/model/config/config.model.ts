@@ -1,6 +1,8 @@
 import {Tag} from '../../../core/selection/tag.model';
 import {FeatureCategories} from '../results/feature-categories.model';
 import {QuerySettings} from './query-settings.model';
+import * as DEEPMERGE from 'deepmerge';
+
 
 export class Config {
     /** Context of the Cineast API. */
@@ -96,13 +98,29 @@ export class Config {
      * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
      */
     constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, vbs?: any, tags?: Tag[], mlt?: FeatureCategories[]) {
-        if (api) Config.merge(this._config.api, api);
-        if (resources) Config.merge(this._config.resources, resources);
-        if (evaluation) Config.merge(this._config.evaluation, evaluation);
-        if (query) Config.merge(this._config.query, query);
-        if (vbs) Config.merge(this._config.vbs, vbs);
-        if (tags) Config.merge(this._config.tags, tags);
-        if (mlt) this._config.mlt = mlt;
+        console.log(this._config);
+        if (api) {
+            this._config.api = DEEPMERGE(this._config.api, api);
+        }
+        if (resources) {
+            this._config.resources = DEEPMERGE(this._config.resources, resources);
+        }
+        if (evaluation) {
+            this._config.evaluation = DEEPMERGE(this._config.evaluation, evaluation);
+        }
+        if (query) {
+            this._config.query = DEEPMERGE(this._config.query, query);
+        }
+        if (vbs) {
+            this._config.vbs = DEEPMERGE(this._config.vbs, vbs);
+        }
+        if (tags) {
+            this._config.tags = DEEPMERGE(this._config.tags, tags);
+        }
+        if (mlt) {
+            this._config.mlt = DEEPMERGE(this._config.mlt, mlt);
+        }
+        console.log(this._config)
     }
 
     /**
@@ -117,20 +135,6 @@ export class Config {
             return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['vbs'], object['tags'], object['mlt']);
         } else {
             return null;
-        }
-    }
-
-    /**
-     * Merges the loaded properties with the existing, default properties.
-     *
-     * @param defaultProperty The default property.
-     * @param loadedProperty The loaded property.
-     */
-    private static merge(defaultProperty, loadedProperty) {
-        for (const property in loadedProperty) {
-            if (loadedProperty.hasOwnProperty(property) && defaultProperty.hasOwnProperty(property)) {
-                defaultProperty[property] = loadedProperty[property];
-            }
         }
     }
 

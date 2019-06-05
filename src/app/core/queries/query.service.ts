@@ -1,6 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 import {Message} from '../../shared/model/messages/interfaces/message.interface';
 import {QueryStart} from '../../shared/model/messages/interfaces/responses/query-start.interface';
@@ -76,6 +75,7 @@ export class QueryService {
             ).subscribe((msg: Message) => this.onApiMessage(msg));
         })
     }
+
     /**
      * Starts a new similarity query. Success is indicated by the return value.
      *
@@ -134,8 +134,14 @@ export class QueryService {
      * @returns {boolean} true if query was issued, false otherwise.
      */
     public lookupNeighboringSegments(segmentId: string, count?: number) {
-        if (!this._results) return false;
-        if (!this._socket) return false;
+        if (!this._results) {
+            console.log('no results, not looking up neighboring segments');
+            return false;
+        }
+        if (!this._socket) {
+            console.log('no socket, not looking up neighboring segments');
+            return false;
+        }
         this._socket.next(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
         return true;
     }
