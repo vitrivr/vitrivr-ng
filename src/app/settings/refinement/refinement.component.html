@@ -27,9 +27,13 @@
 
     <h3 class="mat-h3">Metadata Filter Configuration</h3>
 
-    <mat-checkbox [checked]="mdCatOperatorChecked()" (change)="onMdCatOperatorChange($event)">Use OR for multiple categories</mat-checkbox>
+    <mat-slide-toggle [checked]="mdCatOperatorChecked()" (change)="onMdCatOperatorChange($event)">Use OR for multiple categories</mat-slide-toggle>
 
-    <h3 class="mat-h3">Metadata Filters</h3>
+    <mat-divider style="margin-top: 5px; margin-bottom: 5px;"></mat-divider>
+
+    <button mat-raised-button color="primary" style="width:100%;" (click)="resetMetadataFilters()">Reset All Filters</button>
+
+    <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>
 
     <div *ngFor="let entry of metadata | async | keyvalue">
         <h5 class="mat-h5">Display only the following values for {{entry.key}}:</h5>
