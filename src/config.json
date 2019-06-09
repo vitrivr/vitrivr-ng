@@ -43,7 +43,9 @@
       "boolean": true
     },
     "config": {
-      "hints": ["exact"]
+      "hints": ["exact"],
+      "neighboringSegmentLookupCount": 5,
+      "neighboringSegmentLookupAllCount": 2000
     },
     "text": {
       "categories": [
