@@ -56,7 +56,7 @@ export class Config {
             new Tag('Magenta', 300),
         ],
         mlt : {
-            'MODEL3D' : ['sphericalharmonicshigh'],
+            'MODEL3D' : ['sphericalharmonicsdefault'],
             'IMAGE' : ['globalcolor', 'localcolor', 'edge'],
             'VIDEO' : ['globalcolor', 'localcolor', 'edge'],
             'AUDIO' : ['audiofingerprint'],

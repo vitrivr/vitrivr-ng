@@ -108,7 +108,7 @@ export class QueryService {
      * @param categories Optional list of category names that should be used for More-Like-This.
      * @returns {boolean} true if query was issued, false otherwise.
      */
-    public findMoreLikeThis(segment: SegmentScoreContainer, categories?: string[]): boolean {
+    public findMoreLikeThis(segment: SegmentScoreContainer, categories: string[] = []): boolean {
         if (this._running > 0) return false;
         if (!this._socket) return false;
 
