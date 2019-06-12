@@ -25,6 +25,7 @@ import {HistoryService} from './history.service';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
+import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -103,20 +104,19 @@ export class QueryService {
      *
      * Note: More-Like-This queries can only be started if no query is currently running.
      *
-     * @param segmentId The ID of the segment that should serve as example.
+     * @param segment The {SegmentScoreContainer} that should serve as example.
      * @param categories Optional list of category names that should be used for More-Like-This.
      * @returns {boolean} true if query was issued, false otherwise.
      */
-    public findMoreLikeThis(segmentId: string, categories?: string[]): boolean {
+    public findMoreLikeThis(segment: SegmentScoreContainer, categories?: string[]): boolean {
         if (this._running > 0) return false;
         if (!this._socket) return false;
 
         /* Use categories from last query AND the default categories for MLT. */
         this._config.pipe(first()).subscribe(config => {
-            const categories = this._results.features.map(f => f.name);
-            config.get<FeatureCategories[]>('mlt').filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
+            config.get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`).filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
             if (categories.length > 0) {
-                this._socket.next(new MoreLikeThisQuery(segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+                this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
             }
         });
 

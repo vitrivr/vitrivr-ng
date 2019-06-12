@@ -153,7 +153,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param segment SegmentScoreContainer which should be used for MLT.
      */
     public onMltButtonClicked(segment: SegmentScoreContainer) {
-        this._queryService.findMoreLikeThis(segment.segmentId);
+        this._queryService.findMoreLikeThis(segment);
 
         /* Emit a MLT event on the bus. */
         let context: Map<ContextKey, any> = new Map();

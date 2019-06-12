@@ -112,7 +112,7 @@ export class ObjectdetailsComponent {
      * @param segment SegmentScoreContainer that is being clicked.
      */
     public onMltClick(segment: SegmentScoreContainer) {
-        this._query.findMoreLikeThis(segment.segmentId);
+        this._query.findMoreLikeThis(segment);
     }
 
     /**

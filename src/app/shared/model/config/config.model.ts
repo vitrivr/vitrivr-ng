@@ -55,12 +55,13 @@ export class Config {
             new Tag('Violet', 270),
             new Tag('Magenta', 300),
         ],
-        mlt : [
-            'globalcolor',
-            'localcolor',
-            'quantized',
-            'edge'
-        ],
+        mlt : {
+            'MODEL3D' : ['sphericalharmonicshigh'],
+            'IMAGE' : ['globalcolor', 'localcolor', 'edge'],
+            'VIDEO' : ['globalcolor', 'localcolor', 'edge'],
+            'AUDIO' : ['audiofingerprint'],
+            'IMAGE_SEQUENCE' : ['globalcolor', 'localcolor', 'edge']
+        },
         query: {
             history: -1,
             options: {
