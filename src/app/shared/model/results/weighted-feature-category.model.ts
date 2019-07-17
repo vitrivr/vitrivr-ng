@@ -1,12 +1,13 @@
 /**
  * Represents a specific feature category as used by Cineast to facilitate search and retrieval.
+ * Examples for categories are edge, localcolor, globalcolor
  */
-import {ColorUtil} from "../../util/color.util";
-import {FeatureCategories} from "./feature-categories.model";
+import {ColorUtil} from '../../util/color.util';
+import {FeatureCategories} from './feature-categories.model';
 
 export class WeightedFeatureCategory {
 
-    public color : string;
+    public displayColor: string;
     public weight: number;
 
     /**
@@ -17,7 +18,7 @@ export class WeightedFeatureCategory {
      * @param defaultWeight The default weight for the category.
      */
     public constructor(readonly name: FeatureCategories, readonly readableName: string, readonly defaultWeight: number) {
-        this.color = ColorUtil.randomColorHex();
+        this.displayColor = ColorUtil.randomColorHex();
         this.weight = defaultWeight;
     }
 
@@ -27,7 +28,7 @@ export class WeightedFeatureCategory {
      * @param features The list of results.
      */
     public static totalWeight(features: WeightedFeatureCategory[]): number {
-        return features.map(f => f.weight).reduce((a,b) => a+b);
+        return features.map(f => f.weight).reduce((a, b) => a + b);
     }
 
     /**

@@ -1,10 +1,9 @@
 import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.model';
-import {MatOptionSelectionChange} from '@angular/material/typings/core';
 import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {BoolTerm} from './bool-term';
-import { Options } from 'ng5-slider';
+import {Base64Util} from '../../../../shared/util/base64.util';
 
 @Component({
     selector: 'app-qt-bool-component',
@@ -17,23 +16,24 @@ export class BoolTermComponent implements OnInit {
     // TODO add logic to store multiple queries with an OR
     /** This object holds all the query settings. */
     @Input()
-    private boolTerm: BoolQueryTerm;
+    public boolTerm: BoolQueryTerm;
 
     @Input()
     public readonly containers: BoolTermComponent[];
 
     @Input()
-    private readonly self: BoolTermComponent;
+    public readonly self: BoolTermComponent;
 
     @Input()
-    private readonly possibleAttributes: BoolAttribute[];
+    public readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
     /** Current selection */
-    private currentAttributeObservable: BehaviorSubject<BoolAttribute> =
-        new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', [BoolOperator.EQ], ValueType.TEXT));
+    public currentAttributeObservable: BehaviorSubject<BoolAttribute> =
+        new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT));
     /** Current BoolTerm */
-    private term: BoolTerm;
+    public term: BoolTerm;
     /** Currently selected operator */
     currentOperator: BoolOperator;
+
     // TODO Currently slider values are not stored anywhere
 
     get currentAttribute(): Observable<BoolAttribute> {
@@ -53,25 +53,33 @@ export class BoolTermComponent implements OnInit {
         this.removeTermFromData();
     }
 
-    private removeTermFromData() {
+    public removeTermFromData() {
         const termIdx = this.boolTerm.terms.indexOf(this.term);
         if (termIdx > -1) {
             console.log('found query term to remove at index ' + termIdx + ', removing');
             this.boolTerm.terms.splice(termIdx, 1);
-            this.boolTerm.data = JSON.stringify(this.boolTerm.terms);
+            this.updateData();
         }
     }
 
-    private addTermToData(value?: string) {
-        this.term = new BoolTerm(this.currentAttributeObservable.getValue().attribute, this.currentOperator,
-            value == null ? (this.term == null ? '' : this.term.value) : value);
-        console.log('Adding new term: ' + JSON.stringify(this.term));
-        this.boolTerm.terms.push(this.term);
-        this.boolTerm.data = JSON.stringify(this.boolTerm.terms);
-        console.log(JSON.stringify(this.boolTerm.data));
+    public updateData() {
+        console.log('current terms: ' + JSON.stringify(this.boolTerm.terms));
+        this.boolTerm.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.boolTerm.terms));
     }
 
-    private updateTerms(value?: string) {
+    /**
+     * @param value input value for the term (e.g. 150 or 'basel')
+     */
+    public addTermToData(value?: string) {
+        this.term = new BoolTerm(this.currentAttributeObservable.getValue().featureName,
+            BoolAttribute.getOperatorName(this.currentOperator),
+            value == null ? (this.term == null ? '' : this.term.values) : value);
+        console.log('Adding new term: ' + JSON.stringify(this.term));
+        this.boolTerm.terms.push(this.term);
+        this.updateData()
+    }
+
+    public updateTerms(value?: string) {
         if (this.term != null) {
             this.removeTermFromData();
         }
@@ -118,10 +126,10 @@ export class BoolTermComponent implements OnInit {
         if (this.term == null) {
             return '';
         }
-        return this.term.value;
+        return this.term.values;
     }
 
     ngOnInit(): void {
-        this.attribute = this.possibleAttributes[0];
+        this.attribute = this.possibleAttributes.getValue()[0];
     }
 }

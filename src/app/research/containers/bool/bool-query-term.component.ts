@@ -1,11 +1,9 @@
-import {ApplicationRef, ChangeDetectorRef, Component, Injectable, Input, OnInit} from '@angular/core';
+import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
-import {MatOptionSelectionChange} from '@angular/material/typings/core';
-import {BoolAttribute, BoolOperator, ValueType} from './bool-attribute';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
-import {QueryContainerInterface} from '../../../shared/model/queries/interfaces/query-container.interface';
+import {BoolAttribute, ValueType} from './bool-attribute';
+import {BehaviorSubject} from 'rxjs/Rx';
 import {BoolTermComponent} from './individual/bool-term.component';
-import {QueryContainer} from '../../../shared/model/queries/query-container.model';
+import {ConfigService} from '../../../core/basics/config.service';
 
 @Component({
     selector: 'app-qt-bool',
@@ -15,18 +13,26 @@ import {QueryContainer} from '../../../shared/model/queries/query-container.mode
 @Injectable()
 export class BoolQueryTermComponent implements OnInit {
 
-    // TODO add logic to store multiple queries with a combination. 1) the BoolQueryTerm should support it, 2) we need + / - logic
+    // TODO add logic to store multiple queries with a combination.
+    //  1) the BoolQueryTerm should support it,
+    //  2) we need + / - logic
     /** This object holds all the query settings. */
     @Input()
-    private boolTerm: BoolQueryTerm;
-    // @Input()
-    private possibleAttributes: BoolAttribute[] = [
-        new BoolAttribute('heartrate', [BoolOperator.BIGGER, BoolOperator.SMALLER, BoolOperator.EQ], ValueType.NUMERIC),
-        new BoolAttribute('weight', [BoolOperator.BETWEEN], ValueType.RANGE, undefined, [0, 200]),
-        new BoolAttribute('weekday', [BoolOperator.EQ], ValueType.OPTIONS, ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])
-    ];
-
+    protected boolTerm: BoolQueryTerm;
+    protected possibleAttributes: BehaviorSubject<BoolAttribute[]> = new BehaviorSubject(
+        [new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT)]
+    );
     public readonly containers: BoolTermComponent[] = [];
+
+    constructor(_configService: ConfigService) {
+        _configService.subscribe(c => {
+            const next = [];
+            c.get<[string, string, string][]>('query.boolean').forEach(v => {
+                next.push(new BoolAttribute(v[0], v[2], ValueType[v[1]]))
+            });
+            this.possibleAttributes.next(next);
+        })
+    }
 
     public ngOnInit() {
         this.addBoolTermComponent();

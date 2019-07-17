@@ -4,6 +4,6 @@ export class AudioQueryTerm extends AbstractQueryTerm {
      * Default constructor.
      */
     constructor() {
-        super("AUDIO", ['audiofingerprint', 'audiomatching'])
+        super("AUDIO", ['audiofingerprint'])
     }
 }

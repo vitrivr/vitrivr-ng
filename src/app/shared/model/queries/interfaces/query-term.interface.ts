@@ -1,4 +1,4 @@
-import {QueryTermType} from "./query-term-type.interface";
+import {QueryTermType} from './query-term-type.interface';
 
 /**
  * General interface of a QueryTerm.
@@ -7,7 +7,7 @@ export interface QueryTermInterface {
     /**
      * List of retrieval categories that should be used as part of this findSimilar.
      */
-    categories : string[];
+    categories: string[];
 
     /**
      * Type of QueryTerm. Must correspond to one the types defined above.

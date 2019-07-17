@@ -3,6 +3,7 @@
 </h1>
 <div mat-dialog-content class="content">
     <advanced-media-player *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" [width]="'600'" [mediaobject]="mediaobject" [focus]="segment" [auto]="true"></advanced-media-player>
-    <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE' || mediaobject.mediatype == 'IMAGE_SEQUENCE'" src="{{_resolver.pathToObject(mediaobject)}}" [style.max-height]="'600px'"/>
+    <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'" src="{{_resolver.pathToObject(mediaobject)}}" style="max-width:100%; height:auto;"/>
+    <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE_SEQUENCE'" src="{{_resolver.pathToSegment(segment)}}" style="max-width:100%; height:auto;"/>
     <m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'" src="{{_resolver.pathToObject(mediaobject)}}" [width]="400" [height]="400" [interaction]="true"> </m3d-loader>
 </div>

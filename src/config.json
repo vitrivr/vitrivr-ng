@@ -1,24 +1,24 @@
 {
   "api": {
-    "host" : "127.0.0.1",
+    "host" : "localhost",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
     "ping_interval": 10000
   },
   "resources": {
-    "host_thumbnails" : "http://127.0.0.1/thumbnails/:o/:s:x",
-    "host_objects": "http://127.0.0.1/videos/:o.mp4",
+    "host_thumbnails" : "http://localhost/thumbnails/:o/:s:x",
+    "host_objects": "http://localhost/objects/:p",
     "suffix_default":"jpg",
     "suffix": {
-      "IMAGE": "jpg",
-      "VIDEO": "jpg"
+      "IMAGE": "png",
+      "VIDEO": "png"
     }
   },
   "vbs": {
-    "teamid": null,
+    "teamid": 2,
     "toolid": null,
-    "endpoint": null,
+    "endpoint": "http://10.34.58.82:3100/lsc/submit",
     "collabordinator": null
   },
   "evaluation": {
@@ -40,20 +40,28 @@
       "text": true,
       "tag": false,
       "semantic": true,
-      "bool": true
+      "boolean": true
     },
     "config": {
-      "hints": ["exact"]
+      "hints": ["exact"],
+      "neighboringSegmentLookupCount": 5,
+      "neighboringSegmentLookupAllCount": 2000
     },
     "text": {
       "categories": [
         ["ocr", "Text on Screen"],
-        ["asr", "Subtitles"],
-        ["meta", "Metadata"],
-        ["tagsft", "Tags"],
-        ["captioning", "Captioning"],
-        ["audio", "Audio"]
+        ["tagsft", "Tags"]
       ]
-    }
+    },
+    "boolean": [
+      ["Location", "TEXT", "features_daily.location"],
+      ["Skin Temperature", "NUMERIC", "features_daily.skin_temp"],
+      ["Heart Rate", "NUMERIC", "features_daily.heart_rate"],
+      ["Calories", "NUMERIC", "features_daily.calories"],
+      ["GSR", "NUMERIC", "features_daily.gsr"],
+      ["Steps", "NUMERIC", "features_daily.steps"],
+      ["Annotation", "TEXT", "features_wsdmtiannotations.annotation"],
+      ["Object", "TEXT", "features_wsdmtiannotations.object"]
+    ]
   }
 }

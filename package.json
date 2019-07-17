@@ -28,9 +28,12 @@
     "@types/three": "0.93.x",
     "core-js": "^2.5.7",
     "dexie": "^2.0.4",
+    "deepmerge": "^3.2.0",
+    "flatted": "2.0.0",
     "hammerjs": "2.0.x",
     "jszip": "3.1.x",
     "ng2-img-cropper": "0.9.0",
+    "ng5-slider": "1.1.*",
     "ngx-color-picker": "7.1.x",
     "ngx-infinite-scroll": "^6.0.1",
     "npm": "6.3.x",
@@ -44,8 +47,7 @@
     "ts-md5": "1.2.x",
     "typescript": "3.1.6",
     "videogular2": "6.3.x",
-    "zone.js": "0.8.x",
-    "ng5-slider": "1.1.*"
+    "zone.js": "0.8.x"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.7.0",
@@ -63,6 +65,7 @@
     "karma-coverage-istanbul-reporter": "^1.4.3",
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "node-sass": "^4.12.0",
     "protractor": "~5.1.2",
     "ts-node": "~3.2.0",
     "tslint": "~5.4.2"

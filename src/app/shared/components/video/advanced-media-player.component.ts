@@ -127,6 +127,6 @@ export class AdvancedMediaPlayerComponent {
      * @return {Observable<boolean>}
      */
     get showVbsSubmitButton(): Observable<boolean> {
-        return this._vbs.isOn.pipe(map(v => v && this.mediaobject.mediatype == 'VIDEO'));
+        return this._vbs.isOn;
     }
 }

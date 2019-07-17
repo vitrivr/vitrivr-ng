@@ -1,22 +1,22 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from "@angular/core";
-import {AbstractResultsViewComponent} from "../abstract-results-view.component";
-import {QueryService} from "../../core/queries/query.service";
-import {ResolverService} from "../../core/basics/resolver.service";
-import {Router} from "@angular/router";
-import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
-import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
-import {MatDialog, MatSnackBar} from "@angular/material";
-import {QuickViewerComponent} from "../../objectdetails/quick-viewer.component";
-import {Observable} from "rxjs";
-import {VbsSubmissionService} from "app/core/vbs/vbs-submission.service";
-import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
-import {SelectionService} from "../../core/selection/selection.service";
-import {EventBusService} from "../../core/basics/event-bus.service";
-import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
-import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
-import {ContextKey, InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
-import {map} from "rxjs/operators";
-import {FilterService} from "../../core/queries/filter.service";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {AbstractResultsViewComponent} from '../abstract-results-view.component';
+import {QueryService} from '../../core/queries/query.service';
+import {ResolverService} from '../../core/basics/resolver.service';
+import {Router} from '@angular/router';
+import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
+import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MatDialog, MatSnackBar} from '@angular/material';
+import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
+import {Observable} from 'rxjs';
+import {VbsSubmissionService} from 'app/core/vbs/vbs-submission.service';
+import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
+import {SelectionService} from '../../core/selection/selection.service';
+import {EventBusService} from '../../core/basics/event-bus.service';
+import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
+import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
+import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
+import {FilterService} from '../../core/queries/filter.service';
+import {ConfigService} from '../../core/basics/config.service';
 
 @Component({
     moduleId: module.id,
@@ -30,7 +30,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
     private _focus: SegmentScoreContainer;
 
     /** The number of items that should be displayed. */
-    protected _count: number = 100;
+    protected _count = 100;
 
     /**
      * Default constructor.
@@ -40,6 +40,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @param _filterService
      * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
      * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
+     * @param _configService
      * @param _router The Router used for navigation
      * @param _snackBar The MatSnackBar component used to display the SnackBar.
      * @param _resolver
@@ -47,11 +48,12 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @param _vbs
      */
     constructor(_cdr: ChangeDetectorRef,
-                _queryService : QueryService,
-                _filterService : FilterService,
+                _queryService: QueryService,
+                _filterService: FilterService,
                 _selectionService: SelectionService,
                 _eventBusService: EventBusService,
-                 _router: Router,
+                protected _configService: ConfigService,
+                _router: Router,
                 _snackBar: MatSnackBar,
                 protected _resolver: ResolverService,
                 protected _dialog: MatDialog,
@@ -98,23 +100,23 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @param {SegmentScoreContainer} segment
      */
     public onNeighborsButtonClicked(segment: SegmentScoreContainer) {
-        this._queryService.lookupNeighboringSegments(segment.segmentId);
-        let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediasegment", segment.segmentId);
+        this._queryService.lookupNeighboringSegments(segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupCount'));
+        const context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
     }
 
     /**
      * Invokes when a user right clicks the 'Find neighbouring segments' button. Loads neighbouring segments with
-     * a count of 500.
+     * a count specified in the config
      *
      * @param {Event} event
      * @param {SegmentScoreContainer} segment
      */
     public onNeighborsButtonRightClicked(event: Event, segment: SegmentScoreContainer) {
-        this._queryService.lookupNeighboringSegments(segment.segmentId, 500);
-        let context: Map<ContextKey,any> = new Map();
-        context.set("i:mediasegment", segment.segmentId);
+        this._queryService.lookupNeighboringSegments(segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupAllCount'));
+        const context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
         event.preventDefault();
     }
@@ -125,7 +127,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @param {SegmentScoreContainer} segment
      */
     public onSubmitButtonClicked(segment: SegmentScoreContainer) {
-        this._vbs.submitSegment(segment);
+        this._vbs.submit(segment);
     }
 
     /**
@@ -137,12 +139,12 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
     public onTileClicked(event: MouseEvent, segment: SegmentScoreContainer) {
         if (event.shiftKey) {
             /* Shift-Click will trigger VBS submit. */
-            this._vbs.submitSegment(segment);
+            this._vbs.submit(segment);
         } else {
             /* Normal click will display item. */
             this._dialog.open(QuickViewerComponent, {data: segment});
-            let context: Map<ContextKey, any> = new Map();
-            context.set("i:mediasegment", segment.segmentId);
+            const context: Map<ContextKey, any> = new Map();
+            context.set('i:mediasegment', segment.segmentId);
             this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
         }
     }
@@ -155,7 +157,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @return {boolean} True if submit button should be displayed, false otherwise.
      */
     public showVbsSubmitButton(segment: SegmentScoreContainer): Observable<boolean> {
-        return this._vbs.isOn.pipe(map(v => v && segment.objectScoreContainer.mediatype == 'VIDEO'));
+        return this._vbs.isOn;
     }
 
     /**
@@ -169,7 +171,7 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
      * @param {MediaObjectScoreContainer} item
      */
     public trackByFunction(index, item: MediaObjectScoreContainer) {
-        return item.objectId + "_" + item.numberOfSegments;
+        return item.objectId + '_' + item.numberOfSegments;
     }
 
     /**

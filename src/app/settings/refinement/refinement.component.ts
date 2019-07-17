@@ -1,5 +1,5 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {MatCheckboxChange, MatSliderChange} from '@angular/material';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {MatCheckboxChange, MatSliderChange, MatSlideToggleChange} from '@angular/material';
 import {QueryChange, QueryService} from '../../core/queries/query.service';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
 import {EMPTY, Observable} from 'rxjs';
@@ -31,6 +31,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
     /** An observable for the current results. */
     private _features: Observable<WeightedFeatureCategory[]> = EMPTY;
 
+    /** An observable for all possible metadatavalues */
+    private _metadata: Observable<Map<string, Set<string>>>;
+
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
 
@@ -42,14 +45,17 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param _filterService Reference to the FilterService singleton instance.
      * @param _eventBusService Reference to the EventBusService singleton instance.
      */
-    constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBusService: EventBusService) {}
+    constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBusService: EventBusService) {
+    }
 
     /**
      * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
      */
     public ngOnInit(): void {
         this._queryServiceSubscription = this._queryService.observable.pipe(
-            filter(msg => {return ['STARTED', 'CLEAR'].indexOf(msg) > -1})
+            filter(msg => {
+                return ['STARTED', 'CLEAR'].indexOf(msg) > -1
+            })
         ).subscribe((msg) => this.onQueryStartEnd(msg));
     }
 
@@ -66,10 +72,12 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * refinement array to be updated and the view to be changed.
      */
     public onQueryStartEnd(msg: QueryChange) {
-        if (msg == 'STARTED') {
+        if (msg === 'STARTED') {
             this._features = this._queryService.results.featuresAsObservable;
-        } else if (msg == 'CLEAR'){
+            this._metadata = this._queryService.results.metadataAsObservable(this._filterService);
+        } else if (msg === 'CLEAR') {
             this._features = EMPTY;
+            this._metadata = EMPTY;
         }
     }
 
@@ -81,10 +89,12 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param event MatSliderChange event that contains the new value.
      */
     public onValueChanged(feature: WeightedFeatureCategory, event: MatSliderChange) {
-        if (!this._queryService.results) return;
+        if (!this._queryService.results) {
+            return;
+        }
 
         /* Re-rank all objects asynchronously. */
-        Promise.resolve(this._queryService.results).then((results)  => {
+        Promise.resolve(this._queryService.results).then((results) => {
             feature.weight = event.value;
             this._queryService.results.rerank();
 
@@ -104,7 +114,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param event
      */
     public onTypeFilterChanged(type: MediaType, event: MatCheckboxChange) {
-        if (!this._queryService.results) return;
+        if (!this._queryService.results) {
+            return;
+        }
         this._filterService.mediatypes.set(type, event.checked);
         this._filterService.update();
         const context: Map<ContextKey, string> = new Map();
@@ -121,13 +133,61 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param event
      */
     public onColorFilterChanged(color: ColorLabel, event: MatCheckboxChange) {
-        if (!this._queryService.results) return;
+        if (!this._queryService.results) {
+            return;
+        }
         this._filterService.dominant.set(color, event.checked);
         this._filterService.update();
         const context: Map<ContextKey, string> = new Map();
         context.set('f:type', 'dominantColor');
         context.set('f:value', `${event.checked ? '+' : '-'}${color.toLowerCase()}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER, context)));
+    }
+
+    public onMetadataFilterChanged(category: string, key: string, event: MatCheckboxChange) {
+        if (!this._queryService.results) {
+            return;
+        }
+        if (this._filterService.filterMetadata.has(category)) {
+            if (event.checked) {
+                this._filterService.filterMetadata.get(category).add(key)
+            } else {
+                this._filterService.filterMetadata.get(category).delete(key);
+                if (this._filterService.filterMetadata.get(category).size === 0) {
+                    this._filterService.filterMetadata.delete(category);
+                }
+            }
+        } else {
+            if (event.checked) {
+                this._filterService.filterMetadata.set(category, new Set<string>().add(key))
+            }
+        }
+        this._filterService.update();
+        const context: Map<ContextKey, string> = new Map();
+        context.set('f:type', 'metadata');
+        context.set('f:value', `${event.checked ? '+' : '-'}${category.toLowerCase()}:${key.toLowerCase()}`);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
+    }
+
+    public resetMetadataFilters() {
+        this._filterService.clearMetadata();
+    }
+
+    public mdFilterChecked(category, value): boolean {
+        return this._filterService.filterMetadata.has(category) ? (this._filterService.filterMetadata.get(category).has(value)) : false
+    }
+
+    public mdCatOperatorChecked(): boolean {
+        return this._filterService.useOrForMetadataCategoriesFilter
+    }
+
+    public onMdCatOperatorChange(event: MatSlideToggleChange) {
+        this._filterService.useOrForMetadataCategoriesFilter = event.checked;
+        this._filterService.update();
+        const context: Map<ContextKey, string> = new Map();
+        context.set('f:type', 'metadata_categoryfilter');
+        context.set('f:value', `${event.checked}`);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
     }
 
     /**
@@ -147,6 +207,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     get filter(): FilterService {
         return this._filterService;
+    }
+
+    get metadata(): Observable<Map<string, Set<string>>> {
+        return this._metadata
     }
 
     /**

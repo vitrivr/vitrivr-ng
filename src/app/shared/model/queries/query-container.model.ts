@@ -1,14 +1,14 @@
-import {QueryContainerInterface} from "./interfaces/query-container.interface";
-import {QueryTermInterface} from "./interfaces/query-term.interface";
-import {ImageQueryTerm} from "./image-query-term.model";
-import {AudioQueryTerm} from "./audio-query-term.model";
-import {M3DQueryTerm} from "./m3d-query-term.model";
-import {QueryTermType} from "./interfaces/query-term-type.interface";
-import {BoolQueryTerm} from "./bool-query-term.model";
-import {MotionQueryTerm} from "./motion-query-term.model";
-import {TextQueryTerm} from "./text-query-term.model";
-import {TagQueryTerm} from "./tag-query-term.model";
-import {SemanticQueryTerm} from "./semantic/semantic-query-term.model";
+import {QueryContainerInterface} from './interfaces/query-container.interface';
+import {QueryTermInterface} from './interfaces/query-term.interface';
+import {ImageQueryTerm} from './image-query-term.model';
+import {AudioQueryTerm} from './audio-query-term.model';
+import {M3DQueryTerm} from './m3d-query-term.model';
+import {QueryTermType} from './interfaces/query-term-type.interface';
+import {BoolQueryTerm} from './bool-query-term.model';
+import {MotionQueryTerm} from './motion-query-term.model';
+import {TextQueryTerm} from './text-query-term.model';
+import {TagQueryTerm} from './tag-query-term.model';
+import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
 export class QueryContainer implements QueryContainerInterface {
     /**
      * List of QueryTerms contained within this QueryContainer.
@@ -33,28 +33,28 @@ export class QueryContainer implements QueryContainerInterface {
     public addTerm(type: QueryTermType): boolean {
         if (this._terms_map.has(type)) return false;
         switch (type) {
-            case "IMAGE":
+            case 'IMAGE':
                 this._terms_map.set(type, new ImageQueryTerm());
                 break;
-            case "AUDIO":
+            case 'AUDIO':
                 this._terms_map.set(type, new AudioQueryTerm());
                 break;
-            case "MODEL3D":
+            case 'MODEL3D':
                 this._terms_map.set(type, new M3DQueryTerm());
                 break;
-            case "MOTION":
+            case 'MOTION':
                 this._terms_map.set(type, new MotionQueryTerm());
                 break;
-            case "TEXT":
+            case 'TEXT':
                 this._terms_map.set(type, new TextQueryTerm());
                 break;
-            case "TAG":
+            case 'TAG':
                 this._terms_map.set(type, new TagQueryTerm());
                 break;
-            case "SEMANTIC":
+            case 'SEMANTIC':
                 this._terms_map.set(type, new SemanticQueryTerm());
                 break;
-            case "BOOL":
+            case 'BOOLEAN':
                 this._terms_map.set(type, new BoolQueryTerm());
                 break;
             default:

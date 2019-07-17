@@ -6,6 +6,6 @@ export class BoolQueryTerm extends AbstractQueryTerm {
     public readonly terms: BoolTerm[] = [];
 
     constructor() {
-        super('BOOL', []);
+        super('BOOLEAN', ['boolean']);
     }
 }
