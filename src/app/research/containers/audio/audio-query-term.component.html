@@ -1,12 +1,12 @@
 <div style="display:flex; align-items: center; justify-content: center;">
     <audio #player controls class="preview" (click)="onViewerClicked()" (drop)="onAudioDropped($event)" (dragenter)="onAudioDragEnter($event)" (dragover)="onAudioDragOver($event)" (dragleave)="onAudioDragExit($event)"></audio>
-    <button md-icon-button (click)="onViewerClicked()" mdTooltip="Click to change audio clip..."><md-icon>more_horiz</md-icon></button>
+    <button mat-icon-button (click)="onViewerClicked()" matTooltip="Click to change audio clip..."><mat-icon>more_horiz</mat-icon></button>
 </div>
 <div style="display:flex; align-items: center; justify-content: center;">
-    <md-icon class="muted" mdTooltip="Audio fingerprinting">fingerprint</md-icon>
+    <mat-icon class="muted" matTooltip="Audio fingerprinting">fingerprint</mat-icon>
     <div class="toolbar-spacer-small"></div>
-    <md-slider min="0" max="4" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></md-slider>
+    <mat-slider min="0" max="4" step="1" value="1" [(ngModel)]="sliderSetting" (change)="onSliderChanged($event)"></mat-slider>
     <div class="toolbar-spacer-small"></div>
-    <md-icon class="muted" mdTooltip="Query-by-Humming">record_voice_over</md-icon>
+    <mat-icon class="muted" matTooltip="Query-by-Humming">record_voice_over</mat-icon>
 </div>
 <hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>

@@ -1,25 +1,25 @@
-<md-dialog-content>
-    <md-toolbar color="primary">
-        <button md-icon-button (click)="onToggleFrontClicked()" [attr.class]="type == 'FOREGROUND' ? 'highlighted mat-icon-button' : 'mat-icon-button'" mdTooltip="Foreground motion">
-            <md-icon>flip_to_front</md-icon>
+<mat-dialog-content>
+    <mat-toolbar color="primary">
+        <button mat-icon-button (click)="onToggleFrontClicked()" [attr.class]="type == 'FOREGROUND' ? 'highlighted mat-icon-button' : 'mat-icon-button'" matTooltip="Foreground motion">
+            <mat-icon>flip_to_front</mat-icon>
         </button>
 
-        <button md-icon-button (click)="onToggleBackClicked()" [attr.class]="type == 'BACKGROUND' ? 'highlighted mat-icon-button' : 'mat-icon-button'" mdTooltip="Background motion">
-            <md-icon>flip_to_back</md-icon>
+        <button mat-icon-button (click)="onToggleBackClicked()" [attr.class]="type == 'BACKGROUND' ? 'highlighted mat-icon-button' : 'mat-icon-button'" matTooltip="Background motion">
+            <mat-icon>flip_to_back</mat-icon>
         </button>
 
         <span class="spacer-flex"></span>
 
-        <button md-icon-button (click)="onClearCanvasClicked()" mdTooltip="Clear canvas">
-            <md-icon>clear</md-icon>
+        <button mat-icon-button (click)="onClearCanvasClicked()" matTooltip="Clear canvas.">
+            <mat-icon>delete</mat-icon>
         </button>
 
-        <button md-icon-button (click)="onSaveClicked()" mdTooltip="Save and close">
-            <md-icon>save</md-icon>
+        <button mat-icon-button (click)="onSaveClicked()" matTooltip="Close window and save.">
+            <mat-icon>close</mat-icon>
         </button>
-    </md-toolbar>
+    </mat-toolbar>
 
     <div style="display: flex; margin-top: 5px;">
         <motion-sketch-canvas #sketch [width]="300" [height]="300"></motion-sketch-canvas>
     </div>
-</md-dialog-content>
+</mat-dialog-content>

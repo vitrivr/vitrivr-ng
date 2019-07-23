@@ -1,6 +1,7 @@
-import {Component, Input} from "@angular/core";
-import {TextQueryTerm} from "../../../shared/model/queries/text-query-term.model";
-import {MdCheckboxChange} from "@angular/material";
+import {Component, Input} from '@angular/core';
+import {TextQueryTerm} from '../../../shared/model/queries/text-query-term.model';
+import {MatCheckboxChange} from '@angular/material';
+import {ConfigService} from '../../../core/basics/config.service';
 @Component({
     selector: 'qt-text',
     templateUrl: 'text-query-term.component.html',
@@ -19,17 +20,29 @@ export class TextQueryTermComponent {
      * First entry designates the name of the category and the second
      * entry designates the label.
      */
-    public readonly categories: [string, string][] = [
-        ['tos', 'Text on Screen'],
-        ['subtitles', 'Subtitles'],
-        ['metadata', 'Metadata'],
-    ];
+    public readonly categories: [string, string][] = [];
+
+    /**
+     * Constructor for TextQueryTerm
+     *
+     * @param _configService
+     */
+    constructor(_configService: ConfigService) {
+        _configService.subscribe(c => {
+            this.categories.length = 0;
+            c.get<[string, string][]>('query.text.categories').forEach(v => {
+                this.categories.push(v)
+            })
+        })
+    }
+
+
 
     /**
      *
-     * @param {MdCheckboxChange} event
+     * @param {MatCheckboxChange} event
      */
-    public onCheckboxChange(event: MdCheckboxChange) {
+    public onCheckboxChange(event: MatCheckboxChange) {
         if (event.checked) {
             this.textTerm.pushCategory(event.source.value)
         } else {
@@ -48,7 +61,7 @@ export class TextQueryTermComponent {
 
     /**
      * Getter for the data value of textTerm (for ngModel for input field).
-     * 
+     *
      * @return {string}
      */
     get inputValue(): string {

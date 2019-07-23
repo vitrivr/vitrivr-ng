@@ -1,0 +1,49 @@
+<h2 class="mat-h2">Query refinement</h2>
+
+<div *ngIf="(features | async)">
+    <h3 class="mat-h3">Weights</h3>
+    <div *ngFor="let feature of features | async" class="slider-group" [style.color]="feature.displayColor">
+        <span class="label constrained">{{feature.name}}</span>
+        <mat-slider [min]="0" [max]="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></mat-slider>
+        <span class="label constrained"> {{feature.weight}}%</span>
+    </div>
+    <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
+
+    <h3 class="mat-h3">Filters</h3>
+
+    <div>
+        <h5 class="mat-h5">Display only objects of type:</h5>
+        <section class="checkbox-group">
+            <mat-checkbox *ngFor="let type of filter.mediatypeKeys" [name]="type" [checked]="filter.mediatypes.get(type)" (change)="onTypeFilterChanged(type,$event)">{{type}}</mat-checkbox>
+        </section>
+    </div>
+    <br/>
+    <div>
+        <h5 class="mat-h5">Display only objects with score above:</h5>
+        <span class="label constrained">Threshold</span>
+        <mat-slider [min]="0" [max]="1.0" [step]="0.01" [(value)]="filter.threshold" (change)="onThresholdValueChanges($event)"></mat-slider>
+        <span class="label constrained">{{filter.threshold * 100}}%</span>
+    </div>
+
+    <h3 class="mat-h3">Metadata Filter Configuration</h3>
+
+    <mat-slide-toggle [checked]="mdCatOperatorChecked()" (change)="onMdCatOperatorChange($event)">Use OR for multiple categories</mat-slide-toggle>
+
+    <mat-divider style="margin-top: 5px; margin-bottom: 5px;"></mat-divider>
+
+    <button mat-raised-button color="primary" style="width:100%;" (click)="resetMetadataFilters()">Reset All Filters</button>
+
+    <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>
+
+    <div *ngFor="let entry of metadata | async | keyvalue">
+        <h5 class="mat-h5">Display only the following values for {{entry.key}}:</h5>
+        <div class="scrolling-checkbox-list">
+            <mat-checkbox *ngFor="let mdVal of entry.value | sortStringSet" [checked]="mdFilterChecked(entry.key, mdVal)" (change)="onMetadataFilterChanged(entry.key, mdVal,$event)" class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
+        </div>
+        <br/>
+    </div>
+</div>
+
+<div *ngIf="!(features | async)">
+    <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>
+</div>

@@ -1,8 +1,9 @@
 import {Component, ViewChild, Input} from "@angular/core";
 
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {AudioRecorderDialogComponent} from "./audio-recorder-dialog.component";
 import {AudioQueryTerm} from "../../../shared/model/queries/audio-query-term.model";
+import {first} from "rxjs/operators";
 
 @Component({
     selector: 'qt-audio',
@@ -24,7 +25,7 @@ export class AudioQueryTermComponent {
      *
      * @param dialog
      */
-    constructor(private dialog: MdDialog) {}
+    constructor(private dialog: MatDialog) {}
 
     /**
      * This method is invoked whenever the slider value changes. Updates the feature categories for this AudioQueryTerm based
@@ -123,13 +124,13 @@ export class AudioQueryTermComponent {
      */
     private openAudioRecorderDialog(data?: any) {
         let dialogRef = this.dialog.open(AudioRecorderDialogComponent, {data : data});
-        let subscription = dialogRef.afterClosed().first().subscribe(result => {
+        let subscription = dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if (result) {
                 result.then((data: Blob) => {
                     this.player.nativeElement.src = URL.createObjectURL(data);
                     let reader = new FileReader();
                     reader.onloadend = () => {
-                        this.audioTerm.data = reader.result;
+                        this.audioTerm.data = <string>reader.result;
                     };
                     reader.readAsDataURL(data);
                 })

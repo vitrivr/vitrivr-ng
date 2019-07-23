@@ -6,7 +6,7 @@ import {TextQueryTermComponent} from "./text-query-term.component";
 import {FlexLayoutModule} from "@angular/flex-layout";
 
 @NgModule({
-    imports:      [ MaterialModule, FlexLayoutModule, BrowserModule, FormsModule ],
+    imports:      [ MaterialModule, BrowserModule, FormsModule ],
     declarations: [ TextQueryTermComponent ],
     exports:      [ TextQueryTermComponent ],
     entryComponents: [ ]

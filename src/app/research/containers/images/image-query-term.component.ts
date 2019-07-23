@@ -1,17 +1,18 @@
-import {Component, ViewChild, Input} from "@angular/core";
+import {Component, ViewChild, Input, OnInit} from "@angular/core";
 import {SketchDialogComponent} from "./sketch-dialog.component";
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {ImageQueryTerm} from "../../../shared/model/queries/image-query-term.model";
-import {MediaSegment} from "../../../shared/model/media/media-segment.model";
 import {ResolverService} from "../../../core/basics/resolver.service";
-import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
+import {MediaSegmentDragContainer} from "../../../shared/model/internal/media-segment-drag-container.model";
+import {first} from "rxjs/operators";
 
 @Component({
     selector: 'qt-image',
     templateUrl: 'image-query-term.component.html',
     styleUrls: ['image-query-term.component.css']
 })
-export class ImageQueryTermComponent {
+export class ImageQueryTermComponent implements OnInit {
 
     /** Component used to display a preview of the selected AND/OR sketched image. */
     @ViewChild('previewimg')
@@ -22,14 +23,23 @@ export class ImageQueryTermComponent {
     private imageTerm: ImageQueryTerm;
 
     /** Slider to adjust the query-term settings; i.e. to select the refinement used for image-queries. */
-    public sliderSetting : number = 2;
+    public sliderSetting : number = 1;
 
     /**
      * Default constructor.
      *
-     * @param dialog
+     * @param _dialog
+     * @param _resolver
+     * @param _http
      */
-    constructor(private _dialog: MdDialog, private _resolver: ResolverService, private _http: Http) {}
+    constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {}
+
+    /**
+     * Update settings based on preset.
+     */
+    ngOnInit(): void {
+        this.onSettingsChanged(null);
+    }
 
     /**
      * Triggered whenever either the slider for the category settings is used. Adjusts the feature categories
@@ -55,7 +65,7 @@ export class ImageQueryTermComponent {
                 this.imageTerm.setCategories(['localcolor', 'localfeatures', 'edge']);
                 break;
             default:
-                this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized', 'edge']);
+                this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized']);
                 break;
         }
     }
@@ -114,23 +124,21 @@ export class ImageQueryTermComponent {
         /* Prepare file reader (just in case). */
         let reader = new FileReader();
         reader.addEventListener("load", () => {
-            this.applyImageData(reader.result);
+            this.applyImageData(<string>reader.result);
         });
 
         /**
          * Handle dropped object... cases
          */
         if (event.dataTransfer.files.length > 0) {
-
             /* Case 1: Object is a file. */
             reader.readAsDataURL(event.dataTransfer.files.item(0));
         } else if (event.dataTransfer.getData("application/vitrivr-mediasegment")) {
-
-            /* Case: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
-            let segment: MediaSegment = <MediaSegment>JSON.parse(event.dataTransfer.getData("application/vitrivr-mediasegment"));
-            let url = this._resolver.pathToThumbnailForSegment("IMAGE", segment);
-            this._http.get(url, {responseType: 3}).first().subscribe(data => {
-                reader.readAsDataURL(data.blob());
+            /* Case 2: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
+            let drag: MediaSegmentDragContainer = MediaSegmentDragContainer.fromJSON(event.dataTransfer.getData(MediaSegmentDragContainer.FORMAT));
+            let url = this._resolver.pathToThumbnail(drag.object, drag.segment);
+            this._http.get(url, {responseType: 'blob'}).pipe(first()).subscribe(data => {
+                reader.readAsDataURL(data);
             });
         }
     }
@@ -154,10 +162,8 @@ export class ImageQueryTermComponent {
      */
     private openSketchDialog(data? : any) {
         /* Initialize the correct dialog-component. */
-        let dialogRef = this._dialog.open(SketchDialogComponent, {data : data, height:'450px'});
-
-        /* Register the onClose callback. */
-        dialogRef.afterClosed().first().subscribe(result => {
+        let dialogRef = this._dialog.open(SketchDialogComponent, {data : data, width: '750px', height:'690px'});
+        dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if (result) this.applyImageData(result);
         });
     }

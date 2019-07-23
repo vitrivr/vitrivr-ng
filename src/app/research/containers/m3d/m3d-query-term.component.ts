@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 import {Component, ViewChild, Input} from "@angular/core";
-import {MdDialog} from '@angular/material';
-import {M3DQueryTerm} from "../../../shared/model/queries/m3d-query-term.model";
+import {MatDialog} from '@angular/material';
 import {M3DLoaderDialogComponent} from "./m3d-loader-dialog.component";
 import {M3DLoaderComponent} from "../../../shared/components/m3d/m3d-loader.component";
 
 import Mesh = THREE.Mesh;
 import {BinarySketchDialogComponent} from "./binary-sketch-dialog.component";
-import {QueryTermInterface} from "../../../shared/model/queries/interfaces/query-term.interface";
 import {Model3DFileLoader} from "../../../shared/util/m3d-file-loader.util";
+import {first} from "rxjs/operators";
+import {M3DQueryTerm} from "../../../shared/model/queries/m3d-query-term.model";
 
 @Component({
     selector: 'qt-m3d',
@@ -26,7 +26,7 @@ export class M3DQueryTermComponent {
 
     /** The M3DQueryTerm object associated with this M3DQueryTermComponent. That object holds all the query-settings. */
     @Input()
-    private m3dTerm: QueryTermInterface;
+    private m3dTerm: M3DQueryTerm;
 
     /** Value of the slider. */
     public sliderSetting : number;
@@ -39,36 +39,32 @@ export class M3DQueryTermComponent {
      *
      * @param dialog
      */
-    constructor(private dialog: MdDialog) {}
+    constructor(private dialog: MatDialog) {}
 
     /**
-     * Triggered whenever the Mode 3D Slide toggle is used to switch between 3D-sketch mode and normal mode.
+     * Triggered whenever the Mode 3D toggle is used to switch between 3D-sketch mode and normal mode.
      */
-    public onModeToggled() {
-        this.onSliderChanged();
+    public onModeToggled(event: Event) {
+        this.sketch = !this.sketch;
+        this.m3dTerm.setCategories(['lightfield']);
     }
 
     /**
-     * This method is invoked whenever the slider value changes. Updates the feature-categories for this M3DQueryTerm
-     * based on a linear, numerical scale.
+     * This method is invoked whenever the slider value changes. Updates the feature-categories for this M3DQueryTerm based on a linear, numerical scale.
      */
     public onSliderChanged() {
-        if (!this.sketch) {
-            this.m3dTerm.setCategories(['lightfield']);
-        } else {
-            switch (this.sliderSetting) {
-                case 0:
-                    this.m3dTerm.setCategories(['sphericalharmonicslow']);
-                    break;
-                case 1:
-                    this.m3dTerm.setCategories(['sphericalharmonicsdefault']);
-                    break;
-                case 2:
-                    this.m3dTerm.setCategories(['sphericalharmonicshigh', 'lightfield']);
-                    break;
-                default:
-                    break;
-            }
+        switch (this.sliderSetting) {
+            case 0:
+                this.m3dTerm.setCategories(['sphericalharmonicslow']);
+                break;
+            case 1:
+                this.m3dTerm.setCategories(['sphericalharmonicsdefault']);
+                break;
+            case 2:
+                this.m3dTerm.setCategories(['sphericalharmonicshigh', 'lightfield']);
+                break;
+            default:
+                break;
         }
     }
 
@@ -146,7 +142,7 @@ export class M3DQueryTermComponent {
      */
     private openM3DDialog(data? : any) {
         let dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data : data});
-        dialogRef.afterClosed().first().subscribe((result : Mesh) => {
+        dialogRef.afterClosed().pipe(first()).subscribe((result : Mesh) => {
             if (result) {
                 this.preview.setMesh(result);
                 this.preview.render();
@@ -161,7 +157,7 @@ export class M3DQueryTermComponent {
      */
     private openSketchDialog(data? : any) {
         let dialogRef = this.dialog.open(BinarySketchDialogComponent, {data : data});
-        dialogRef.afterClosed().first().subscribe(result => {
+        dialogRef.afterClosed().pipe(first()).subscribe(result => {
             if (result) {
                 this.previewimg.nativeElement.src = result;
                 this.m3dTerm.data = result;

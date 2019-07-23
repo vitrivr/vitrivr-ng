@@ -1,9 +1,11 @@
 import {Component, Inject, OnInit, ViewChild} from "@angular/core";
 import {ImageCropperComponent, CropperSettings} from 'ng2-img-cropper';
-import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
-import {Http} from "@angular/http";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {HttpClient} from "@angular/common/http";
 import {QueryService} from "../core/queries/query.service";
-import {MaterialModule} from "../material.module";
+import {QueryContainer} from "../shared/model/queries/query-container.model";
+import {first} from "rxjs/operators";
+import {ImageQueryTerm} from "../shared/model/queries/image-query-term.model";
 
 @Component({
     moduleId: module.id,
@@ -24,9 +26,12 @@ export class ImagecropComponent implements OnInit {
 
     /**
      *
-     * @param src
+     * @param _src
+     * @param _ref
+     * @param _http
+     * @param _query
      */
-    constructor(@Inject(MD_DIALOG_DATA) private _src : string, private _ref: MdDialogRef<ImagecropComponent>, private _http: Http, private _query : QueryService) {
+    constructor(@Inject(MAT_DIALOG_DATA) private _src : string, private _ref: MatDialogRef<ImagecropComponent>, private _http: HttpClient, private _query : QueryService) {
         this._cropperSettings = new CropperSettings();
 
         this._cropperSettings.canvasWidth = 800;
@@ -57,10 +62,10 @@ export class ImagecropComponent implements OnInit {
               this.isLoaded = true;
             };
 
-            image.src = reader.result;
+            image.src = <string>reader.result;
         });
-        this._http.get(this._src, {responseType: 3}).first().subscribe(data => {
-            reader.readAsDataURL(data.blob());
+        this._http.get(this._src, {responseType: 'blob'}).pipe(first()).subscribe(data => {
+            reader.readAsDataURL(data);
         });
     }
 
@@ -68,7 +73,11 @@ export class ImagecropComponent implements OnInit {
      *
      */
     public onSearchClicked() {
-        this._query.findByDataUrl(this._data.image);
+        let qq = new QueryContainer();
+        qq.addTerm("IMAGE");
+        (<ImageQueryTerm>qq.getTerm("IMAGE")).data = this._data.image;
+        qq.getTerm("IMAGE").setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
+        this._query.findSimilar([qq]);
         this._ref.close(this._data.image);
     }
 

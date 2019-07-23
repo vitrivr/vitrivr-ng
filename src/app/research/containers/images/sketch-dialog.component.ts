@@ -1,5 +1,5 @@
 import {Component, ViewChild, OnInit, Inject, AfterViewInit} from '@angular/core';
-import {MdDialogRef, MD_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {SketchCanvas} from "../../../shared/components/sketch/sketch-canvas.component";
 
 @Component({
@@ -27,12 +27,27 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
     /** Current linesize (default: DEFAULT_LINESIZE). */
     public linesize: number = SketchDialogComponent.DEFAULT_LINESIZE;
 
+    /** List of preset colors. */
+    public readonly preset = [
+        '#FF6347', '#FF4500', '#FF0000', '#DC143C','#B22222' ,'#8B0000', /* Red colors. */
+        '#00FF00', '#32CD32', '#00FF00', '#ADFF2F','#6B8E23' ,'#556B2F', /* Green colors */
+        '#87CEFA', '#00BFFF', '#0000FF', '#0000CD','#00008B' ,'#191970', /* Blue colors */
+        '#E0FFFF', '#AFEEEE', '#00FFFF', '#7FFFD4','#40E0D0' ,'#00CED1', /* Cyan colors */
+        '#DDA0DD', '#EE82EE', '#FF00FF', '#BA55D3','#9400D3' ,'#800080', /* Magenta colors */
+        '#FFFFE0', '#FAFACD', '#FFFF00', '#F0E68C','#FFE4B5' ,'#FFD700', /* Yellow colors */
+        '#FFD9C2', '#FFDBAC', '#F1C27D', '#E0AC69', '#C68642','#8D5524', /* Skin tones. */
+        '#FFFFFF', '#DCDCDC', '#C0C0C0', '#808080', '#696969','#000000' /* B & W. */
+    ];
+
     /**
+     * Constructor for SketchDialogComponent.
      *
      * @param _dialogRef
      * @param _data
      */
-    constructor(private _dialogRef: MdDialogRef<SketchDialogComponent>, @Inject(MD_DIALOG_DATA) private _data : any) {}
+    constructor(private _dialogRef: MatDialogRef<SketchDialogComponent>, @Inject(MAT_DIALOG_DATA) private _data : any) {
+        _dialogRef.disableClose = true;
+    }
 
     /**
      * Lifecycle Hook (onInit): Loads the injected image data (if specified).

@@ -1,4 +1,4 @@
-@import '../node_modules/@angular/material/theming';
+@import '~@angular/material/theming';
 @import 'roboto-font';
 @import 'material-icons';
 
@@ -11,8 +11,8 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue.
-$vitrivr-app-primary: mat-palette($mat-indigo);
-$vitrivr-app-accent:  mat-palette($mat-green);
+$vitrivr-app-primary: mat-palette($mat-indigo, 600);
+$vitrivr-app-accent:  mat-palette($mat-green, 600);
 
 // The warn palette is optional (defaults to red).
 $vitrivr-app-warn:    mat-palette($mat-red);
@@ -132,6 +132,20 @@ h4.inverse {
   transform: translate(-50%, -50%)
 }
 
+.snackbar-success {
+  background-color: #0A8A0A;
+  opacity: 0.85;
+}
+
+.snackbar-error {
+  background-color: #B90000;
+  opacity: 0.85;
+}
+
+.snackbar-warning {
+  background-color: #FFA500;
+  opacity: 0.85;
+}
 
 
 .flex-container {
@@ -176,26 +190,6 @@ div.weight-distribution {
 
 .slider-group {
   display:flex; align-items: center; justify-content: space-between;
-}
-
-/* Defines general appearance of app: toolbar and sidenavs. */
-
-.vitrivr-sidenav {
-  padding: 10px;
-  min-width: 100px;
-}
-
-.vitrivr-sidenav.left {
-  margin-right:10px;
-}
-
-.vitrivr-sidenav.right {
-  margin-left:10px;
-}
-
-.vitrivr-toolbar-menu {
-  padding: 0 14px 0 14px;
-  color: white;
 }
 
 /* Defines some spacer classes that can be used in flexboxes etc. */
@@ -287,4 +281,23 @@ hr.fade {
 /** The default highlighted colour for buttons. */
 .highlighted {
   color: nth(nth($vitrivr-app-accent, 5), 2) !important;
+}
+
+/** Fix scrub bar for Videogular2. */
+.scrubBar {
+  position:static !important;
+}
+
+/** Fix slider size */
+.ng5-slider-pointer {
+  width:20px !important;
+  height:20px !important;
+  top: -10px !important;
+  border-radius: 10px !important;
+}
+
+/** Fix white dot in the middle of the slider. Yes, this took silvan approximately one hour. */
+.ng5-slider-pointer:after {
+  top:6px !important;
+  left:6px !important;
 }

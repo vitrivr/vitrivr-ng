@@ -1,4 +1,4 @@
-import {QueryTermType} from "./query-term-type.interface";
+import {QueryTermType} from './query-term-type.interface';
 
 /**
  * General interface of a QueryTerm.
@@ -7,17 +7,17 @@ export interface QueryTermInterface {
     /**
      * List of retrieval categories that should be used as part of this findSimilar.
      */
-    categories : string[];
-
-    /**
-     * String representation of the data. This could be a base64 encoded image or audio stream.
-     */
-    data: string;
+    categories: string[];
 
     /**
      * Type of QueryTerm. Must correspond to one the types defined above.
      */
     type: QueryTermType
+
+    /**
+     * The Base64 encoded data contained in this QueryTerm.
+     */
+    data: string;
 
     /**
      * Adds a named query category to the QueryTerm. The implementation must make sure, that
@@ -49,9 +49,4 @@ export interface QueryTermInterface {
      * @param {string} categories
      */
     setCategories(categories: string[]);
-
-    /**
-     * Returns a JSON object representing the current QueryTermInterface instance.
-     */
-    toJson() : any;
 }

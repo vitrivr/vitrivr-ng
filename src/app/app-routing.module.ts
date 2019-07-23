@@ -21,7 +21,7 @@ const appRoutes: Routes = [
     { path: 'gallery', component: GalleryComponent },
     { path: 'list', component: ListComponent },
     { path: 'mini-gallery', component: MiniGalleryComponent },
-    { path: '',  redirectTo: '/gallery', pathMatch: 'full' }
+    { path: '',  redirectTo: '/mini-gallery', pathMatch: 'full' }
 ];
 
 @NgModule({

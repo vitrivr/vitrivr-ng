@@ -1,10 +1,12 @@
 import {EvaluationSet} from "../../shared/model/evaluation/evaluation-set";
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 import {EvaluationTemplate} from "../../shared/model/evaluation/evaluation-template";
-import {Observable} from "rxjs/Observable";
+import {Observable, throwError} from "rxjs";
 import Dexie from 'dexie';
 import * as JSZip from 'jszip';
+import {fromPromise} from "rxjs/internal-compatibility";
+import {map} from "rxjs/operators";
 
 @Injectable()
 export class EvaluationService extends Dexie {
@@ -14,7 +16,7 @@ export class EvaluationService extends Dexie {
     /**
      * Default constructor.
      */
-    constructor(private _http: Http) {
+    constructor(private _http: HttpClient) {
         super("vitrivng");
         this.version(1).stores({
             evaluations: 'id,name,template,evaluations,position'
@@ -26,7 +28,7 @@ export class EvaluationService extends Dexie {
      */
     public saveEvaluation(evaluationset: EvaluationSet): Observable<string> {
         /** Reads the objects from the store OR creates a new one. */
-        return Observable.fromPromise(this.evaluations.put(EvaluationSet.serialise(evaluationset)));
+        return fromPromise(this.evaluations.put(EvaluationSet.serialise(evaluationset)));
     }
 
     /**
@@ -38,13 +40,15 @@ export class EvaluationService extends Dexie {
      */
     public loadEvaluation(participantId: string): Observable<EvaluationSet> {
         /* Check if the Evaluation Storage entry exists at all. If not, return null. */
-        return Observable.fromPromise(this.evaluations.get(participantId)).map((result) => {
-            if (result) {
-                return EvaluationSet.deserialise(result);
-            } else {
-                Observable.throw(new Error("Could not find an the evaluation for participant '" + participantId + "'."));
-            }
-        });
+        return fromPromise(this.evaluations.get(participantId)).pipe(
+            map((result) => {
+                if (result) {
+                    return EvaluationSet.deserialise(result);
+                } else {
+                    throwError(new Error("Could not find an the evaluation for participant '" + participantId + "'."));
+                }
+             })
+        );
     }
 
     /**
@@ -54,14 +58,16 @@ export class EvaluationService extends Dexie {
      * @return {any}
      */
     public evaluationData(): Observable<JSZip> {
-        return Observable.fromPromise(this.evaluations.toArray()).map((results: any[]) => {
-            let zip = new JSZip();
-            let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
-            for (let result of results) {
-                zip.file(result["id"] + ".json", JSON.stringify(result, null, 2), options)
-            }
-            return zip
-        });
+        return fromPromise(this.evaluations.toArray()).pipe(
+            map((results: any[]) => {
+                let zip = new JSZip();
+                let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
+                for (let result of results) {
+                    zip.file(result["id"] + ".json", JSON.stringify(result, null, 2), options)
+                }
+                return zip
+            })
+        );
     }
 
     /**
@@ -78,14 +84,16 @@ export class EvaluationService extends Dexie {
      * @param url URL to load the template from.
      */
     public loadEvaluationTemplate(url: string): Observable<EvaluationTemplate> {
-        return this._http.get(url).map(
-            response => {
-                if (response.ok) {
-                    return EvaluationTemplate.fromJson(response.json(), response.url);
-                } else {
-                    Observable.throw(new Error("Could not load the EvaluationTemplate due to a HTTP error (Status: " + response.status + ")"));
+        return this._http.get(url, {observe: 'response'}).pipe(
+            map(
+                response => {
+                    if (response.ok) {
+                        return EvaluationTemplate.fromJson(response.body, response.url);
+                    } else {
+                        throwError(new Error("Could not load the EvaluationTemplate due to a HTTP error (Status: " + response.status + ")"));
+                    }
                 }
-            }
+            )
         );
     }
 }

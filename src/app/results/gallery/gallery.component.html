@@ -1,25 +1,33 @@
-<div style="padding:10px;">
-    <p class="background-prompt" *ngIf="mediaobjects.length == 0 && !loading">No results available. Please start a search...</p>
+<p class="background-prompt" *ngIf="!(dataSource | async) && !loading">No results available. Please start a search...</p>
 
-    <p class="background-prompt" *ngIf="mediaobjects.length == 0 && loading"><md-spinner></md-spinner></p>
+<p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
-    <div class="gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="{{tilegap + 'px'}}" fxLayoutAlign="space-between start">
-        <div class="tile" *ngFor="let mediaobject of mediaobjects | OrderByScorePipe" fxFlex="{{tilesize + 'px'}}" [style.width]="tilesize + 'px'" [style.height]="tilesize + 'px'" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject)">
-            <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
-                <div class="filename">{{mediaobject.name}}</div>
-                <div class="score">
-                    <p>{{mediaobject.scorePercentage}}&#37;</p>
-                    <p><md-icon>filter_none</md-icon>&nbsp;{{mediaobject.numberOfSegments}}</p>
+<div class="gallery" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
+    <div class="tile" *ngFor="let mediaobject of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count" draggable="true" (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, mediaobject.representativeSegment, mediaobject)">
+        <div class="header" fxLayout fxLayoutAlign="space-between start" [style.background]="backgroundForSegment(mediaobject.representativeSegment)">
+            <div class="filename">
+                <div>
+                    {{mediaobject.name}}
+                </div>
+                <div *ngIf="inFocus(mediaobject)" class="tags" fxLayout="row">
+                    <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(mediaobject.representativeSegment,tag)" (contextmenu)="onHighlightButtonRightClicked($event,mediaobject.representativeSegment,tag)">
+                        <mat-icon [style.color]="selectionService.hasTag(mediaobject.representativeSegment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">album</mat-icon>
+                    </button>
                 </div>
             </div>
 
-            <img class="tile-body" src="{{_resolver.pathToThumbnailForSegment(mediaobject.mediatype, mediaobject.representativeSegment.mediaSegment)}}" draggable="false" (click)="onDetailsButtonClicked(mediaobject)"/>
-
-            <div  *ngIf="inFocus(mediaobject)" class="tile-footer" fxLayout="row-reverse">
-                <div><button md-icon-button (click)="onMltButtonClicked(mediaobject)" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button></div>
-                <div><button md-icon-button (click)="onDetailsButtonClicked(mediaobject)" mdTooltip="Show details"><md-icon>remove_red_eye</md-icon></button></div>
-                <div><button md-icon-button (click)="onInformationButtonClicked(mediaobject)" mdTooltip="Feature information"><md-icon>help</md-icon></button></div>
+            <div class="score">
+                <p>{{mediaobject.scorePercentage}}&#37;</p>
+                <p><mat-icon>filter_none</mat-icon>&nbsp;{{mediaobject.numberOfSegments}}</p>
             </div>
+        </div>
+
+        <img class="body" src="{{_resolver.pathToThumbnail(mediaobject,mediaobject.representativeSegment)}}" draggable="false" (click)="onDetailsButtonClicked(mediaobject.representativeSegment)"/>
+
+        <div *ngIf="inFocus(mediaobject)" class="footer" fxLayout="row-reverse" [style.background]="backgroundForSegment(mediaobject.representativeSegment)">
+            <div><button mat-icon-button (click)="onMltButtonClicked(mediaobject.representativeSegment)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button></div>
+            <div><button mat-icon-button (click)="onDetailsButtonClicked(mediaobject.representativeSegment)" matTooltip="Show details"><mat-icon>remove_red_eye</mat-icon></button></div>
+            <div><button mat-icon-button (click)="onInformationButtonClicked(mediaobject.representativeSegment)" matTooltip="Feature information"><mat-icon>help</mat-icon></button></div>
         </div>
     </div>
 </div>

@@ -1,54 +1,95 @@
-import {ChangeDetectorRef, OnDestroy, OnInit} from "@angular/core";
-import {ResultsContainer} from "../shared/model/features/scores/results-container.model";
-import {QueryChange, QueryService} from "../core/queries/query.service";
+import {ChangeDetectorRef, OnDestroy, OnInit} from '@angular/core';
+import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
+import {QueryChange, QueryService} from '../core/queries/query.service';
+import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {EMPTY, Observable} from 'rxjs';
+import {SelectionService} from '../core/selection/selection.service';
+import {Tag} from '../core/selection/tag.model';
+import {ColorUtil} from '../shared/util/color.util';
+import {EventBusService} from '../core/basics/event-bus.service';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import {InteractionEvent} from '../shared/model/events/interaction-event.model';
+import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
+import {FeatureDetailsComponent} from './feature-details.component';
+import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
+import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
+import {MediaObjectDragContainer} from '../shared/model/internal/media-object-drag-container.model';
+import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
+import {Router} from '@angular/router';
+import {filter} from 'rxjs/operators';
+import {FilterService} from '../core/queries/filter.service';
 
-export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy  {
-
-    /* Indicator whether the progress bar should be visible. */
-    private _loading : boolean = false;
+export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
+    /** Indicator whether the progress bar should be visible. */
+    private _loading: boolean = false;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
 
-    /** Local reference to the ResultsContainer holding the query results. May be null. */
-    private _results : ResultsContainer;
+    /** Local reference to the subscription to the FilterService. */
+    protected _filterServiceSubscription;
 
-    /** Local reference to the subscription to the ResultsContainer. */
-    private _resultsSubscriptionRef;
+    /** Local reference to the subscription of the SelectionService. */
+    protected _selectionServiceSubscription;
+
+    /** Local reference to the data source holding the query results.*/
+    protected _dataSource: Observable<T> = EMPTY;
+
+    /** The number of items that should be displayed. */
+    protected _count: number = 500;
 
     /**
      * Default constructor.
      *
      * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
-     * @param _queryService
+     * @param _filterService
+     * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
+     * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
+     * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
+     * @param _router The Router used for navigation
+     * @param _snackBar The MatSnackBar component used to display the SnackBar.
      */
-    constructor(protected _cdr: ChangeDetectorRef, protected _queryService : QueryService) {}
+    constructor(protected _cdr: ChangeDetectorRef,
+                protected _queryService: QueryService,
+                protected _filterService: FilterService,
+                protected _selectionService: SelectionService,
+                protected _eventBusService: EventBusService,
+                protected _router: Router,
+                protected _snackBar: MatSnackBar) {
+    }
 
     /**
      * Calculates and returns a green colour with a varying intensity based on the provided score.
      *
-     * @param {number} score
+     * @param {number} segment The segment for which the background should be evaluated.
      * @return String that encodes the RGB value.
      */
-    public colorForScore(score: number): string {
-        let v = Math.round(255.0 - (score * 255.0));
-        return "#" + ((1 << 24) + (v << 16) + (255 << 8) + v).toString(16).slice(1);
+    public backgroundForSegment(segment: SegmentScoreContainer): string {
+        let score = segment.score;
+        let tags: Tag[] = this._selectionService.getTags(segment.segmentId);
+        if (tags.length == 0) {
+            let v = Math.round(255.0 - (score * 255.0));
+            return ColorUtil.rgbToHex(v, 255, v);
+        } else if (tags.length == 1) {
+            return tags[0].colorForRelevance(score);
+        } else {
+            let width = 100.0 / tags.length;
+            return 'repeating-linear-gradient(90deg,' + tags.map((t, i) => t.colorForRelevance(score) + ' ' + i * width + '%,' + t.colorForRelevance(score) + ' ' + (i + 1) * width + '%').join(',') + ')';
+        }
     }
 
     /**
-     * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
+     * Lifecycle Hook (onInit): Subscribes to the QueryService and the SelectionService
      */
     public ngOnInit(): void {
-        this._queryServiceSubscription = this._queryService.observable
-            .filter(msg => ["STARTED", "ENDED", "ERROR", "CLEAR"].indexOf(msg) > -1)
-            .subscribe((msg) => this.onQueryStateChange(msg));
-
-
-        /* Register ResultsContainer from QueryService if there is an active one. */
-        if (this._queryService.results) this.register(this._queryService.results);
-
-        /* Update view. */
-        this.updateView();
+        this._queryServiceSubscription = this._queryService.observable.pipe(
+            filter(msg => ['STARTED', 'ENDED', 'ERROR', 'CLEAR'].indexOf(msg) > -1)
+        ).subscribe((msg) => this.onQueryStateChange(msg));
+        this._selectionServiceSubscription = this._selectionService.subscribe(s => this._cdr.markForCheck());
+        this._filterServiceSubscription = this._filterService.objectFilters.subscribe(s => {
+            this._cdr.markForCheck()
+        });
+        this.subscribe(this._queryService.results);
     }
 
     /**
@@ -56,10 +97,15 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
      */
     public ngOnDestroy() {
         this._queryServiceSubscription.unsubscribe();
-        this._queryServiceSubscription = null;
+        this._selectionServiceSubscription.unsubscribe();
+        this._filterServiceSubscription.unsubscribe();
+    }
 
-        /* Unregister current ResultsContainer. */
-        this.unregister()
+    /**
+     * Getter for count property (for limiting the result set)
+     */
+    get count(): number {
+        return this._count;
     }
 
     /**
@@ -72,12 +118,131 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
     }
 
     /**
-     * Getter for results.
      *
-     * @return {ResultsContainer}
+     * @return {Observable<T>}
      */
-    get results(): ResultsContainer {
-        return this._results;
+    get dataSource(): Observable<T> {
+        return this._dataSource;
+    }
+
+    /**
+     *
+     * @return {Tag[]}
+     */
+    get selectionService(): SelectionService {
+        return this._selectionService;
+    }
+
+    /**
+     * Triggered whenever a user clicks on the object details button. Triggers a transition to the ObjectdetailsComponent.
+     *
+     * @param segment SegmentScoreContainer for which details should be displayed.
+     */
+    public onDetailsButtonClicked(segment: SegmentScoreContainer) {
+        this._router.navigate(['/mediaobject/' + segment.objectId]);
+
+        /* Emit an EXAMINE event on the bus. */
+        let context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.objectId);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
+    }
+
+    /**
+     * Triggered whenever a user clicks on the MLT (= MoreLikeThis) button. Triggers a MLT query with the QueryService.
+     *
+     * @param segment SegmentScoreContainer which should be used for MLT.
+     */
+    public onMltButtonClicked(segment: SegmentScoreContainer) {
+        this._queryService.findMoreLikeThis(segment);
+
+        /* Emit a MLT event on the bus. */
+        let context: Map<ContextKey, any> = new Map();
+        context.set('q:value', segment.segmentId);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
+    }
+
+    /**
+     * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
+     *
+     * @param {SegmentScoreContainer} segment SegmentScoreContainer for which to display information.
+     */
+    public onInformationButtonClicked(segment: SegmentScoreContainer) {
+        this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
+
+        /* Emit an EXAMINE event on the bus. */
+        let context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
+    }
+
+    /**
+     * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
+     *
+     * @param {SegmentScoreContainer} segment The segment that was tagged.
+     * @param {Tag} tag The tag that should be toggled.
+     */
+    public onHighlightButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
+        this._selectionService.toggle(tag, segment.segmentId);
+
+        /* Emit a HIGHLIGHT event on the bus. */
+        let context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)))
+    }
+
+    /**
+     * Invoked when a user right clicks one of the 'Tag' buttons. Toggles all tags for the selected objects.
+     *
+     * @param {Event} event
+     * @param {SegmentScoreContainer} segment The object that was tagged.
+     * @param {Tag} tag The tag that should be toggled.
+     */
+    public onHighlightButtonRightClicked(event: Event, segment: SegmentScoreContainer, tag: Tag) {
+        let segments = segment.objectScoreContainer.segments.map(v => v.segmentId);
+        if (segments.length > 0) {
+            this._selectionService.toggle(tag, ...segments);
+
+            /* Emit a HIGHLIGHT event on the bus. */
+            let context: Map<ContextKey, any> = new Map();
+            context.set('i:mediasegment', segments.join(','));
+            this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)));
+        }
+        event.preventDefault();
+    }
+
+
+    /**
+     * Whenever a tile is dragged the associated segment and the media object that tile represents is converted to JSON and added to the dataTransfer object of the drag event.
+     *
+     * @param event Drag event
+     * @param segment SegmentScoreContainer that is being dragged.
+     * @param object MediaObjectScoreContainer that is being dragged.
+     */
+    public onTileDrag(event, segment?: SegmentScoreContainer, object?: MediaObjectScoreContainer) {
+        if (segment) event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
+        if (object) event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
+    }
+
+    /**
+     * Increments the start value by the count value. Should be called by some kind of pagination control.
+     */
+    public incrementCount() {
+        this._count += 500;
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
+        this._cdr.markForCheck();
+    }
+
+    /**
+     * Decrements the start value by the count value. Should be called by some kind of pagination control.
+     */
+    public decrementCount() {
+        if (this._count - 500 >= 500) {
+            this._count -= 500;
+        } else {
+            this._count = 500;
+        }
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
+        this._cdr.markForCheck();
     }
 
     /**
@@ -90,50 +255,22 @@ export abstract class AbstractResultsViewComponent implements OnInit, OnDestroy 
         switch (msg) {
             case 'STARTED':
                 this._loading = true;
-                this._results = this._queryService.results;
-                this._results.subscribe(() => {this.updateView();});
+                this.subscribe(this._queryService.results);
                 break;
             case 'ENDED':
             case 'ERROR':
                 this._loading = false;
                 break;
             case 'CLEAR':
-                this.unregister();
+                this._dataSource = EMPTY;
                 break;
         }
-
-        this.updateView();
+        this._cdr.markForCheck();
     }
 
     /**
-     * Registers the provided ResultsContainer instance as the one that feeds the current ResultsViewComponent instance.
      *
      * @param {ResultsContainer} results
      */
-    protected register(results: ResultsContainer) {
-        if (!results) throw new Error("The provided results are null or undefined; this is a programmers error!");
-
-        /* Apply results */
-        this._results = results;
-        this._resultsSubscriptionRef = this._results.subscribe(() => {
-            this.updateView();
-        });
-    }
-
-    /**
-     * Unregisters the currently active ResultsContainer instance and stops this view from getting data from it.
-     */
-    protected unregister() {
-        if (this._resultsSubscriptionRef) {
-            this._resultsSubscriptionRef.unsubscribe();
-            this._resultsSubscriptionRef = null;
-        }
-        this._results = null;
-    }
-
-    /**
-     * This method is used internally to update the results view, i.e. re-populate the list
-     * of items and re-render the component by marking it for change.
-     */
-    protected abstract updateView();
+    protected abstract subscribe(results: ResultsContainer);
 }

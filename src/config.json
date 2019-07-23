@@ -1,29 +1,67 @@
 {
   "api": {
-    "host" : "127.0.0.1",
+    "host" : "localhost",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
     "ping_interval": 10000
   },
   "resources": {
-    "host_thumbnails" : "http://127.0.0.1/vitrivr/thumbnails/",
-    "host_object": "http://127.0.0.1/vitrivr/data",
-    "suffix_default":".jpg",
+    "host_thumbnails" : "http://localhost/thumbnails/:o/:s:x",
+    "host_objects": "http://localhost/objects/:p",
+    "suffix_default":"jpg",
     "suffix": {
       "IMAGE": "png",
       "VIDEO": "png"
     }
   },
+  "vbs": {
+    "teamid": 2,
+    "toolid": null,
+    "endpoint": "http://10.34.58.82:3100/lsc/submit",
+    "collabordinator": null
+  },
   "evaluation": {
     "active":false,
-    "templates":[]
+    "templates": [
+      {
+        "name": "Test","url": "http://localhost:4200/evaluation.json"
+      }
+    ]
   },
-  "queryContainerTypes":{
-    "image": true,
-    "text" : false,
-    "audio": true,
-    "model3d": true,
-    "motion": true
+  "mlt" : ["globalcolor", "localcolor", "edge"],
+  "query": {
+    "history": 5,
+    "options": {
+      "image": true,
+      "audio": false,
+      "model3d": false,
+      "motion": false,
+      "text": true,
+      "tag": false,
+      "semantic": true,
+      "boolean": true
+    },
+    "config": {
+      "hints": ["exact"],
+      "neighboringSegmentLookupCount": 5,
+      "neighboringSegmentLookupAllCount": 2000
+    },
+    "text": {
+      "categories": [
+        ["ocr", "Text on Screen"],
+        ["tagsft", "Tags"]
+      ]
+    },
+    "boolean": [
+      ["Location", "TEXT", "features_daily.location"],
+      ["Skin Temperature", "NUMERIC", "features_daily.skin_temp"],
+      ["Heart Rate", "NUMERIC", "features_daily.heart_rate"],
+      ["Calories", "NUMERIC", "features_daily.calories"],
+      ["GSR", "NUMERIC", "features_daily.gsr"],
+      ["Steps", "NUMERIC", "features_daily.steps"],
+      ["Annotation", "TEXT", "features_wsdmtiannotations.annotation"],
+      ["Object", "TEXT", "features_wsdmtiannotations.object"]
+    ]
   }
 }

@@ -1,0 +1,25 @@
+mat-slider {
+    width: 200px;
+}
+
+.picker {
+    width: 300px;
+    height: 250px;
+    overflow: scroll;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.picker .item {
+    height: 20px;
+    margin: 5px;
+
+    font-weight: bold;
+    text-align: center;
+    vertical-align: center;
+}
+
+.picker .item.selected {
+    border: 1px solid;
+}

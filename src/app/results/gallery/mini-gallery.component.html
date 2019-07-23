@@ -1,17 +1,37 @@
-<div style="padding:10px;">
-    <p class="background-prompt" *ngIf="segments.length == 0 && !loading">No results available. Please start a search...</p>
+<p class="background-prompt" *ngIf="!(dataSource | async) && !loading">No results available. Please start a search...</p>
 
-    <p class="background-prompt" *ngIf="segments.length == 0 && loading"><md-spinner></md-spinner></p>
+<p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
-    <div class="mini-gallery" fxLayout="row" fxLayoutWrap fxLayoutGap="4px" fxLayoutAlign="space-between start">
-        <div class="segment" *ngFor="let segment of segments | OrderByScorePipe" fxFlex="100px" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment)" [style.background-color]="colorForScore(segment.score)">
-            <img src="{{_resolver.pathToThumbnailForSegment(segment.objectScoreContainer.mediatype, segment.mediaSegment)}}" draggable="false" (click)="onTileClicked(segment)"/>
+<div class="mini-gallery" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
+    <div class="segment" *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, segment.objectScoreContainer)" [style.background]="backgroundForSegment(segment)">
+        <img src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked($event, segment)"/>
 
-            <div  *ngIf="inFocus(segment)" class="segment-footer" fxLayout="row-reverse">
-                <button md-icon-button (click)="onMltButtonClicked(segment)" class="tile-button" mdTooltip="More-like-this"><md-icon>youtube_searched_for</md-icon></button>
-                <button md-icon-button (click)="onDetailsButtonClicked(segment)" class="tile-button" mdTooltip="Show details"><md-icon>remove_red_eye</md-icon></button>
-                <button md-icon-button (click)="onInformationButtonClicked(segment)" class="tile-button" mdTooltip="Feature information"><md-icon>help</md-icon></button>
-            </div>
+        <div  *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
+            <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(segment,tag)" (contextmenu)="onHighlightButtonRightClicked($event, segment,tag)">
+                <mat-icon [style.color]="selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">album</mat-icon>
+            </button>
+        </div>
+
+        <div *ngIf="inFocus(segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
+            <button *ngIf="(showVbsSubmitButton(segment) | async)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
+                <mat-icon>send</mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="onDetailsButtonClicked(segment)" matTooltip="Show details">
+                <mat-icon>remove_red_eye</mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="onInformationButtonClicked(segment)" matTooltip="Feature information">
+                <mat-icon>help</mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="onMltButtonClicked(segment)" matTooltip="More-like-this">
+                <mat-icon>youtube_searched_for</mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" (contextmenu)="onNeighborsButtonRightClicked($event, segment)" matTooltip="Load neighboring segments">
+                <mat-icon>settings_ethernet</mat-icon>
+            </button>
         </div>
     </div>
 </div>
