@@ -68,7 +68,7 @@ export class VbsSubmission implements Submission {
             case InteractionEventType.QUERY_TAG:
                 return <AtomicEvent>{category: "Text", type: ['concept'], value: component.context.get("q:value"), timestamp: timestamp};
             case InteractionEventType.QUERY_FULLTEXT: {
-                const event = <AtomicEvent>{category: "Text", type: [], value: component.context.get("q:value")};
+                const event = <AtomicEvent>{category: "Text", type: [], value: component.context.get("q:value"), timestamp: timestamp};
                 const c = component.context.get("q:categories");
                 if (c.indexOf('ocr') > -1) event.type.push('ocr');
                 if (c.indexOf('asr') > -1) event.type.push('asr');
