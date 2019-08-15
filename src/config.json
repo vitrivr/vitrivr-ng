@@ -7,8 +7,8 @@
     "ping_interval": 10000
   },
   "resources": {
-    "host_thumbnails" : "http://localhost/thumbnails/:o/:s:x",
-    "host_objects": "http://localhost/objects/:p",
+    "host_thumbnails" : "http://10.34.58.178/V3C1/V3C1jpg/:o/:s.jpg",
+    "host_objects": "http://10.34.58.178/V3C1/videos/:o.mp4",
     "suffix_default":"jpg",
     "suffix": {
       "IMAGE": "png",
@@ -38,9 +38,9 @@
       "model3d": false,
       "motion": false,
       "text": true,
-      "tag": false,
+      "tag": true,
       "semantic": true,
-      "boolean": true
+      "boolean": false
     },
     "config": {
       "hints": ["exact"],
@@ -50,18 +50,10 @@
     "text": {
       "categories": [
         ["ocr", "Text on Screen"],
-        ["tagsft", "Tags"]
+        ["tagsft", "Tags"],
+	    ["asr", "Audio"],
+	    ["scenecaption", "Description"]
       ]
-    },
-    "boolean": [
-      ["Location", "TEXT", "features_daily.location"],
-      ["Skin Temperature", "NUMERIC", "features_daily.skin_temp"],
-      ["Heart Rate", "NUMERIC", "features_daily.heart_rate"],
-      ["Calories", "NUMERIC", "features_daily.calories"],
-      ["GSR", "NUMERIC", "features_daily.gsr"],
-      ["Steps", "NUMERIC", "features_daily.steps"],
-      ["Annotation", "TEXT", "features_wsdmtiannotations.annotation"],
-      ["Object", "TEXT", "features_wsdmtiannotations.object"]
-    ]
+    }
   }
 }
