@@ -36,8 +36,8 @@
     <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>
 
     <div *ngFor="let entry of metadata | async | keyvalue">
-        <h5 class="mat-h5">Display only the following values for {{entry.key}}:</h5>
-        <div class="scrolling-checkbox-list">
+        <mat-slide-toggle [checked]="mdShowFilterCategory(entry.key)" (change)="onFilterCategoryToggle(entry.key, $event)">{{entry.key}}</mat-slide-toggle>
+        <div *ngIf="mdShowFilterCategory(entry.key)" class="scrolling-checkbox-list">
             <mat-checkbox *ngFor="let mdVal of entry.value | sortStringSet" [checked]="mdFilterChecked(entry.key, mdVal)" (change)="onMetadataFilterChanged(entry.key, mdVal,$event)" class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
         </div>
         <br/>

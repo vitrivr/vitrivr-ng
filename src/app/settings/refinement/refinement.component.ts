@@ -37,6 +37,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
 
+    private filtersEnabled: Map<string, boolean> = new Map<string, boolean>();
+
     /**
      * Constructor: Registers with the QueryService to be updated about changes
      * in the refinement.
@@ -175,6 +177,14 @@ export class RefinementComponent implements OnInit, OnDestroy {
 
     public mdFilterChecked(category, value): boolean {
         return this._filterService.filterMetadata.has(category) ? (this._filterService.filterMetadata.get(category).has(value)) : false
+    }
+
+    public mdShowFilterCategory(category): boolean {
+        return this.filtersEnabled.has(category) ? this.filtersEnabled.get(category) : true
+    }
+
+    public onFilterCategoryToggle(category, event: MatSlideToggleChange) {
+        this.filtersEnabled.set(category, event.checked)
     }
 
     public mdCatOperatorChecked(): boolean {
