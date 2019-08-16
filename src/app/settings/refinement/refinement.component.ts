@@ -11,6 +11,11 @@ import {filter} from 'rxjs/operators';
 import {FilterService} from '../../core/queries/filter.service';
 import {ColorLabel} from '../../shared/model/misc/colorlabel.model';
 import {MediaType} from '../../shared/model/media/media-type.model';
+import {ConfigService} from '../../core/basics/config.service';
+import {AbstractRefinementOption} from './refinementoption.model';
+import {CheckboxRefinementModel} from './checkboxrefinement.model';
+import {SliderRefinementModel} from './sliderrefinement.model';
+import {FilterType} from './filtertype.model';
 
 @Component({
     moduleId: module.id,
@@ -32,7 +37,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
     private _features: Observable<WeightedFeatureCategory[]> = EMPTY;
 
     /** An observable for all possible metadatavalues */
-    private _metadata: Observable<Map<string, Set<string>>>;
+    private _metadata: Observable<Map<string, AbstractRefinementOption>>;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
@@ -46,8 +51,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
      * @param _queryService Reference to the QueryService singleton instance.
      * @param _filterService Reference to the FilterService singleton instance.
      * @param _eventBusService Reference to the EventBusService singleton instance.
+     * @param _configService Reference to the ConfigService singleton instance
      */
-    constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBusService: EventBusService) {
+    constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBusService: EventBusService, private _configService: ConfigService) {
     }
 
     /**
@@ -76,7 +82,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
     public onQueryStartEnd(msg: QueryChange) {
         if (msg === 'STARTED') {
             this._features = this._queryService.results.featuresAsObservable;
-            this._metadata = this._queryService.results.metadataAsObservable(this._filterService);
+            this._metadata = this._queryService.results.metadataAsObservable(this._configService);
         } else if (msg === 'CLEAR') {
             this._features = EMPTY;
             this._metadata = EMPTY;
@@ -184,15 +190,18 @@ export class RefinementComponent implements OnInit, OnDestroy {
     }
 
     public onFilterCategoryToggle(category, event: MatSlideToggleChange) {
-        this.filtersEnabled.set(category, event.checked)
+        this.filtersEnabled.set(category, event.checked);
+        this._filterService.filterRangeMetadata.delete(category);
+        this._filterService.filterMetadata.delete(category);
+        this._filterService.update();
     }
 
     public mdCatOperatorChecked(): boolean {
-        return this._filterService.useOrForMetadataCategoriesFilter
+        return this._filterService._useOrForMetadataCategoriesFilter
     }
 
     public onMdCatOperatorChange(event: MatSlideToggleChange) {
-        this._filterService.useOrForMetadataCategoriesFilter = event.checked;
+        this._filterService._useOrForMetadataCategoriesFilter = event.checked;
         this._filterService.update();
         const context: Map<ContextKey, string> = new Map();
         context.set('f:type', 'metadata_categoryfilter');
@@ -219,7 +228,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
         return this._filterService;
     }
 
-    get metadata(): Observable<Map<string, Set<string>>> {
+    get metadata(): Observable<Map<string, AbstractRefinementOption>> {
         return this._metadata
     }
 
@@ -230,5 +239,41 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     get features(): Observable<WeightedFeatureCategory[]> {
         return this._features;
+    }
+
+    isCheckbox(value: AbstractRefinementOption): boolean {
+        return value.type === FilterType.CHECKBOX
+    }
+
+    isSlider(value: AbstractRefinementOption): boolean {
+        return value.type === FilterType.SLIDER
+    }
+
+    sliderObject(value: AbstractRefinementOption): SliderRefinementModel {
+        return (value as SliderRefinementModel)
+    }
+
+    checkboxOptions(value: AbstractRefinementOption): Set<string> {
+        return (value as CheckboxRefinementModel).options
+    }
+
+    minSliderChange(key: string, min: number) {
+        const prev = this._filterService.filterRangeMetadata.get(key);
+        if (prev) {
+            this._filterService.filterRangeMetadata.set(key, [min, prev[1]]);
+        } else {
+            this._filterService.filterRangeMetadata.set(key, [min, null]);
+        }
+        this._filterService.update()
+    }
+
+    maxSliderChange(key: string, max: number) {
+        const prev = this._filterService.filterRangeMetadata.get(key);
+        if (prev) {
+            this._filterService.filterRangeMetadata.set(key, [prev[0], max]);
+        } else {
+            this._filterService.filterRangeMetadata.set(key, [null, max]);
+        }
+        this._filterService.update()
     }
 }

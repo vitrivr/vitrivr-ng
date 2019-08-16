@@ -36,9 +36,18 @@
     <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>
 
     <div *ngFor="let entry of metadata | async | keyvalue">
+        <!-- Toggle to enable / disable filter category -->
         <mat-slide-toggle [checked]="mdShowFilterCategory(entry.key)" (change)="onFilterCategoryToggle(entry.key, $event)">{{entry.key}}</mat-slide-toggle>
-        <div *ngIf="mdShowFilterCategory(entry.key)" class="scrolling-checkbox-list">
-            <mat-checkbox *ngFor="let mdVal of entry.value | sortStringSet" [checked]="mdFilterChecked(entry.key, mdVal)" (change)="onMetadataFilterChanged(entry.key, mdVal,$event)" class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
+
+        <!-- checkbox -->
+        <div *ngIf="mdShowFilterCategory(entry.key) && isCheckbox(entry.value)" class="scrolling-checkbox-list">
+            <mat-checkbox *ngFor="let mdVal of checkboxOptions(entry.value) | sortStringSet" [checked]="mdFilterChecked(entry.key, mdVal)" (change)="onMetadataFilterChanged(entry.key, mdVal,$event)" class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
+        </div>
+
+        <!-- slider -->
+        <div *ngIf="mdShowFilterCategory(entry.key) && isSlider(entry.value)" style="width: 90%;">
+            <ng5-slider [value]="sliderObject(entry.value).min" [highValue]="sliderObject(entry.value).max" (valueChange)="minSliderChange(entry.key, $event)" (highValueChange)="maxSliderChange(entry.key, $event)"
+                        [options]="sliderObject(entry.value).sliderOptions()"></ng5-slider>
         </div>
         <br/>
     </div>

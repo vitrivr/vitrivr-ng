@@ -34,9 +34,15 @@ export class FilterService {
     private _filterMetadata: Map<string, Set<string>> = new Map();
 
     /**
+     * A filter by metadata for numeric values.
+     * For each category, a min and max number is kept (or null)
+     */
+    private _filterRangeMetadata: Map<string, [number | null, number | null]> = new Map();
+
+    /**
      * When set to true, objects who have metadata matching for any of the categories are displayed.
      */
-    private _useOrForMetadataCategoriesFilter = false;
+    public _useOrForMetadataCategoriesFilter = false;
 
     /** Threshold for score filtering. */
     private _threshold = 0.0;
@@ -62,30 +68,26 @@ export class FilterService {
         }
     }
 
-    get useOrForMetadataCategoriesFilter(): boolean {
-        return this._useOrForMetadataCategoriesFilter
-    }
-
-    set useOrForMetadataCategoriesFilter(val: boolean) {
-        this._useOrForMetadataCategoriesFilter = val
-    }
-
     /**
-     * Returns a copy of the list of Metadata that should be used for filtering.
+     * Returns the list of Metadata that should be used for filtering.
      */
     get filterMetadata(): Map<string, Set<string>> {
         return this._filterMetadata
     }
 
+    get filterRangeMetadata(): Map<string, [number | null, number | null]> {
+        return this._filterRangeMetadata
+    }
+
     /**
-     * Returns a copy of the list of MediaTypes that should be used for filtering.
+     * Returns the list of MediaTypes that should be used for filtering.
      */
     get mediatypes(): Map<MediaType, boolean> {
         return this._mediatypes;
     }
 
     /**
-     * Returns a copy of the list of colors that should be used for filtering.
+     * Returns the list of colors that should be used for filtering.
      */
     get dominant(): Map<ColorLabel, boolean> {
         return this._dominant;
@@ -126,6 +128,7 @@ export class FilterService {
         this._mediatypes.forEach((v, k) => this._mediatypes.set(k, false));
         this._dominant.forEach((v, k) => this._dominant.set(k, false));
         this._filterMetadata.clear();
+        this._filterRangeMetadata.clear();
         this._threshold = 0.0;
         this.update()
     }
@@ -133,6 +136,7 @@ export class FilterService {
 
     public clearMetadata() {
         this._filterMetadata.clear();
+        this._filterRangeMetadata.clear();
         this.update();
     }
 
@@ -144,54 +148,89 @@ export class FilterService {
         const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[] = [];
         const segmentFilters: ((v: SegmentScoreContainer) => boolean)[] = [];
 
-        if (this._filterMetadata.size > 0) {
-            objectFilters.push((obj) => {
-                let andFilter = true;
-                let orFilter = false;
-                this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
-                    // check if one of the segments fullfills the condition
-                    if (obj.segments.findIndex(seg => seg.metadata.has(mdKey) ? mdAllowedValuesSet.has(seg.metadata.get(mdKey)) : false) >= 0) {
-                        orFilter = true;
-                        return;
-                    }
-                    if (!obj.metadata.has(mdKey)) {
-                        andFilter = false;
-                        return;
-                    }
-                    if (!mdAllowedValuesSet.has(obj.metadata.get(mdKey))) {
-                        andFilter = false;
-                    } else {
-                        orFilter = true;
-                    }
-                });
-                return this._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
-            });
-            segmentFilters.push((seg) => {
-                let andFilter = true;
-                let orFilter = false;
-                // Also check whether the corresponding object has the metadata. In this case, the segment remains
-                this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
-                    if (!seg.metadata.has(mdKey) && !seg.objectScoreContainer.metadata.has(mdKey)) {
-                        andFilter = false;
-                        return;
-                    }
-                    if (!mdAllowedValuesSet.has(seg.metadata.get(mdKey)) && !mdAllowedValuesSet.has(seg.objectScoreContainer.metadata.get(mdKey))) {
-                        andFilter = false;
-                    } else {
-                        orFilter = true;
-                    }
-                });
-                return this._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
-            });
+        // check if the given string a number and within the range-array
+        // we have to be careful here because < and > return false if one of the args is NaN, undefined or null
+        function checkRange(range, string): boolean {
+            if (!string) {  // !NaN === true
+                return false
+            }
+            const value = Number(string);
+            // check if the value is even assignable.
+            if (!value) {
+                return false
+            }
+            if (range[0]) {
+                if (value < range[0]) {
+                    return false
+                }
+            }
+            if (range[1]) {
+                if (value > range[1]) {
+                    return false
+                }
+            }
+            return true
         }
 
-        if (!this.mediatypeKeys.every(v => this._mediatypes.get(v) == false)) {
-            objectFilters.push((obj) => this._mediatypes.get(obj.mediatype) == true);
-            segmentFilters.push((seg) => this._mediatypes.get(seg.objectScoreContainer.mediatype) == true);
+        // of course, the AND filter can only be falsified by non-matching filter criteria while the OR filter can only be set to true if one of the conditions match
+        // thus, the logic for all filters if the same
+        objectFilters.push((obj) => {
+            // this constructor avoids TS2367 giving an incorrect error when comparing andFilter to orFilter
+            // this incorrect error is a feature ('working as intended')
+            // see https://github.com/Microsoft/TypeScript/issues/25642
+            let andFilter = Boolean(true);
+            let orFilter = Boolean(false);
+            this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
+                // check if either one of the underlying segments or the object itself has appropriate metadata
+                if (obj.segments.findIndex(seg => mdAllowedValuesSet.has(seg.metadata.get(mdKey))) >= 0 || mdAllowedValuesSet.has(obj.metadata.get(mdKey))) {
+                    orFilter = true;
+                    return;
+                }
+                andFilter = false;
+            });
+            this._filterRangeMetadata.forEach((range, mdKey) => {
+                // check if one of the segments fulfills both range conditions
+                if (obj.segments.findIndex(seg => checkRange(range, seg.metadata.get(mdKey))) >= 0) {
+                    orFilter = true;
+                    return;
+                }
+                // check if the object metadata fulfills the range condition
+                if (checkRange(range, obj.metadata.get(mdKey))) {
+                    orFilter = true;
+                    return;
+                }
+                andFilter = false;
+            });
+            return this._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
+        });
+        segmentFilters.push((seg) => {
+            let andFilter = Boolean(true);
+            let orFilter = Boolean(false);
+            // check whether the segment or the corresponding object has appropriate metadata
+            this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
+                if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer.metadata.get(mdKey))) {
+                    orFilter = true;
+                    return;
+                }
+                andFilter = false;
+            });
+            this._filterRangeMetadata.forEach((range, mdKey) => {
+                if (checkRange(range, seg.metadata.get(mdKey)) || checkRange(range, seg.objectScoreContainer.metadata.get(mdKey))) {
+                    orFilter = true;
+                    return;
+                }
+                andFilter = false;
+            });
+            return this._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
+        });
+
+        if (!this.mediatypeKeys.every(v => this._mediatypes.get(v) === false)) {
+            objectFilters.push((obj) => this._mediatypes.get(obj.mediatype) === true);
+            segmentFilters.push((seg) => this._mediatypes.get(seg.objectScoreContainer.mediatype) === true);
         }
 
-        if (!this.dominantKeys.every(v => this._dominant.get(v) == false)) {
-            segmentFilters.push((seg) => seg.metadata.has('dominantcolor.color') && this._dominant.get(<ColorLabel>seg.metadata.get('dominantcolor.color').toUpperCase()) == true);
+        if (!this.dominantKeys.every(v => this._dominant.get(v) === false)) {
+            segmentFilters.push((seg) => seg.metadata.has('dominantcolor.color') && this._dominant.get(<ColorLabel>seg.metadata.get('dominantcolor.color').toUpperCase()) === true);
         }
 
         /* Filter for score threshold. */
