@@ -59,7 +59,7 @@
   "refinement": {
     "filters": [
       ["dominantcolor.color", "CHECKBOX"],
-      ["technical.duration", "SLIDER"]
+      ["v3c1.faces", "SLIDER"]
     ]
   }
 }
