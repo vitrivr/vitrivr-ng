@@ -13,6 +13,11 @@ For development, you will require [NodeJS](https://nodejs.org) and the [npm](htt
 npm install -g @angular/cli
 ```
 
+Then, install the dependencies using
+```bash
+npm install
+```
+
 That's it. Now you should be ready to run Vitrivr NG!
 
 ## Configure
@@ -30,9 +35,3 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
-
-If you get the error `You seem to not be depending on “@angular/core”. This is an error.` Run 
-```bash
-npm install
-```
-and then try again.
