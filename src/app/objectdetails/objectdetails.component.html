@@ -43,6 +43,7 @@
                     <div class="tile-footer" fxLayout="row-reverse">
                         <button mat-icon-button *ngIf="(mediaobject|async).mediatype == 'VIDEO' || (mediaobject|async).mediatype == 'AUDIO'" (click)="onPlayClick(segment)" matTooltip="Start playback"><mat-icon>play_arrow</mat-icon></button>
                         <button mat-icon-button (click)="onMltClick(segment)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button>
+                        <button mat-icon-button (click)="onInformationButtonClicked(segment)" matTooltip="Metadata"><mat-icon>help</mat-icon></button>
                     </div>
                 </div>
             </div>

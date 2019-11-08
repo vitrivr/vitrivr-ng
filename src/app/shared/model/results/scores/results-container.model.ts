@@ -167,7 +167,7 @@ export class ResultsContainer {
                     case FilterType.SLIDER:
                         const slider = map.get(mdKey) as SliderRefinementModel;
                         const num = Number(mdValue);
-                        if (!num) {
+                        if (!num && num !== 0) {
                             console.error(mdValue + ' is not a number so it cannot be used for category ' + mdKey)
                         }
                         if (num < slider.min) {

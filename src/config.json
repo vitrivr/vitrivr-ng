@@ -59,7 +59,8 @@
   "refinement": {
     "filters": [
       ["dominantcolor.color", "CHECKBOX"],
-      ["v3c1.faces", "SLIDER"]
+      ["v3c1.faces", "SLIDER"],
+      ["v3c1.colorlabels", "CHECKBOX"]
     ]
   }
 }

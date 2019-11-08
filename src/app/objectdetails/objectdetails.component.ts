@@ -1,18 +1,23 @@
 import {Component, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {MetadataLookupService} from "../core/lookup/metadata-lookup.service";
-import {QueryService} from "../core/queries/query.service";
-import {MediaObject} from "../shared/model/media/media-object.model";
-import {ResolverService} from "../core/basics/resolver.service";
-import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
-import {Location} from "@angular/common";
-import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
-import {MediaObjectScoreContainer} from "../shared/model/results/scores/media-object-score-container.model";
-import {MediaSegmentDragContainer} from "../shared/model/internal/media-segment-drag-container.model";
-import {MediaObjectDragContainer} from "../shared/model/internal/media-object-drag-container.model";
-import {EMPTY, Observable} from "rxjs";
-import {HtmlUtil} from "../shared/util/html.util";
-import {catchError, filter, map, tap} from "rxjs/operators";
+import {ActivatedRoute, Router} from '@angular/router';
+import {MetadataLookupService} from '../core/lookup/metadata-lookup.service';
+import {QueryService} from '../core/queries/query.service';
+import {MediaObject} from '../shared/model/media/media-object.model';
+import {ResolverService} from '../core/basics/resolver.service';
+import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {Location} from '@angular/common';
+import {MatDialog, MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
+import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
+import {MediaObjectDragContainer} from '../shared/model/internal/media-object-drag-container.model';
+import {EMPTY, Observable} from 'rxjs';
+import {HtmlUtil} from '../shared/util/html.util';
+import {catchError, filter, map, tap} from 'rxjs/operators';
+import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
+import {InteractionEvent} from '../shared/model/events/interaction-event.model';
+import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
+import {EventBusService} from '../core/basics/event-bus.service';
+import {MetadataDetailsComponent} from './metadata-details.component';
 
 @Component({
     moduleId: module.id,
@@ -34,32 +39,21 @@ export class ObjectdetailsComponent {
     private imageviewer: any;
 
     /** The observable that provides the MediaObjectMetadata for the active object. */
-    private _mediaObjectObservable : Observable<MediaObjectScoreContainer>;
+    private _mediaObjectObservable: Observable<MediaObjectScoreContainer>;
 
-    /**
-     * Constructor for ObjectdetailsComponent.
-     *
-     * @param {ActivatedRoute} _route
-     * @param {Router} _router
-     * @param {MatSnackBar} _snackBar
-     * @param {MetadataLookupService} _metadataLookup
-     * @param {QueryService} _query
-     * @param {Location} _location
-     * @param {ResolverService} _resolver
-     * @param {MatDialog} _dialog
-     */
     constructor(_route: ActivatedRoute,
                 _router: Router,
-                _snackBar: MatSnackBar,
-                _metadataLookup: MetadataLookupService,
+                private _snackBar: MatSnackBar,
+                private _metadataLookup: MetadataLookupService,
                 private _query: QueryService,
+                private  _eventBusService: EventBusService,
                 private _location: Location,
                 private _resolver: ResolverService,
                 private _dialog: MatDialog) {
 
 
         /** Generate observables required to create the view. */
-        let objectIdObservable = _route.params.pipe(
+        const objectIdObservable = _route.params.pipe(
             map(p => p['objectId']),
             filter(p => p != null),
             tap(objectID => {
@@ -68,7 +62,7 @@ export class ObjectdetailsComponent {
                 }
             }),
             catchError((err, obs) => {
-                _snackBar.open(err.message,'',<MatSnackBarConfig>{duration: 2500});
+                _snackBar.open(err.message, '', <MatSnackBarConfig>{duration: 2500});
                 _router.navigate(['/mini-gallery']);
                 return EMPTY;
             })
@@ -115,6 +109,15 @@ export class ObjectdetailsComponent {
         this._query.findMoreLikeThis(segment);
     }
 
+    public onInformationButtonClicked(segment: SegmentScoreContainer) {
+        this._snackBar.openFromComponent(MetadataDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
+
+        /* Emit an EXAMINE event on the bus. */
+        const context: Map<ContextKey, any> = new Map();
+        context.set('i:mediasegment', segment.segmentId);
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
+    }
+
     /**
      * Triggered whenever someone clicks the 'Back' button. Returns to the last page,
      * i.e. usually the gallery.
@@ -139,6 +142,6 @@ export class ObjectdetailsComponent {
      * @return {string} Modified string.
      */
     public textWithLink(str: string): string {
-        return HtmlUtil.replaceUrlByLink(str, "_blank");
+        return HtmlUtil.replaceUrlByLink(str, '_blank');
     }
 }
