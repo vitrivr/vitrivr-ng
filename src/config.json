@@ -29,7 +29,6 @@
       }
     ]
   },
-  "mlt" : ["globalcolor", "localcolor", "edge"],
   "query": {
     "history": 5,
     "options": {

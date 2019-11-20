@@ -25,7 +25,7 @@ import {HistoryService} from './history.service';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
-import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
+import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -114,7 +114,10 @@ export class QueryService {
 
         /* Use categories from last query AND the default categories for MLT. */
         this._config.pipe(first()).subscribe(config => {
-            config.get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`).filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
+            config
+                .get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`)
+                .filter(c => categories.indexOf(c) === -1)
+                .forEach(c => categories.push(c));
             if (categories.length > 0) {
                 this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
             }
