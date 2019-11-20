@@ -60,8 +60,8 @@ export class Config {
         ],
         mlt: {
             'MODEL3D': ['sphericalharmonicsdefault'],
-            'IMAGE': ['globalcolor', 'localcolor', 'edge'],
-            'VIDEO': ['globalcolor', 'localcolor', 'edge'],
+            'IMAGE': ['globalcolor', 'localcolor', 'edge', 'localfeatures'],
+            'VIDEO': ['globalcolor', 'localcolor', 'edge', 'localfeatures'],
             'AUDIO': ['audiofingerprint'],
             'IMAGE_SEQUENCE': ['globalcolor', 'localcolor', 'edge']
         },
