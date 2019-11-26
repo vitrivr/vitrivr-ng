@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "localhost",
+    "host" : "default",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
@@ -58,8 +58,7 @@
   "refinement": {
     "filters": [
       ["dominantcolor.color", "CHECKBOX"],
-      ["v3c1.faces", "SLIDER"],
-      ["v3c1.colorlabels", "CHECKBOX"]
+      ["v3c1.faces", "SLIDER"]
     ]
   }
 }
