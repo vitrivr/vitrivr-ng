@@ -135,6 +135,9 @@ export class Config {
         if (refinement) {
             this._config.refinement = DEEPMERGE(this._config.refinement, refinement, {arrayMerge: overwriteMerge});
         }
+        if (this._config.api.host == 'default') {
+            this._config.api.host = window.location.hostname
+        }
         console.log(this._config)
     }
 
