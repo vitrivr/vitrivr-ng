@@ -18,24 +18,27 @@ export class Config {
     public static SNACKBAR_DURATION = 2500;
 
     private _config = {
-        api : {
-            host : window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
-            port : 4567, /* Port for the API. */
+        api: {
+            host: window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
+            port: 4567, /* Port for the API. */
             http_secure: false, /* Whether or not TLS should be used for HTTP connection. */
             ws_secure: false, /* Whether or not TLS should be used for WebSocket connection. */
             ping_interval: 10000 /* Default ping interval in milliseconds. */
         },
-        resources : {
-            host_thumbnails: window.location.protocol + '//' + window.location.hostname + '/vitrivr/thumbnails',  /** Path / URL to location where media object thumbnails will be stored. */
-            host_objects: window.location.protocol + '//' + window.location.hostname + '/vitrivr/objects', /** Path / URL to location where media object's will be stored. */
-            suffix_default: '.jpg', /** Default suffix for thumbnails. */
+        resources: {
+            host_thumbnails: window.location.protocol + '//' + window.location.hostname + '/vitrivr/thumbnails',
+            /** Path / URL to location where media object thumbnails will be stored. */
+            host_objects: window.location.protocol + '//' + window.location.hostname + '/vitrivr/objects',
+            /** Path / URL to location where media object's will be stored. */
+            suffix_default: '.jpg',
+            /** Default suffix for thumbnails. */
             suffix: {} /** Per-mediatype suffix definition for thumbnails. */
         },
-        evaluation : {
+        evaluation: {
             active: true,
             templates: [] /* URLs */
         },
-        vbs : {
+        vbs: {
             /* The team number within the VBS contest. */
             teamid: null,
 
@@ -48,19 +51,19 @@ export class Config {
             /* URL to the Collabordinator endpoint. */
             collabordinator: null
         },
-        tags : [
+        tags: [
             new Tag('Red', 0),
             new Tag('Orange', 30),
             new Tag('Blue', 240),
             new Tag('Violet', 270),
             new Tag('Magenta', 300),
         ],
-        mlt : {
-            'MODEL3D' : ['sphericalharmonicsdefault'],
-            'IMAGE' : ['globalcolor', 'localcolor', 'edge'],
-            'VIDEO' : ['globalcolor', 'localcolor', 'edge'],
-            'AUDIO' : ['audiofingerprint'],
-            'IMAGE_SEQUENCE' : ['globalcolor', 'localcolor', 'edge']
+        mlt: {
+            'MODEL3D': ['sphericalharmonicsdefault'],
+            'IMAGE': ['globalcolor', 'localcolor', 'edge', 'localfeatures'],
+            'VIDEO': ['globalcolor', 'localcolor', 'edge', 'localfeatures'],
+            'AUDIO': ['audiofingerprint'],
+            'IMAGE_SEQUENCE': ['globalcolor', 'localcolor', 'edge']
         },
         query: {
             history: -1,
@@ -80,9 +83,15 @@ export class Config {
                 neighboringSegmentLookupAllCount: 240000
             },
             text: {
-                categories : []
+                categories: []
             },
             boolean: []
+        },
+        refinement: {
+            filters: [
+                ['dominantcolor.color', 'CHECKBOX'],
+                ['technical.duration', 'SLIDER']
+            ]
         }
     };
 
@@ -97,8 +106,9 @@ export class Config {
      * @param vbs Optional VBS configuration as, e.g. loaded from a file.
      * @param tags Optional tag configurations as, e.g. loaded from a file.
      * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
+     * @param refinement Optional refinement configuration
      */
-    constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, vbs?: any, tags?: Tag[], mlt?: FeatureCategories[]) {
+    constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, vbs?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
         console.log(this._config);
         const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
         if (api) {
@@ -122,6 +132,12 @@ export class Config {
         if (mlt) {
             this._config.mlt = DEEPMERGE(this._config.mlt, mlt, {arrayMerge: overwriteMerge});
         }
+        if (refinement) {
+            this._config.refinement = DEEPMERGE(this._config.refinement, refinement, {arrayMerge: overwriteMerge});
+        }
+        if (this._config.api.host == 'default') {
+            this._config.api.host = window.location.hostname
+        }
         console.log(this._config)
     }
 
@@ -133,8 +149,8 @@ export class Config {
      */
     public static deserialize(object: {} | string): Config {
         if (typeof object == 'string') object = JSON.parse(object);
-        if (object['api'] || object['resources'] || object['evaluation'] || object['query']  || object['vbs'] || object['tags'] || object['mlt']) {
-            return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['vbs'], object['tags'], object['mlt']);
+        if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['vbs'] || object['tags'] || object['mlt'] || object['refinement']) {
+            return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['vbs'], object['tags'], object['mlt'], object['refinement']);
         } else {
             return null;
         }
@@ -149,7 +165,7 @@ export class Config {
      */
     public get<T>(path: string): T {
         try {
-            const separator =  '.';
+            const separator = '.';
             const components = path.replace('[', separator).replace(']', '').split(separator);
             return components.reduce((obj, property) => obj[property], this._config);
         } catch (err) {
@@ -166,7 +182,7 @@ export class Config {
      */
     public set<T>(path: string, value: T): boolean {
         try {
-            const separator =  '.';
+            const separator = '.';
             const components = path.replace('[', separator).replace(']', '').split(separator);
             const last = components[components.length - 1];
             const obj = components.reduce((obj, property) => {

@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "localhost",
+    "host" : "default",
     "port" : 4567,
     "protocol_http": "http",
     "protocol_ws": "ws",
