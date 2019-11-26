@@ -79,7 +79,7 @@ export class ConfigService extends BehaviorSubject<Config> {
     private loadFromDatabase(): Observable<Config> {
         return fromPromise(this._configTable.get(Config.DB_KEY)).pipe(
             filter(r => r && r.config && r.config['_config']),
-            map((r: Object) => Config.deserialize(r.config['_config'])),
+            map((r) => Config.deserialize(r.config['_config'])),
             first()
         );
     }
