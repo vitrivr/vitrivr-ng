@@ -9,90 +9,103 @@ import {MotionQueryTerm} from './motion-query-term.model';
 import {TextQueryTerm} from './text-query-term.model';
 import {TagQueryTerm} from './tag-query-term.model';
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
+import {UUIDGenerator} from '../../util/uuid-generator.util';
+
 export class QueryContainer implements QueryContainerInterface {
-    /**
-     * List of QueryTerms contained within this QueryContainer.
-     *
-     * @type {QueryTermInterface[]}
-     */
-    public readonly terms: QueryTermInterface[] = [];
+  /**
+   * The client-generated container-id to reference query results per container
+   */
+  containerId: string;
 
-    /**
-     * Internal map of QueryTermType to QueryTermInterface.
-     *
-     * @type {Map<QueryTermType, QueryTermInterface>}
-     */
-    private _terms_map: Map<QueryTermType, QueryTermInterface> = new Map();
+  /**
+   * List of QueryTerms contained within this QueryContainer.
+   *
+   * @type {QueryTermInterface[]}
+   */
+  public readonly terms: QueryTermInterface[] = [];
 
-    /**
-     * Adds a new QueryTerm for the specified QueryTermType.
-     *
-     * @param type The QueryTermType of the new QueryTerm.
-     * @returns {boolean} True if QueryTerm was added, false otherwise
-     */
-    public addTerm(type: QueryTermType): boolean {
-        if (this._terms_map.has(type)) return false;
-        switch (type) {
-            case 'IMAGE':
-                this._terms_map.set(type, new ImageQueryTerm());
-                break;
-            case 'AUDIO':
-                this._terms_map.set(type, new AudioQueryTerm());
-                break;
-            case 'MODEL3D':
-                this._terms_map.set(type, new M3DQueryTerm());
-                break;
-            case 'MOTION':
-                this._terms_map.set(type, new MotionQueryTerm());
-                break;
-            case 'TEXT':
-                this._terms_map.set(type, new TextQueryTerm());
-                break;
-            case 'TAG':
-                this._terms_map.set(type, new TagQueryTerm());
-                break;
-            case 'SEMANTIC':
-                this._terms_map.set(type, new SemanticQueryTerm());
-                break;
-            case 'BOOLEAN':
-                this._terms_map.set(type, new BoolQueryTerm());
-                break;
-            default:
-                return false;
-        }
-        this.terms.push(this._terms_map.get(type));
-        return true;
+  /**
+   * Internal map of QueryTermType to QueryTermInterface.
+   *
+   * @type {Map<QueryTermType, QueryTermInterface>}
+   */
+  private _terms_map: Map<QueryTermType, QueryTermInterface> = new Map();
+
+  public constructor(){
+      this.containerId = UUIDGenerator.uuid();
+  }
+
+  /**
+   * Adds a new QueryTerm for the specified QueryTermType.
+   *
+   * @param type The QueryTermType of the new QueryTerm.
+   * @returns {boolean} True if QueryTerm was added, false otherwise
+   */
+  public addTerm(type: QueryTermType): boolean {
+    if (this._terms_map.has(type)) {
+      return false;
     }
-
-    /**
-     * Removes the QueryTerm instance associated with the given QueryTermType.
-     *
-     * @param type The QueryTermType of the QueryTerm that should be removed.
-     * @returns {boolean} True if QueryTerm was removed, false otherwise
-     */
-    public removeTerm(type: QueryTermType): boolean {
-        if (this._terms_map.has(type)) {
-            this.terms.splice(this.terms.indexOf(this._terms_map.get(type)), 1);
-            return this._terms_map.delete(type)
-        }
+    switch (type) {
+      case 'IMAGE':
+        this._terms_map.set(type, new ImageQueryTerm());
+        break;
+      case 'AUDIO':
+        this._terms_map.set(type, new AudioQueryTerm());
+        break;
+      case 'MODEL3D':
+        this._terms_map.set(type, new M3DQueryTerm());
+        break;
+      case 'MOTION':
+        this._terms_map.set(type, new MotionQueryTerm());
+        break;
+      case 'TEXT':
+        this._terms_map.set(type, new TextQueryTerm());
+        break;
+      case 'TAG':
+        this._terms_map.set(type, new TagQueryTerm());
+        break;
+      case 'SEMANTIC':
+        this._terms_map.set(type, new SemanticQueryTerm());
+        break;
+      case 'BOOLEAN':
+        this._terms_map.set(type, new BoolQueryTerm());
+        break;
+      default:
+        return false;
     }
+    this.terms.push(this._terms_map.get(type));
+    return true;
+  }
 
-    /**
-     * Determines whether the current QueryContainer has an instance of a QueryTerm for the given QueryTermType.
-     *
-     * @param type The QueryTermType
-     * @returns {boolean} True if QueryTerm was created, false otherwise.
-     */
-    public hasTerm(type: QueryTermType): boolean {
-        return this._terms_map.has(type);
+  /**
+   * Removes the QueryTerm instance associated with the given QueryTermType.
+   *
+   * @param type The QueryTermType of the QueryTerm that should be removed.
+   * @returns {boolean} True if QueryTerm was removed, false otherwise
+   */
+  public removeTerm(type: QueryTermType): boolean {
+    if (this._terms_map.has(type)) {
+      this.terms.splice(this.terms.indexOf(this._terms_map.get(type)), 1);
+      return this._terms_map.delete(type)
     }
+  }
 
-    /**
-     *
-     * @param type
-     * @returns {boolean}
-     */
-    public getTerm(type: QueryTermType): QueryTermInterface {
-        return this._terms_map.get(type)
-    }
+  /**
+   * Determines whether the current QueryContainer has an instance of a QueryTerm for the given QueryTermType.
+   *
+   * @param type The QueryTermType
+   * @returns {boolean} True if QueryTerm was created, false otherwise.
+   */
+  public hasTerm(type: QueryTermType): boolean {
+    return this._terms_map.has(type);
+  }
+
+  /**
+   *
+   * @param type
+   * @returns {boolean}
+   */
+  public getTerm(type: QueryTermType): QueryTermInterface {
+    return this._terms_map.get(type)
+  }
 }
