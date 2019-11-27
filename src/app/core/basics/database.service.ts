@@ -1,15 +1,15 @@
-import Dexie from "dexie";
+import Dexie from 'dexie';
 
 export class DatabaseService {
     /** The name of the IndexedDB used to store Vitrivr NG related objects. */
-    public static readonly DB = new Dexie("vitrivrng");
+    public static readonly DB = new Dexie('vitrivrng');
 
     /**
      * Constructor for DatabaseService; initializes the database.
      */
     constructor() {
         DatabaseService.DB.version(1).stores({
-            config: '',
+            config: 'id,config',
             history: '++id,timestamp'
         });
     }

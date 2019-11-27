@@ -1,12 +1,12 @@
-import {WebSocketSubject, WebSocketSubjectConfig} from "rxjs/observable/dom/WebSocketSubject";
-import {NextObserver} from "rxjs/src/Observer";
-import {BehaviorSubject} from "rxjs";
-import {Message} from "../../shared/model/messages/interfaces/message.interface";
-import {Inject, Injectable} from "@angular/core";
-import {ConfigService} from "../basics/config.service";
-import {filter, tap} from "rxjs/operators";
-import {Config} from "../../shared/model/config/config.model";
-import {webSocket} from "rxjs/webSocket";
+import {WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/observable/dom/WebSocketSubject';
+import {NextObserver} from 'rxjs/src/Observer';
+import {BehaviorSubject} from 'rxjs';
+import {Message} from '../../shared/model/messages/interfaces/message.interface';
+import {Inject, Injectable} from '@angular/core';
+import {ConfigService} from '../basics/config.service';
+import {filter} from 'rxjs/operators';
+import {Config} from '../../shared/model/config/config.model';
+import {webSocket} from 'rxjs/webSocket';
 
 /**
  * This class exposes an observable that generates WebSocketWrapper classes whenever the connection configuration changes. Since only one WebSocketWrapper can be active
@@ -19,7 +19,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
     private _config: Config;
 
     /** Default constructor. */
-    constructor(@Inject(ConfigService) private _configService : ConfigService) {
+    constructor(@Inject(ConfigService) private _configService: ConfigService) {
         super(null);
         this._configService.pipe(
             filter(c => c.endpoint_ws != null),
@@ -30,10 +30,11 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
      * Establishes a connection to the provided endpoint using the provided config. Connection is only established if
      * endpoint config has changed.
      */
-    private connect(c: Config){
+    private connect(c: Config) {
 
         /* Check if connection has changed. */
         if (this._config && this._config.endpoint_ws == c.endpoint_ws) {
+            console.log('no changes to connection in config, not reconnecting');
             return false;
         }
 
@@ -47,9 +48,10 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
     /**
      * Reconnects the WebSocket using the current settings. If the active WebSocket instance is connected, that connection is dropped.
      */
-    public reconnect(){
+    public reconnect() {
         /* If there is an active WebSocketSubject then disconnect it. */
         if (this.getValue() != null) {
+            console.log('disconnecting to reconnect');
             this.getValue().complete();
         }
 
@@ -71,7 +73,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
             openObserver: openObserver,
             closeObserver: closeObserver,
             serializer: (m: Message) => JSON.stringify(m, (key, value) => {
-                if (key.startsWith("_")) {
+                if (key.startsWith('_')) {
                     return undefined;
                 } else {
                     return value

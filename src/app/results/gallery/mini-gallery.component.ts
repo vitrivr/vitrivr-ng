@@ -117,7 +117,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
      * @param {SegmentScoreContainer} segment
      */
     public onSubmitButtonClicked(segment: SegmentScoreContainer) {
-        this._vbs.submit(segment);
+        this._vbs.submitSegment(segment);
     }
 
     /**
@@ -129,7 +129,7 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
     public onTileClicked(event: MouseEvent, segment: SegmentScoreContainer) {
         if (event.shiftKey) {
             /* Shift-Click will trigger VBS submit. */
-            this._vbs.submit(segment);
+            this._vbs.submitSegment(segment);
         } else {
             /* Normal click will display item. */
             this._dialog.open(QuickViewerComponent, {data: segment});

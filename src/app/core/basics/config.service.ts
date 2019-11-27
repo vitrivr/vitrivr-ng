@@ -1,14 +1,13 @@
-import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject, combineLatest} from "rxjs";
-import {Config} from "../../shared/model/config/config.model";
-import {Observable} from "rxjs";
-import {UUIDGenerator} from "../../shared/util/uuid-generator.util";
-import {fromPromise} from "rxjs/internal-compatibility";
-import {filter, first, flatMap, map, tap} from "rxjs/operators";
-import {DatabaseService} from "./database.service";
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {Config} from '../../shared/model/config/config.model';
+import {UUIDGenerator} from '../../shared/util/uuid-generator.util';
+import {fromPromise} from 'rxjs/internal-compatibility';
+import {filter, first, flatMap, map, tap} from 'rxjs/operators';
+import {DatabaseService} from './database.service';
 
-import Dexie from "dexie";
+import Dexie from 'dexie';
 
 /**
  * This service provides access to the application's configuration. It extends a BehaviorSubject i.e. whenever someone subscribes
@@ -40,7 +39,7 @@ export class ConfigService extends BehaviorSubject<Config> {
             this.loadFromDatabase(),
             this.loadFromServer()
         ).pipe(
-            map(([c1, c2]) =>{
+            map(([c1, c2]) => {
                 return (c1 ? c1 : c2)
             }),
             tap(c => {
@@ -69,7 +68,7 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @param {Config} config
      */
     public apply(config: Config) {
-        fromPromise(this._configTable.put(config,Config.DB_KEY)).subscribe(c => this.next(config))
+        fromPromise(this._configTable.put(config, Config.DB_KEY)).subscribe(c => this.next(config))
     }
 
     /**
@@ -79,8 +78,8 @@ export class ConfigService extends BehaviorSubject<Config> {
      */
     private loadFromDatabase(): Observable<Config> {
         return fromPromise(this._configTable.get(Config.DB_KEY)).pipe(
-            filter(r => r && r["_config"]),
-            map((r: Object) => Config.deserialize(r["_config"])),
+            filter(r => r && r.config && r.config['_config']),
+            map((r) => Config.deserialize(r.config['_config'])),
             first()
         );
     }
@@ -109,8 +108,13 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @param {Config} config The configuration object that should be saved.
      */
     private saveToDatabase(config: Config) {
-        return fromPromise(this._configTable.put(config,Config.DB_KEY)).pipe(first()).subscribe();
-    }
+        return fromPromise(this._configTable.delete(Config.DB_KEY))
+            .pipe(first())
+            .map(obs => {
+                fromPromise(this._configTable.add({id: Config.DB_KEY, config: config}))
+            })
+            .pipe(first()).subscribe();
+    };
 
     /**
      * Getter for the Observable.
@@ -121,4 +125,4 @@ export class ConfigService extends BehaviorSubject<Config> {
     get observable(): Observable<Config> {
         return this.asObservable();
     }
- }
+}

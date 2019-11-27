@@ -60,8 +60,8 @@ export class Config {
         ],
         mlt: {
             'MODEL3D': ['sphericalharmonicsdefault'],
-            'IMAGE': ['globalcolor', 'localcolor', 'edge'],
-            'VIDEO': ['globalcolor', 'localcolor', 'edge'],
+            'IMAGE': ['globalcolor', 'localcolor', 'edge', 'localfeatures'],
+            'VIDEO': ['globalcolor', 'localcolor', 'edge', 'localfeatures'],
             'AUDIO': ['audiofingerprint'],
             'IMAGE_SEQUENCE': ['globalcolor', 'localcolor', 'edge']
         },
@@ -134,6 +134,9 @@ export class Config {
         }
         if (refinement) {
             this._config.refinement = DEEPMERGE(this._config.refinement, refinement, {arrayMerge: overwriteMerge});
+        }
+        if (this._config.api.host == 'default') {
+            this._config.api.host = window.location.hostname
         }
         console.log(this._config)
     }

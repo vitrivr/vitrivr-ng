@@ -121,13 +121,16 @@ export class QueryService {
       return false;
     }
 
-    /* Use categories from last query AND the default categories for MLT. */
-    this._config.pipe(first()).subscribe(config => {
-      config.get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`).filter(c => categories.indexOf(c) == -1).forEach(c => categories.push(c));
-      if (categories.length > 0) {
-        this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
-      }
-    });
+        /* Use categories from last query AND the default categories for MLT. */
+        this._config.pipe(first()).subscribe(config => {
+            config
+                .get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`)
+                .filter(c => categories.indexOf(c) === -1)
+                .forEach(c => categories.push(c));
+            if (categories.length > 0) {
+                this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
+            }
+        });
 
     return true;
   }
