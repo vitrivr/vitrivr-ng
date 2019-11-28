@@ -18,7 +18,7 @@
   "vbs": {
     "teamid": 2,
     "toolid": null,
-    "endpoint": "http://10.34.58.82:3100/lsc/submit",
+    "endpoint": "http://10.34.58.45:3100/vbs/submit",
     "collabordinator": null
   },
   "evaluation": {

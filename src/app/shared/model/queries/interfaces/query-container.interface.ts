@@ -1,12 +1,17 @@
-import {QueryTermInterface} from "./query-term.interface";
-import {QueryTermType} from "./query-term-type.interface";
+import {QueryTermInterface} from './query-term.interface';
+import {QueryTermType} from './query-term-type.interface';
 
 /**
  *
  */
 export interface QueryContainerInterface {
-    addTerm(type: QueryTermType): boolean;
-    removeTerm(type: QueryTermType): boolean;
-    hasTerm(type: QueryTermType): boolean;
-    terms: QueryTermInterface[];
+
+  terms: QueryTermInterface[];
+  containerId: string;
+
+  addTerm(type: QueryTermType): boolean;
+
+  removeTerm(type: QueryTermType): boolean;
+
+  hasTerm(type: QueryTermType): boolean;
 }
