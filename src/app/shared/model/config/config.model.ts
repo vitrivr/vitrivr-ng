@@ -48,6 +48,9 @@ export class Config {
             /* URL to the VBS endpoint. */
             endpoint: null,
 
+            /*The timer interval at which logs are submitted to the VBS server. */
+            loginterval: null,
+
             /* URL to the Collabordinator endpoint. */
             collabordinator: null
         },
