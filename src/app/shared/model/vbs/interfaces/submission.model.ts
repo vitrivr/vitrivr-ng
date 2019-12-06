@@ -7,4 +7,4 @@ export interface Submission {
     events: SubmittedEvent[] ;
 }
 
-export type SubmissionType = 'submission';
+export type SubmissionType = 'interaction' | 'result';

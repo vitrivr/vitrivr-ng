@@ -2,20 +2,19 @@ import {Observable} from "rxjs";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
-import {catchError, filter, map} from "rxjs/operators";
+import {catchError, filter, flatMap} from "rxjs/operators";
 import {Submission, SubmissionType} from "../../shared/model/vbs/interfaces/submission.model";
 import {SubmittedEvent} from "../../shared/model/vbs/interfaces/event.model";
 import {AtomicEvent} from "../../shared/model/vbs/interfaces/atomic-event.model";
 import {InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
-import {CompositEvent} from "../../shared/model/vbs/interfaces/composit-event.model";
 
-export class VbsSubmission implements Submission {
+export class VbsInteractionLog implements Submission {
 
-    /** Timestam of the VbsSubmission. */
+    /** Timestam of the VbsInteractionLog. */
     public readonly timestamp: number = Date.now();
 
-    /** Type of the VbsSubmission. */
-    public readonly type: SubmissionType = 'submission';
+    /** Type of the VbsInteractionLog. */
+    public readonly type: SubmissionType = 'interaction';
 
     /** List of submitted events. */
     public readonly events: SubmittedEvent[] = [];
@@ -34,13 +33,12 @@ export class VbsSubmission implements Submission {
      */
     public static mapEventStream(stream: Observable<InteractionEvent>): Observable<SubmittedEvent> {
         return stream.pipe(
-            map(e => {
+            flatMap(e => {
                 if (e.components.length > 1) {
-                    let composit = <CompositEvent>{timestamp: e.timestamp, actions: []};
-                    e.components.forEach(c => composit.actions.push(VbsSubmission.mapAtomicEvent(c, e.timestamp)));
-                    return composit;
-                } else if (e.components.length === 1) {
-                    return VbsSubmission.mapAtomicEvent(e.components[0], e.timestamp);
+                    let composit = e.components.map(c => VbsInteractionLog.mapAtomicEvent(c, e.timestamp));
+                    return Observable.from<AtomicEvent>(composit);
+                } else {
+                    return Observable.of(<AtomicEvent>(VbsInteractionLog.mapAtomicEvent(e.components[0], e.timestamp)));
                 }
             }),
             catchError((e,o) => {
