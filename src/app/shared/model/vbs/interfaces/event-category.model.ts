@@ -1,7 +1,5 @@
 export type EventCategory = 'Text' | 'Image' | 'Sketch' | 'Filter' | 'Browsing' | 'Cooperation';
-
 export const EventCategories: EventCategory[] = ['Text', 'Image', 'Sketch', 'Filter', 'Browsing', 'Cooperation'];
-
 
 /* */
 export const CategoryTypeMap = new Map<string, string[]>();
