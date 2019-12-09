@@ -18,6 +18,7 @@ import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-
 import {Router} from '@angular/router';
 import {filter} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
+import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
     /** Indicator whether the progress bar should be visible. */
@@ -55,7 +56,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
                 protected _selectionService: SelectionService,
                 protected _eventBusService: EventBusService,
                 protected _router: Router,
-                protected _snackBar: MatSnackBar) {
+                protected _snackBar: MatSnackBar,
+                protected _historyService: PreviousRouteService) {
     }
 
     /**
@@ -139,7 +141,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param segment SegmentScoreContainer for which details should be displayed.
      */
     public onDetailsButtonClicked(segment: SegmentScoreContainer) {
-        this._router.navigate(['/mediaobject/' + segment.objectId], {skipLocationChange: true});
+        this._router.navigate(['/mediaobject/' + segment.objectId], {skipLocationChange: true})
 
         /* Emit an EXAMINE event on the bus. */
         let context: Map<ContextKey, any> = new Map();

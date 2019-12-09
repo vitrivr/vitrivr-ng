@@ -1,15 +1,16 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {MediaObjectScoreContainer} from "../../shared/model/results/scores/media-object-score-container.model";
-import {QueryService} from "../../core/queries/query.service";
-import {Router} from "@angular/router";
-import {ResolverService} from "../../core/basics/resolver.service";
-import {AbstractResultsViewComponent} from "../abstract-results-view.component";
-import {MatSnackBar} from "@angular/material";
-import {ResultsContainer} from "../../shared/model/results/scores/results-container.model";
-import {SelectionService} from "../../core/selection/selection.service";
-import {EventBusService} from "../../core/basics/event-bus.service";
-import {FilterService} from "../../core/queries/filter.service";
-import {Observable} from "rxjs";
+import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
+import {QueryService} from '../../core/queries/query.service';
+import {Router} from '@angular/router';
+import {ResolverService} from '../../core/basics/resolver.service';
+import {AbstractResultsViewComponent} from '../abstract-results-view.component';
+import {MatSnackBar} from '@angular/material';
+import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
+import {SelectionService} from '../../core/selection/selection.service';
+import {EventBusService} from '../../core/basics/event-bus.service';
+import {FilterService} from '../../core/queries/filter.service';
+import {Observable} from 'rxjs';
+import {PreviousRouteService} from '../../core/basics/previous-route.service';
 
 @Component({
     moduleId: module.id,
@@ -23,7 +24,7 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
     protected _focus: MediaObjectScoreContainer;
 
     /* The size of an individual tile in pixels. */
-    private _tilesize : number = 250;
+    private _tilesize: number = 250;
 
     /* The gap between two tile in pixels. */
     private _tilegap: number = 15;
@@ -39,9 +40,10 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
      * @param _router The Router used for navigation
      * @param _snackBar The MatSnackBar component used to display the SnackBar.
      * @param _resolver
+     * @param _historyService used to track changes to navigation
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService : QueryService, _filterService : FilterService, _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router, _snackBar: MatSnackBar, protected _resolver: ResolverService) {
-        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
+    constructor(_cdr: ChangeDetectorRef, _queryService: QueryService, _filterService: FilterService, _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router, _snackBar: MatSnackBar, protected _resolver: ResolverService, _historyService: PreviousRouteService) {
+        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _historyService);
     }
 
     /**
@@ -92,7 +94,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
     get filters(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
         return this._filterService.objectFilters;
     }
-
 
 
     /**

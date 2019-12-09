@@ -1,9 +1,10 @@
-import {Component} from "@angular/core";
-import {Router} from "@angular/router";
-import {MatSnackBar} from "@angular/material";
-import {ConfigService} from "../core/basics/config.service";
-import {UUIDGenerator} from "../shared/util/uuid-generator.util";
-import {first} from "rxjs/operators";
+import {Component} from '@angular/core';
+import {Router} from '@angular/router';
+import {MatSnackBar} from '@angular/material';
+import {ConfigService} from '../core/basics/config.service';
+import {UUIDGenerator} from '../shared/util/uuid-generator.util';
+import {first} from 'rxjs/operators';
+import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 @Component({
     moduleId: module.id,
@@ -13,10 +14,10 @@ import {first} from "rxjs/operators";
 export class EvaluationSelectionComponent {
 
     /** Model for the URL field. Contains the URL to the evaluation template. */
-    public urlFieldValue : string;
+    public urlFieldValue: string;
 
     /** Model for the name field. Contains the name of the participant. */
-    public nameFieldValue : string;
+    public nameFieldValue: string;
 
     /** Evaluation ID entered by the user. This ID will be used to identify a participant. */
     public enteredId: string;
@@ -27,13 +28,7 @@ export class EvaluationSelectionComponent {
     /** Evaluation ID generated when loading this component. This ID will be used to identify a participant. */
     public readonly randomId;
 
-    /**
-     *
-     * @param _configService
-     * @param _router
-     * @param snackBar
-     */
-    constructor(private _configService: ConfigService, private _router: Router, private snackBar: MatSnackBar) {
+    constructor(private _configService: ConfigService, private _router: Router, private snackBar: MatSnackBar, private _historyService: PreviousRouteService) {
         this.randomId = UUIDGenerator.suid();
         this._configService.pipe(first()).subscribe((config) => {
             if (config.get<boolean>('evaluation.active') == true) {
@@ -46,7 +41,7 @@ export class EvaluationSelectionComponent {
      * Invoked whenever the 'START EVALUATION' button is clicked.
      */
     public onStartClick() {
-        if (this.urlFieldValue && this.nameFieldValue && this.urlFieldValue.length > 0 &&  this.nameFieldValue.length > 0) {
+        if (this.urlFieldValue && this.nameFieldValue && this.urlFieldValue.length > 0 && this.nameFieldValue.length > 0) {
             this._router.navigate(['/evaluation/' + this.randomId + '/' + btoa(this.urlFieldValue) + '/' + btoa(this.nameFieldValue)], {skipLocationChange: true});
         } else {
             this.snackBar.open('Please specify a valid template and your name.', null, {duration: 3000});
@@ -68,6 +63,6 @@ export class EvaluationSelectionComponent {
      * Invoked whenever the 'Abort' button is clicked.
      */
     public onAbortClick() {
-        this._router.navigate(['/gallery'], {skipLocationChange: true});
+        this._router.navigate(['/gallery/' + this.enteredId], {skipLocationChange: true});
     }
 }
