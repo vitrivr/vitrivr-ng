@@ -63,7 +63,7 @@ export class ObjectdetailsComponent {
             }),
             catchError((err, obs) => {
                 _snackBar.open(err.message, '', <MatSnackBarConfig>{duration: 2500});
-                _router.navigate(['/mini-gallery']);
+                _router.navigate(['/mini-gallery'], {skipLocationChange: true});
                 return EMPTY;
             })
         );

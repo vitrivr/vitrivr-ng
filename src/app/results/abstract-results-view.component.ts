@@ -139,7 +139,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param segment SegmentScoreContainer for which details should be displayed.
      */
     public onDetailsButtonClicked(segment: SegmentScoreContainer) {
-        this._router.navigate(['/mediaobject/' + segment.objectId]);
+        this._router.navigate(['/mediaobject/' + segment.objectId], {skipLocationChange: true});
 
         /* Emit an EXAMINE event on the bus. */
         let context: Map<ContextKey, any> = new Map();
