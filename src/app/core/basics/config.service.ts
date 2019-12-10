@@ -29,6 +29,8 @@ export class ConfigService extends BehaviorSubject<Config> {
         super(new Config());
         this._configTable = _db.db.table('config');
         this.reload();
+        console.log('config loaded');
+        console.log(this.value);
     }
 
     /**

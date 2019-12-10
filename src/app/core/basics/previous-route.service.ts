@@ -14,7 +14,6 @@ export class PreviousRouteService {
         this._router.events
             .pipe(filter(event => event instanceof NavigationEnd))
             .subscribe(({urlAfterRedirects}: NavigationEnd) => {
-                console.log('router navigated from ' + this.currentUrl + ' to ' + urlAfterRedirects);
                 this.previousUrl = this.currentUrl;
                 this.currentUrl = urlAfterRedirects;
             });

@@ -141,8 +141,14 @@ export class QueryService {
                 console.log('config undefined, cannot perform mlt');
                 return;
             }
-            config
-                .get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`)
+            const _cat = config.get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`);
+            if (!_cat) {
+                console.log('no mlt categories available. printing first config, then segment');
+                console.log(config);
+                console.log(segment);
+                return;
+            }
+            _cat
                 .filter(c => categories.indexOf(c) === -1)
                 .forEach(c => categories.push(c));
             if (categories.length > 0) {
