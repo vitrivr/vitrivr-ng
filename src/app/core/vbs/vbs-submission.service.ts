@@ -60,7 +60,8 @@ export class VbsSubmissionService {
 
         /* */
         this._config = _config.asObservable().pipe(
-            map(c => <[string, string, number, number]>[c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<number>('vbs.toolid'), c.get<number>('vbs.loginterval')])
+            filter(c => c.get<string>('vbs.endpoint') != null),
+            map(c => <[string, string, number, number]>[c.get<string>('vbs.endpoint').endsWith('/') ? c.get<string>('vbs.endpoint').slice(0, -1) : c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<number>('vbs.toolid'), c.get<number>('vbs.loginterval')])
         );
 
 
@@ -113,19 +114,18 @@ export class VbsSubmissionService {
               return null
             }
           }),
-          tap((log: VbsInteractionLog) => {
-            if (log != null) {
-              /* Prepare log submission. */
-              const headers = new HttpHeaders().append('Content-Type', 'application/json');
-              const params = new HttpParams().set('team', String(team));
-              const observable = this._http.post(String(`${endpoint}/log`), JSON.stringify(log),{responseType: 'text', params: params, headers: headers});
+          filter(log => log != null),
+          flatMap((log: VbsInteractionLog) => {
+            /* Prepare log submission. */
+            const headers = new HttpHeaders().append('Content-Type', 'application/json');
+            const params = new HttpParams().set('team', log.teamId).set('member', String(log.memberId));
+            const observable = this._http.post(String(`${endpoint}/log`), JSON.stringify(log),{responseType: 'text', params: params, headers: headers});
 
-              /* Do some logging and catch HTTP errors. */
-              console.log(`Submitting interaction log to VBS server.`);
-              return observable.pipe(
-                catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
-              );
-            }
+            /* Do some logging and catch HTTP errors. */
+            return observable.pipe(
+              tap(o => console.log(`Submitting interaction log to VBS server.`)),
+              catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
+            );
           })
         ).subscribe();
 
@@ -139,19 +139,18 @@ export class VbsSubmissionService {
             ires.results.push(...VbsResultsLog.mapSegmentScoreContainer(r));
             return ires
           }),
-          tap((log: VbsResultsLog) => {
-            if (log != null) {
-              /* Prepare log submission. */
-              const headers = new HttpHeaders().append('Content-Type', 'application/json');
-              const params = new HttpParams().set('team', String(team));
-              const observable = this._http.post(String(`${endpoint}/log`), JSON.stringify(log),{responseType: 'text', params: params, headers: headers});
+          filter(log => log != null),
+          flatMap((log: VbsResultsLog) => {
+            /* Prepare log submission. */
+            const headers = new HttpHeaders().append('Content-Type', 'application/json');
+            const params = new HttpParams().set('team', log.teamId).set('member', String(log.memberId));
+            const observable = this._http.post(String(`${endpoint}/log`), JSON.stringify(log),{responseType: 'text', params: params, headers: headers});
 
-              /* Do some logging and catch HTTP errors. */
-              console.log(`Submitting results log to VBS server.`);
-              return observable.pipe(
-                catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
-              );
-            }
+            /* Do some logging and catch HTTP errors. */
+            return observable.pipe(
+              tap(o => console.log(`Submitting interaction log to VBS server.`)),
+              catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
+            );
           })
         ).subscribe();
 
@@ -167,12 +166,12 @@ export class VbsSubmissionService {
             flatMap(([segment, frame]) => {
                 /* Prepare VBS submission. */
                 const videoId = parseInt(segment.objectId.replace('v_', '')).toString();
-                const params = new HttpParams().set('team', String(team)).set('video', videoId).set('frame', String(frame));
+                const params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', videoId).set('frame', String(frame));
                 const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params});
 
                 /* Do some logging and catch HTTP errors. */
-                console.log(`Submitting video to VBS server; id: ${videoId}, frame: ${frame}`);
                 return observable.pipe(
+                    tap(o => console.log(`Submitting video to VBS server; id: ${videoId}, frame: ${frame}`)),
                     catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
                 );
             }),
