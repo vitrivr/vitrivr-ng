@@ -7,8 +7,8 @@
     "ping_interval": 10000
   },
   "resources": {
-    "host_thumbnails" : "http://10.34.58.178/V3C1/V3C1jpg/:o/:s.jpg",
-    "host_objects": "http://10.34.58.178/V3C1/video/:o.mp4",
+    "host_thumbnails" : "http://localhost/V3C1jpg/:o/:s.jpg",
+    "host_objects": "http://localhost/video/:o.mp4",
     "suffix_default":"jpg",
     "suffix": {
       "IMAGE": "png",
@@ -20,7 +20,7 @@
     "toolid": null,
     "endpoint": "http://10.34.58.45:3100/vbs/",
     "loginterval": 5000,
-    "collabordinator": null
+    "collabordinator": "ws://localhost:12345/ws"
   },
   "evaluation": {
     "active":false,

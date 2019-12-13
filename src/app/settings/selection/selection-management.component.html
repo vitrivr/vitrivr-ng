@@ -6,6 +6,10 @@
 
 <div *ngIf="(selection | async).size > 0">
     <mat-list>
+        <mat-list-item fxLayout="row" fxLayoutAlign="center">
+            <button mat-raised-button color="warn" (click)="onClearSelectionClicked()" matTooltip="Remove all highlighting">Clear</button>
+        </mat-list-item>
+
         <mat-list-item *ngFor="let current of (selection | async).entries()">
             <button mat-flat-button (click)="onSegmentClicked(current[0])">{{current[0]}}</button>
             <button mat-icon-button *ngFor="let tag of current[1].entries()" (click)="onTagButtonClicked(current[0],tag[0])">
@@ -13,8 +17,5 @@
             </button>
         </mat-list-item>
 
-        <mat-list-item fxLayout="row" fxLayoutAlign="center">
-            <button mat-raised-button color="warn" (click)="onClearSelectionClicked()" matTooltip="Remove all highlighting">Clear</button>
-        </mat-list-item>
     </mat-list>
 </div>
