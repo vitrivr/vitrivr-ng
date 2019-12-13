@@ -36,7 +36,7 @@
     "ng5-slider": "1.1.*",
     "ngx-color-picker": "7.1.x",
     "ngx-infinite-scroll": "^6.0.1",
-    "npm": "6.3.x",
+    "npm": "6.13.x",
     "rxjs": "6.3.3",
     "rxjs-compat": "6.2.x",
     "systemjs": "0.21.x",
