@@ -29,6 +29,7 @@ import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefin
 import {Config} from '../../config/config.model';
 import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {SimilarityQuery} from '../../messages/queries/similarity-query.model';
+import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -66,6 +67,7 @@ export class ResultsContainer {
 
   /** Ordered list of query container ids */
   private _queryContainerIds: string[] = [];
+  private _temporalScoringFunction = new TemporalFusionFunction();
 
   /**
    * Constructor for ResultsContainer.
@@ -232,7 +234,7 @@ export class ResultsContainer {
    * @param {WeightedFeatureCategory[]} features
    * @param {FusionFunction} weightFunction
    */
-  public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
+  public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction, containerId?: string) {
     if (!features) {
       features = this.features;
     }
@@ -240,10 +242,21 @@ export class ResultsContainer {
       weightFunction = this.weightFunction;
     }
     console.time(`Rerank (${this.queryId})`);
-    this._results_objects.forEach((value) => {
-      value.update(features, weightFunction);
-    });
-    // TODO temporal
+
+    console.log(`ResultContaier.rerank, containerId=${containerId !== undefined ? containerId : 'N/A'}`);
+    if (containerId !== undefined) {
+      console.log('Temporal Scoring');
+      this._results_objects.forEach((value) => {
+        this._temporalScoringFunction.activeQueryContainerId = containerId;
+        value.update(features, this._temporalScoringFunction);
+      })
+    } else {
+      console.log('Default Scoring');
+      this._results_objects.forEach((value) => {
+        value.update(features, weightFunction);
+      });
+    }
+
 
     /* Other methods calling rerank() depend on this next() call */
     this.next();
@@ -362,7 +375,7 @@ export class ResultsContainer {
       return false;
     }
 
-    console.log(sim);
+    console.log('ResultContainer.processSimilairtyMessage(sim), sim=', sim);
 
     /* Get and (if missing) add a unique feature. */
     const feature = this.uniqueFeature(sim.category);
@@ -375,15 +388,20 @@ export class ResultsContainer {
       }
     }
 
-    if (query !== undefined){
+    if (query !== undefined) {
       this._queryContainerIds = query.containers.map((value) =>
         value.containerId
       );
-      console.log(this._queryContainerIds);
+      this._temporalScoringFunction.queryContainerIds = this._queryContainerIds;
+      console.log(`ResultContainer._queryContainerIds: ${this._queryContainerIds}`);
     }
 
     /* Re-rank the results (calling this method also causes an invocation of next(). */
-    this.rerank();
+    if (sim.containerId !== undefined) {
+      this.rerank(undefined, undefined, sim.containerId as string);
+    } else {
+      this.rerank();
+    }
 
     /* Return true. */
     return true;

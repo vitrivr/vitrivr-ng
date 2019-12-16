@@ -1,7 +1,7 @@
 <div style="text-align:center;">
 
     <div [style.margin-bottom]="'15px'">
-        <button mat-raised-button style="width:100%" (click)="onSearchClicked()" [color]="'accent'"><mat-icon>search</mat-icon>Search</button>
+        <button mat-raised-button style="width:100%" (keydown.control.enter)="onSearchClicked()" (click)="onSearchClicked()" [color]="'accent'"><mat-icon>search</mat-icon>Search</button>
     </div>
 
     <div  [style.margin-bottom]="'15px'">
