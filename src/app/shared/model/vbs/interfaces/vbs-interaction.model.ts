@@ -1,11 +1,9 @@
 import {EventCategory} from './event-category.model';
-import {SubmittedEvent} from './event.model';
-
 
 /**
- * An AtomicEvent.
+ * An Interaction.
  */
-export interface AtomicEvent extends SubmittedEvent {
+export interface VbsInteraction {
     category: EventCategory;
     type: string[];
     value?: string;

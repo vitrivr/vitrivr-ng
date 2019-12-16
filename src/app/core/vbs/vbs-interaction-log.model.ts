@@ -2,23 +2,21 @@ import {Observable} from "rxjs";
 import {InteractionEventType} from "../../shared/model/events/interaction-event-type.model";
 import {InteractionEvent} from "../../shared/model/events/interaction-event.model";
 import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
-import {catchError, filter, map} from "rxjs/operators";
-import {Submission, SubmissionType} from "../../shared/model/vbs/interfaces/submission.model";
-import {SubmittedEvent} from "../../shared/model/vbs/interfaces/event.model";
-import {AtomicEvent} from "../../shared/model/vbs/interfaces/atomic-event.model";
+import {catchError, filter, flatMap} from "rxjs/operators";
+import {VbsSubmission, SubmissionType} from "../../shared/model/vbs/interfaces/vbs-submission.model";
 import {InteractionEventComponent} from "../../shared/model/events/interaction-event-component.model";
-import {CompositEvent} from "../../shared/model/vbs/interfaces/composit-event.model";
+import {VbsInteraction} from "../../shared/model/vbs/interfaces/vbs-interaction.model";
 
-export class VbsSubmission implements Submission {
+export class VbsInteractionLog implements VbsSubmission {
 
-    /** Timestam of the VbsSubmission. */
+    /** Timestam of the VbsInteractionLog. */
     public readonly timestamp: number = Date.now();
 
-    /** Type of the VbsSubmission. */
-    public readonly type: SubmissionType = 'submission';
+    /** Type of the VbsInteractionLog. */
+    public readonly type: SubmissionType = 'interaction';
 
     /** List of submitted events. */
-    public readonly events: SubmittedEvent[] = [];
+    public readonly events: VbsInteraction[] = [];
 
     /**
      *
@@ -30,17 +28,16 @@ export class VbsSubmission implements Submission {
     /**
      * This method maps the events emitted on the Vitrivr NG EventBusService to VbsActions.
      *
-     * @param {Observable<InteractionEvent>} stream The observable of the InteractionEvents as exposed by the EventBusService
+     * @param {Observable<Interaction>} stream The observable of the InteractionEvents as exposed by the EventBusService
      */
-    public static mapEventStream(stream: Observable<InteractionEvent>): Observable<SubmittedEvent> {
+    public static mapEventStream(stream: Observable<InteractionEvent>): Observable<VbsInteraction> {
         return stream.pipe(
-            map(e => {
+            flatMap(e => {
                 if (e.components.length > 1) {
-                    let composit = <CompositEvent>{timestamp: e.timestamp, actions: []};
-                    e.components.forEach(c => composit.actions.push(VbsSubmission.mapAtomicEvent(c, e.timestamp)));
-                    return composit;
-                } else if (e.components.length === 1) {
-                    return VbsSubmission.mapAtomicEvent(e.components[0], e.timestamp);
+                    let composit = e.components.map(c => VbsInteractionLog.mapAtomicEvent(c, e.timestamp));
+                    return Observable.from<VbsInteraction>(composit);
+                } else {
+                    return Observable.of(<VbsInteraction>(VbsInteractionLog.mapAtomicEvent(e.components[0], e.timestamp)));
                 }
             }),
             catchError((e,o) => {
@@ -52,23 +49,23 @@ export class VbsSubmission implements Submission {
     }
 
     /**
-     * Maps a single InteractionEventComponent to an AtomicEvent.
+     * Maps a single InteractionEventComponent to an Interaction.
      *
      * @param component InteractionEventComponent
      * @param timestamp Timestamp of the event.
      */
-    private static mapAtomicEvent(component: InteractionEventComponent, timestamp: number): AtomicEvent {
+    private static mapAtomicEvent(component: InteractionEventComponent, timestamp: number): VbsInteraction {
         switch (component.type) {
             case InteractionEventType.QUERY_MOTION:
-                return <AtomicEvent>{category: "Sketch", type: ['motion'], timestamp: timestamp};
+                return <VbsInteraction>{category: "Sketch", type: ['motion'], timestamp: timestamp};
             case InteractionEventType.QUERY_SEMANTIC:
-                return <AtomicEvent>{category: "Sketch", type: ['semanticSegmentation'], timestamp: timestamp};
+                return <VbsInteraction>{category: "Sketch", type: ['semanticSegmentation'], timestamp: timestamp};
             case InteractionEventType.MLT:
-                return <AtomicEvent>{category: "Image", type: ['globalFeatures'], attributes: 'mlt', timestamp: timestamp};
+                return <VbsInteraction>{category: "Image", type: ['globalFeatures'], attributes: 'mlt', timestamp: timestamp};
             case InteractionEventType.QUERY_TAG:
-                return <AtomicEvent>{category: "Text", type: ['concept'], value: component.context.get("q:value"), timestamp: timestamp};
+                return <VbsInteraction>{category: "Text", type: ['concept'], value: component.context.get("q:value"), timestamp: timestamp};
             case InteractionEventType.QUERY_FULLTEXT: {
-                const event = <AtomicEvent>{category: "Text", type: [], value: component.context.get("q:value"), timestamp: timestamp};
+                const event = <VbsInteraction>{category: "Text", type: [], value: component.context.get("q:value"), timestamp: timestamp};
                 const c = component.context.get("q:categories");
                 if (c.indexOf('ocr') > -1) event.type.push('ocr');
                 if (c.indexOf('asr') > -1) event.type.push('asr');
@@ -80,7 +77,7 @@ export class VbsSubmission implements Submission {
             }
             case InteractionEventType.QUERY_IMAGE: {
                 const c = component.context.get("q:categories");
-                const event = <AtomicEvent>{category: "Sketch", type: [], timestamp: timestamp};
+                const event = <VbsInteraction>{category: "Sketch", type: [], timestamp: timestamp};
                 if ((c.indexOf("localfeatures") === -1)) {
                     if (c.indexOf("globalcolor") > -1 || c.context.get("q:categories").indexOf("localcolor") > -1) event.type.push("color");
                     if (c.indexOf("edge") > -1) event.type.push("edge");
@@ -91,18 +88,18 @@ export class VbsSubmission implements Submission {
                 return event;
             }
             case InteractionEventType.FILTER:
-                return <AtomicEvent>{category: "Filter", type: [component.context.get("f:type")], value: component.context.get("f:value"), timestamp: timestamp};
+                return <VbsInteraction>{category: "Filter", type: [component.context.get("f:type")], value: component.context.get("f:value"), timestamp: timestamp};
             case InteractionEventType.EXPAND:
-                return <AtomicEvent>{category: "Browsing", type: ['temporalContext'], timestamp: timestamp};
+                return <VbsInteraction>{category: "Browsing", type: ['temporalContext'], timestamp: timestamp};
             case InteractionEventType.REFINE:
                 let weights = component.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weight / 100).join(",");
-                return <AtomicEvent>{category: "Browsing", type: ['explicitSort'], attributes: "adjust weights," + weights, timestamp: timestamp};
+                return <VbsInteraction>{category: "Browsing", type: ['explicitSort'], attributes: "adjust weights," + weights, timestamp: timestamp};
             case InteractionEventType.EXAMINE:
-                return <AtomicEvent>{category: "Browsing", type: ['videoPlayer'], value: component.context.get("i:mediasegment"), timestamp: timestamp};
+                return <VbsInteraction>{category: "Browsing", type: ['videoPlayer'], value: component.context.get("i:mediasegment"), timestamp: timestamp};
             case InteractionEventType.SCROLL:
-                return <AtomicEvent>{category: "Browsing", type: ['rankedList'], timestamp: timestamp};
+                return <VbsInteraction>{category: "Browsing", type: ['rankedList'], timestamp: timestamp};
             case InteractionEventType.CLEAR:
-                return <AtomicEvent>{category: "Browsing", type: ['resetAll'], timestamp: timestamp};
+                return <VbsInteraction>{category: "Browsing", type: ['resetAll'], timestamp: timestamp};
             default:
                 break;
         }

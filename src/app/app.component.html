@@ -7,19 +7,19 @@
 
     <span class="spacer-xlarge"></span>
 
-    <a *ngIf="!(config|async).get('vbs.teamid')" mat-icon-button routerLink="/gallery" routerLinkActive="active" matTooltip="Gallery view"><mat-icon>grid_on</mat-icon></a>
+    <a *ngIf="!(config|async).get('vbs.teamid')" mat-icon-button skipLocationChange="true" routerLink="/gallery" routerLinkActive="active" matTooltip="Gallery view"><mat-icon>grid_on</mat-icon></a>
 
     <span class="spacer-medium"></span>
 
-    <a mat-icon-button routerLink="/mini-gallery" routerLinkActive="active" matTooltip="Mini-gallery view"><mat-icon>view_comfy</mat-icon></a>
+    <a mat-icon-button routerLink="/mini-gallery" skipLocationChange="true" routerLinkActive="active" matTooltip="Mini-gallery view"><mat-icon>view_comfy</mat-icon></a>
 
     <span class="spacer-medium"></span>
 
-    <a mat-icon-button routerLink="/list" routerLinkActive="active" matTooltip="List view"><mat-icon>list</mat-icon></a>
+    <a mat-icon-button routerLink="/list" skipLocationChange="true" routerLinkActive="active" matTooltip="List view"><mat-icon>list</mat-icon></a>
 
     <span class="spacer-xlarge"></span>
 
-    <a *ngIf="(config|async).get('evaluation.active')" mat-icon-button routerLink="/evaluation" routerLinkActive="active" matTooltip="Navigate to evaluation module"><mat-icon>assessment</mat-icon></a>
+    <a *ngIf="(config|async).get('evaluation.active')" mat-icon-button skipLocationChange="true" routerLink="/evaluation" routerLinkActive="active" matTooltip="Navigate to evaluation module"><mat-icon>assessment</mat-icon></a>
 
     <span *ngIf="(config|async).get('evaluation.active')" class="spacer-medium"></span>
 

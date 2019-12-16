@@ -48,6 +48,9 @@ export class Config {
             /* URL to the VBS endpoint. */
             endpoint: null,
 
+            /*The timer interval at which logs are submitted to the VBS server. */
+            loginterval: null,
+
             /* URL to the Collabordinator endpoint. */
             collabordinator: null
         },
@@ -109,7 +112,6 @@ export class Config {
      * @param refinement Optional refinement configuration
      */
     constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, vbs?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
-        console.log(this._config);
         const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
         if (api) {
             this._config.api = DEEPMERGE(this._config.api, api, {arrayMerge: overwriteMerge});
@@ -138,7 +140,8 @@ export class Config {
         if (this._config.api.host == 'default') {
             this._config.api.host = window.location.hostname
         }
-        console.log(this._config)
+        this._config.resources.host_objects = this._config.resources.host_objects.replace('default', window.location.hostname);
+        this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace('default', window.location.hostname);
     }
 
     /**

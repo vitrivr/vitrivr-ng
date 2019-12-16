@@ -17,6 +17,7 @@ import {InteractionEvent} from '../../shared/model/events/interaction-event.mode
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {FilterService} from '../../core/queries/filter.service';
 import {ConfigService} from '../../core/basics/config.service';
+import {PreviousRouteService} from '../../core/basics/previous-route.service';
 
 @Component({
     moduleId: module.id,
@@ -32,21 +33,6 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
     /** The number of items that should be displayed. */
     protected _count = 100;
 
-    /**
-     * Default constructor.
-     *
-     * @param _cdr Reference to ChangeDetectorRef used to inform component about changes.
-     * @param _queryService Reference to the singleton QueryService used to interact with the QueryBackend
-     * @param _filterService
-     * @param _selectionService Reference to the singleton SelectionService used for item highlighting.
-     * @param _eventBusService Reference to the singleton EventBusService, used to listen to and emit application events.
-     * @param _configService
-     * @param _router The Router used for navigation
-     * @param _snackBar The MatSnackBar component used to display the SnackBar.
-     * @param _resolver
-     * @param _dialog
-     * @param _vbs
-     */
     constructor(_cdr: ChangeDetectorRef,
                 _queryService: QueryService,
                 _filterService: FilterService,
@@ -57,8 +43,9 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
                 _snackBar: MatSnackBar,
                 protected _resolver: ResolverService,
                 protected _dialog: MatDialog,
-                protected _vbs: VbsSubmissionService) {
-        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
+                protected _vbs: VbsSubmissionService,
+                _historyService: PreviousRouteService) {
+        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _historyService);
     }
 
     /**

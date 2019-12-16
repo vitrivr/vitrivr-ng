@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterState} from '@angular/router';
 import {MetadataLookupService} from '../core/lookup/metadata-lookup.service';
 import {QueryService} from '../core/queries/query.service';
 import {MediaObject} from '../shared/model/media/media-object.model';
@@ -18,6 +18,7 @@ import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {EventBusService} from '../core/basics/event-bus.service';
 import {MetadataDetailsComponent} from './metadata-details.component';
+import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 @Component({
     moduleId: module.id,
@@ -41,15 +42,16 @@ export class ObjectdetailsComponent {
     /** The observable that provides the MediaObjectMetadata for the active object. */
     private _mediaObjectObservable: Observable<MediaObjectScoreContainer>;
 
-    constructor(_route: ActivatedRoute,
-                _router: Router,
+    constructor(private _route: ActivatedRoute,
+                private _router: Router,
                 private _snackBar: MatSnackBar,
                 private _metadataLookup: MetadataLookupService,
                 private _query: QueryService,
                 private  _eventBusService: EventBusService,
                 private _location: Location,
                 private _resolver: ResolverService,
-                private _dialog: MatDialog) {
+                private _dialog: MatDialog,
+                private _historyService: PreviousRouteService) {
 
 
         /** Generate observables required to create the view. */
@@ -63,7 +65,7 @@ export class ObjectdetailsComponent {
             }),
             catchError((err, obs) => {
                 _snackBar.open(err.message, '', <MatSnackBarConfig>{duration: 2500});
-                _router.navigate(['/mini-gallery']);
+                this._historyService.goToPrevious();
                 return EMPTY;
             })
         );
@@ -123,7 +125,7 @@ export class ObjectdetailsComponent {
      * i.e. usually the gallery.
      */
     public onBackClick() {
-        this._location.back()
+        this._historyService.goToPrevious();
     }
 
     /**

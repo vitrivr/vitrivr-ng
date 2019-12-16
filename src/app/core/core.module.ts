@@ -10,11 +10,12 @@ import {SelectionModule} from "./selection/selection.module";
 import {SelectionService} from "./selection/selection.service";
 import {WebSocketFactoryService} from "./api/web-socket-factory.service";
 import {QueryModule} from "./queries/query.module";
+import {PreviousRouteService} from './basics/previous-route.service';
 
 @NgModule({
     imports:      [ LookupModule, BasicModule, EvaluationModule, VbsModule, SelectionModule, QueryModule ],
     exports:      [ LookupModule, BasicModule, EvaluationModule, VbsModule, SelectionModule, QueryModule ],
     declarations: [ ],
-    providers:    [ TagsLookupService, WebSocketFactoryService, EvaluationService, VbsSubmissionService, SelectionService ]
+    providers:    [ TagsLookupService, WebSocketFactoryService, EvaluationService, VbsSubmissionService, SelectionService, PreviousRouteService ]
 })
 export class CoreModule { }
