@@ -28,9 +28,11 @@ export class ConfigService extends BehaviorSubject<Config> {
     constructor(private _http: HttpClient, _db: DatabaseService) {
         super(new Config());
         this._configTable = _db.db.table('config');
+        this.subscribe(c => {
+            console.log('config changed');
+            console.log(c);
+        });
         this.reload();
-        console.log('config loaded');
-        console.log(this.value);
     }
 
     /**
