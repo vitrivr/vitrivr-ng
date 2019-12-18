@@ -135,9 +135,7 @@ export class VbsSubmissionService {
           flatMap(f => this._queryService.results.segmentsAsObservable),
           debounceTime(1000), /* IMPORTANT: Limits the number of submissions to one per second. */
           map(r => {
-            const ires = new VbsResultsLog(team, tool);
-            ires.results.push(...VbsResultsLog.mapSegmentScoreContainer(r));
-            return ires
+            return VbsResultsLog.mapSegmentScoreContainer(team, tool, r)
           }),
           filter(log => log != null),
           flatMap((log: VbsResultsLog) => {
