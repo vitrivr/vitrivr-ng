@@ -9,10 +9,6 @@ export class DefaultFusionFunction implements FusionFunction {
      * Calculates and returns the weighted score of a MediaObjectScoreContainer. This implementation simply
      * returns the maximum score of any of the child segments!
      *
-     * @param features Feature categories to consider when calculating the score.
-     * @param mediaObjectScoreContainer MediaObjectScoreContainer for which to calculate the score.
-     *
-     * @return Weighted score for teh MediaObjectScoreContainer given the results
      */
     scoreForObject(features: WeightedFeatureCategory[], mediaObjectScoreContainer: MediaObjectScoreContainer): number {
         let score = 0;
@@ -26,21 +22,16 @@ export class DefaultFusionFunction implements FusionFunction {
 
     /**
      * Calculates and returns the weighted score of a SegmentScoreContainer. This implementation obtains
-     * the weighted mean value of the all the scores in the SegmentScoreContainer.
-     *
-     * @param features Feature categories to consider when calculating the score.
-     * @param segmentScoreContainer SegmentScoreContainer for which to calculate the score.
-     *
-     * @return Weighted score for teh MediaObjectScoreContainer given the results
+     * the max value of the all the scores in the SegmentScoreContainer.
      */
     scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number {
         let score = 0;
-        let total = 0;
-        features.forEach((value: WeightedFeatureCategory) => {
-            if (segmentScoreContainer.scores.has(value))score += (segmentScoreContainer.scores.get(value) * value.weight);
-            total += value.weight;
-        });
-       return (score / total);
+            segmentScoreContainer.scores.forEach((categoryMap, containerId) => {
+                categoryMap.forEach((categoryScore, category) => {
+                    score = Math.max(categoryScore, score);
+                });
+            });
+        return score;
     }
 
 }

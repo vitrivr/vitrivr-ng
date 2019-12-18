@@ -65,9 +65,8 @@ export class ResultsContainer {
   /** A subject that can be used to publish changes to the results. */
   private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
 
-  /** Ordered list of query container ids */
+  /** Ordered list of query container ids as they were sent to cineast. Needed as this information might be lost when results trickle in from cineast. */
   private _queryContainerIds: string[] = [];
-  private _temporalScoringFunction = new TemporalFusionFunction();
 
   /**
    * Constructor for ResultsContainer.
@@ -75,7 +74,7 @@ export class ResultsContainer {
    * @param {string} queryId Unique ID of the query. Used to filter messages!
    * @param {FusionFunction} weightFunction Function that should be used to calculate the scores.
    */
-  constructor(public readonly queryId: string, private weightFunction: FusionFunction = new DefaultFusionFunction()) {
+  constructor(public readonly queryId: string, private weightFunction: FusionFunction = new TemporalFusionFunction()) {
   }
 
   /**
@@ -234,7 +233,7 @@ export class ResultsContainer {
    * @param {WeightedFeatureCategory[]} features
    * @param {FusionFunction} weightFunction
    */
-  public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction, containerId?: string) {
+  public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
     if (!features) {
       features = this.features;
     }
@@ -243,19 +242,9 @@ export class ResultsContainer {
     }
     console.time(`Rerank (${this.queryId})`);
 
-    console.log(`ResultContaier.rerank, containerId=${containerId !== undefined ? containerId : 'N/A'}`);
-    if (containerId !== undefined) {
-      console.log('Temporal Scoring');
-      this._results_objects.forEach((value) => {
-        this._temporalScoringFunction.activeQueryContainerId = containerId;
-        value.update(features, this._temporalScoringFunction);
-      })
-    } else {
-      console.log('Default Scoring');
-      this._results_objects.forEach((value) => {
-        value.update(features, weightFunction);
-      });
-    }
+    this._results_objects.forEach((value) => {
+      value.update(features, weightFunction);
+    });
 
 
     /* Other methods calling rerank() depend on this next() call */
@@ -480,6 +469,14 @@ export class ResultsContainer {
    * Serializes this ResultsContainer into a plain JavaScript object.
    */
   public serialize() {
+    const similarityList = [];
+    this._results_segments.forEach(seg => {
+      seg.scores.forEach((categoryMap, containerId) => {
+        categoryMap.forEach((score, category) => {
+          similarityList.push(<Similarity>{category: category.name, key: seg.segmentId, value: score, containerId: containerId})
+        })
+      });
+    });
     return {
       queryId: this.queryId,
       objects: this._results_objects.map(obj => obj.serialize()),
@@ -498,11 +495,7 @@ export class ResultsContainer {
         });
         return metadata;
       }).reduce((x, y) => x.concat(y), []),
-      similarity: this.features.map(f => {
-        return this._results_segments.filter(seg => seg.scores.has(f)).map(seg => {
-          return <Similarity>{category: f.name, key: seg.segmentId, value: seg.scores.get(f)};
-        });
-      })
+      similarity: similarityList
     };
   }
 
@@ -510,6 +503,7 @@ export class ResultsContainer {
    * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
    * ResultsContainer#serialize().
    */
+  // tslint:disable-next-line:member-ordering
   public static deserialize(data: any): ResultsContainer {
     const container = new ResultsContainer(data['queryId']);
     container.processObjectMessage(<ObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
@@ -527,6 +521,7 @@ export class ResultsContainer {
         container.processSimilarityMessage(<SimilarityQueryResult>{
           queryId: container.queryId,
           category: similiarity[0].category,
+          containerId: similiarity.containerId,
           content: similiarity
         });
       }

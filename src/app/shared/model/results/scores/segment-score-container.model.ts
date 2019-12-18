@@ -11,14 +11,8 @@ import {MediaObjectScoreContainer} from './media-object-score-container.model';
  * score is determined by the actual scores of the segment (per category).
  */
 export class SegmentScoreContainer extends ScoreContainer implements MediaSegment {
-  /** List of scores. Entries should correspond to those in the array categories. */
-  private _scores: Map<WeightedFeatureCategory, number> = new Map();
-
-  /**
-   * List of scores per query container.
-   * Key: QueryContainerId, value: Score
-   */
-  private _scores_per_query_container: Map<string, number> = new Map();
+  /** List of scores. Maps per containerId the category and similarity score. */
+  private _scores: Map<string, Map<WeightedFeatureCategory, number>> = new Map();
 
   /** Map containing the metadata that belongs to the segment. Can be empty! */
   private _metadata: Map<string, string> = new Map();
@@ -78,14 +72,14 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * @param category
    * @param similarity
    */
-  public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity): boolean {
+  public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: string): boolean {
     if (similarity.key !== this._mediaSegment.segmentId) {
       return false;
     }
-    this.scores.set(category, similarity.value);
-    if(similarity.extra !== undefined){
-        this.scoresPerQueryContainer.set(similarity.extra, similarity.value);
+    if (!this._scores.has(containerId)) {
+      this._scores.set(containerId, new Map());
     }
+    this._scores.get(containerId).set(category, similarity.value);
     return true;
   }
 
@@ -103,18 +97,28 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
   /**
    * Returns the map of scores
    *
-   * @return {Map<WeightedFeatureCategory, number>}
    */
   get scores() {
     return this._scores;
   }
 
-    /**
-     * Returns the map of scores to query-container id.
-     * Might be empty, if this is not supported serverside.
-     */
-  get scoresPerQueryContainer(){
-      return this._scores_per_query_container;
+  /**
+   * Returns the score per category max pooled over the container (querycontainer)
+   */
+  get scoresPerCategory() {
+    const map = new Map<WeightedFeatureCategory, number>();
+    this._scores.forEach((categoryMap, containerId) => {
+      categoryMap.forEach((score, category) => {
+        if (map.has(category)) {
+          if (map.get(category) < score) {
+            map.set(category, score);
+          }
+        } else {
+          map.set(category, score);
+        }
+      });
+    });
+    return map;
   }
 
   /**

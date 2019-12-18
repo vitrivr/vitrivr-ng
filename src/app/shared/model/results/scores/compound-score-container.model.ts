@@ -23,8 +23,9 @@ export abstract class ScoreContainer {
      *
      * @param category Category for which to add the similarity value.
      * @param similarity Similarity value
+     * @param containerId The containerId this similarity corresponds to
      */
-    public abstract addSimilarity(category : WeightedFeatureCategory, similarity : Similarity) : void;
+    public abstract addSimilarity(category : WeightedFeatureCategory, similarity : Similarity, containerId: string) : void;
 
 
     /**
@@ -33,8 +34,9 @@ export abstract class ScoreContainer {
      *
      * @param features List of results that should be used to calculate the score.
      * @param func The weight function that should be used to calculate the score.
+     * @param containerId The containerId this similarity corresponds to
      */
-    public abstract update(features: WeightedFeatureCategory[], func: FusionFunction) : void;
+    public abstract update(features: WeightedFeatureCategory[], func: FusionFunction, containerId: string) : void;
 
     /**
      * Getter for the container's score.

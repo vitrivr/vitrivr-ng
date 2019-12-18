@@ -35,21 +35,21 @@ export class TemporalFusionFunction implements FusionFunction {
       console.log('Warning: No Temporal scoring - something is missing')
       return score;
     } else {
-      console.log(`Temporal Scoring for object. Active Id=${this._activeContainerId}, all container ids: ${this._queryContainerIds}`)
+      console.log(`Temporal Scoring for object (${mediaObjectScoreContainer.objectId}). Active Id=${this._activeContainerId}, all container ids: ${this._queryContainerIds}`)
 
-      if(!this._containerIds.has(this._activeContainerId)){
+      if (!this._containerIds.has(this._activeContainerId)){
         this._containerIds.set(this._activeContainerId, this._activeContainerId);
       }
 
+    /* A penalty for not corresponding to every single container */
       let alignmentPenalty = 0;
-
       Array.from(this._containerIds.keys()).forEach(id => {
         if(this._queryContainerIds.find(qcid => qcid === id)){
           alignmentPenalty++;
         }
       });
       alignmentPenalty /= this.queryContainerIds.length;
-
+      console.log(`[Temporal Scoring] Penalty for ${mediaObjectScoreContainer.objectId}: ${alignmentPenalty}`);
 
 
       /*console.log(`TemporalS. mediaObject.containerIds.length=${sortedQueryContainerIds.length}, query.containerIds.length=${this._queryContainerIds.length}`);

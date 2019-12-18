@@ -28,7 +28,11 @@ export class FeatureDetailsComponent{
      */
     constructor(@Inject(MAT_SNACK_BAR_DATA) data: SegmentScoreContainer) {
         this._title = data.segmentId + " (" + (data.score * 100).toFixed(2) + "%)";
-        data.scores.forEach((value, key) => {this._lines.push(key.name + ": " + Math.round(value * 1000) / 1000);})
+        data.scores.forEach((map, containerID) => {
+            map.forEach((score, category) => {
+                this._lines.push(containerID+ ": "+category.name + ": " + Math.round(score * 1000) / 1000);
+            });
+        })
     }
 
     /**

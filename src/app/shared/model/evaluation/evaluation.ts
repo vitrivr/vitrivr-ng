@@ -130,7 +130,7 @@ export class Evaluation {
             results.forEach((v1 : MediaObjectScoreContainer, index : number) => {
                 if (index < this._k + 10) {
                     let per_category_relevance: {[key:string]:number} = {};
-                    v1.representativeSegment.scores.forEach((v2, k2) => {
+                    v1.representativeSegment.scoresPerCategory.forEach((v2, k2) => {
                         per_category_relevance[k2.name] = v2;
                     });
                     this._ratings.push(new EvaluationRating(v1.objectId, v1.representativeSegment.segmentId, index, v1.score, per_category_relevance));
