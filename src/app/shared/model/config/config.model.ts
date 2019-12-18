@@ -140,8 +140,8 @@ export class Config {
         if (this._config.api.host == 'default') {
             this._config.api.host = window.location.hostname
         }
-        this._config.resources.host_objects = this._config.resources.host_objects.replace('/default/', window.location.hostname);
-        this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace('/default/', window.location.hostname);
+        this._config.resources.host_objects = this._config.resources.host_objects.replace('/default/', '/' + window.location.hostname + '/');
+        this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace('/default/', '/' + window.location.hostname + '/');
     }
 
     /**
