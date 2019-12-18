@@ -22,6 +22,10 @@
     "loginterval": 5000,
     "collabordinator": "ws://localhost:12345/ws"
   },
+  "mlt": {
+    "VIDEO": ["localcolor", "globalcolor", "localfeatures", "objinstance"],
+    "IMAGE": ["localcolor", "globalcolor", "localfeatures", "objinstance"]
+  },
   "evaluation": {
     "active":false,
     "templates": [
