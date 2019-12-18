@@ -137,7 +137,7 @@ export class Config {
         if (refinement) {
             this._config.refinement = DEEPMERGE(this._config.refinement, refinement, {arrayMerge: overwriteMerge});
         }
-        if (this._config.api.host == 'default') {
+        if (this._config.api.host === 'default') {
             this._config.api.host = window.location.hostname
         }
         this._config.resources.host_objects = this._config.resources.host_objects.replace('/default/', '/' + window.location.hostname + '/');
@@ -151,7 +151,7 @@ export class Config {
      * @return {Config} The resulting config object.
      */
     public static deserialize(object: {} | string): Config {
-        if (typeof object == 'string') object = JSON.parse(object);
+        if (typeof object === 'string') object = JSON.parse(object);
         if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['vbs'] || object['tags'] || object['mlt'] || object['refinement']) {
             return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['vbs'], object['tags'], object['mlt'], object['refinement']);
         } else {
