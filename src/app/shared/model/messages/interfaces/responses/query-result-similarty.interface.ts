@@ -8,5 +8,5 @@ import {FeatureCategories} from '../../../results/feature-categories.model';
 export interface SimilarityQueryResult extends QueryResult {
   category: FeatureCategories;
   content: Similarity[];
-  containerId?: string;
+  containerId?: number;
 }

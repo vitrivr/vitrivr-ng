@@ -66,7 +66,7 @@ export class ResultsContainer {
   private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
 
   /** Ordered list of query container ids as they were sent to cineast. Needed as this information might be lost when results trickle in from cineast. */
-  private _queryContainerIds: string[] = [];
+  private _queryContainerIds: number[] = [];
 
   /**
    * Constructor for ResultsContainer.
@@ -143,6 +143,7 @@ export class ResultsContainer {
     return this._results_segments_subject.asObservable();
   }
 
+  // tslint:disable-next-line:member-ordering
   private static fillMap(map: Map<string, AbstractRefinementOption>, resultList: any, config?: Config) {
     if (config) {
       config.get<[string, string][]>('refinement.filters').forEach(el => {
@@ -240,10 +241,18 @@ export class ResultsContainer {
     if (!weightFunction) {
       weightFunction = this.weightFunction;
     }
+
+    if (weightFunction instanceof TemporalFusionFunction) {
+      (weightFunction as TemporalFusionFunction).queryContainerIds = this._queryContainerIds;
+    }
+
     console.time(`Rerank (${this.queryId})`);
 
-    this._results_objects.forEach((value) => {
-      value.update(features, weightFunction);
+    this._results_objects.forEach((mediaObject) => {
+      mediaObject.update(features, weightFunction);
+      mediaObject.segments.forEach((segment) => {
+        segment.update(features, weightFunction);
+      });
     });
 
 
@@ -363,8 +372,14 @@ export class ResultsContainer {
       console.warn('similarity query result id ' + sim.queryId + ' does not match query id ' + this.queryId);
       return false;
     }
+    if (query !== undefined) {
+      this._queryContainerIds = query.containers.map((value) =>
+        value.containerId
+      );
+      console.log(`ResultContainer._queryContainerIds: ${this._queryContainerIds}`);
+    }
 
-    console.log('ResultContainer.processSimilairtyMessage(sim), sim=', sim);
+    console.log('ResultContainer.processSimilarityMessage(sim), sim=', sim);
 
     /* Get and (if missing) add a unique feature. */
     const feature = this.uniqueFeature(sim.category);
@@ -373,26 +388,13 @@ export class ResultsContainer {
     for (const similarity of sim.content) {
       const segment = this._segmentid_to_segment_map.get(similarity.key);
       if (segment !== undefined) {
-        segment.addSimilarity(feature, similarity);
+        segment.addSimilarity(feature, similarity, sim.containerId);
       }
     }
 
-    if (query !== undefined) {
-      this._queryContainerIds = query.containers.map((value) =>
-        value.containerId
-      );
-      this._temporalScoringFunction.queryContainerIds = this._queryContainerIds;
-      console.log(`ResultContainer._queryContainerIds: ${this._queryContainerIds}`);
-    }
 
     /* Re-rank the results (calling this method also causes an invocation of next(). */
-    if (sim.containerId !== undefined) {
-      this.rerank(undefined, undefined, sim.containerId as string);
-    } else {
-      this.rerank();
-    }
-
-    /* Return true. */
+    this.rerank();
     return true;
   }
 

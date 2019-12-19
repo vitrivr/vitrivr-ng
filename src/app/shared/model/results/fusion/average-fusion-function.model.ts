@@ -12,10 +12,10 @@ export class AverageFusionFunction implements FusionFunction {
   scoreForObject(features: WeightedFeatureCategory[], mediaObjectScoreContainer: MediaObjectScoreContainer): number {
     let score = 0;
     let count = 0;
-    mediaObjectScoreContainer.segments.forEach((value: SegmentScoreContainer) => {
-      value.update(features, this);
-      if (value.score > 0) {
-        score += value.score;
+    mediaObjectScoreContainer.segments.forEach((segment: SegmentScoreContainer) => {
+      const segmentScore = this.scoreForSegment(features, segment);
+      if (segmentScore > 0) {
+        score += segmentScore;
         count += 1;
       }
     });

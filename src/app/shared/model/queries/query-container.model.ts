@@ -12,10 +12,8 @@ import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
 import {UUIDGenerator} from '../../util/uuid-generator.util';
 
 export class QueryContainer implements QueryContainerInterface {
-  /**
-   * The client-generated container-id to reference query results per container
-   */
-  containerId: string;
+
+  public containerId = -1;
 
   /**
    * List of QueryTerms contained within this QueryContainer.
@@ -31,9 +29,10 @@ export class QueryContainer implements QueryContainerInterface {
    */
   private _terms_map: Map<QueryTermType, QueryTermInterface> = new Map();
 
-  public constructor(){
-      this.containerId = UUIDGenerator.uuid();
+
+  public constructor() {
   }
+
 
   /**
    * Adds a new QueryTerm for the specified QueryTermType.

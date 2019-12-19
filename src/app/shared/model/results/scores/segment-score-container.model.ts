@@ -12,7 +12,7 @@ import {MediaObjectScoreContainer} from './media-object-score-container.model';
  */
 export class SegmentScoreContainer extends ScoreContainer implements MediaSegment {
   /** List of scores. Maps per containerId the category and similarity score. */
-  private _scores: Map<string, Map<WeightedFeatureCategory, number>> = new Map();
+  private _scores: Map<number, Map<WeightedFeatureCategory, number>> = new Map();
 
   /** Map containing the metadata that belongs to the segment. Can be empty! */
   private _metadata: Map<string, string> = new Map();
@@ -66,13 +66,8 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * Adds a similarity object to this SegmentScoreContainer by pushing the category and
    * the actual value to their respective arrays. The segmentId of the Similarity object
    * must be equal to the segmentId of the SegmentScoreContainer.
-   *
-   * Note: Causes an update of the score value.
-   *
-   * @param category
-   * @param similarity
    */
-  public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: string): boolean {
+  public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number): boolean {
     if (similarity.key !== this._mediaSegment.segmentId) {
       return false;
     }
@@ -91,7 +86,9 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * @param func The fusion function that should be used to calculate the score.
    */
   public update(features: WeightedFeatureCategory[], func: FusionFunction) {
-    this._score = func.scoreForSegment(features, this);
+    const score =  func.scoreForSegment(features, this);
+    console.debug(`old score= ${this._score} new score=${score}`);
+    this._score = score;
   }
 
   /**

@@ -24,7 +24,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     private _metadata: Map<string, string> = new Map();
 
     /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet.  string is containerId*/
-    private _cache: Map<string, Array<[WeightedFeatureCategory, Similarity, string]>> = new Map();
+    private _cache: Map<string, Array<[WeightedFeatureCategory, Similarity, number]>> = new Map();
 
     /** Type of the MediaObject. */
     public mediatype: MediaType;
@@ -71,7 +71,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      * @param similarity The actual similarity entry.
      * @param containerId The query container id this similarity corresponds to
      */
-    public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: string) {
+    public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number) {
         if (this._segmentScores.has(similarity.key)) {
             this._segmentScores.get(similarity.key).addSimilarity(category, similarity, containerId);
         } else if (this._cache.has(similarity.key)) {

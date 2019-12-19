@@ -98,9 +98,11 @@ export class QueryService {
             return false;
         }
         this._config.pipe(first()).subscribe(config => {
+            let containerId = 0;
+            containers.forEach(container => container.containerId = containerId++);
             const query = new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
-            this._socket.next(query);
             this._query = query;
+            this._socket.next(query);
         });
     }
 
