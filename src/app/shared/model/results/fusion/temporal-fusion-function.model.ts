@@ -43,6 +43,9 @@ export class TemporalFusionFunction implements FusionFunction {
         const recursiveSuggestion = this.temporalPath(segment, segmentsTemporallyOrdered.splice(index + 1, segmentsTemporallyOrdered.length), containerId, sugggestion, features)
         const recursiveSuggestionScore = this.temporalScore(features, recursiveSuggestion);
         this.updateCache(segment.segmentId, recursiveSuggestionScore);
+        recursiveSuggestion.forEach((pathSegment, pathSegmentContainerId) => {
+          this.updateCache(pathSegment.segmentId, recursiveSuggestionScore);
+        });
         console.debug(`[${mediaObjectScoreContainer.objectId}] recursiveSuggestionScore=${recursiveSuggestionScore} > Score=${score} `);
         if (recursiveSuggestionScore > score) {
           score = recursiveSuggestionScore;
