@@ -24,8 +24,8 @@
     "collabordinator": "ws://localhost:12345/ws"
   },
   "mlt": {
-    "VIDEO": ["localcolor", "globalcolor", "edge", "localfeatures", "objinstance"],
-    "IMAGE": ["localcolor", "globalcolor", "edge", "localfeatures", "objinstance"]
+    "VIDEO": ["localcolor", "globalcolor", "edge", "localfeatures", "objectInstances"],
+    "IMAGE": ["localcolor", "globalcolor", "edge", "localfeatures", "objectInstances"]
   },
   "evaluation": {
     "active":false,
