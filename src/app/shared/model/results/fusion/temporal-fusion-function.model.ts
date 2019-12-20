@@ -51,7 +51,9 @@ export class TemporalFusionFunction implements FusionFunction {
           score = recursiveSuggestionScore;
           optimalPath = recursiveSuggestion;
         }
-      })
+      });
+      /* we update the cache for the segment only if it has elements (as we loop over the scores) - if there is none (for whatever reason) there will be no score */
+      this.updateCache(segment.segmentId, this.individualScoreForSegment(features, segment));
     });
     mediaObjectScoreContainer.segments.forEach(segment => {
       if (!this._bestScorePerSegmentCache.has(segment.segmentId)) {
@@ -66,6 +68,7 @@ export class TemporalFusionFunction implements FusionFunction {
   private updateCache(segmentId: string, score: number) {
     console.log(`[TS_updateCache]: ${segmentId}: ${this._bestScorePerSegmentCache.get(segmentId)}`)
     if (this._bestScorePerSegmentCache.has(segmentId)) {
+      console.log(`[TS_updateCache]: ${segmentId}: ${this._bestScorePerSegmentCache.get(segmentId)} < ${score}`);
       if (this._bestScorePerSegmentCache.get(segmentId) < score) {
         this._bestScorePerSegmentCache.set(segmentId, score);
       }
