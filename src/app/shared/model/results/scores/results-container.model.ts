@@ -382,8 +382,6 @@ export class ResultsContainer {
             return false;
         }
 
-        console.debug(`ResultContainer.processSimilarityMessage(sim), sim=${JSON.stringify(sim)}`);
-
         /* Get and (if missing) add a unique feature. */
         const feature = this.uniqueFeature(sim.category);
 
@@ -414,7 +412,6 @@ export class ResultsContainer {
      * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
      */
     private next() {
-        console.debug('publishing next round of changes with ' + this._results_segments.length + ' segments and ' + this._results_objects.length + ' objects');
         this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
         this._results_objects_subject.next(this._results_objects.filter(v => v.show));
         this._results_features_subject.next(this._features);
