@@ -376,10 +376,10 @@ export class ResultsContainer {
       this._queryContainerIds = query.containers.map((value) =>
         value.containerId
       );
-      console.log(`ResultContainer._queryContainerIds: ${this._queryContainerIds}`);
+      console.debug(`ResultContainer._queryContainerIds: ${this._queryContainerIds}`);
     }
 
-    console.log('ResultContainer.processSimilarityMessage(sim), sim=', sim);
+    console.debug(`ResultContainer.processSimilarityMessage(sim), sim=${JSON.stringify(sim)}`);
 
     /* Get and (if missing) add a unique feature. */
     const feature = this.uniqueFeature(sim.category);

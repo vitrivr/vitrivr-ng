@@ -67,6 +67,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @return String that encodes the RGB value.
      */
     public backgroundForSegment(segment: SegmentScoreContainer): string {
+      console.debug(`[AbstractResultView.backgroundForSegment] segmentId=${segment.segmentId}, segment.score=${segment.score}`);
         let score = segment.score;
         let tags: Tag[] = this._selectionService.getTags(segment.segmentId);
         if (tags.length == 0) {

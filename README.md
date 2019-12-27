@@ -30,7 +30,7 @@ All references to thumbnails and media files will be resolved relative to those 
 ## Development server
 
 From the project folder, run `ng serve` to start a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-If you wish to prevent automatic reloading, run `ng serve --live-reload=false`
+If you wish to prevent automatic reloading, run `ng serve --liveReload=false`
 
 ## Build
 

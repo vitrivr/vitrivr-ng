@@ -68,6 +68,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * must be equal to the segmentId of the SegmentScoreContainer.
    */
   public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number): boolean {
+    console.debug(`[SegmentScoreContainer.addSimilarity] Segment ${this.segmentId}: cat ${category}, sim ${JSON.stringify(similarity)} and cID ${containerId}`);
     if (similarity.key !== this._mediaSegment.segmentId) {
       return false;
     }
@@ -87,7 +88,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    */
   public update(features: WeightedFeatureCategory[], func: FusionFunction) {
     const score =  func.scoreForSegment(features, this);
-    console.debug(`old score= ${this._score} new score=${score}`);
+    console.debug(`[SegmentScoreContainer.update] Old score for ${this.segmentId} = ${this._score} new score=${score}`);
     this._score = score;
   }
 
@@ -117,6 +118,8 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
     });
     return map;
   }
+
+
 
   /**
    * Returns the map of metadata.

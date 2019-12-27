@@ -16,6 +16,8 @@ export class TemporalFusionFunction implements FusionFunction {
 
   private _bestScorePerSegmentCache: Map<string, number> = new Map();
 
+  private _verbose = false;
+
   /**
    * Calculates and returns the weighted score of a MediaObjectScoreContainer.
    * There is a bonus for temporal scoring here.
@@ -33,46 +35,49 @@ export class TemporalFusionFunction implements FusionFunction {
 
     const segmentsTemporallyOrdered = Array.from(mediaObjectScoreContainer.segments).sort((a, b) => a.startabs - b.startabs);
     /* for each segment, assume it could be the start of the optimal sequence path for this object */
-    console.log(`scoring object ${mediaObjectScoreContainer.objectId} with ${segmentsTemporallyOrdered.length} segments`);
+    this.verbose(`[TS_scoreForObject]: scoring object ${mediaObjectScoreContainer.objectId} with ${segmentsTemporallyOrdered.length} segments`);
+    segmentsTemporallyOrdered.forEach(seg => this.verbose(`[TemporalFusionFunction.scoreForObject] iterating over segment ${seg.segmentId}`));
     segmentsTemporallyOrdered.forEach((segment, index) => {
-      console.log(`segment ${segment.segmentId} has ${segment.scores.size} elements`)
+      this.verbose(`[TS_scoreForObject]: Seeking for segment ${segment.segmentId} with ${segment.scores.size} score elements`);
+      /* we update the cache for the segment only if it has elements (as we loop over the scores) - if there is none (for whatever reason) there will be no score */
+      this.updateCache(segment.segmentId, this.individualScoreForSegment(features, segment));
       // for each container, assume start of sequence
       segment.scores.forEach((categoryMap, containerId) => {
         const sugggestion = new Map();
         sugggestion.set(containerId, segment);
-        const recursiveSuggestion = this.temporalPath(segment, segmentsTemporallyOrdered.splice(index + 1, segmentsTemporallyOrdered.length), containerId, sugggestion, features)
+        const recursiveSuggestion = this.temporalPath(segment, segmentsTemporallyOrdered.slice(index + 1, segmentsTemporallyOrdered.length), containerId, sugggestion, features)
         const recursiveSuggestionScore = this.temporalScore(features, recursiveSuggestion);
         this.updateCache(segment.segmentId, recursiveSuggestionScore);
         recursiveSuggestion.forEach((pathSegment, pathSegmentContainerId) => {
           this.updateCache(pathSegment.segmentId, recursiveSuggestionScore);
         });
-        console.debug(`[${mediaObjectScoreContainer.objectId}] recursiveSuggestionScore=${recursiveSuggestionScore} > Score=${score} `);
         if (recursiveSuggestionScore > score) {
           score = recursiveSuggestionScore;
           optimalPath = recursiveSuggestion;
         }
+        this.verbose(`[TS_scoreForObject]:  objectId=${mediaObjectScoreContainer.objectId}, segment ${segment.segmentId}, container ${containerId} recursiveSuggestionScore=${recursiveSuggestionScore} > Score=${score} `);
       });
-      /* we update the cache for the segment only if it has elements (as we loop over the scores) - if there is none (for whatever reason) there will be no score */
-      this.updateCache(segment.segmentId, this.individualScoreForSegment(features, segment));
     });
-    mediaObjectScoreContainer.segments.forEach(segment => {
+    /* Cache Debugging */
+    /*mediaObjectScoreContainer.segments.forEach(segment => {
       if (!this._bestScorePerSegmentCache.has(segment.segmentId)) {
-        console.error(`did not initialize cache for segment ${segment.segmentId}`)
-        console.log(segment)
+        console.error(`[TS_scoreForObject]: did not initialize cache for segment ${segment.segmentId}`)
+        this.verbose(segment)
       }
-    });
-    console.log(`[${mediaObjectScoreContainer.objectId}] Score=${score} `);
+    });*/
+    this.verbose(`[TS_scoreForObject]: objectId=${mediaObjectScoreContainer.objectId}, score=${score} `);
     return score;
   }
 
   private updateCache(segmentId: string, score: number) {
-    console.log(`[TS_updateCache]: ${segmentId}: ${this._bestScorePerSegmentCache.get(segmentId)}`)
+    this.verbose(`[TS_updateCache]: Starting for ${segmentId} with existing score ${this._bestScorePerSegmentCache.get(segmentId)} and candidate score ${score}`);
     if (this._bestScorePerSegmentCache.has(segmentId)) {
-      console.log(`[TS_updateCache]: ${segmentId}: ${this._bestScorePerSegmentCache.get(segmentId)} < ${score}`);
+      this.verbose(`[TS_updateCache]: ${segmentId}: ${this._bestScorePerSegmentCache.get(segmentId)} < ${score}`);
       if (this._bestScorePerSegmentCache.get(segmentId) < score) {
         this._bestScorePerSegmentCache.set(segmentId, score);
       }
     } else {
+      this.verbose(`[TS_updateCache]: initializing ${segmentId} to : ${score}`);
       this._bestScorePerSegmentCache.set(segmentId, score);
     }
   }
@@ -83,8 +88,9 @@ export class TemporalFusionFunction implements FusionFunction {
     // very naive approach: sum and normalize over no. of containers
     temporalPath.forEach((segment, containerId) => {
       score += this.individualScoreForSegment(features, segment);
+      this.verbose(`[TemporalFusionFunction.temporalScore] Incremented score to ${score} for segment ${segment.segmentId}`)
     });
-    console.debug(`TS ${temporalPath.size}, scroe=${score}, normalized=${score / this._queryContainerIds.length}`);
+    this.verbose(`[TemporalFusionFunction.temporalScore] for length ${temporalPath.size}, score=${score} is normalized=${score / this._queryContainerIds.length}`);
     return score / this._queryContainerIds.length;
   }
 
@@ -159,12 +165,10 @@ export class TemporalFusionFunction implements FusionFunction {
     return this._queryContainerIds[this._queryContainerIds.length - 1];
   }
 
-  /**
-   * TODO
-   */
   scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number {
-    if (!this._bestScorePerSegmentCache.has(segmentScoreContainer.segmentId)) {
-      console.error('scores for segments have not been initalized, returning individualscore');
+    if (!this._bestScorePerSegmentCache.has(segmentScoreContainer.segmentId) || this._bestScorePerSegmentCache.get(segmentScoreContainer.segmentId) === -1) {
+      /* not actually an error, due to the sequential sending of results from cineast, this will definitively occur */
+      // console.error(`[TemporalFusion.scoreForSegment] Scores for segment ${segmentScoreContainer.segmentId} have not been initialized or initialized to -1, calculating score for object again`);
       /* initialize cache by calculate object score */
       this.scoreForObject(features, segmentScoreContainer.objectScoreContainer);
     }
@@ -172,14 +176,29 @@ export class TemporalFusionFunction implements FusionFunction {
   }
 
   public individualScoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number {
-    const score = this._segmentFusionFunction.scoreForSegment(features, segmentScoreContainer);
-    console.debug(`[TemporalFusion] Segment=${segmentScoreContainer.segmentId} score=${score}`);
+    let score = this._segmentFusionFunction.scoreForSegment(features, segmentScoreContainer);
+    if (segmentScoreContainer.scores.size === 0) {
+      this.verbose(`[TemporalFusion.individualScoreForSegment] Segment ${segmentScoreContainer.segmentId} has no score elements yet (${JSON.stringify(segmentScoreContainer.scores)}), initializing to -1`)
+      score = -1;
+    }
+    this.verbose(`[TemporalFusion.individualScoreForSegment] Segment=${segmentScoreContainer.segmentId} score=${score}`);
     return score;
   }
 
   /** Setter for quer container ids */
   public set queryContainerIds(queryContainerIds: number[]) {
     this._queryContainerIds = queryContainerIds;
+  }
+
+  /**
+   * A hacky way to not bother with more sophisticated logging than console.XYZ
+   * Shall be replaced with proper logging
+   * @param msg The message to log (Will be logged by issuing console.debug
+   */
+  private verbose(msg:string){
+    if(this._verbose){
+      console.debug(msg);
+    }
   }
 
 }
