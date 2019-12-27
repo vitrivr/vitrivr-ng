@@ -7,6 +7,7 @@ import {EventBusService} from "./core/basics/event-bus.service";
 import {filter, map} from "rxjs/operators";
 import {MatBottomSheet} from "@angular/material";
 import {HistoryComponent} from "./results/history.component";
+
 @Component({
     moduleId: module.id,
     selector: 'vitrivr',
