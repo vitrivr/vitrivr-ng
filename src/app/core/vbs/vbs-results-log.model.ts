@@ -17,15 +17,6 @@ export class VbsResultsLog implements VbsSubmission {
   public readonly resultSetAvailability: string = 'top';
 
   /**
-   * Constructor
-   *
-   * @param teamId
-   * @param memberId
-   */
-  constructor(public readonly teamId: string, public readonly memberId: number) {
-  }
-
-  /**
    * Maps a list of {SegmentScoreContainer}s to a {VbsResultsLog}.
    *
    * @param teamId The ID of the VBS team.
@@ -39,7 +30,7 @@ export class VbsResultsLog implements VbsSubmission {
     list.splice(limit);
     list.forEach((segmentScoreContainer, index) => {
       results.results.push(<VbsResult>{video: segmentScoreContainer.objectId, shot: segmentScoreContainer.sequenceNumber, score: segmentScoreContainer.score, rank: index});
-      segmentScoreContainer.scores.forEach((categoryScoreMap, queryContainerid) => {
+      segmentScoreContainer.scores.forEach((categoryScoreMap, containerId) => {
         categoryScoreMap.forEach((score, feature) => {
           const category = this.featureCategoryToVbsCategory(feature.name);
           const type = this.featureCategoryToVbsType(feature.name);
@@ -118,5 +109,8 @@ export class VbsResultsLog implements VbsSubmission {
       default:
         return null;
     }
+  }
+
+  constructor(public readonly teamId: string, public readonly memberId: number) {
   }
 }

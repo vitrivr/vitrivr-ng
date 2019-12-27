@@ -40,9 +40,8 @@ export class MiniGalleryComponent extends AbstractResultsViewComponent<SegmentSc
                 protected _configService: ConfigService,
                 protected _resolver: ResolverService,
                 protected _dialog: MatDialog,
-                protected _vbs: VbsSubmissionService,
-                protected _historyService: PreviousRouteService) {
-        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _historyService);
+                protected _vbs: VbsSubmissionService) {
+        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**

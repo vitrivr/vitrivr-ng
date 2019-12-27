@@ -17,7 +17,6 @@ import {InteractionEvent} from '../../shared/model/events/interaction-event.mode
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {FilterService} from '../../core/queries/filter.service';
 import {ConfigService} from '../../core/basics/config.service';
-import {PreviousRouteService} from '../../core/basics/previous-route.service';
 
 @Component({
     moduleId: module.id,
@@ -43,9 +42,9 @@ export class ListComponent extends AbstractResultsViewComponent<MediaObjectScore
                 _snackBar: MatSnackBar,
                 protected _resolver: ResolverService,
                 protected _dialog: MatDialog,
-                protected _vbs: VbsSubmissionService,
-                _historyService: PreviousRouteService) {
-        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _historyService);
+                protected _vbs: VbsSubmissionService
+    ) {
+        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**

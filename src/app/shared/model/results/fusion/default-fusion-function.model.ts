@@ -31,7 +31,6 @@ export class DefaultFusionFunction implements FusionFunction {
         score = Math.max(categoryScore, score);
       });
     });
-    console.debug(`[DefaultFusionFunction.scoreForSegment] Segment ${segmentScoreContainer.segmentId} was scored to ${score}`);
     return score;
   }
 
