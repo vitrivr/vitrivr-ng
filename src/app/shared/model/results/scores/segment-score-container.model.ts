@@ -96,7 +96,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * Returns the map of scores
    *
    */
-  get scores() {
+  get scores(): Map<WeightedFeatureCategory, number> {
     return this._scores;
   }
 

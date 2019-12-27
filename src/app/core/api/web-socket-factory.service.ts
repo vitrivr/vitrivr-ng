@@ -34,7 +34,6 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
 
         /* Check if connection has changed. */
         if (this._config && this._config.endpoint_ws == c.endpoint_ws) {
-            console.log('no changes to connection in config, not reconnecting');
             return false;
         }
 

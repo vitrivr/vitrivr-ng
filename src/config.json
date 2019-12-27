@@ -19,8 +19,13 @@
     "teamid": 2,
     "toolid": null,
     "endpoint": "http://10.34.58.45:3100/vbs/",
+    "log": true,
     "loginterval": 5000,
     "collabordinator": "ws://localhost:12345/ws"
+  },
+  "mlt": {
+    "VIDEO": ["localcolor", "globalcolor", "edge", "localfeatures", "objectInstances"],
+    "IMAGE": ["localcolor", "globalcolor", "edge", "localfeatures", "objectInstances"]
   },
   "evaluation": {
     "active":false,

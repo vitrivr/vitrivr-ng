@@ -28,10 +28,6 @@ export class ConfigService extends BehaviorSubject<Config> {
     constructor(private _http: HttpClient, _db: DatabaseService) {
         super(new Config());
         this._configTable = _db.db.table('config');
-        this.subscribe(c => {
-            console.log('config changed');
-            console.log(c);
-        });
         this.reload();
     }
 
@@ -40,7 +36,8 @@ export class ConfigService extends BehaviorSubject<Config> {
      */
     public reload() {
         combineLatest(
-            this.loadFromDatabase(),
+            //storing the config in the db is currently disabled
+            //this.loadFromDatabase(),
             this.loadFromServer()
         ).pipe(
             map(([c1, c2]) => {
@@ -112,6 +109,8 @@ export class ConfigService extends BehaviorSubject<Config> {
      * @param {Config} config The configuration object that should be saved.
      */
     private saveToDatabase(config: Config) {
+        console.log('db-functionality for configs is currently disabled');
+        return;
         return fromPromise(this._configTable.delete(Config.DB_KEY))
             .pipe(first())
             .map(obs => {
