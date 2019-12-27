@@ -1,24 +1,18 @@
-import {SubmissionType, VbsSubmission} from "../../shared/model/vbs/interfaces/vbs-submission.model";
-import {VbsResult} from "../../shared/model/vbs/interfaces/vbs-result.model";
-import {SegmentScoreContainer} from "../../shared/model/results/scores/segment-score-container.model";
+import {SubmissionType, VbsSubmission} from '../../shared/model/vbs/interfaces/vbs-submission.model';
+import {VbsResult} from '../../shared/model/vbs/interfaces/vbs-result.model';
+import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 
 export class VbsResultsLog implements VbsSubmission {
-
   /** Timestam of the VbsInteractionLog. */
   public readonly timestamp: number = Date.now();
-
   /** Type of the VbsInteractionLog. */
   public readonly type: SubmissionType = 'result';
-
   /** List of {VbsResults} that make up this {VbsResultsLog}. */
   public readonly results: VbsResult[] = [];
-
   /** List of categories that were used  to create this {VbsResultsLog}. */
   public readonly usedCategories: string[] = [];
-
   /** List of types that were used  to create this {VbsResultsLog}. */
   public readonly usedTypes: string[] = [];
-
   /** Constant, since vitrivr NG always returns the top K results. */
   public readonly resultSetAvailability: string = 'top';
 
@@ -28,8 +22,8 @@ export class VbsResultsLog implements VbsSubmission {
    * @param teamId
    * @param memberId
    */
-  constructor(public readonly teamId: string, public readonly memberId: number) {}
-
+  constructor(public readonly teamId: string, public readonly memberId: number) {
+  }
 
   /**
    * Maps a list of {SegmentScoreContainer}s to a {VbsResultsLog}.
@@ -41,32 +35,33 @@ export class VbsResultsLog implements VbsSubmission {
    * @return List of {VbsResultsLog}
    */
   public static mapSegmentScoreContainer(teamId: string, memberId: number, list: SegmentScoreContainer[], limit = 500): VbsResultsLog {
-    let results = new VbsResultsLog(teamId, memberId);
-    list.splice(limit)
-    list.forEach((v,i) => {
-      results.results.push(<VbsResult>{video: v.objectId, shot: v.sequenceNumber, score: v.score, rank: i});
-      v.scores.forEach((v, k) => {
-        let category = this.featureCategoryToVbsCategory(k.name);
-        let type = this.featureCategoryToVbsType(k.name);
-        if (category != null && results.usedCategories.indexOf(category) == -1) {
-          results.usedCategories.push(category)
-        }
-        if (type != null && results.usedTypes.indexOf(type) == -1) {
-          results.usedCategories.push(type)
-        }
-      })
+    const results = new VbsResultsLog(teamId, memberId);
+    list.splice(limit);
+    list.forEach((segmentScoreContainer, index) => {
+      results.results.push(<VbsResult>{video: segmentScoreContainer.objectId, shot: segmentScoreContainer.sequenceNumber, score: segmentScoreContainer.score, rank: index});
+      segmentScoreContainer.scores.forEach((categoryScoreMap, queryContainerid) => {
+        categoryScoreMap.forEach((score, feature) => {
+          const category = this.featureCategoryToVbsCategory(feature.name);
+          const type = this.featureCategoryToVbsType(feature.name);
+          if (category != null && results.usedCategories.indexOf(category) === -1) {
+            results.usedCategories.push(category)
+          }
+          if (type != null && results.usedTypes.indexOf(type) === -1) {
+            results.usedCategories.push(type)
+          }
+        });
+      });
     });
 
     return results
   }
-
 
   /**
    * Maps vitrivr feature categories to the VBS category.
    *
    * @param category
    */
-  private static featureCategoryToVbsCategory(category: string) : string {
+  private static featureCategoryToVbsCategory(category: string): string {
     switch (category) {
       case 'ocr':
       case 'asr':
@@ -94,7 +89,7 @@ export class VbsResultsLog implements VbsSubmission {
    *
    * @param category
    */
-  private static featureCategoryToVbsType(category: string) : string {
+  private static featureCategoryToVbsType(category: string): string {
     switch (category) {
       case 'ocr':
         return 'OCR';

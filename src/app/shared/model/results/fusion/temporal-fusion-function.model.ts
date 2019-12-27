@@ -195,8 +195,8 @@ export class TemporalFusionFunction implements FusionFunction {
    * Shall be replaced with proper logging
    * @param msg The message to log (Will be logged by issuing console.debug
    */
-  private verbose(msg:string){
-    if(this._verbose){
+  private verbose(msg: string) {
+    if (this._verbose) {
       console.debug(msg);
     }
   }

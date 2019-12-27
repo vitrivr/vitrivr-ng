@@ -48,7 +48,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
     super();
 
     /* Make a logic check: objectId of MediaSegment must match that of the MediaObjectScoreContainer. */
-    if (_mediaSegment.objectId != _objectScoreContainer.objectId) {
+    if (_mediaSegment.objectId !== _objectScoreContainer.objectId) {
       throw new Error('You cannot associate a MediaObjectScoreContainer with ID \'' + _objectScoreContainer.objectId + '\' with a segment with objectId \'' + _mediaSegment.objectId + '\'.');
     }
 
@@ -87,7 +87,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * @param func The fusion function that should be used to calculate the score.
    */
   public update(features: WeightedFeatureCategory[], func: FusionFunction) {
-    const score =  func.scoreForSegment(features, this);
+    const score = func.scoreForSegment(features, this);
     console.debug(`[SegmentScoreContainer.update] Old score for ${this.segmentId} = ${this._score} new score=${score}`);
     this._score = score;
   }
@@ -96,7 +96,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * Returns the map of scores
    *
    */
-  get scores(): Map<WeightedFeatureCategory, number> {
+  get scores(): Map<number, Map<WeightedFeatureCategory, number>> {
     return this._scores;
   }
 
@@ -118,7 +118,6 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
     });
     return map;
   }
-
 
 
   /**
