@@ -19,7 +19,6 @@ import {Config} from '../shared/model/config/config.model';
 import {EventBusService} from '../core/basics/event-bus.service';
 import {catchError, first, flatMap, map} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
-import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 
 type DisplayType = 'NONE' | 'SCENARIO' | 'GALLERY' | 'HISTORY';
@@ -49,9 +48,8 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
         private _location: Location,
         private _evaluation: EvaluationService,
         private _route: ActivatedRoute,
-        private _dialog: MatDialog,
-        _historyService: PreviousRouteService) {
-        super(_cdr, _queryService, _filterService, _selectionService, _evemtBusService, _router, _snackBar, _resolver, _historyService);
+        private _dialog: MatDialog) {
+        super(_cdr, _queryService, _filterService, _selectionService, _evemtBusService, _router, _snackBar, _resolver);
     }
 
     /**
