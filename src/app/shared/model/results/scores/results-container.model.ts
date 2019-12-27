@@ -75,8 +75,8 @@ export class ResultsContainer {
     constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
     }
 
-    public weightFunction(scoreFunction: string) {
-        switch (scoreFunction) {
+    public setScoreFunction(scoreFunction: string) {
+        switch (scoreFunction.toUpperCase()) {
             case 'TEMPORAL':
                 this.scoreFunction = TemporalFusionFunction.instance();
                 break;

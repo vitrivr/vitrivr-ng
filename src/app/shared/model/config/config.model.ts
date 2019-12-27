@@ -73,6 +73,7 @@ export class Config {
         },
         query: {
             history: -1,
+            scoreFunction: 'temporal',
             options: {
                 image: true,
                 audio: true,
