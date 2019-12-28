@@ -15,7 +15,6 @@ export class OrderByScorePipe implements PipeTransform {
      */
     public transform(array: Array<ScoreContainer>, desc: boolean = true): Array<ScoreContainer> {
         if(!array || array === undefined || array.length === 0) return [];
-        console.time("UI (Sort by Score)");
         let results = array.sort((a: ScoreContainer, b: ScoreContainer) => {
             if (desc) {
                 return ScoreContainer.compareDesc(a,b);
@@ -23,7 +22,6 @@ export class OrderByScorePipe implements PipeTransform {
                 return ScoreContainer.compareAsc(a,b);
             }
         });
-        console.timeEnd("UI (Sort by Score)");
         return results;
     }
 }

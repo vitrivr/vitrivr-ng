@@ -9,9 +9,6 @@ export class FilterPipe implements PipeTransform {
         if (!array || array.length === 0) {
             return [];
         }
-        console.time('UI (Filter)');
-        const results = array.filter(v => filter.every(f => f(v)));
-        console.timeEnd('UI (Filter)');
-        return results;
+        return array.filter(v => filter.every(f => f(v)));
     }
 }

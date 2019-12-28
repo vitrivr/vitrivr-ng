@@ -10,7 +10,6 @@ export class OrderPathByScorePipe implements PipeTransform {
         if (!array || array === undefined || array.length === 0) {
             return [];
         }
-        console.time('UI (Sort by Score)');
         const results = array.sort((a: ScoredPath, b: ScoredPath) => {
             if (desc) {
                 return b.score - a.score
@@ -18,7 +17,6 @@ export class OrderPathByScorePipe implements PipeTransform {
                 return b.score - a.score;
             }
         });
-        console.timeEnd('UI (Sort by Score)');
         return results;
     }
 }
