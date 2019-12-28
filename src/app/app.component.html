@@ -19,6 +19,10 @@
 
     <span class="spacer-xlarge"></span>
 
+    <a mat-icon-button routerLink="/temporal-list" skipLocationChange="true" routerLinkActive="active" matTooltip="Temporal Scoring view"><mat-icon>filter_list</mat-icon></a>
+
+    <span class="spacer-xlarge"></span>
+
     <a *ngIf="(config|async).get('evaluation.active')" mat-icon-button skipLocationChange="true" routerLink="/evaluation" routerLinkActive="active" matTooltip="Navigate to evaluation module"><mat-icon>assessment</mat-icon></a>
 
     <span *ngIf="(config|async).get('evaluation.active')" class="spacer-medium"></span>

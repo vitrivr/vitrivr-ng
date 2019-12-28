@@ -18,7 +18,6 @@ import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-
 import {Router} from '@angular/router';
 import {filter} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
-import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
     /** Indicator whether the progress bar should be visible. */
@@ -67,6 +66,10 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      */
     public backgroundForSegment(segment: SegmentScoreContainer): string {
         const score = segment.score;
+        return this.backgroundForScore(score, segment);
+    }
+
+    public backgroundForScore(score: number, segment: SegmentScoreContainer): string {
         const tags: Tag[] = this._selectionService.getTags(segment.segmentId);
         if (tags.length === 0) {
             const v = Math.round(255.0 - (score * 255.0));

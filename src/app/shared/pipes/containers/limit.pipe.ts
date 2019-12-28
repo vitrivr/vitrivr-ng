@@ -1,5 +1,4 @@
-import {Pipe, PipeTransform} from "@angular/core";
-import {ScoreContainer} from "../../model/results/scores/compound-score-container.model";
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
     name: 'LimitPipe'
@@ -11,8 +10,10 @@ export class LimitPipe implements PipeTransform {
      * @param array The array of result items.
      * @param count The number of items in the ouput array.
      */
-    public transform<T extends ScoreContainer>(array: Array<T>, count: number): Array<T> {
-        if(!array || array === undefined || array.length === 0) return [];
+    public transform<T>(array: Array<T>, count: number): Array<T> {
+        if (!array || array === undefined || array.length === 0) {
+            return [];
+        }
         return array.slice(0, count);
     }
 }

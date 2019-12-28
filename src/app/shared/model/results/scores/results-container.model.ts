@@ -257,6 +257,7 @@ export class ResultsContainer {
 
         console.time(`Rerank (${this.queryId})`);
 
+
         this._results_objects.forEach((mediaObject) => {
             mediaObject.update(features, weightFunction);
             mediaObject.segments.forEach((segment) => {
