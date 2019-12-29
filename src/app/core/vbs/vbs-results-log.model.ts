@@ -52,7 +52,7 @@ export class VbsResultsLog implements VbsSubmission {
           results.usedCategories.push(category)
         }
         if (type != null && results.usedTypes.indexOf(type) == -1) {
-          results.usedCategories.push(type)
+          results.usedTypes.push(type)
         }
       })
     });
