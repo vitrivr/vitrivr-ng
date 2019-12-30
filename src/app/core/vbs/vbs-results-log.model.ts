@@ -28,20 +28,20 @@ export class VbsResultsLog implements VbsSubmission {
   public static mapSegmentScoreContainer(teamId: string, memberId: number, list: SegmentScoreContainer[], limit = 500): VbsResultsLog {
     const results = new VbsResultsLog(teamId, memberId);
     list.splice(limit);
-    list.forEach((segmentScoreContainer, index) => {
+    list.forEach((segmentScoreContainer,index) => {
       results.results.push(<VbsResult>{video: segmentScoreContainer.objectId, shot: segmentScoreContainer.sequenceNumber, score: segmentScoreContainer.score, rank: index});
       segmentScoreContainer.scores.forEach((categoryScoreMap, containerId) => {
         categoryScoreMap.forEach((score, feature) => {
-          const category = this.featureCategoryToVbsCategory(feature.name);
-          const type = this.featureCategoryToVbsType(feature.name);
-          if (category != null && results.usedCategories.indexOf(category) === -1) {
-            results.usedCategories.push(category)
-          }
-          if (type != null && results.usedTypes.indexOf(type) === -1) {
-            results.usedCategories.push(type)
-          }
+        const category = this.featureCategoryToVbsCategory(feature.name);
+        const type = this.featureCategoryToVbsType(feature.name);
+        if (category != null && results.usedCategories.indexOf(category) === -1) {
+          results.usedCategories.push(category)
+        }
+        if (type != null && results.usedTypes.indexOf(type) === -1) {
+          results.usedTypes.push(type)
+        }
         });
-      });
+      })
     });
 
     return results
