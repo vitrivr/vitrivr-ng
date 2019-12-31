@@ -16,7 +16,7 @@
     }
   },
   "vbs": {
-    "teamid": 2,
+    "teamid": 8,
     "toolid": null,
     "endpoint": "http://10.34.58.45:3100/vbs/",
     "log": true,
