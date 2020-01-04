@@ -4,7 +4,7 @@
     <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
     <div class="list" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
-        <div *ngFor="let scoredPath of ((((dataSource | async) | OrderPathByScorePipe) | FilterPipe : (objectFilter|async)) | LimitPipe : count)" class="object">
+        <div *ngFor="let scoredPath of ((((dataSource | async) | OrderPathByScorePipe) | FilterPipe : (objectFilter|async)) | LimitPipe : count)" class="scoredPath">
             <div *ngFor="let segment of (scoredPath.segments | OrderBySegmentPipe | FilterPipe : (segmentFilter|async))" class="{{segment.marked ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, segment.objectScoreContainer)" [style.background]="backgroundForScore(scoredPath.score, segment)">
 
                 <img src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked($event, segment)"/>
