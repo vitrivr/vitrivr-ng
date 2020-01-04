@@ -381,7 +381,7 @@ export class ResultsContainer {
      */
     public processSimilarityMessage(sim: SimilarityQueryResult, query?: SimilarityQuery) {
         if (sim.queryId !== this.queryId) {
-            console.warn('similarity query result id ' + sim.queryId + ' does not match query id ' + this.queryId);
+            console.warn(`similarity result query id ${sim.queryId} does not match query id ${this.queryId}`);
             return false;
         }
 
