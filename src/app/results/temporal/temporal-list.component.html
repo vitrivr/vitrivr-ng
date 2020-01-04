@@ -12,10 +12,10 @@
 
     <div
         *ngFor="let objectPathContainer of ((((dataSource | async) | OrderObjectByBestPathScorePipe) | FilterPipe : (objectFilter|async)) | LimitPipe : count)"
-        class="objectPathContainer" id="{{objectPathContainer.toString()}}">
+        class="objectPathContainer">
 
       <div *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
-           id="{{pathSegment.toString}}" class="{{pathSegment.mark ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = pathSegment.segment"
+           class="{{pathSegment.mark ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = pathSegment.segment"
            (mouseleave)="focus = null" (dragstart)="onTileDrag($event, pathSegment.segment, pathSegment.segment.objectScoreContainer)"
            [style.background]="backgroundForScore(pathSegment.score, pathSegment.segment)" >
 
