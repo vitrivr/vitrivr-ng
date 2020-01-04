@@ -5,7 +5,7 @@
 
     <audio id="audioplayer" *ngIf="mediaobject.mediatype == 'AUDIO'" #media [vgMedia]="media" preload="auto" [autoplay]="auto" src="{{_resolver.pathToObject(mediaobject)}}">
     </audio>
-    
+
     <vg-controls [style.display]="'block'" [style.height]="'100px'" [style.position]="'relative'">
         <div [style.display]="'flex'">
             <vg-time-display vgProperty="current" vgFormat="mm:ss"></vg-time-display>

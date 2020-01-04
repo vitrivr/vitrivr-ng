@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {MediaObjectScoreContainer} from '../../model/results/scores/media-object-score-container.model';
 import {SegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
 import {ResolverService} from '../../../core/basics/resolver.service';
@@ -16,7 +16,7 @@ declare var VTTCue;
     templateUrl: 'advanced-media-player.component.html',
     styleUrls: ['advanced-media-player.component.css']
 })
-export class AdvancedMediaPlayerComponent {
+export class AdvancedMediaPlayerComponent implements AfterViewChecked {
     /** The MediaObjectScoreContainer that should be displayed. */
     @Input()
     public mediaobject: MediaObjectScoreContainer;
@@ -39,13 +39,7 @@ export class AdvancedMediaPlayerComponent {
     /** The internal VgAPI reference used to interact with the media player. */
     private _track: BehaviorSubject<TextTrack>;
 
-    /**
-     * Default constructor.
-     *
-     * @param {ResolverService} _resolver  Injected service to resolve names of resources.
-     * @param {VbsSubmissionService} _vbs
-     */
-    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService) {
+    constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService, private _cdRef: ChangeDetectorRef) {
         this._track = new BehaviorSubject<TextTrack>(null)
     }
 
@@ -68,6 +62,13 @@ export class AdvancedMediaPlayerComponent {
         /* Add callback for when the loading of media starts. */
         this._track.next(this._api.textTracks[0]);
         this._api.getDefaultMedia().subscriptions.loadedData.pipe(first()).subscribe(() => this.seekToFocusPosition());
+    }
+
+    /**
+     * https://github.com/videogular/videogular2/issues/720
+     */
+    ngAfterViewChecked() {
+        this._cdRef.detectChanges();
     }
 
     /**
