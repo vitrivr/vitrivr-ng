@@ -139,11 +139,11 @@ export class QueryService {
             return false;
         }
         if (!segment.objectScoreContainer) {
-            console.log('objectscorecontainer for segment ' + JSON.stringify(segment) + ' undefined, cannot perform mlt');
+            console.log(`object score container for segment ${segment.segmentId} undefined, cannot perform mlt`);
             return false;
         }
         if (!segment.objectScoreContainer.mediatype) {
-            console.log('no object mediatype available for segment ' + JSON.stringify(segment) + ', cannot perform mlt');
+            console.log(`no object mediatype available for segment ${segment.segmentId} undefined, cannot perform mlt`);
             return false;
         }
 
@@ -326,8 +326,6 @@ export class QueryService {
         if (!this._results || (this._results && this._results.queryId !== queryId)) {
             this._results = new ResultsContainer(queryId);
             if (this._scoreFunction) {
-
-
                 this._results.setScoreFunction(this._scoreFunction);
             }
             this._query.config.queryId = queryId;

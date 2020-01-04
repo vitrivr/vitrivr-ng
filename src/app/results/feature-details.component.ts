@@ -31,7 +31,7 @@ export class FeatureDetailsComponent {
         this._lines.push(`Score for ${data.objectScoreContainer.objectId} : ${data.objectScoreContainer.scorePercentage}%`);
         data.scores.forEach((map, containerID) => {
             map.forEach((score, category) => {
-                this._lines.push('c' + containerID + '.' + category.name + ': ' + Math.round(score * 1000) / 1000);
+                this._lines.push('(c:' + containerID + ').' + category.name + ': ' + Math.round(score * 1000) / 1000);
             });
         })
     }

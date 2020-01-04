@@ -73,7 +73,7 @@ export class Config {
     },
     query: {
       history: -1,
-      scoreFunction: 'maxpool', // the scoring function to use in SEGMENT and OBJECT view
+      scoreFunction: 'average', // the scoring function to use in SEGMENT and OBJECT view
       temporalView: true, // Activate or deactivate temporal scoring (view) at all
       options: {
         image: true,

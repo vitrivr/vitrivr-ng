@@ -158,4 +158,5 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
       endabs: this.endabs
     }
   }
+
 }
