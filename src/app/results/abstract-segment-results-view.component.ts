@@ -19,7 +19,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
 
 /**
- * More specialized AbstractResultsView, tailored for views based on segments or segments-alike
+ * More specialized AbstractResultsView, tailored for views which display segments
  */
 export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractResultsViewComponent<T> {
 

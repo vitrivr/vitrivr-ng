@@ -14,7 +14,7 @@ export class OrderPathByScorePipe implements PipeTransform {
             if (desc) {
                 return b.score - a.score
             } else {
-                return b.score - a.score;
+                return a.score - b.score;
             }
         });
         return results;

@@ -18,10 +18,10 @@
   "vbs": {
     "teamid": 8,
     "toolid": 1,
-    "endpoint": "http://10.34.58.45:3100/vbs/",
+    "endpoint": "http://10.10.11.173:8080/vbs/",
     "log": true,
     "loginterval": 5000,
-    "collabordinator": "ws://localhost:12345/ws"
+    "collabordinator": "ws://10.10.11.173:12345/ws"
   },
   "mlt": {
     "VIDEO": ["localcolor", "globalcolor", "edge", "localfeatures", "objectInstances"],

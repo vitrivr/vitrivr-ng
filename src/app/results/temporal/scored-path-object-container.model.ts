@@ -1,5 +1,7 @@
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 import {ScoredPath} from './scored-path.model';
+import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {ScoredPathSegment} from './scored-path-segment.model';
 
 /**
  * A container of ScoredPath elements which belong to the same object.
@@ -7,7 +9,7 @@ import {ScoredPath} from './scored-path.model';
 export class ScoredPathObjectContainer {
 
   /**
-   * The best scored path
+   * The best scored path, this is important, as these containers are to be sorted based on that best path
    */
   public readonly bestPath;
 
@@ -19,13 +21,38 @@ export class ScoredPathObjectContainer {
   constructor(public readonly objectScoreContainer: MediaObjectScoreContainer,
               public readonly scoredPaths: ScoredPath[]) {
     if (scoredPaths.length > 1) {
-
+      /* the bestPath is the one with the highest score */
       this.bestPath = scoredPaths.sort((a, b) => b.score - a.score)[0];
     } else if (scoredPaths.length === 1) {
       this.bestPath = scoredPaths[0];
     } else {
+      console.log(`ScoredPath empty for ${objectScoreContainer.objectId}`);
       this.bestPath = undefined;
     }
+  }
+
+  /**
+   * Returns tuples of all segments and to which path they belong
+   */
+  get pathSegmentsOrderedDesc(): ScoredPathSegment[] {
+    const tuples = new Array<ScoredPathSegment>();
+    let mark = false;
+    this.scoredPaths.sort((a, b) => b.score - a.score).forEach(scoredPath => {
+      scoredPath.segments.forEach(segment => tuples.push(new ScoredPathSegment(segment, scoredPath, mark)));
+      mark = !mark;
+    });
+    return tuples;
+  }
+
+  /**
+   * Returns all segments of this object, ordered by their path score in descending order.
+   */
+  get segmentsInPathOrderedDesc(): SegmentScoreContainer[] {
+    const segments = [];
+    this.scoredPaths.sort((a, b) => b.score - a.score).forEach(scoredPath => {
+      scoredPath.segments.forEach(segment => segments.push(segment));
+    });
+    return segments;
   }
 
   public toString() {

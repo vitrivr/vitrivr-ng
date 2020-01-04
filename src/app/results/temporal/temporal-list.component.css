@@ -1,6 +1,6 @@
-.scoredPath {
-    width: 100%;
-    border: 1px solid #808080;
+.objectPathContainer {
+    border: 1px solid black;
+
     padding: 4px;
     margin-bottom: 10px;
 
@@ -12,6 +12,20 @@
     grid-column-gap: 5px;
 }
 
+.scoredPath {
+    width: 100%;
+    border: 1px solid #808080;
+    padding: 4px;
+    margin-bottom: 10px;
+/*
+    display: grid;
+    grid-template-columns: repeat(auto-fill,120px);
+    grid-template-rows: repeat(auto-fill,110px);
+    grid-auto-flow: row;
+    grid-row-gap: 5px;
+    grid-column-gap: 5px;*/
+}
+
 .segment {
     width: 120px;
     height: 110px;
@@ -19,7 +33,7 @@
 }
 
 .segment.marked {
-    border: 0.5px solid #0101ff;
+    box-shadow: 4px 4px grey;
 }
 
 .segment img {
