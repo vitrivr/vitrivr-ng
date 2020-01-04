@@ -1,21 +1,21 @@
-import {Injectable} from "@angular/core";
-import {ConfigService} from "../basics/config.service";
-import {Tag} from "./tag.model";
-import {BehaviorSubject} from "rxjs";
-import {CollabordinatorService} from "../vbs/collabordinator.service";
-import {CollabordinatorMessage} from "../../shared/model/messages/collaboration/collabordinator-message.model";
+import {Injectable} from '@angular/core';
+import {ConfigService} from '../basics/config.service';
+import {Tag} from './tag.model';
+import {BehaviorSubject} from 'rxjs';
+import {CollabordinatorService} from '../vbs/collabordinator.service';
+import {CollabordinatorMessage} from '../../shared/model/messages/collaboration/collabordinator-message.model';
 
 /**
  * This service orchestrates similarity requests using the Cineast API (WebSocket). The service is responsible for
  * issuing findSimilar requests, processing incoming responses and ranking of the requests.
  */
 @Injectable()
-export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
+export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
     /** List of available Tag objects. */
     private readonly _available: Tag[] = [];
 
     /** A map of selected items identified by a string and the associated Tag objects. */
-    private readonly _selections: Map<string,Set<Tag>> = new Map();
+    private readonly _selections: Map<string, Set<Tag>> = new Map();
 
     /**
      * Constructor; injects the ConfigService.
@@ -65,7 +65,9 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
             if (this._selections.has(identifier)) {
                 let entry = this._selections.get(identifier);
                 entry.delete(tag);
-                if (entry.size == 0) this._selections.delete(identifier);
+                if (entry.size == 0) {
+                    this._selections.delete(identifier);
+                }
                 this.next(this._selections);
             }
         }
@@ -134,9 +136,13 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
      */
     public clear(tag?: Tag) {
         if (tag) {
-            this._selections.forEach((v,k) => {
-                if (v.has(tag)) v.delete(tag);
-                if (v.size == 0) this._selections.delete(k);
+            this._selections.forEach((v, k) => {
+                if (v.has(tag)) {
+                    v.delete(tag);
+                }
+                if (v.size === 0) {
+                    this._selections.delete(k);
+                }
             });
             this._collabordinator.clear(tag);
         } else {
@@ -167,33 +173,44 @@ export class SelectionService extends BehaviorSubject<Map<string,Set<Tag>>> {
         /* Get tag that is affected. */
         let tag = null;
         for (let t of this._available) {
-            if (t.name.toLowerCase() === msg.key.split("~")[1]) {
+            if (t.name.toLowerCase() === msg.key.split('~')[1]) {
                 tag = t;
                 break;
             }
         }
 
         /* If no valid tag could be returned, move on. */
-        if (!tag) return;
+        if (!tag) {
+            return;
+        }
 
         /* Update tags according to submission. */
         switch (msg.action) {
-            case "ADD":
+            case 'ADD':
                 msg.attribute.forEach(v => {
-                    if (!this._selections.has(v)) this._selections.set(v, new Set());
+                    if (!this._selections.has(v)) {
+                        this._selections.set(v, new Set());
+                    }
                     this._selections.get(v).add(tag)
                 });
                 break;
-            case "REMOVE":
+            case 'REMOVE':
                 msg.attribute.forEach(v => {
-                    if (this._selections.has(v)) this._selections.get(v).delete(tag);
-                    if (this._selections.get(v).size == 0) this._selections.delete(v);
+                    if (this._selections.has(v)) {
+                        this._selections.get(v).delete(tag);
+                    } else if (this._selections.get(v).size === 0) {
+                        this._selections.delete(v);
+                    }
                 });
                 break;
-            case "CLEAR":
-                this._selections.forEach((v,k) => {
-                    if (v.has(tag)) v.delete(tag);
-                    if (v.size == 0) this._selections.delete(k);
+            case 'CLEAR':
+                this._selections.forEach((v, k) => {
+                    if (v.has(tag)) {
+                        v.delete(tag);
+                    }
+                    if (v.size === 0) {
+                        this._selections.delete(k);
+                    }
                 });
                 break;
         }
