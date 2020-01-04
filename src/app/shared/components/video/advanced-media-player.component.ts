@@ -1,18 +1,18 @@
-import {Component, Input} from "@angular/core";
-import {MediaObjectScoreContainer} from "../../model/results/scores/media-object-score-container.model";
-import {SegmentScoreContainer} from "../../model/results/scores/segment-score-container.model";
-import {ResolverService} from "../../../core/basics/resolver.service";
-import {VgAPI} from "videogular2/core";
-import {VbsSubmissionService} from "../../../core/vbs/vbs-submission.service";
-import {BehaviorSubject, Observable} from "rxjs";
-import {first, map} from "rxjs/operators";
+import {Component, Input} from '@angular/core';
+import {MediaObjectScoreContainer} from '../../model/results/scores/media-object-score-container.model';
+import {SegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
+import {ResolverService} from '../../../core/basics/resolver.service';
+import {VgAPI} from 'videogular2/core';
+import {VbsSubmissionService} from '../../../core/vbs/vbs-submission.service';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {first} from 'rxjs/operators';
 
 
 declare var VTTCue;
 
 @Component({
     moduleId: module.id,
-    selector: 'advanced-media-player',
+    selector: 'app-advanced-media-player',
     templateUrl: 'advanced-media-player.component.html',
     styleUrls: ['advanced-media-player.component.css']
 })
@@ -27,11 +27,11 @@ export class AdvancedMediaPlayerComponent {
 
     /** Flag indicating whether the media component should auto play. */
     @Input()
-    public auto: boolean = false;
+    public auto = false;
 
     /** Width of the media player in pixels. This property will automatically determine the height of the component as well. */
     @Input()
-    public width: number = 500;
+    public width = 500;
 
     /** The internal VgAPI reference used to interact with the media player. */
     private _api: VgAPI;
@@ -58,9 +58,9 @@ export class AdvancedMediaPlayerComponent {
         this._api = api;
 
         /* Adds a text track and creates a cue per segment in the media object. */
-        this._api.addTextTrack("metadata", "Segments");
-        for (let segment of this.mediaobject.segments) {
-            let cue = new VTTCue(segment.startabs, segment.endabs, "Segment: " + segment.segmentId);
+        this._api.addTextTrack('metadata', 'Segments');
+        for (const segment of this.mediaobject.segments) {
+            const cue = new VTTCue(segment.startabs, segment.endabs, 'Segment: ' + segment.segmentId);
             cue.id = segment.segmentId;
             this._api.textTracks[0].addCue(cue)
         }
@@ -79,6 +79,7 @@ export class AdvancedMediaPlayerComponent {
      * estimate is calculated using the focus segment.
      */
     public onSubmitPressed() {
+        console.debug(`submitting for time ${this._api.currentTime}`);
         this._vbs.submit(this.focus, this._api.currentTime);
     }
 
@@ -86,15 +87,17 @@ export class AdvancedMediaPlayerComponent {
      * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
      */
     public seekToFocusPosition() {
-        if (this.focus) this._api.seekTime(this.focus.startabs);
+        if (this.focus) {
+            this._api.seekTime(this.focus.startabs);
+        }
     }
 
     /**
      * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
      */
     public seekToNext() {
-        let time = this._api.time.current/1000;
-        let times = this.mediaobject.segments.map(s => s.startabs).filter(t => t > time).sort((a,b) => a-b);
+        const time = this._api.time.current / 1000;
+        const times = this.mediaobject.segments.map(s => s.startabs).filter(t => t > time).sort((a, b) => a - b);
         if (times.length > 0) {
             this._api.seekTime(times[0])
         }
@@ -104,8 +107,8 @@ export class AdvancedMediaPlayerComponent {
      * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
      */
     public seekToPrevious() {
-        let time = this._api.time.current/1000;
-        let times = this.mediaobject.segments.map(s => s.startabs).filter(t => t < time).sort((a,b) => b-a);
+        const time = this._api.time.current / 1000;
+        const times = this.mediaobject.segments.map(s => s.startabs).filter(t => t < time).sort((a, b) => b - a);
         if (times.length > 0) {
             this._api.seekTime(times[0])
         }
