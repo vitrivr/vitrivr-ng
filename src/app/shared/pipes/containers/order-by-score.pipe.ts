@@ -1,5 +1,5 @@
-import {Pipe, PipeTransform} from "@angular/core";
-import {ScoreContainer} from "../../model/results/scores/compound-score-container.model";
+import {Pipe, PipeTransform} from '@angular/core';
+import {ScoreContainer} from '../../model/results/scores/compound-score-container.model';
 
 @Pipe({
     name: 'OrderByScorePipe'
@@ -14,14 +14,15 @@ export class OrderByScorePipe implements PipeTransform {
      * @return {Array<ScoreContainer>}
      */
     public transform(array: Array<ScoreContainer>, desc: boolean = true): Array<ScoreContainer> {
-        if(!array || array === undefined || array.length === 0) return [];
-        let results = array.sort((a: ScoreContainer, b: ScoreContainer) => {
+        if (!array || array.length === 0) {
+            return [];
+        }
+        return array.sort((a: ScoreContainer, b: ScoreContainer) => {
             if (desc) {
-                return ScoreContainer.compareDesc(a,b);
+                return b.score - a.score;
             } else {
-                return ScoreContainer.compareAsc(a,b);
+                return a.score - b.score
             }
         });
-        return results;
     }
 }

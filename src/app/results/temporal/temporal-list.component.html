@@ -11,7 +11,7 @@
        (scrolledUp)="decrementCount()">
 
     <div
-        *ngFor="let objectPathContainer of ((((dataSource | async) | OrderObjectByBestPathScorePipe) | FilterPipe : (objectFilter|async)) | LimitPipe : count)"
+        *ngFor="let objectPathContainer of (((dataSource | async) | OrderObjectByBestPathScorePipe) | LimitPipe : count)"
         class="objectPathContainer">
 
       <div *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
