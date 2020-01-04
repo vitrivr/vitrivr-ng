@@ -257,10 +257,18 @@ export class TemporalFusionFunction implements FusionFunction {
         }
     }
 
+    /**
+     * Completely reset state of this container
+     */
+    reset() {
+        console.debug('resetting temporal fusion function');
+        this._bestPathPerCombination.clear();
+        this._paths.clear();
+    }
+
     name(): string {
         return 'temporal';
     }
-
 }
 
 class SegmentContainerIdentifier {
