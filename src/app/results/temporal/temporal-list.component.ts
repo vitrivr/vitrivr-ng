@@ -3,7 +3,6 @@ import {AbstractResultsViewComponent} from '../abstract-results-view.component';
 import {QueryService} from '../../core/queries/query.service';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {Router} from '@angular/router';
-import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
@@ -19,7 +18,6 @@ import {FilterService} from '../../core/queries/filter.service';
 import {ConfigService} from '../../core/basics/config.service';
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {ScoredPath} from './scored-path.model';
-import {Path} from './path.model';
 
 @Component({
     moduleId: module.id,
@@ -187,16 +185,23 @@ export class TemporalListComponent extends AbstractResultsViewComponent<ScoredPa
 
     /**
      * Subscribes to the data exposed by the ResultsContainer.
-     *
-     * @return {Observable<MediaObjectScoreContainer>}
      */
     protected subscribe(results: ResultsContainer) {
         if (results) {
-            this._dataSource = results.mediaobjectsAsObservable.map(objects =>
-                objects.map(
+            this._fusion.reset();
+            this._dataSource = results.mediaobjectsAsObservable.map(objects => {
+                if (objects.length === 0) {
+                    return [];
+                }
+                return objects.map(
                     object => Array.from(this._fusion.computePaths(results.features, object).values())
-                ).reduce(((previousValue, currentValue) => previousValue.concat(currentValue)))
-            );
+                ).reduce(((previousValue, currentValue, []) => {
+                    if (previousValue.length === 0) {
+                        return [];
+                    }
+                    return previousValue.concat(currentValue)
+                }));
+            });
         }
     }
 }
