@@ -1,5 +1,6 @@
-import {Component, Input} from "@angular/core";
-import {WeightedFeatureCategory} from "../../shared/model/results/weighted-feature-category.model";
+import {Component, Input} from '@angular/core';
+import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
+
 @Component({
     moduleId: module.id,
     selector: 'weight-distribution',
@@ -9,7 +10,7 @@ import {WeightedFeatureCategory} from "../../shared/model/results/weighted-featu
                  [style.background-color]="feature.displayColor"></div>
         </div>
     `
-    
+
 })
 
 /**
@@ -24,15 +25,15 @@ export class WeightDistributionComponent {
     @Input() features: WeightedFeatureCategory[] = [];
 
     /**
-     * Returns the total weight of all refinement currently known
+     * Returns the total weightPercentage of all refinement currently known
      * to the component.
      *
-     * @returns {number} Total weight of all refinement.
+     * @returns {number} Total weightPercentage of all refinement.
      */
     public getTotal(): number {
         return this.features
-            .map(f => f.weight)
-            .reduce((a,b) => a+b);
+            .map(f => f.weightPercentage)
+            .reduce((a, b) => a + b);
     }
 
     /**
@@ -42,6 +43,6 @@ export class WeightDistributionComponent {
      * @returns {number} Width in percent.
      */
     public getWidth(feature: WeightedFeatureCategory) {
-       return (feature.weight/this.getTotal()) * 100 + '%';
+        return (feature.weightPercentage / this.getTotal()) + '%';
     }
 }

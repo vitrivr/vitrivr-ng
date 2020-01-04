@@ -31,4 +31,8 @@ export interface FusionFunction {
    */
   scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number;
 
+  /**
+   * Human-readable name
+   */
+  name(): string;
 }

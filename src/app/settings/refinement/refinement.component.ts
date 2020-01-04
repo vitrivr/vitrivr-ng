@@ -90,7 +90,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Triggered whenever the value of one of the weight-sliders changes. Reports
+     * Triggered whenever the value of one of the weightPercentage-sliders changes. Reports
      * the change to the QueryService, which will trigger a re-ranking of the results
      *
      * @param feature The feature that was changed.
@@ -98,12 +98,13 @@ export class RefinementComponent implements OnInit, OnDestroy {
      */
     public onValueChanged(feature: WeightedFeatureCategory, event: MatSliderChange) {
         if (!this._queryService.results) {
+            console.warn('no results in queryService, ignoring change');
             return;
         }
 
         /* Re-rank all objects asynchronously. */
         Promise.resolve(this._queryService.results).then((results) => {
-            feature.weight = event.value;
+            feature.weightPercentage = event.value;
             this._queryService.results.rerank();
 
             /* Submit event to EventBus. */

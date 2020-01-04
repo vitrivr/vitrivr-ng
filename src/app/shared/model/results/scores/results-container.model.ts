@@ -30,7 +30,7 @@ import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {SimilarityQuery} from '../../messages/queries/similarity-query.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
-import {DefaultFusionFunction} from '../fusion/default-fusion-function.model';
+import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
 
 export class ResultsContainer {
     /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -83,8 +83,8 @@ export class ResultsContainer {
             case 'AVERAGE':
                 this.scoreFunction = new AverageFusionFunction();
                 break;
-            case 'DEFAULT':
-                this.scoreFunction = new DefaultFusionFunction();
+            case 'MAXPOOL':
+                this.scoreFunction = new MaxpoolFusionFunction();
                 break;
         }
         this.rerank()
@@ -241,7 +241,7 @@ export class ResultsContainer {
 
     /**
      * Re-ranks the objects and segments, i.e. calculates new scores, using the provided list of
-     * results and weight function. If none are provided, the default ones define in the ResultsContainer
+     * results and weightPercentage function. If none are provided, the default ones define in the ResultsContainer
      * are used.
      *
      * @param {WeightedFeatureCategory[]} features
@@ -249,9 +249,11 @@ export class ResultsContainer {
      */
     public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
         if (!features) {
+            console.debug(`no features given for rerank(), using features inherent to the results container: ${this.features}`);
             features = this.features;
         }
         if (!weightFunction) {
+            console.debug(`no weight function given for rerank(), using weight function inherent to the results container: ${this.scoreFunction.name()}`);
             weightFunction = this.scoreFunction;
         }
 

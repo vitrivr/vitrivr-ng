@@ -30,10 +30,10 @@ export abstract class ScoreContainer {
 
   /**
    * Method can be used to update the score of a ScoreContainer given a list of
-   * feature categories and a weight function.
+   * feature categories and a weightPercentage function.
    *
    * @param features List of results that should be used to calculate the score.
-   * @param func The weight function that should be used to calculate the score.
+   * @param func The weightPercentage function that should be used to calculate the score.
    * @param containerId The containerId this similarity corresponds to
    */
   public abstract update(features: WeightedFeatureCategory[], func: FusionFunction, containerId: number): void;

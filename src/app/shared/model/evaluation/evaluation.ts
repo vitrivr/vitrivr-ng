@@ -26,7 +26,7 @@ export class Evaluation {
     /** ID of the EvaluationScenario */
     private _scenario: string;
 
-    /** Weights of the individual feature categories {category : weight}. */
+    /** Weights of the individual feature categories {category : weightPercentage}. */
     private _per_category_weights : {[key:string]:number};
 
     /** List of evaluation events. */
@@ -122,7 +122,7 @@ export class Evaluation {
             /* Store per-category weights. */
             this._per_category_weights = {};
             features.forEach((v,i) => {
-                this._per_category_weights[v.name] = v.weight;
+                this._per_category_weights[v.name] = v.weightPercentage;
             });
 
             /* Store ratings and accompanying information. */
