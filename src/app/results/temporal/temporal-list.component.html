@@ -14,7 +14,7 @@
         *ngFor="let objectPathContainer of ((((dataSource | async) | OrderObjectByBestPathScorePipe) | FilterPipe : (objectFilter|async)) | LimitPipe : count)"
         class="objectPathContainer" id="{{objectPathContainer.toString()}}">
 
-      <div *ngFor="let pathSegment of (objectPathContainer.pathSegmentsOrderedDesc)"
+      <div *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
            id="{{pathSegment.toString}}" class="{{pathSegment.mark ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = pathSegment.segment"
            (mouseleave)="focus = null" (dragstart)="onTileDrag($event, pathSegment.segment, pathSegment.segment.objectScoreContainer)"
            [style.background]="backgroundForScore(pathSegment.scoredPath.score, pathSegment.segment)" >
