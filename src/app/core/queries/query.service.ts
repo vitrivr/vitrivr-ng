@@ -62,6 +62,8 @@ export class QueryService {
     /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
     private _socket: WebSocketSubject<Message>;
 
+    private _scoreFunction: string;
+
     /**
      * Default constructor.
      *
@@ -80,8 +82,9 @@ export class QueryService {
             ).subscribe((msg: Message) => this.onApiMessage(msg));
         });
         this._config.subscribe(config => {
+            this._scoreFunction = config.get('query.scoreFunction');
             if (this._results) {
-                this._results.setScoreFunction(config.get('query.scoreFunction'));
+                this._results.setScoreFunction(this._scoreFunction);
             }
         })
     }
@@ -223,6 +226,9 @@ export class QueryService {
         const deserialized = ResultsContainer.deserialize(snapshot.results);
         if (deserialized) {
             this._results = deserialized;
+            if (this._scoreFunction) {
+                this._results.setScoreFunction(this._scoreFunction);
+            }
             this._subject.next('STARTED');
             this._subject.next('ENDED');
         }
@@ -319,6 +325,11 @@ export class QueryService {
         /* Start the actual query. */
         if (!this._results || (this._results && this._results.queryId !== queryId)) {
             this._results = new ResultsContainer(queryId);
+            if (this._scoreFunction) {
+
+
+                this._results.setScoreFunction(this._scoreFunction);
+            }
             this._query.config.queryId = queryId;
         }
         this._running += 1;

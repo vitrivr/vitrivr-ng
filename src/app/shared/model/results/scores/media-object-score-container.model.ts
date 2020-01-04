@@ -86,7 +86,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      * Updates the score of this MediaObjectScoreContainer.
      *
      * @param features List of feature categories that should be used to calculate the score.
-     * @param func The weight function that should be used to calculate the score.
+     * @param func The weightPercentage function that should be used to calculate the score.
      */
     public update(features: WeightedFeatureCategory[], func: FusionFunction) {
         this._score = func.scoreForObject(features, this);

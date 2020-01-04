@@ -4,8 +4,8 @@
     <h3 class="mat-h3">Weights</h3>
     <div *ngFor="let feature of features | async" class="slider-group" [style.color]="feature.displayColor">
         <span class="label constrained">{{feature.name}}</span>
-        <mat-slider [min]="0" [max]="100" value="{{feature.weight}}" (change)="onValueChanged(feature, $event)"></mat-slider>
-        <span class="label constrained"> {{feature.weight}}%</span>
+        <mat-slider [min]="0" [max]="100" value="{{feature.weightPercentage}}" (change)="onValueChanged(feature, $event)"></mat-slider>
+        <span class="label constrained"> {{feature.weightPercentage}}%</span>
     </div>
     <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
 

@@ -2,7 +2,7 @@ import {FusionFunction} from './weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {MediaObjectScoreContainer} from '../scores/media-object-score-container.model';
 import {SegmentScoreContainer} from '../scores/segment-score-container.model';
-import {DefaultFusionFunction} from './default-fusion-function.model';
+import {MaxpoolFusionFunction} from './maxpool-fusion-function.model';
 import {ScoredPath} from '../../../../results/temporal/scored-path.model';
 import {Path} from '../../../../results/temporal/path.model';
 
@@ -20,7 +20,7 @@ export class TemporalFusionFunction implements FusionFunction {
     private static readonly TEMPORAL_DISTANCE_CAP = 30; // 30s
     private static _instance: TemporalFusionFunction = new TemporalFusionFunction();
     /** The underlying FusionFunction to use for segments */
-    private _segmentFusionFunction: FusionFunction = new DefaultFusionFunction();
+    private _segmentFusionFunction: FusionFunction = new MaxpoolFusionFunction();
 
     /** Stores per segment the path it belongs to.  A segment may "help" multiple paths, but will always know its best path */
     private _bestPathPerCombination: Map<SegmentContainerIdentifierKey, SegmentContainerIdentifier> = new Map();
@@ -255,6 +255,10 @@ export class TemporalFusionFunction implements FusionFunction {
         if (this._verbose) {
             console.debug(msg);
         }
+    }
+
+    name(): string {
+        return 'temporal';
     }
 
 }
