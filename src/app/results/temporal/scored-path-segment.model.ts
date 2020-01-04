@@ -2,16 +2,16 @@ import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-s
 import {ScoredPath} from './scored-path.model';
 
 /**
- * This is a tuple of <SegmentScoreContainer,ScoredPath>, this is used for rendering
+ * This is a tuple of <SegmentScoreContainer,score (of path)>, this is used for rendering
  */
 export class ScoredPathSegment {
   constructor(
     public readonly segment: SegmentScoreContainer,
-    public readonly scoredPath: ScoredPath,
+    public readonly score: number,
     public readonly mark: boolean) {
   }
 
   get toString(): string {
-    return `${this.segment.segmentId}<>${this.scoredPath}`;
+    return `${this.segment.segmentId}<>${this.score}`;
   }
 }

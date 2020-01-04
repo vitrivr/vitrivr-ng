@@ -17,7 +17,7 @@
       <div *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
            id="{{pathSegment.toString}}" class="{{pathSegment.mark ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = pathSegment.segment"
            (mouseleave)="focus = null" (dragstart)="onTileDrag($event, pathSegment.segment, pathSegment.segment.objectScoreContainer)"
-           [style.background]="backgroundForScore(pathSegment.scoredPath.score, pathSegment.segment)" >
+           [style.background]="backgroundForScore(pathSegment.score, pathSegment.segment)" >
 
         <img src="{{_resolver.pathToThumbnail(objectPathContainer.objectScoreContainer, pathSegment.segment)}}" draggable="false"
              (click)="onTileClicked($event, pathSegment.segment)"/>
