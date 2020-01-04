@@ -33,7 +33,7 @@
 }
 
 .segment.marked {
-    box-shadow: 4px 4px grey;
+    box-shadow: 4px 4px 2px grey;
 }
 
 .segment img {
