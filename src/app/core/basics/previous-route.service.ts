@@ -11,9 +11,11 @@ export class PreviousRouteService {
     private currentUrl: string;
 
     constructor(private _router: Router) {
+        this.currentUrl = '/';
         this._router.events
             .pipe(filter(event => event instanceof NavigationEnd))
             .subscribe(({urlAfterRedirects}: NavigationEnd) => {
+                console.debug(`navigating to ${urlAfterRedirects} from ${this.currentUrl}`);
                 this.previousUrl = this.currentUrl;
                 this.currentUrl = urlAfterRedirects;
             });
@@ -24,7 +26,7 @@ export class PreviousRouteService {
     }
 
     public goToPrevious() {
-        console.log('navigating to previous location: ' + this.getPreviousRoute());
+        console.debug(`navigating to previous location: ${this.getPreviousRoute()}`);
         this._router.navigate([this.getPreviousRoute()], {skipLocationChange: true})
     }
 }
