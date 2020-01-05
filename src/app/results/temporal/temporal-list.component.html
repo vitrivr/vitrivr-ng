@@ -19,7 +19,7 @@
            (mouseleave)="focus = null" (dragstart)="onTileDrag($event, pathSegment.segment, pathSegment.segment.objectScoreContainer)"
            [style.background]="backgroundForScore(pathSegment.score, pathSegment.segment)" >
 
-        <img *ngIf="!(_ctrlPressed | async) || !inFocus(pathSegment.segment)" src="{{_resolver.pathToThumbnail(pathSegment.segment.objectScoreContainer, pathSegment.segment)}}" draggable="false" (click)="onTileClicked($event, segment)"/>
+        <img *ngIf="!(_ctrlPressed | async) || !inFocus(pathSegment.segment)" src="{{_resolver.pathToThumbnail(pathSegment.segment.objectScoreContainer, pathSegment.segment)}}" draggable="false" (click)="onTileClicked($event, pathSegment.segment)"/>
 
         <vg-player *ngIf="playVideo(pathSegment.segment) | async" (onPlayerReady)="onPlayerReady($event, pathSegment.segment)">
           <video #media [vgMedia]="media" preload="auto" [autoplay]="true" src="{{_resolver.pathToObject(pathSegment.segment.objectScoreContainer)}}">
