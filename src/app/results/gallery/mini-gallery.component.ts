@@ -52,4 +52,8 @@ export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<Se
             this._dataSource = results.segmentsAsObservable;
         }
     }
+
+    scrollIncrement(): number {
+        return 500;
+    }
 }

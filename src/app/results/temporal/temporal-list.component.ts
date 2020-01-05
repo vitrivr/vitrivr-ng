@@ -108,4 +108,8 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
       });
     }
   }
+
+  scrollIncrement(): number {
+    return 100;
+  }
 }

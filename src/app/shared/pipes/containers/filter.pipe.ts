@@ -9,6 +9,9 @@ export class FilterPipe implements PipeTransform {
         if (!array || array.length === 0) {
             return [];
         }
+        if (filter.length === 0) {
+            return array;
+        }
         return array.filter(v => filter.every(f => f(v)));
     }
 }

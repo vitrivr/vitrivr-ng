@@ -126,4 +126,8 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
             this._dataSource = results.mediaobjectsAsObservable;
         }
     }
+
+    scrollIncrement(): number {
+        return 200;
+    }
 }

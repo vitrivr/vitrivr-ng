@@ -36,7 +36,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     protected _dataSource: Observable<T> = EMPTY;
 
     /** The number of items that should be displayed. */
-    protected _count = 500;
+    protected _count: number = undefined;
 
     /**
      * Default constructor.
@@ -56,6 +56,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
                 protected _eventBusService: EventBusService,
                 protected _router: Router,
                 protected _snackBar: MatSnackBar) {
+        this._count = this.scrollIncrement();
     }
 
     /**
@@ -115,27 +116,16 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         return this._count;
     }
 
-    /**
-     * Getter for loading.
-     *
-     * @return {boolean}
-     */
     get loading(): boolean {
         return this._loading;
     }
 
-    /**
-     *
-     * @return {Observable<T>}
-     */
+    abstract scrollIncrement(): number;
+
     get dataSource(): Observable<T> {
         return this._dataSource;
     }
 
-    /**
-     *
-     * @return {Tag[]}
-     */
     get selectionService(): SelectionService {
         return this._selectionService;
     }
@@ -238,7 +228,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * Increments the start value by the count value. Should be called by some kind of pagination control.
      */
     public incrementCount() {
-        this._count += 500;
+        this._count += this.scrollIncrement();
+        console.debug(`incrementing count to ${this._count}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._cdr.markForCheck();
     }
@@ -247,11 +238,12 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * Decrements the start value by the count value. Should be called by some kind of pagination control.
      */
     public decrementCount() {
-        if (this._count - 500 >= 500) {
-            this._count -= 500;
+        if (this._count - this.scrollIncrement() >= this.scrollIncrement()) {
+            this._count -= this.scrollIncrement();
         } else {
-            this._count = 500;
+            this._count = this.scrollIncrement();
         }
+        console.debug(`decrementing count to ${this._count}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._cdr.markForCheck();
     }

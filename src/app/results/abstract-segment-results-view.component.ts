@@ -44,8 +44,6 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
               protected _dialog: MatDialog,
               protected _vbs: VbsSubmissionService) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
-    /* Apparently, all segment-based views have 100 as count */
-    this._count = 100;
   }
 
   /**
