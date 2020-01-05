@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "192.168.0.47"
+    "host" : "default"
   },
   "resources": {
     "host_thumbnails" : "http://localhost/V3C1/V3C1jpg/:o/:s.jpg",

@@ -6,6 +6,7 @@ import {Tag} from '../../../shared/model/misc/tag.model';
 import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'qt-tag',
@@ -22,8 +23,9 @@ export class TagQueryTermComponent {
    * Constructor for TagQueryTermComponent
    *
    * @param {TagsLookupService} _tagService Service used to load tags from Cineast.
+   * @param {MatSnackBar} _matsnackbar The Snackbar to tell people they should really only use a tag once
    */
-  constructor(_tagService: TagsLookupService) {
+  constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
     this._field = new FieldGroup(_tagService);
   }
 
@@ -71,6 +73,9 @@ export class TagQueryTermComponent {
       })));
     } else {
       this.field.formControl.setValue('');
+      this._matsnackbar.open(`Tag ${event.option.value.name} (${event.option.value.id}) already added`, null, {
+        duration: 2000,
+      });
     }
   }
 
