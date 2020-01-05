@@ -33,7 +33,6 @@
     "text": {
       "categories": [
         ["ocr", "Text on Screen"],
-        ["tagsft", "Tags"],
 	    ["asr", "Audio"],
 	    ["scenecaption", "Description"]
       ]

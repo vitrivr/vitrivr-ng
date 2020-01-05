@@ -36,7 +36,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     protected _dataSource: Observable<T> = EMPTY;
 
     /** The number of items that should be displayed. */
-    protected _count = 100;
+    protected _count: number = undefined;
 
     /**
      * Default constructor.
@@ -56,6 +56,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
                 protected _eventBusService: EventBusService,
                 protected _router: Router,
                 protected _snackBar: MatSnackBar) {
+        this._count = this.scrollIncrement();
     }
 
     /**
@@ -115,29 +116,16 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         return this._count;
     }
 
-    /**
-     * Getter for loading.
-     *
-     * @return {boolean}
-     */
     get loading(): boolean {
         return this._loading;
     }
 
     abstract scrollIncrement(): number;
 
-    /**
-     *
-     * @return {Observable<T>}
-     */
     get dataSource(): Observable<T> {
         return this._dataSource;
     }
 
-    /**
-     *
-     * @return {Tag[]}
-     */
     get selectionService(): SelectionService {
         return this._selectionService;
     }
@@ -241,6 +229,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      */
     public incrementCount() {
         this._count += this.scrollIncrement();
+        console.debug(`incrementing count to ${this._count}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._cdr.markForCheck();
     }
@@ -254,6 +243,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         } else {
             this._count = this.scrollIncrement();
         }
+        console.debug(`decrementing count to ${this._count}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._cdr.markForCheck();
     }

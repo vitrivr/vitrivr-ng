@@ -14,6 +14,11 @@ export class LimitPipe implements PipeTransform {
         if (!array || array.length === 0) {
             return [];
         }
+        if (!count) {
+            console.debug(`returning empty array since count is undefined`);
+            return [];
+        }
+        console.debug(`limiting to ${count} elements`);
         return array.slice(0, count);
     }
 }

@@ -13,7 +13,7 @@ export class OrderByScorePipe implements PipeTransform {
      * @param {string} desc
      * @return {Array<ScoreContainer>}
      */
-    public transform(array: Array<ScoreContainer>, desc: boolean = true): Array<ScoreContainer> {
+    public transform<T extends ScoreContainer>(array: Array<T>, desc: boolean = true): Array<T> {
         if (!array || array.length === 0) {
             return [];
         }
