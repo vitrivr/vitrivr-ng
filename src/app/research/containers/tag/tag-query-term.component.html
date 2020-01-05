@@ -8,7 +8,7 @@
         </mat-autocomplete>
     </mat-form-field>
     <mat-chip-list>
-        <mat-chip *ngFor="let tag of tags" [selectable]="true" [removable]="true" (removed)="removeTag(tag)">
+        <mat-chip *ngFor="let tag of tags" [selectable]="true" [removable]="true" (removed)="removeTag(tag)" id="{{tag.id}}">
             {{tag.name}}
             <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>

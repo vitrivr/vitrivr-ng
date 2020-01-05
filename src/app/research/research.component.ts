@@ -56,7 +56,6 @@ export class ResearchComponent implements OnInit {
     from(this.containers).pipe(
       flatMap(c => c.terms),
       map(t => {
-          console.log(`[Research] T=${JSON.stringify(t)}`);
         const context: Map<ContextKey, any> = new Map();
         context.set('q:categories', t.categories);
         switch (t.type) {
@@ -74,9 +73,9 @@ export class ResearchComponent implements OnInit {
             context.set('q:value', t.data);
             return new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context);
           case 'TAG':
-              console.log(`[Research] t.data=${atob(t.data.substring('data:application/json;base64,'.length))}`)
             context.set('q:value', t.data);
-            console.log(`[Research] context=${JSON.stringify(context)}`);
+            // console.log(`[Research] context=${JSON.stringify(context)}`);
+            // FIXME Why is the context empty here? should have at least a q:categories and q:value entry
             return new InteractionEventComponent(InteractionEventType.QUERY_TAG, context);
         }
       }),

@@ -28,18 +28,6 @@ export class TagQueryTermComponent {
   }
 
   /** List of tag fields  currently displayed. */
-  private _field: FieldGroup;
-
-  /**
-   * Getter for form control.
-   *
-   * @return {any}
-   */
-  get field() {
-    return this._field;
-  }
-
-  /** List of tag fields  currently displayed. */
   private _tags: Tag[] = [];
 
   /**
@@ -51,22 +39,39 @@ export class TagQueryTermComponent {
     return this._tags;
   }
 
+  /** List of tag fields  currently displayed. */
+  private _field: FieldGroup;
+
+  /**
+   * Getter for form control.
+   *
+   * @return {any}
+   */
+  get field() {
+    return this._field;
+  }
+
   /**
    * Invoked whenever the user selects a Tag from the list.
    *
    * @param {MatAutocompleteSelectedEvent} event The selection event.
    */
   public onTagSelected(event: MatAutocompleteSelectedEvent) {
+    let tagAlreadyInList = false;
     for (const existing of this._tags) {
-        console.log(`[TagQT.onTagSelected] existing=${JSON.stringify(existing)}, event.option.value=${JSON.stringify(event.option.value)}`);
-      if (existing.id === event.option.value) {
+      if (existing.id === event.option.value.id) {
+        tagAlreadyInList = true;
       }
     }
-    this.addTag(event.option.value);
-    this.field.formControl.setValue('');
-    this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
-            return v;
-    })));
+    if (!tagAlreadyInList) {
+      this.addTag(event.option.value);
+      this.field.formControl.setValue('');
+      this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
+        return v;
+      })));
+    } else {
+      this.field.formControl.setValue('');
+    }
   }
 
   /**
@@ -85,14 +90,12 @@ export class TagQueryTermComponent {
    */
   public removeTag(tag: Tag) {
     const index = this._tags.indexOf(tag);
-    console.log(`[TagQT] Remove=${JSON.stringify(tag)}, tags=${JSON.stringify(this._tags)}`);
     if (index > -1) {
       this._tags.splice(index, 1);
     }
-      this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
-          return v;
-      })));
-    console.log(`[TagQT] Tags=${JSON.stringify(this._tags)}`);
+    this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
+      return v;
+    })));
   }
 }
 
