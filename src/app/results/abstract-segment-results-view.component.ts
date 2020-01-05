@@ -6,7 +6,7 @@ import {InteractionEventType} from '../shared/model/events/interaction-event-typ
 import {QuickViewerComponent} from '../objectdetails/quick-viewer.component';
 import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
 import {AbstractResultsViewComponent} from './abstract-results-view.component';
-import {ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectorRef, HostListener} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {FilterService} from '../core/queries/filter.service';
 import {SelectionService} from '../core/selection/selection.service';
@@ -17,6 +17,9 @@ import {ConfigService} from '../core/basics/config.service';
 import {ResolverService} from '../core/basics/resolver.service';
 import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
+import {VgAPI} from 'videogular2/core';
+import {first} from 'rxjs/operators';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 /**
  * More specialized AbstractResultsView, tailored for views which display segments
@@ -25,6 +28,9 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
 
   /** Reference to the SegmentScoreContainer that is currently in focus. */
   protected _focus: SegmentScoreContainer;
+
+  private _ctrlPressed = new BehaviorSubject(false);
+
 
   constructor(_cdr: ChangeDetectorRef,
               _queryService: QueryService,
@@ -140,4 +146,36 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
    * @return {Observable<MediaObjectScoreContainer>}
    */
   protected abstract subscribe(results: ResultsContainer): void;
+
+
+  public onPlayerReady(api: VgAPI, segment: SegmentScoreContainer) {
+    api.getDefaultMedia().subscriptions.loadedData.pipe(first()).subscribe(() => this.seekToFocusPosition(api, segment));
+  }
+
+  /**
+   * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
+   */
+  public seekToFocusPosition(api: VgAPI, segment: SegmentScoreContainer) {
+    if (segment) {
+      api.seekTime(segment.startabs);
+    }
+  }
+
+  playVideo(segment: SegmentScoreContainer): Observable<boolean> {
+    return this._ctrlPressed.map(el => el && segment.objectScoreContainer.mediatype === 'VIDEO' && this._focus === segment);
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown($event: KeyboardEvent) {
+    if ($event.ctrlKey) {
+      this._ctrlPressed.next(true);
+    }
+  }
+
+  @HostListener('document:keyup', ['$event'])
+  onKeyUp($event: KeyboardEvent) {
+    if ($event.key === 'Control') {
+      this._ctrlPressed.next(false);
+    }
+  }
 }

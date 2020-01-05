@@ -8,9 +8,10 @@ import {ContainerPipesModule} from '../../shared/pipes/containers/container-pipe
 import {VbsModule} from '../../core/vbs/vbs.module';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {TemporalListComponent} from './temporal-list.component';
+import {VgCoreModule} from 'videogular2/core';
 
 @NgModule({
-    imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule, InfiniteScrollModule],
+    imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule, InfiniteScrollModule, VgCoreModule],
     declarations: [TemporalListComponent],
     exports: [TemporalListComponent]
 })

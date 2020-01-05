@@ -19,8 +19,12 @@
            (mouseleave)="focus = null" (dragstart)="onTileDrag($event, pathSegment.segment, pathSegment.segment.objectScoreContainer)"
            [style.background]="backgroundForScore(pathSegment.score, pathSegment.segment)" >
 
-        <img src="{{_resolver.pathToThumbnail(objectPathContainer.objectScoreContainer, pathSegment.segment)}}" draggable="false"
-             (click)="onTileClicked($event, pathSegment.segment)"/>
+        <img *ngIf="!(_ctrlPressed | async) || !inFocus(pathSegment.segment)" src="{{_resolver.pathToThumbnail(pathSegment.segment.objectScoreContainer, pathSegment.segment)}}" draggable="false" (click)="onTileClicked($event, segment)"/>
+
+        <vg-player *ngIf="playVideo(pathSegment.segment) | async" (onPlayerReady)="onPlayerReady($event, pathSegment.segment)">
+          <video #media [vgMedia]="media" preload="auto" [autoplay]="true" src="{{_resolver.pathToObject(pathSegment.segment.objectScoreContainer)}}">
+          </video>
+        </vg-player>
 
         <div *ngIf="inFocus(pathSegment.segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
           <button *ngFor="let tag of selectionService.availableTags" mat-icon-button
