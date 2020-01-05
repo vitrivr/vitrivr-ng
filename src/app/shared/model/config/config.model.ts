@@ -38,7 +38,7 @@ export class Config {
             } /** Per-mediatype suffix definition for thumbnails. */
         },
         evaluation: {
-            active: true,
+            active: false,
             templates: [] /* URLs */
         },
         vbs: {
