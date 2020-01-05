@@ -197,6 +197,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     public onHighlightButtonRightClicked(event: Event, segment: SegmentScoreContainer, tag: Tag) {
         const segments = segment.objectScoreContainer.segments.map(v => v.segmentId);
         if (segments.length > 0) {
+            console.warn(`the following line of code will toggle multiple segments but the usage of an identifier is unclear.`);
             this._selectionService.toggle(tag, ...segments);
 
             /* Emit a HIGHLIGHT event on the bus. */

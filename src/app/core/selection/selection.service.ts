@@ -41,7 +41,7 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
      * @param {string} identifiers The identifiers for which to add the tag.
      */
     public add(tag: Tag, ...identifiers: string[]) {
-        for (let identifier of identifiers) {
+        for (const identifier of identifiers) {
             if (!this._selections.has(identifier)) {
                 this._selections.set(identifier, new Set([tag]));
             }
@@ -61,11 +61,11 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
      * @return true if tag for identifier was removed, false if either identifier was unknown OR did not contain that tag
      */
     public remove(tag: Tag, ...identifiers: string[]) {
-        for (let identifier of identifiers) {
+        for (const identifier of identifiers) {
             if (this._selections.has(identifier)) {
-                let entry = this._selections.get(identifier);
+                const entry = this._selections.get(identifier);
                 entry.delete(tag);
-                if (entry.size == 0) {
+                if (entry.size === 0) {
                     this._selections.delete(identifier);
                 }
                 this.next(this._selections);
@@ -80,9 +80,9 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
      * @param {string} identifiers The identifiers for which to toggle the tags.
      */
     public toggle(tag: Tag, ...identifiers: string[]) {
-        let active = [];
-        let inactive = [];
-        for (let identifier of identifiers) {
+        const active = [];
+        const inactive = [];
+        for (const identifier of identifiers) {
             if (this._selections.has(identifier) && this._selections.get(identifier).has(tag)) {
                 active.push(identifier);
             } else {
@@ -114,14 +114,13 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
         }
         return false;
     }
-
     /**
      * Returns an array of Tags for the provided identifier. May be empty.
      *
      * @param {string} identifier
      */
     public getTags(identifier: string): Tag[] {
-        let tags: Tag[] = [];
+        const tags: Tag[] = [];
         if (this._selections.has(identifier)) {
             this._selections.get(identifier).forEach(t => tags.push(t));
         }
@@ -147,8 +146,8 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
             this._collabordinator.clear(tag);
         } else {
             this._selections.clear();
-            for (let tag of this._available) {
-                this._collabordinator.clear(tag);
+            for (const availableTag of this._available) {
+                this._collabordinator.clear(availableTag);
             }
         }
 
@@ -172,7 +171,7 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
     private synchronize(msg: CollabordinatorMessage) {
         /* Get tag that is affected. */
         let tag = null;
-        for (let t of this._available) {
+        for (const t of this._available) {
             if (t.name.toLowerCase() === msg.key.split('~')[1]) {
                 tag = t;
                 break;

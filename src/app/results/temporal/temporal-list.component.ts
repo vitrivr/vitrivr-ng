@@ -66,17 +66,9 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
    * Returns true for all objects that should be included
    */
   get objectFilter(): Observable<((v: ScoredPathObjectContainer) => boolean)[]> {
-    // FIXME not sure whether that's correct - dont we actually want ALL of the paths?
     return this._filterService.objectFilters.map(filters =>
       filters.map(filter => function (scoredPathContainer: ScoredPathObjectContainer): boolean {
-        let good = true;
-        scoredPathContainer.bestPath.pathMap.forEach(value => {
-          if (filter(value.objectScoreContainer)) {
-            return;
-          }
-          good = false;
-        });
-        return good;
+        return filter(scoredPathContainer.objectScoreContainer);
       })
     );
   }
