@@ -1,22 +1,22 @@
 {
   "api": {
-    "host" : "default"
+    "host" : "192.168.0.47"
   },
   "resources": {
     "host_thumbnails" : "http://localhost/V3C1/V3C1jpg/:o/:s.jpg",
     "host_objects": "http://localhost/V3C1/video/:o.mp4"
   },
   "vbs": {
-    "teamid": 3,
-    "toolid": 1,
-    "endpoint": "http://10.10.11.173:8080/vbs/",
+    "teamid": 8,
+    "toolid": 2,
+    "endpoint": "http://192.168.0.49:80/vbs/",
     "log": true,
     "loginterval": 5000,
-    "collabordinator": "ws://10.10.11.173:12345/ws"
+    "collabordinator": "ws://192.168.0.47:12345/ws"
   },
   "mlt": {
-    "VIDEO": ["localcolor", "globalcolor", "edge", "localfeatures", "objectInstances"],
-    "IMAGE": ["localcolor", "globalcolor", "edge", "localfeatures", "objectInstances"]
+    "VIDEO": ["localcolor", "globalcolor", "edge", "localfeatures"],
+    "IMAGE": ["localcolor", "globalcolor", "edge", "localfeatures"]
   },
   "query": {
     "history": 5,

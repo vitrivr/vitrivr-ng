@@ -11,7 +11,7 @@ export class LimitPipe implements PipeTransform {
      * @param count The number of items in the ouput array.
      */
     public transform<T>(array: Array<T>, count: number): Array<T> {
-        if (!array || array === undefined || array.length === 0) {
+        if (!array || array.length === 0) {
             return [];
         }
         return array.slice(0, count);

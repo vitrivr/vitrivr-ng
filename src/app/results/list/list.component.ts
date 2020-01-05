@@ -76,4 +76,8 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
       this._dataSource = results.mediaobjectsAsObservable;
     }
   }
+
+  scrollIncrement(): number {
+    return 50;
+  }
 }

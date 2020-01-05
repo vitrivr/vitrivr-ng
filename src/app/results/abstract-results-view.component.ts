@@ -36,7 +36,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     protected _dataSource: Observable<T> = EMPTY;
 
     /** The number of items that should be displayed. */
-    protected _count = 500;
+    protected _count = 100;
 
     /**
      * Default constructor.
@@ -123,6 +123,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     get loading(): boolean {
         return this._loading;
     }
+
+    abstract scrollIncrement(): number;
 
     /**
      *
@@ -238,7 +240,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * Increments the start value by the count value. Should be called by some kind of pagination control.
      */
     public incrementCount() {
-        this._count += 500;
+        this._count += this.scrollIncrement();
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._cdr.markForCheck();
     }
@@ -247,10 +249,10 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * Decrements the start value by the count value. Should be called by some kind of pagination control.
      */
     public decrementCount() {
-        if (this._count - 500 >= 500) {
-            this._count -= 500;
+        if (this._count - this.scrollIncrement() >= this.scrollIncrement()) {
+            this._count -= this.scrollIncrement();
         } else {
-            this._count = 500;
+            this._count = this.scrollIncrement();
         }
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._cdr.markForCheck();
