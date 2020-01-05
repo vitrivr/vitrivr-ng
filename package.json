@@ -35,7 +35,7 @@
     "ng2-img-cropper": "0.9.0",
     "ng5-slider": "1.1.*",
     "ngx-color-picker": "7.1.x",
-    "ngx-infinite-scroll": "^6.0.1",
+    "ngx-infinite-scroll": "7.x",
     "npm": "6.3.x",
     "rxjs": "6.3.3",
     "rxjs-compat": "6.2.x",
