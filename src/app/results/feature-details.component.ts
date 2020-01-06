@@ -1,18 +1,18 @@
-import {Component, Inject} from "@angular/core";
-import {MAT_SNACK_BAR_DATA} from "@angular/material";
-import {WeightedFeatureCategory} from "../shared/model/results/weighted-feature-category.model";
-import {SegmentScoreContainer} from "../shared/model/results/scores/segment-score-container.model";
+import {Component, Inject} from '@angular/core';
+import {MAT_SNACK_BAR_DATA} from '@angular/material';
+import {WeightedFeatureCategory} from '../shared/model/results/weighted-feature-category.model';
+import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 
 @Component({
     moduleId: module.id,
     selector: 'feature-details',
-    template: `        
+    template: `
         <h3>{{title}}</h3>
         <div class="snackbar-feature" *ngFor="let line of lines">{{line}}</div>
     `,
     styles: ['.snackbar-feature { color: white; opacity: 0.65; font-size: 1.5em; padding: 5px; }']
 })
-export class FeatureDetailsComponent{
+export class FeatureDetailsComponent {
 
     /** The title string displayed by the FeatureDetailsComponent. */
     private _title: string;
@@ -27,8 +27,13 @@ export class FeatureDetailsComponent{
      * @param {Map<WeightedFeatureCategory, number>} data Data containing the results and associated scores.
      */
     constructor(@Inject(MAT_SNACK_BAR_DATA) data: SegmentScoreContainer) {
-        this._title = data.segmentId + " (" + (data.score * 100).toFixed(2) + "%)";
-        data.scores.forEach((value, key) => {this._lines.push(key.name + ": " + Math.round(value * 1000) / 1000);})
+        this._title = data.segmentId + ' (' + (data.score * 100).toFixed(2) + '%)';
+        this._lines.push(`Score for ${data.objectScoreContainer.objectId} : ${data.objectScoreContainer.scorePercentage}%`);
+        data.scores.forEach((map, containerID) => {
+            map.forEach((score, category) => {
+                this._lines.push('(c:' + containerID + ').' + category.name + ': ' + Math.round(score * 1000) / 1000);
+            });
+        })
     }
 
     /**

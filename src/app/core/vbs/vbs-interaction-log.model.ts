@@ -92,7 +92,7 @@ export class VbsInteractionLog implements VbsSubmission {
             case InteractionEventType.EXPAND:
                 return <VbsInteraction>{category: "Browsing", type: ['temporalContext'], timestamp: timestamp};
             case InteractionEventType.REFINE:
-                let weights = component.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weight / 100).join(",");
+                let weights = component.context.get("w:weights").map((v: WeightedFeatureCategory) => v.name + ":" + v.weightPercentage / 100).join(",");
                 return <VbsInteraction>{category: "Browsing", type: ['explicitSort'], attributes: "adjust weights," + weights, timestamp: timestamp};
             case InteractionEventType.EXAMINE:
                 return <VbsInteraction>{category: "Browsing", type: ['videoPlayer'], value: component.context.get("i:mediasegment"), timestamp: timestamp};

@@ -1,54 +1,47 @@
-import {FusionFunction} from "./weight-function.interface";
-import {WeightedFeatureCategory} from "../weighted-feature-category.model";
-import {MediaObjectScoreContainer} from "../scores/media-object-score-container.model";
-import {SegmentScoreContainer} from "../scores/segment-score-container.model";
+import {FusionFunction} from './weight-function.interface';
+import {WeightedFeatureCategory} from '../weighted-feature-category.model';
+import {MediaObjectScoreContainer} from '../scores/media-object-score-container.model';
+import {SegmentScoreContainer} from '../scores/segment-score-container.model';
+import {MaxpoolFusionFunction} from './maxpool-fusion-function.model';
 
-
+/**
+ * Averages per category on segment-level and maxpools on object-level
+ */
 export class AverageFusionFunction implements FusionFunction {
+
+    private _objectFusionFunction = new MaxpoolFusionFunction();
+
     /**
-     * Calculates and returns the weighted score of a MediaObjectScoreContainer. This implementation simply
-     * returns the maximum score of any of the child segments!
-     *
-     * @param features Feature categories to consider when calculating the score.
-     * @param mediaObjectScoreContainer MediaObjectScoreContainer for which to calculate the score.
-     *
-     * @return Weighted score for teh MediaObjectScoreContainer given the results
+     * Calculates and returns the weighted score of a MediaObjectScoreContainer. This implementation
+     * returns the average score of any of the child segments!
      */
     scoreForObject(features: WeightedFeatureCategory[], mediaObjectScoreContainer: MediaObjectScoreContainer): number {
-        let score = 0;
-        let count = 0;
-        mediaObjectScoreContainer.segments.forEach((value: SegmentScoreContainer) => {
-            value.update(features, this);
-            if (value.score > 0) {
-                score += value.score;
-                count += 1;
-            }
-        });
-
-        if (count > 0) {
-            return score / count;
-        } else {
-            return 0;
-        }
+        return this._objectFusionFunction.scoreForObject(features, mediaObjectScoreContainer);
     }
 
 
     /**
-     * Calculates and returns the weighted score of a SegmentScoreContainer. This implementation obtains
-     * the weighted mean value of the all the scores in the SegmentScoreContainer.
-     *
-     * @param features Feature categories to consider when calculating the score.
-     * @param segmentScoreContainer SegmentScoreContainer for which to calculate the score.
-     *
-     * @return Weighted score for teh MediaObjectScoreContainer given the results
+     * Calculates the best score per category and then normalizes by all weighted features
      */
-    scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number {
+    scoreForSegment(categories: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number {
         let score = 0;
         let total = 0;
-        features.forEach((value: WeightedFeatureCategory) => {
-            if (segmentScoreContainer.scores.has(value))score += (segmentScoreContainer.scores.get(value) * value.weight);
-            total += value.weight;
+        categories.forEach((weightedFeatureCategory: WeightedFeatureCategory) => {
+            let bestScoreForCategory = 0;
+            segmentScoreContainer.scores.forEach((categoryMap, containerId) => {
+                if (categoryMap.has(weightedFeatureCategory)) {
+                    const scoreForCategory = (categoryMap.get(weightedFeatureCategory) * weightedFeatureCategory.weightPercentage / 100);
+                    bestScoreForCategory = Math.max(scoreForCategory, bestScoreForCategory);
+                }
+            });
+            /* This is 0 if there is no match for a given category */
+            score += bestScoreForCategory;
+            total += (weightedFeatureCategory.weightPercentage / 100);
         });
         return (score / total);
+    }
+
+    name(): string {
+        return 'average';
     }
 }

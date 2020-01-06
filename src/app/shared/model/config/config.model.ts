@@ -32,10 +32,13 @@ export class Config {
             /** Path / URL to location where media object's will be stored. */
             suffix_default: '.jpg',
             /** Default suffix for thumbnails. */
-            suffix: {} /** Per-mediatype suffix definition for thumbnails. */
+            suffix: {
+                'IMAGE': 'png',
+                'VIDEO': 'png'
+            } /** Per-mediatype suffix definition for thumbnails. */
         },
         evaluation: {
-            active: true,
+            active: false,
             templates: [] /* URLs */
         },
         vbs: {
@@ -73,20 +76,23 @@ export class Config {
         },
         query: {
             history: -1,
+            scoreFunction: 'average', // the scoring function to use in SEGMENT and OBJECT view
+            temporalView: true, // Activate or deactivate temporal scoring (view) at all
             options: {
                 image: true,
-                audio: true,
+                audio: false,
                 model3d: true,
-                motion: true,
-                text: true,
+                motion: false,
+                text: false,
                 tag: true,
+                semantic: false,
                 boolean: true
             },
             config: {
                 queryId: null,
                 hints: ['exact'],
-                neighboringSegmentLookupCount: 10000,
-                neighboringSegmentLookupAllCount: 240000
+                neighboringSegmentLookupCount: 5,
+                neighboringSegmentLookupAllCount: 200000
             },
             text: {
                 categories: []
@@ -145,69 +151,6 @@ export class Config {
         }
         this._config.resources.host_objects = this._config.resources.host_objects.replace('/default/', '/' + window.location.hostname + '/');
         this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace('/default/', '/' + window.location.hostname + '/');
-    }
-
-    /**
-     * Deserializes a Config object from a given JavaScript object or string.
-     *
-     * @param {{} | string} object The object that should be parsed.
-     * @return {Config} The resulting config object.
-     */
-    public static deserialize(object: {} | string): Config {
-        if (typeof object === 'string') object = JSON.parse(object);
-        if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['vbs'] || object['tags'] || object['mlt'] || object['refinement']) {
-            return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['vbs'], object['tags'], object['mlt'], object['refinement']);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Accesses and returns the config value specified by the given path. Path components are separated by a '.'
-     * If the value does not exist, then null is returned!
-     *
-     * @param {string} path Path relative to this._config; components separated by '.'
-     * @return {T | null} The config value at the given path or null.
-     */
-    public get<T>(path: string): T {
-        try {
-            const separator = '.';
-            const components = path.replace('[', separator).replace(']', '').split(separator);
-            return components.reduce((obj, property) => obj[property], this._config);
-        } catch (err) {
-            return null;
-        }
-    }
-
-    /**
-     * Replaces the config value specified by the given path by the value provided. Path components are separated by a '.'
-     *
-     * @param {string} path Path relative to this._config; components separated by '.'
-     * @param {T} value New value
-     * @return true on success, false if the path does not exist.
-     */
-    public set<T>(path: string, value: T): boolean {
-        try {
-            const separator = '.';
-            const components = path.replace('[', separator).replace(']', '').split(separator);
-            const last = components[components.length - 1];
-            const obj = components.reduce((obj, property) => {
-                if (property === last) {
-                    return obj
-                } else {
-                    return obj[property]
-                }
-            }, this._config);
-
-            if (obj[last] && typeof value == typeof obj[last]) {
-                obj[last] = value;
-                return true;
-            } else {
-                return false;
-            }
-        } catch (err) {
-            return false;
-        }
     }
 
     /**
@@ -287,5 +230,70 @@ export class Config {
      */
     get suffix(): any {
         return this._config.resources.suffix;
+    }
+
+    /**
+     * Deserializes a Config object from a given JavaScript object or string.
+     *
+     * @param {{} | string} object The object that should be parsed.
+     * @return {Config} The resulting config object.
+     */
+    public static deserialize(object: {} | string): Config {
+        if (typeof object === 'string') {
+            object = JSON.parse(object);
+        }
+        if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['vbs'] || object['tags'] || object['mlt'] || object['refinement']) {
+            return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['vbs'], object['tags'], object['mlt'], object['refinement']);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Accesses and returns the config value specified by the given path. Path components are separated by a '.'
+     * If the value does not exist, then null is returned!
+     *
+     * @param {string} path Path relative to this._config; components separated by '.'
+     * @return {T | null} The config value at the given path or null.
+     */
+    public get<T>(path: string): T {
+        try {
+            const separator = '.';
+            const components = path.replace('[', separator).replace(']', '').split(separator);
+            return components.reduce((obj, property) => obj[property], this._config);
+        } catch (err) {
+            return null;
+        }
+    }
+
+    /**
+     * Replaces the config value specified by the given path by the value provided. Path components are separated by a '.'
+     *
+     * @param {string} path Path relative to this._config; components separated by '.'
+     * @param {T} value New value
+     * @return true on success, false if the path does not exist.
+     */
+    public set<T>(path: string, value: T): boolean {
+        try {
+            const separator = '.';
+            const components = path.replace('[', separator).replace(']', '').split(separator);
+            const last = components[components.length - 1];
+            const obj = components.reduce((obj, property) => {
+                if (property === last) {
+                    return obj
+                } else {
+                    return obj[property]
+                }
+            }, this._config);
+
+            if (obj[last] && typeof value == typeof obj[last]) {
+                obj[last] = value;
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            return false;
+        }
     }
 }

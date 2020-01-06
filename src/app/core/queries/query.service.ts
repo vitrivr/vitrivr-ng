@@ -26,6 +26,7 @@ import {HistoryContainer} from '../../shared/model/internal/history-container.mo
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -61,6 +62,8 @@ export class QueryService {
     /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
     private _socket: WebSocketSubject<Message>;
 
+    private _scoreFunction: string;
+
     /**
      * Default constructor.
      *
@@ -77,6 +80,12 @@ export class QueryService {
             this._socket.pipe(
                 filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
             ).subscribe((msg: Message) => this.onApiMessage(msg));
+        });
+        this._config.subscribe(config => {
+            this._scoreFunction = config.get('query.scoreFunction');
+            if (this._results) {
+                this._results.setScoreFunction(this._scoreFunction);
+            }
         })
     }
 
@@ -98,9 +107,12 @@ export class QueryService {
             return false;
         }
         this._config.pipe(first()).subscribe(config => {
+            let containerId = 0;
+            containers.forEach(container => container.containerId = containerId++);
+            TemporalFusionFunction.queryContainerCount = containerId;
             const query = new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
-            this._socket.next(query);
             this._query = query;
+            this._socket.next(query);
         });
     }
 
@@ -127,11 +139,11 @@ export class QueryService {
             return false;
         }
         if (!segment.objectScoreContainer) {
-            console.log('objectscorecontainer for segment ' + JSON.stringify(segment) + ' undefined, cannot perform mlt');
+            console.log(`object score container for segment ${segment.segmentId} undefined, cannot perform mlt`);
             return false;
         }
         if (!segment.objectScoreContainer.mediatype) {
-            console.log('no object mediatype available for segment ' + JSON.stringify(segment) + ', cannot perform mlt');
+            console.log(`no object mediatype available for segment ${segment.segmentId} undefined, cannot perform mlt`);
             return false;
         }
 
@@ -214,6 +226,9 @@ export class QueryService {
         const deserialized = ResultsContainer.deserialize(snapshot.results);
         if (deserialized) {
             this._results = deserialized;
+            if (this._scoreFunction) {
+                this._results.setScoreFunction(this._scoreFunction);
+            }
             this._subject.next('STARTED');
             this._subject.next('ENDED');
         }
@@ -308,8 +323,11 @@ export class QueryService {
      */
     private startNewQuery(queryId: string) {
         /* Start the actual query. */
-        if (!this._results || (this._results && this._results.queryId != queryId)) {
+        if (!this._results || (this._results && this._results.queryId !== queryId)) {
             this._results = new ResultsContainer(queryId);
+            if (this._scoreFunction) {
+                this._results.setScoreFunction(this._scoreFunction);
+            }
             this._query.config.queryId = queryId;
         }
         this._running += 1;

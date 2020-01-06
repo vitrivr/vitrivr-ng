@@ -4,10 +4,15 @@
     <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
     <div class="list" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
-        <div *ngFor="let mediaobject of ((((dataSource | async) | OrderByScorePipe) | FilterPipe : (objectFilter|async)) | LimitPipe : count); trackBy: trackByFunction" class="object">
-            <div *ngFor="let segment of (mediaobject.segments | OrderBySegmentPipe | FilterPipe : (segmentFilter|async))" class="{{segment.marked ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, mediaobject)" [style.background]="backgroundForSegment(segment)">
+        <div *ngFor="let mediaobject of ((((dataSource | async) | FilterPipe : (objectFilter|async)) | OrderByScorePipe) | LimitPipe : count); trackBy: trackByFunction" class="object">
+            <div *ngFor="let segment of (mediaobject.segments | FilterPipe : (segmentFilter|async) | OrderBySegmentPipe)" draggable="true" (mouseenter)="focus = segment" class="segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, mediaobject)" [style.background]="backgroundForSegment(segment)">
 
-                <img src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked($event, segment)"/>
+                <img *ngIf="!(_ctrlPressed | async) || !inFocus(segment)" src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked($event, segment)"/>
+
+                <vg-player *ngIf="playVideo(segment) | async" (onPlayerReady)="onPlayerReady($event, segment)">
+                    <video #media [vgMedia]="media" preload="auto" [autoplay]="true" src="{{_resolver.pathToObject(segment.objectScoreContainer)}}">
+                    </video>
+                </vg-player>
 
                 <div *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
                     <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(segment,tag)" (contextmenu)="onHighlightButtonRightClicked($event, segment,tag)">
@@ -18,10 +23,6 @@
                 <div *ngIf="inFocus(segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
                     <button *ngIf="(showVbsSubmitButton(segment) | async)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
                         <mat-icon>send</mat-icon>
-                    </button>
-
-                    <button mat-icon-button (click)="onDetailsButtonClicked(segment)" matTooltip="Show details">
-                        <mat-icon>remove_red_eye</mat-icon>
                     </button>
 
                     <button mat-icon-button (click)="onInformationButtonClicked(segment)" matTooltip="Feature information">

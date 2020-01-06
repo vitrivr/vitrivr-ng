@@ -18,11 +18,10 @@ import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-
 import {Router} from '@angular/router';
 import {filter} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
-import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
     /** Indicator whether the progress bar should be visible. */
-    private _loading: boolean = false;
+    private _loading = false;
 
     /** Local reference to the subscription to the QueryService. */
     protected _queryServiceSubscription;
@@ -37,7 +36,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     protected _dataSource: Observable<T> = EMPTY;
 
     /** The number of items that should be displayed. */
-    protected _count: number = 500;
+    protected _count: number = undefined;
 
     /**
      * Default constructor.
@@ -56,8 +55,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
                 protected _selectionService: SelectionService,
                 protected _eventBusService: EventBusService,
                 protected _router: Router,
-                protected _snackBar: MatSnackBar,
-                protected _historyService: PreviousRouteService) {
+                protected _snackBar: MatSnackBar) {
+        this._count = this.scrollIncrement();
     }
 
     /**
@@ -67,16 +66,23 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @return String that encodes the RGB value.
      */
     public backgroundForSegment(segment: SegmentScoreContainer): string {
-        let score = segment.score;
-        let tags: Tag[] = this._selectionService.getTags(segment.segmentId);
-        if (tags.length == 0) {
-            let v = Math.round(255.0 - (score * 255.0));
+        const score = segment.score;
+        return this.backgroundForScore(score, segment);
+    }
+
+    public backgroundForScore(score: number, segment: SegmentScoreContainer): string {
+        const tags: Tag[] = this._selectionService.getTags(segment.segmentId);
+        if (tags.length === 0) {
+            const v = Math.round(255.0 - (score * 255.0));
             return ColorUtil.rgbToHex(v, 255, v);
-        } else if (tags.length == 1) {
+        } else if (tags.length === 1) {
             return tags[0].colorForRelevance(score);
         } else {
-            let width = 100.0 / tags.length;
-            return 'repeating-linear-gradient(90deg,' + tags.map((t, i) => t.colorForRelevance(score) + ' ' + i * width + '%,' + t.colorForRelevance(score) + ' ' + (i + 1) * width + '%').join(',') + ')';
+            const width = 100.0 / tags.length;
+            return 'repeating-linear-gradient(90deg,' +
+                tags.map((t, i) =>
+                    t.colorForRelevance(score) + ' ' + i * width + '%,' + t.colorForRelevance(score) + ' ' + (i + 1) * width + '%'
+                ).join(',') + ')';
         }
     }
 
@@ -110,27 +116,16 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         return this._count;
     }
 
-    /**
-     * Getter for loading.
-     *
-     * @return {boolean}
-     */
     get loading(): boolean {
         return this._loading;
     }
 
-    /**
-     *
-     * @return {Observable<T>}
-     */
+    abstract scrollIncrement(): number;
+
     get dataSource(): Observable<T> {
         return this._dataSource;
     }
 
-    /**
-     *
-     * @return {Tag[]}
-     */
     get selectionService(): SelectionService {
         return this._selectionService;
     }
@@ -144,7 +139,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._router.navigate(['/mediaobject/' + segment.objectId], {skipLocationChange: true})
 
         /* Emit an EXAMINE event on the bus. */
-        let context: Map<ContextKey, any> = new Map();
+        const context: Map<ContextKey, any> = new Map();
         context.set('i:mediasegment', segment.objectId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
@@ -158,7 +153,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._queryService.findMoreLikeThis(segment);
 
         /* Emit a MLT event on the bus. */
-        let context: Map<ContextKey, any> = new Map();
+        const context: Map<ContextKey, any> = new Map();
         context.set('q:value', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
     }
@@ -172,7 +167,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
 
         /* Emit an EXAMINE event on the bus. */
-        let context: Map<ContextKey, any> = new Map();
+        const context: Map<ContextKey, any> = new Map();
         context.set('i:mediasegment', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
@@ -187,7 +182,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
         this._selectionService.toggle(tag, segment.segmentId);
 
         /* Emit a HIGHLIGHT event on the bus. */
-        let context: Map<ContextKey, any> = new Map();
+        const context: Map<ContextKey, any> = new Map();
         context.set('i:mediasegment', segment.segmentId);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)))
     }
@@ -200,12 +195,13 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param {Tag} tag The tag that should be toggled.
      */
     public onHighlightButtonRightClicked(event: Event, segment: SegmentScoreContainer, tag: Tag) {
-        let segments = segment.objectScoreContainer.segments.map(v => v.segmentId);
+        const segments = segment.objectScoreContainer.segments.map(v => v.segmentId);
         if (segments.length > 0) {
+            console.warn(`the following line of code will toggle multiple segments but the usage of an identifier is unclear.`);
             this._selectionService.toggle(tag, ...segments);
 
             /* Emit a HIGHLIGHT event on the bus. */
-            let context: Map<ContextKey, any> = new Map();
+            const context: Map<ContextKey, any> = new Map();
             context.set('i:mediasegment', segments.join(','));
             this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)));
         }
@@ -221,15 +217,20 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * @param object MediaObjectScoreContainer that is being dragged.
      */
     public onTileDrag(event, segment?: SegmentScoreContainer, object?: MediaObjectScoreContainer) {
-        if (segment) event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
-        if (object) event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
+        if (segment) {
+            event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
+        }
+        if (object) {
+            event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(object).toJSON());
+        }
     }
 
     /**
      * Increments the start value by the count value. Should be called by some kind of pagination control.
      */
     public incrementCount() {
-        this._count += 500;
+        this._count += this.scrollIncrement();
+        console.debug(`incrementing count to ${this._count}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._cdr.markForCheck();
     }
@@ -238,11 +239,12 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
      * Decrements the start value by the count value. Should be called by some kind of pagination control.
      */
     public decrementCount() {
-        if (this._count - 500 >= 500) {
-            this._count -= 500;
+        if (this._count - this.scrollIncrement() >= this.scrollIncrement()) {
+            this._count -= this.scrollIncrement();
         } else {
-            this._count = 500;
+            this._count = this.scrollIncrement();
         }
+        console.debug(`decrementing count to ${this._count}`);
         this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._cdr.markForCheck();
     }

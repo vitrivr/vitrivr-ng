@@ -5,11 +5,12 @@ import {FeatureDetailsComponent} from './feature-details.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {HistoryComponent} from './history.component';
 import {MaterialModule} from '../material.module';
+import {TemporalListModule} from './temporal/temporal-list.module';
 
 @NgModule({
-    imports: [GalleryModule, ListModule, BrowserModule, MaterialModule],
+    imports: [GalleryModule, ListModule, TemporalListModule, BrowserModule, MaterialModule],
     declarations: [FeatureDetailsComponent, HistoryComponent],
-    exports: [GalleryModule, ListModule],
+    exports: [GalleryModule, ListModule, TemporalListModule],
     entryComponents: [FeatureDetailsComponent, HistoryComponent]
 })
 export class ResultsModule {

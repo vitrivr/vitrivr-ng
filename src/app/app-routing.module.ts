@@ -6,6 +6,7 @@ import {EvaluationSelectionComponent} from './evaluation/evaluation-selection.co
 import {EvaluationComponent} from './evaluation/evaluation.component';
 import {MiniGalleryComponent} from './results/gallery/mini-gallery.component';
 import {ListComponent} from './results/list/list.component';
+import {TemporalListComponent} from './results/temporal/temporal-list.component';
 
 /**
  * Defines the application's routes.
@@ -20,6 +21,7 @@ const appRoutes: Routes = [
     {path: 'evaluation/:participant', component: EvaluationComponent},
     {path: 'gallery', component: GalleryComponent},
     {path: 'list', component: ListComponent},
+    {path: 'temporal-list', component: TemporalListComponent},
     {path: 'mini-gallery', component: MiniGalleryComponent},
     {path: '', component: MiniGalleryComponent}
 ];

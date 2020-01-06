@@ -2,122 +2,285 @@ import {FusionFunction} from './weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {MediaObjectScoreContainer} from '../scores/media-object-score-container.model';
 import {SegmentScoreContainer} from '../scores/segment-score-container.model';
-import {DefaultFusionFunction} from './default-fusion-function.model';
+import {MaxpoolFusionFunction} from './maxpool-fusion-function.model';
+import {ScoredPath} from '../../../../results/temporal/scored-path.model';
+import {Path} from '../../../../results/temporal/path.model';
 
+type SegmentId = string;
+type ObjectId = string;
+type ContainerId = number;
+type Score = number;
+type SegmentContainerIdentifierKey = string;
+type PathIdentifierKey = string;
 
 export class TemporalFusionFunction implements FusionFunction {
 
-  /** The underlying FusionFunction to use for segments */
-  private _segmentFusionFunction: FusionFunction = new DefaultFusionFunction();
+    /** The current number of query containers */
+    static queryContainerCount: number;
+    private static readonly TEMPORAL_DISTANCE_CAP = 30; // 30s
+    private static _instance: TemporalFusionFunction = new TemporalFusionFunction();
+    /** The underlying FusionFunction to use for segments */
+    private _segmentFusionFunction: FusionFunction = new MaxpoolFusionFunction();
 
-  /** The current query container ids for temporal closeness */
-  private _queryContainerIds: string[];
+    /** Stores per segment the path it belongs to.  A segment may "help" multiple paths, but will always know its best path */
+    private _bestPathPerCombination: Map<SegmentContainerIdentifierKey, SegmentContainerIdentifier> = new Map();
 
-  /** The boosting factor to be used */
-  private _boostFactor: number;
+    /** Stores the best set of paths, mapping start-segment to the list of segments.*/
+    private _paths: Map<SegmentContainerIdentifierKey, ScoredPath> = new Map();
 
-  /**
-   * Calculates and returns the weighted score of a MediaObjectScoreContainer.
-   * There is a bonus for temporal scoring here.
-   *
-   * @param features Feature categories to consider when calculating the score.
-   * @param mediaObjectScoreContainer MediaObjectScoreContainer for which to calculate the score.
-   *
-   * @return Weighted score for teh MediaObjectScoreContainer given the results
-   */
-  scoreForObject(features: WeightedFeatureCategory[], mediaObjectScoreContainer: MediaObjectScoreContainer): number {
-    let score = this._segmentFusionFunction.scoreForObject(features, mediaObjectScoreContainer);
-    if (this._queryContainerIds === null || this._queryContainerIds.length === 0) {
-      return score;
-    } else {
-      score *= this._boostFactor;
-      let map = this.mapSegmentsToQueryContainer(mediaObjectScoreContainer);
-      // sort map based on temporal segment position
-      map = new Map(Array.from(map).sort((a, b) => a[0].startabs - b[0].startabs));
-      const sortedQueryContainerIds = Array.from(map.values());
-      if (sortedQueryContainerIds[0] === this._queryContainerIds[0] && sortedQueryContainerIds[sortedQueryContainerIds.length - 1] === this._queryContainerIds[this._queryContainerIds.length - 1]) {
-        score *= (1 + this._boostFactor);
-        score = Math.max(score, 1);
-      }
-      return score;
+    private _verbose = false;
+
+    public static instance(): TemporalFusionFunction {
+        return TemporalFusionFunction._instance;
     }
-  }
 
-  /**
-   * @param mediaObjectScoreContainer
-   */
-  private extractQueryContainerIdsPerSegmentId(mediaObjectScoreContainer: MediaObjectScoreContainer): Map<string, Array<string>> {
-    const map = new Map<string, Array<string>>();
-    mediaObjectScoreContainer.segments.forEach(segment => {
-      let array = new Array<string>();
-      if (segment.scoresPerQueryContainer !== null && segment.scoresPerQueryContainer.size > 0) {
-        array = Array.from(segment.scoresPerQueryContainer.keys());
-      }
-      map[segment.segmentId] = array;
-    });
-    return map;
-  }
+    private constructor() {
+    }
 
-  private mapSegmentsToQueryContainer(mediaObjectScoreContainer: MediaObjectScoreContainer): Map<SegmentScoreContainer, string> {
-    const map = new Map<SegmentScoreContainer, string>();
-    mediaObjectScoreContainer.segments.forEach(segment => {
-      Array.from(segment.scoresPerQueryContainer.entries()).forEach(value => {
-        map.set(segment, this.max(segment.scoresPerQueryContainer)[0]);
-      })
-    });
-    return map;
-  }
 
-  private max(map: Map<string, number>): [string, number] {
-    let _max = Array.from(map.entries())[0];
-    map.forEach((value, key) => {
-      if (_max[1] < value) {
-        _max = [key, value];
-      }
-    });
-    return _max;
-  }
+    /**
+     * Check whether a segment is a logical successor to another (e.g. temporally close and increasing container ids)
+     */
+    // tslint:disable-next-line:member-ordering
+    private static isLogicalSuccessor(predecessor: SegmentScoreContainer, predecessorContainerId: ContainerId, successor: SegmentScoreContainer, containerId: ContainerId): boolean {
+        return successor.startabs - predecessor.endabs <= TemporalFusionFunction.TEMPORAL_DISTANCE_CAP && predecessorContainerId < containerId;
+    }
 
-  /**
-   * Calculates and returns the weighted score of a SegmentScoreContainer. This implementation obtains
-   * the weighted mean value of the all the scores in the SegmentScoreContainer.
-   *
-   * @param features Feature categories to consider when calculating the score.
-   * @param segmentScoreContainer SegmentScoreContainer for which to calculate the score.
-   *
-   * @return Weighted score for teh MediaObjectScoreContainer given the results
-   */
-  scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number {
-    return this._segmentFusionFunction.scoreForSegment(features, segmentScoreContainer);
-  }
+    /**
+     * Maxpools over all possible paths inside this object
+     */
+    scoreForObject(features: WeightedFeatureCategory[], mediaObjectScoreContainer: MediaObjectScoreContainer): Score {
+        const paths = this.computePaths(features, mediaObjectScoreContainer);
+        let max = 0;
+        paths.forEach((path, pathIdentifier) => max = Math.max(max, path.score));
+        return max;
+    }
 
-  /** Getter for the segment fusion function */
-  public get segmentFusionFunction(): FusionFunction {
-    return this._segmentFusionFunction;
-  }
+    /**
+     * Computes all optimal paths inside an score container
+     * There is a bonus for temporal scoring here.
+     * This methods seeks to determine an optimal path through multiple segments. This path should fulfill the following conditions:
+     * - Each element of the path should have a higher containerId than its predecessor
+     * - Each element of the path is temporally close to its predecessor
+     * A path can skip segments, if the successor is temporally close enough
+     * A path can skip containers since we assume cineast might have not found a result for container 2, but it did find temporally close segments for container 1 and three
+     * The score of the element is then determined by the score of this optimal path of segments
+     */
+    public computePaths(features: WeightedFeatureCategory[], objectContainer: MediaObjectScoreContainer): Map<PathIdentifierKey, ScoredPath> {
+        const segmentsTemporallyOrdered = Array.from(objectContainer.segments).sort((a, b) => a.startabs - b.startabs);
+        segmentsTemporallyOrdered.forEach(seg => this.verbose(`[TemporalFusionFunction.scoreForObject] iterating over segment ${seg.segmentId}`));
 
-  /** Setter for segment fusion function */
-  public set segmentFusionFunction(fn: FusionFunction) {
-    this._segmentFusionFunction = fn;
-  }
+        /* for each segment, assume it could be the start of the optimal sequence path for this object */
+        segmentsTemporallyOrdered.forEach((segment, index) => {
+            this.verbose(`[TS_scoreForObject]: Seeking for segment ${segment.segmentId} with ${segment.scores.size} score elements`);
+            // for each container, assume start of sequence
+            segment.scores.forEach((categoryMap, containerId) => {
+                /* Create initial suggestion, a single element */
+                const suggestion = new Path(new Map());
+                suggestion.pathMap.set(containerId, segment);
+                /* Go look for the best temporal path */
+                const recursiveSuggestion = this.temporalPath(segment, segmentsTemporallyOrdered.slice(index + 1, segmentsTemporallyOrdered.length), containerId, suggestion, features);
+                /* Score the path */
+                const recursiveSuggestionScore = this.temporalScore(features, recursiveSuggestion);
+                /* For each element in the path, go update the cache */
+                recursiveSuggestion.pathMap.forEach((pathSegment, _pathSegmentContainerId) => {
+                    this.updateCache(pathSegment, _pathSegmentContainerId, recursiveSuggestion, recursiveSuggestionScore);
+                });
+            });
+        });
+        const paths = new Map<PathIdentifierKey, ScoredPath>();
+        /* For each segment, add its best path to the resulting set of paths */
+        segmentsTemporallyOrdered.forEach(segment => {
+            segment.scores.forEach((categoryMap, containerId) => {
+                /* Create identifier for this <segment, container> combo */
+                const identifier = new SegmentContainerIdentifier(segment.segmentId, containerId);
+                /* If there is a best path for this combo, store it in the list of paths */
+                if (this._bestPathPerCombination.has(identifier.key())) {
+                    /* get path */
+                    const path: ScoredPath = this._paths.get(this._bestPathPerCombination.get(identifier.key()).key());
+                    /* Store it in our list of paths. Two identical paths have the same score, so we do not worry about overwriting values here */
+                    paths.set(path.path.key(), path);
+                } else {
+                    /* This should not happen, every combo should have a best path*/
+                    console.warn(`[TS.computePaths] no path exists for ${identifier}`);
+                    console.log(this._bestPathPerCombination);
+                    console.log(this._bestPathPerCombination.get(identifier.key()));
+                }
+            })
+        });
+        return paths;
+    }
 
-  /** Getter for query container ids*/
-  public get queryContainerIds(): string[] {
-    return this._queryContainerIds;
-  }
+    scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): Score {
+        let max = -1;
+        segmentScoreContainer.scores.forEach((value, containerId) => {
+            const identifier = new SegmentContainerIdentifier(segmentScoreContainer.segmentId, containerId);
+            if (this._bestPathPerCombination.has(identifier.key())) {
+                max = Math.max(this._paths.get(this._bestPathPerCombination.get(identifier.key()).key()).score, max);
+            }
+        });
+        return max;
+    }
 
-  /** Setter for quer container ids */
-  public set queryContainerIds(queryContainerIds: string[]) {
-    this._queryContainerIds = queryContainerIds;
-  }
+    public individualScoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): Score {
+        let score = this._segmentFusionFunction.scoreForSegment(features, segmentScoreContainer);
+        if (segmentScoreContainer.scores.size === 0) {
+            this.verbose(`[TemporalFusion.individualScoreForSegment] Segment ${segmentScoreContainer.segmentId} has no score elements yet, initializing to -1`);
+            score = -1;
+        }
+        this.verbose(`[TemporalFusion.individualScoreForSegment] Segment=${segmentScoreContainer.segmentId} score=${score}`);
+        return score;
+    }
 
-  /** Getter for booster factor */
-  get boostFactor(): number {
-    return this._boostFactor;
-  }
+    private updateCache(segment: SegmentScoreContainer, containerId: ContainerId, path: Path, score: Score) {
+        const identifier = new SegmentContainerIdentifier(segment.segmentId, containerId);
+        const start: SegmentContainerIdentifier = this.start(path);
+        /* First, update the best path per container / segment combo cache */
+        if (this._bestPathPerCombination.has(identifier.key())) {
+            const pathIdentifier = this._bestPathPerCombination.get(identifier.key());
+            /* If the path currently stored for this combo has a lower score than the new one, set a new best path for this combo */
+            if (this._paths.get(pathIdentifier.key()).score < score) {
+                this.verbose(`[TS.updateCache] Updating best path cache for ${identifier} to ${start}`);
+                this._bestPathPerCombination.set(identifier.key(), start);
+            }
+            /* Otherwise, ignore this call*/
+        } else {
+            this.verbose(`[TS.updateCache] Initializing best path cache for ${identifier} to ${start}`);
+            this._bestPathPerCombination.set(identifier.key(), start);
+        }
 
-  /** Setter for booster factor */
-  set boostFactor(value: number) {
-    this._boostFactor = value;
-  }
+        /* Next, update the best path-start cache */
+        if (this._paths.has(start.key())) {
+            if (this._paths.get(start.key()).score < score) {
+                const newBestPath = new ScoredPath(path, score);
+                this.verbose(`[TS.updateCache] Updating path start because of ${identifier} for ${start} to ${newBestPath}`);
+                this._paths.set(start.key(), newBestPath);
+            }
+        } else {
+            const newBestPath = new ScoredPath(path, score);
+            this.verbose(`[TS.updateCache] Initializing path start because of ${identifier} for ${start} to ${newBestPath}`);
+            this._paths.set(start.key(), newBestPath);
+        }
+    }
+
+    private start(path: Path): SegmentContainerIdentifier {
+        let low: ContainerId = Number.MAX_VALUE;
+        let seg: SegmentId = null;
+        path.pathMap.forEach((value, key) => {
+            if (key < low) {
+                low = key;
+                seg = value.segmentId;
+            }
+        });
+        return new SegmentContainerIdentifier(seg, low);
+    }
+
+    private temporalScore(features: WeightedFeatureCategory[], temporalPath: Path): number {
+        let score = 0;
+        // very naive approach: sum and normalize over no. of containers
+        temporalPath.pathMap.forEach((segment, _containerId) => {
+            score += this.individualScoreForSegment(features, segment);
+            this.verbose(`[TemporalFusionFunction.temporalScore] Incremented score to ${score} for segment ${segment.segmentId}`)
+        });
+        this.verbose(`[TemporalFusionFunction.temporalScore] for length ${temporalPath.pathMap.size}, score=${score} is normalized=${score / TemporalFusionFunction.queryContainerCount}`);
+        return score / TemporalFusionFunction.queryContainerCount;
+    }
+
+    /**
+     * TODO
+     *
+     * @param seeker segment looking for further segments to join its group
+     * @param segments Temporally ordered segments starting from, but not including seeker. lower timestamps first.
+     * @param seekerContainerId containerId for seeker
+     * @param pathToAndWithSeeker path up to and including this seeker
+     * @param features for scoring
+     *
+     * @return the best path continuing from this seeker segment. If there is no better path, just returns the path to the seeker segment
+     */
+    private temporalPath(seeker: SegmentScoreContainer,
+                         segments: SegmentScoreContainer[],
+                         seekerContainerId: number,
+                         pathToAndWithSeeker: Path,
+                         features: WeightedFeatureCategory[]): Path {
+        /* the initial best score is simply quitting at this segment */
+        let bestScore = this.temporalScore(features, pathToAndWithSeeker);
+        /* store best path, assumption is simply path to this segment */
+        let bestPath = new Path(new Map(pathToAndWithSeeker.pathMap));
+        /* check if containerId of seeker is the maximum id, therefore there is no successor to the seeker / container combination */
+        if (seekerContainerId === TemporalFusionFunction.queryContainerCount - 1) {
+            return pathToAndWithSeeker;
+        }
+        /* Iterate over all remaining segment / container combinations to see if there is a path with further segments which improves the score */
+        segments.forEach((candidateSegment, candidateSegmentIdx) => {
+            /* iterate over all possible containers in this candidateSegment */
+            candidateSegment.scores.forEach((categoryMap, candidateContainerId) => {
+                /* if candidateSegment is not temporally close enough or candidateContainerId is lower, exit */
+                if (!TemporalFusionFunction.isLogicalSuccessor(seeker, seekerContainerId, candidateSegment, candidateContainerId)) {
+                    /* candidateSegment - candidateContainerId combo is not a candidateSegment for further search */
+                    return;
+                }
+                /* generate potential path with candidate segment */
+                const candidatePath = new Path(new Map(pathToAndWithSeeker.pathMap));
+                candidatePath.pathMap.set(candidateContainerId, candidateSegment);
+                /* check if the score with the candidate is better than the existing best path*/
+                const candidateScore = this.temporalScore(features, candidatePath);
+                if (candidateScore >= bestScore) {
+                    bestScore = candidateScore;
+                    bestPath = candidatePath
+                }
+                /* if this candidateSegment is last in the list, there is no potential to go further down the path */
+                if (candidateSegmentIdx === segments.length - 1) {
+                    return;
+                }
+                /* Additionally, try to go down the rabbit hole, and look for a better path */
+                const recursivelyFoundPath = this.temporalPath(candidateSegment, segments.slice(candidateSegmentIdx + 1, segments.length), candidateContainerId, candidatePath, features);
+                /* check if that path is better than the one we are currently considering */
+                const recursivelyFoundScore = this.temporalScore(features, recursivelyFoundPath);
+                if (recursivelyFoundScore >= bestScore) {
+                    bestScore = recursivelyFoundScore;
+                    bestPath = recursivelyFoundPath;
+                }
+            });
+        });
+
+        return bestPath;
+    }
+
+    /**
+     * A hacky way to not bother with more sophisticated logging than console.XYZ
+     * Shall be replaced with proper logging
+     * @param msg The message to log (Will be logged by issuing console.debug
+     */
+    private verbose(msg: string) {
+        if (this._verbose) {
+            console.debug(msg);
+        }
+    }
+
+    /**
+     * Completely reset state of this container
+     */
+    reset() {
+        console.debug('resetting temporal fusion function');
+        this._bestPathPerCombination.clear();
+        this._paths.clear();
+    }
+
+    name(): string {
+        return 'temporal';
+    }
+}
+
+class SegmentContainerIdentifier {
+    constructor(readonly segmentId: SegmentId, readonly containerId: ContainerId) {
+    }
+
+
+    public key(): SegmentContainerIdentifierKey {
+        return this.toString();
+    }
+
+    public toString(): string {
+        return this.segmentId + ':' + this.containerId
+    }
 }

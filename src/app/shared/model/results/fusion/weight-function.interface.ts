@@ -14,6 +14,7 @@ export interface FusionFunction {
    *
    * @param features Features to consider when calculating the score.
    * @param mediaObjectScoreContainer MediaObjectScoreContainer for which to calculate the score.
+   * @param containerId the query container id
    *
    * @return Weighted score for teh MediaObjectScoreContainer given the results
    */
@@ -24,9 +25,14 @@ export interface FusionFunction {
    *
    * @param features Features to consider when calculating the score.
    * @param segmentScoreContainer SegmentScoreContainer for which to calculate the score.
+   * @param containerId the query container id
    *
    * @return Weighted score for teh MediaObjectScoreContainer given the results
    */
   scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number;
 
+  /**
+   * Human-readable name
+   */
+  name(): string;
 }

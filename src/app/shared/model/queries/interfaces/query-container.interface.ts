@@ -7,7 +7,7 @@ import {QueryTermType} from './query-term-type.interface';
 export interface QueryContainerInterface {
 
   terms: QueryTermInterface[];
-  containerId: string;
+  containerId: number;
 
   addTerm(type: QueryTermType): boolean;
 

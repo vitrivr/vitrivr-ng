@@ -9,9 +9,10 @@ import {MiniGalleryComponent} from "./mini-gallery.component";
 import {ContainerPipesModule} from "../../shared/pipes/containers/container-pipes.module";
 import {VbsModule} from "../../core/vbs/vbs.module";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
+import {VgCoreModule} from 'videogular2/core';
 
 @NgModule({
-    imports:      [ MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, InfiniteScrollModule, VbsModule ],
+    imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, InfiniteScrollModule, VbsModule, VgCoreModule],
     declarations: [ GalleryComponent, MiniGalleryComponent ],
     exports: [ GalleryComponent, MiniGalleryComponent ]
 })

@@ -42,8 +42,8 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
      * @param _resolver
      * @param _historyService used to track changes to navigation
      */
-    constructor(_cdr: ChangeDetectorRef, _queryService: QueryService, _filterService: FilterService, _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router, _snackBar: MatSnackBar, protected _resolver: ResolverService, _historyService: PreviousRouteService) {
-        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _historyService);
+    constructor(_cdr: ChangeDetectorRef, _queryService: QueryService, _filterService: FilterService, _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router, _snackBar: MatSnackBar, protected _resolver: ResolverService) {
+        super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
     }
 
     /**
@@ -125,5 +125,9 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
         if (results) {
             this._dataSource = results.mediaobjectsAsObservable;
         }
+    }
+
+    scrollIncrement(): number {
+        return 200;
     }
 }

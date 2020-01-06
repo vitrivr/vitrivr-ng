@@ -23,8 +23,8 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     /** Map containing the metadata that belongs to the object. Can be empty! */
     private _metadata: Map<string, string> = new Map();
 
-    /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet. */
-    private _cache: Map<string, Array<[WeightedFeatureCategory, Similarity]>> = new Map();
+    /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet.  string is containerId*/
+    private _cache: Map<string, Array<[WeightedFeatureCategory, Similarity, number]>> = new Map();
 
     /** Type of the MediaObject. */
     public mediatype: MediaType;
@@ -57,7 +57,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
         const ssc = this.uniqueSegmentScoreContainer(segment);
         if (this._cache.has(ssc.segmentId)) {
             this._cache.get(ssc.segmentId).forEach(v => {
-                this.addSimilarity(v[0], v[1])
+                this.addSimilarity(v[0], v[1], v[2])
             });
             this._cache.delete(ssc.segmentId)
         }
@@ -69,15 +69,16 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      *
      * @param category The category for which to add the similarity entry.
      * @param similarity The actual similarity entry.
+     * @param containerId The query container id this similarity corresponds to
      */
-    public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity) {
+    public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number) {
         if (this._segmentScores.has(similarity.key)) {
-            this._segmentScores.get(similarity.key).addSimilarity(category, similarity);
+            this._segmentScores.get(similarity.key).addSimilarity(category, similarity, containerId);
         } else if (this._cache.has(similarity.key)) {
-            this._cache.get(similarity.key).push([category, similarity]);
+            this._cache.get(similarity.key).push([category, similarity, containerId]);
         } else {
             this._cache.set(similarity.key, []);
-            this._cache.get(similarity.key).push([category, similarity]);
+            this._cache.get(similarity.key).push([category, similarity, containerId]);
         }
     }
 
@@ -85,7 +86,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
      * Updates the score of this MediaObjectScoreContainer.
      *
      * @param features List of feature categories that should be used to calculate the score.
-     * @param func The weight function that should be used to calculate the score.
+     * @param func The weightPercentage function that should be used to calculate the score.
      */
     public update(features: WeightedFeatureCategory[], func: FusionFunction) {
         this._score = func.scoreForObject(features, this);

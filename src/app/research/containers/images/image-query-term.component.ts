@@ -48,6 +48,7 @@ export class ImageQueryTermComponent implements OnInit {
      * @param event
      */
     public onSettingsChanged(event:any) {
+        // FIXME there are debates about the usefulness of this slider...
         switch (this.sliderSetting) {
             case 0:
                 this.imageTerm.setCategories(['globalcolor', 'localcolor']);

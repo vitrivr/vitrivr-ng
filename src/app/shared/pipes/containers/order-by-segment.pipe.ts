@@ -17,7 +17,6 @@ export class OrderBySegmentPipe implements PipeTransform {
         if (!array || array.length === 0) {
             return [];
         }
-        console.time('UI (Sort by Segment)');
         const results = array.sort((a: SegmentScoreContainer, b: SegmentScoreContainer) => {
             /**
              * This logic is ok even if a.startabs or b.startabs is 0. This is because sorting by sequence number still work.
@@ -34,7 +33,6 @@ export class OrderBySegmentPipe implements PipeTransform {
                 return b.startabs - a.startabs;
             }
         });
-        console.timeEnd('UI (Sort by Segment)');
         return results;
     }
 }
