@@ -15,8 +15,8 @@
     "collabordinator": "ws://192.168.0.47:12345/ws"
   },
   "mlt": {
-    "VIDEO": ["localcolor", "globalcolor", "edge", "localfeatures"],
-    "IMAGE": ["localcolor", "globalcolor", "edge", "localfeatures"]
+    "VIDEO": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"],
+    "IMAGE": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"]
   },
   "query": {
     "history": 5,
