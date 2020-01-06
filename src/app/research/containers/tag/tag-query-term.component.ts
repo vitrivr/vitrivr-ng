@@ -66,11 +66,9 @@ export class TagQueryTermComponent {
       }
     }
     if (!tagAlreadyInList) {
-      this.addTag(event.option.value);
-      this.field.formControl.setValue('');
-      this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
-        return v;
-      })));
+
+      this.addTags(this.getAllTagsWithEqualName(event.option.value));
+
     } else {
       this.field.formControl.setValue('');
       this._matsnackbar.open(`Tag ${event.option.value.name} (${event.option.value.id}) already added`, null, {
@@ -86,6 +84,20 @@ export class TagQueryTermComponent {
    */
   public addTag(tag: Tag) {
     this._tags.push(tag);
+    this.field.formControl.setValue('');
+    this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
+      return v;
+    })));
+  }
+
+  /**
+   * Adds the specified collection of tags to the list of tags
+   * @param {Tag[]} tags THe tags to be added
+   */
+  public addTags(tags: Tag[]) {
+    tags.forEach(tag => {
+      this.addTag(tag);
+    })
   }
 
   /**
@@ -102,6 +114,10 @@ export class TagQueryTermComponent {
       return v;
     })));
   }
+
+  private getAllTagsWithEqualName(tag: Tag): Tag[] {
+    return this._field.currentlyDisplayedTags.filter(t => t.name === tag.name);
+  }
 }
 
 /**
@@ -113,6 +129,8 @@ export class FieldGroup {
 
   /** The Observable that acts as data source for the field. */
   public readonly filteredTags: Observable<Tag[]>;
+
+  public currentlyDisplayedTags: Array<Tag> = new Array<Tag>();
 
   /**
    * Constructor for FieldGroup
@@ -132,6 +150,10 @@ export class FieldGroup {
       }),
       mergeAll()
     );
+    this.filteredTags.subscribe(value => {
+      this.currentlyDisplayedTags = new Array<Tag>();
+      value.forEach(t => this.currentlyDisplayedTags.push(t))
+    });
   }
 
   /** The currently selected tag. */
