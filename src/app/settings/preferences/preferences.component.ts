@@ -45,7 +45,6 @@ export class PreferencesComponent {
                 hints.push("exact");
             }
             c.set('query.config.hints', hints);
-            this._configService.apply(c);
         });
     }
 
