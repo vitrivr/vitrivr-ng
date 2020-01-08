@@ -13,50 +13,10 @@
     <div
         *ngFor="let objectPathContainer of (((dataSource | async) | OrderObjectByBestPathScorePipe) | FilterPipe: (objectFilter|async) | LimitPipe : count)"
         class="objectPathContainer">
-
-      <div *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
-           class="{{pathSegment.mark ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = pathSegment.segment"
-           (mouseleave)="focus = null" (dragstart)="onTileDrag($event, pathSegment.segment, pathSegment.segment.objectScoreContainer)"
-           [style.background]="backgroundForScore(pathSegment.score, pathSegment.segment)" >
-
-        <img *ngIf="!(_ctrlPressed | async) || !inFocus(pathSegment.segment)" src="{{_resolver.pathToThumbnail(pathSegment.segment.objectScoreContainer, pathSegment.segment)}}" draggable="false" (click)="onTileClicked($event, pathSegment.segment)"/>
-
-        <vg-player *ngIf="playVideo(pathSegment.segment) | async" (onPlayerReady)="onPlayerReady($event, pathSegment.segment)">
-          <video #media [vgMedia]="media" preload="auto" [autoplay]="true" src="{{_resolver.pathToObject(pathSegment.segment.objectScoreContainer)}}">
-          </video>
-        </vg-player>
-
-        <div *ngIf="inFocus(pathSegment.segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
-          <button *ngFor="let tag of selectionService.availableTags" mat-icon-button
-                  matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(pathSegment.segment,tag)"
-                  (contextmenu)="onHighlightButtonRightClicked($event, pathSegment.segment,tag)">
-            <mat-icon
-                [style.color]="selectionService.hasTag(pathSegment.segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">album
-            </mat-icon>
-          </button>
-        </div>
-
-        <div *ngIf="inFocus(pathSegment.segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
-          <button *ngIf="(showVbsSubmitButton(pathSegment.segment) | async)" mat-icon-button
-                  (click)="onSubmitButtonClicked(pathSegment.segment)" matTooltip="Submit segment to VBS">
-            <mat-icon>send</mat-icon>
-          </button>
-
-          <button mat-icon-button (click)="onInformationButtonClicked(pathSegment.segment)" matTooltip="Feature information">
-            <mat-icon>help</mat-icon>
-          </button>
-
-          <button mat-icon-button (click)="onMltButtonClicked(pathSegment.segment)" matTooltip="More-like-this">
-            <mat-icon>youtube_searched_for</mat-icon>
-          </button>
-
-          <button mat-icon-button (click)="onNeighborsButtonClicked(pathSegment.segment)"
-                  (contextmenu)="onNeighborsButtonRightClicked($event, pathSegment.segment)"
-                  matTooltip="Load neighboring segments">
-            <mat-icon>settings_ethernet</mat-icon>
-          </button>
-        </div>
-      </div>
+      <app-result-segment-preview-tile [container]="this"
+                                       *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
+                                       [segment]="pathSegment.segment"
+                                       [score]="pathSegment.score"></app-result-segment-preview-tile>
     </div>
   </div>
 </div>
