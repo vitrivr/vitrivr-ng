@@ -1,11 +1,11 @@
-<div class="segment" draggable="true" (mouseenter)="container.focus = segment" (mouseleave)="container.focus = null"
+<div id="{{id}}" class="segment" draggable="true" (mouseenter)="container.focus = segment" (mouseleave)="container.focus = null"
      (dragstart)="container.onTileDrag($event, segment, segment.objectScoreContainer)"
      [style.background]="container.backgroundForScore(score,segment)">
-  <img *ngIf="!(_ctrlPressed | async) || !container.inFocus(segment)"
+  <img *ngIf="!(this._keyboardService.ctrlPressed | async) || !container.inFocus(segment)"
        src="{{container._resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false"
        (click)="container.onTileClicked($event, segment)"/>
 
-  <vg-player *ngIf="playVideo(segment) | async" (onPlayerReady)="onPlayerReady($event, segment)">
+  <vg-player *ngIf="(playVideo(segment) | async) " (onPlayerReady)="onPlayerReady($event, segment)">
     <video #media [vgMedia]="media" preload="auto" [autoplay]="true"
            src="{{container._resolver.pathToObject(segment.objectScoreContainer)}}">
     </video>

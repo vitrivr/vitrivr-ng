@@ -3,5 +3,5 @@
 <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
 
 <div class="mini-gallery" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
-    <app-result-segment-preview-tile [container]="this" *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count" [segment]="segment" [score]="segment.score"></app-result-segment-preview-tile>
+    <app-result-segment-preview-tile *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count" [container]="this" [segment]="segment" [score]="segment.score"></app-result-segment-preview-tile>
 </div>
