@@ -1,0 +1,49 @@
+<div class="segment" draggable="true" (mouseenter)="container.focus = segment" (mouseleave)="container.focus = null"
+     (dragstart)="container.onTileDrag($event, segment, segment.objectScoreContainer)"
+     [style.background]="container.backgroundForSegment(segment)">
+  <img *ngIf="!(_ctrlPressed | async) || !container.inFocus(segment)"
+       src="{{container._resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false"
+       (click)="container.onTileClicked($event, segment)"/>
+
+  <vg-player *ngIf="container.playVideo(segment) | async" (onPlayerReady)="container.onPlayerReady($event, segment)">
+    <video #media [vgMedia]="media" preload="auto" [autoplay]="true"
+           src="{{container._resolver.pathToObject(segment.objectScoreContainer)}}">
+    </video>
+  </vg-player>
+
+  <div *ngIf="container.inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
+    <button *ngFor="let tag of container.selectionService.availableTags" mat-icon-button
+            matTooltip="Toggle '{{tag.name}}' tag" (click)="container.onHighlightButtonClicked(segment,tag)"
+            (contextmenu)="container.onHighlightButtonRightClicked($event, segment,tag)">
+      <mat-icon
+          [style.color]="container.selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">
+        album
+      </mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="container.inFocus(segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
+    <button *ngIf="(container.showVbsSubmitButton(segment) | async)" mat-icon-button
+            (click)="container.onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
+      <mat-icon>send</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="container.onDetailsButtonClicked(segment)" matTooltip="Show details">
+      <mat-icon>remove_red_eye</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="container.onInformationButtonClicked(segment)" matTooltip="Feature information">
+      <mat-icon>help</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="container.onMltButtonClicked(segment)" matTooltip="More-like-this">
+      <mat-icon>youtube_searched_for</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="container.onNeighborsButtonClicked(segment)"
+            (contextmenu)="container.onNeighborsButtonRightClicked($event, segment)"
+            matTooltip="Load neighboring segments">
+      <mat-icon>settings_ethernet</mat-icon>
+    </button>
+  </div>
+</div>

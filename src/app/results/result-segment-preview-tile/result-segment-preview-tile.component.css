@@ -1,0 +1,41 @@
+.segment {
+  width: 120px;
+  height: 100px;
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.segment.marked {
+  border: 0.5px solid #0101ff;
+}
+
+.segment img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.segment .header {
+  position: absolute;
+  top: 0;
+  height: 25px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: black;
+  opacity: 0.65;
+  color: white;
+}
+
+.segment .footer {
+  position: absolute;
+  top: 75px;
+  height: 25px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: black;
+  opacity: 0.65;
+  color: white;
+}

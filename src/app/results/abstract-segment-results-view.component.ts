@@ -29,7 +29,7 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
   /** Reference to the SegmentScoreContainer that is currently in focus. */
   protected _focus: SegmentScoreContainer;
 
-  private _ctrlPressed = new BehaviorSubject(false);
+  public ctrlPressed = new BehaviorSubject(false);
 
 
   constructor(_cdr: ChangeDetectorRef,
@@ -40,7 +40,7 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
               _router: Router,
               _snackBar: MatSnackBar,
               protected _configService: ConfigService,
-              protected _resolver: ResolverService,
+              public _resolver: ResolverService,
               protected _dialog: MatDialog,
               protected _vbs: VbsSubmissionService) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
@@ -160,20 +160,20 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
   }
 
   playVideo(segment: SegmentScoreContainer): Observable<boolean> {
-    return this._ctrlPressed.map(el => el && segment.objectScoreContainer.mediatype === 'VIDEO' && this._focus === segment);
+    return this.ctrlPressed.map(el => el && segment.objectScoreContainer.mediatype === 'VIDEO' && this._focus === segment);
   }
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown($event: KeyboardEvent) {
     if ($event.ctrlKey) {
-      this._ctrlPressed.next(true);
+      this.ctrlPressed.next(true);
     }
   }
 
   @HostListener('document:keyup', ['$event'])
   onKeyUp($event: KeyboardEvent) {
     if ($event.key === 'Control') {
-      this._ctrlPressed.next(false);
+      this.ctrlPressed.next(false);
     }
   }
 }
