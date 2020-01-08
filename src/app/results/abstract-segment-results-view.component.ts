@@ -37,33 +37,12 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
   }
 
-  /** Reference to the SegmentScoreContainer that is currently in focus. */
-  protected _focus: SegmentScoreContainer;
-
-  /**
-   * Sets the focus to the provided SegmentScoreContainer.
-   *
-   * @param focus
-   */
-  set focus(focus: SegmentScoreContainer) {
-    this._focus = focus;
-  }
 
   /**
    * Getter for the filters that should be applied to SegmentScoreContainer.
    */
   get filters(): Observable<((v: SegmentScoreContainer) => boolean)[]> {
     return this._filterService.segmentFilter;
-  }
-
-  /**
-   * Returns true, if the provided SegmentScoreContainer is currently in focus and false otherwise.
-   *
-   * @param segment SegmentScoreContainer that should be checked.
-   * @return {boolean}
-   */
-  public inFocus(segment: SegmentScoreContainer) {
-    return this._focus === segment;
   }
 
   /**
