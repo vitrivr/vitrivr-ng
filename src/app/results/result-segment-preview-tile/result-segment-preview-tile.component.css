@@ -1,3 +1,12 @@
+.mini-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,120px);
+  grid-template-rows: repeat(auto-fill,100px);
+  grid-auto-flow: row;
+  grid-row-gap: 5px;
+  grid-column-gap: 5px;
+}
+
 .segment {
   width: 120px;
   height: 100px;
@@ -38,4 +47,38 @@
   background-color: black;
   opacity: 0.65;
   color: white;
+}
+
+/* Styles the button in the tile footer. */
+
+.header > button {
+  max-height: 20px !important;
+  max-width: 20px !important;
+  line-height: 0 !important;
+}
+
+.header .mat-icon {
+  max-height: 18px;
+  max-width: 18px;
+}
+
+.header .material-icons {
+  font-size: 16px !important;
+}
+
+/* Styles the button in the tile footer. */
+
+.footer > button {
+  max-height: 20px !important;
+  max-width: 20px !important;
+  line-height: 0 !important;
+}
+
+.footer .mat-icon {
+  max-height: 18px;
+  max-width: 18px;
+}
+
+.footer .material-icons {
+  font-size: 16px !important;
 }
