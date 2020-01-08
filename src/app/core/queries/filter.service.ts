@@ -36,7 +36,7 @@ export class FilterService {
     private _filterMetadata: Map<string, Set<string>> = new Map();
 
     /**
-     * A filter for tags. This is the list of allowed tag names
+     * A filter for tags. This is the list of allowed tag names. If the set is empty, no filter is applied.
      */
     private _filterTags: Set<Tag> = new Set();
 
@@ -76,25 +76,35 @@ export class FilterService {
     }
 
     /**
-     * Returns the list of Metadata that should be used for filtering.
+     * Returns an editable map of the metadata that should be used for filtering
      */
     get filterMetadata(): Map<string, Set<string>> {
         return this._filterMetadata
     }
 
+    /**
+     * Returns the editable set of tags used for filtering
+     */
+    get filterTags(): Set<Tag> {
+        return this._filterTags;
+    }
+
+    /**
+     * Returns an editable map of the metadata that should be used for filtering with ranges
+     */
     get filterRangeMetadata(): Map<string, [number | null, number | null]> {
         return this._filterRangeMetadata
     }
 
     /**
-     * Returns the list of MediaTypes that should be used for filtering.
+     * Returns an editable map of the mediatypes that should be used for filtering
      */
     get mediatypes(): Map<MediaType, boolean> {
         return this._mediatypes;
     }
 
     /**
-     * Returns the list of colors that should be used for filtering.
+     * Returns an editable map of the colorlabels that should be used for filtering
      */
     get dominant(): Map<ColorLabel, boolean> {
         return this._dominant;
@@ -128,10 +138,6 @@ export class FilterService {
         return this._segmentFilters.asObservable();
     }
 
-    get filterTags(): Set<Tag> {
-        return this._filterTags;
-    }
-
     /**
      * Clears all filters. Causes an update to be published.
      */
@@ -146,6 +152,9 @@ export class FilterService {
     }
 
 
+    /**
+     * Clear metadata filters. Causes an update to be published
+     */
     public clearMetadata() {
         this._filterMetadata.clear();
         this._filterRangeMetadata.clear();
@@ -160,27 +169,33 @@ export class FilterService {
         const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[] = [];
         const segmentFilters: ((v: SegmentScoreContainer) => boolean)[] = [];
 
-        // check if the given string a number and within the range-array
-        // we have to be careful here because < and > return false if one of the args is NaN, undefined or null
+        /* Inline function for range metadata filters
+         * check if the given string is a number and within the range-array
+         * we have to be careful here because < and > return false if one of the args is NaN, undefined or null
+         */
         function checkRange(range, string): boolean {
             if (!string) {  // !NaN === true
+                /* If the value is not available, do not show the object */
                 return false
             }
             const value = Number(string);
-            // check if the value is even assignable.
             if (!value) {
+                /* if the value is not a string, do not show the object */
                 return false
             }
+            /* If a lower bound is set, check if the value is smaller than that */
             if (range[0]) {
                 if (value < range[0]) {
                     return false
                 }
             }
+            /* If an upper bound is set, check if the value is larger than that */
             if (range[1]) {
                 if (value > range[1]) {
                     return false
                 }
             }
+            /* If we're here, the value is valid and the corresponding segment can be displayed */
             return true
         }
 
@@ -217,7 +232,6 @@ export class FilterService {
                     }
                     andFilter = false;
                 });
-
                 if (this._filterTags.size === 0) {
                     tagFilter = true;
                 }
