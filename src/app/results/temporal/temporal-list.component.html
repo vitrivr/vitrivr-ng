@@ -16,7 +16,7 @@
       <app-result-segment-preview-tile *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
                                        [container]="this"
                                        [score]="pathSegment.score"
-                                       [segment]="pathSegment.segment"></app-result-segment-preview-tile>
+                                       [segment]="pathSegment.segment" class="{{pathSegment.mark ? 'marked' : ''}}"></app-result-segment-preview-tile>
     </div>
   </div>
 </div>
