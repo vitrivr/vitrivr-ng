@@ -1,5 +1,5 @@
 import {AbstractQueryTerm} from './abstract-query-term.model';
-import {BoolTerm} from '../../../research/containers/bool/individual/bool-term';
+import {BoolTerm} from '../../../query/containers/bool/individual/bool-term';
 
 export class BoolQueryTerm extends AbstractQueryTerm {
 
