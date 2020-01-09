@@ -79,13 +79,20 @@
   <mat-divider></mat-divider>
   <mat-card-content style="padding-top:10px;">
     <qt-image *ngIf="containerModel.hasTerm('IMAGE')" [imageTerm]="containerModel.getTerm('IMAGE')"></qt-image>
+    <hr *ngIf="containerModel.hasTerm('AUDIO')" _ngcontent-c25="" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
     <qt-audio *ngIf="containerModel.hasTerm('AUDIO')" [audioTerm]="containerModel.getTerm('AUDIO')"></qt-audio>
+    <hr *ngIf="containerModel.hasTerm('MODEL3D')" _ngcontent-c25="" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
     <qt-m3d *ngIf="containerModel.hasTerm('MODEL3D')" [m3dTerm]="containerModel.getTerm('MODEL3D')"></qt-m3d>
+    <hr *ngIf="containerModel.hasTerm('MOTION')" _ngcontent-c25="" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
     <qt-motion *ngIf="containerModel.hasTerm('MOTION')" [motionTerm]="containerModel.getTerm('MOTION')"></qt-motion>
+    <hr *ngIf="containerModel.hasTerm('TEXT')" _ngcontent-c25="" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
     <qt-text *ngIf="containerModel.hasTerm('TEXT')" [textTerm]="containerModel.getTerm('TEXT')"></qt-text>
+    <hr *ngIf="containerModel.hasTerm('TAG')" _ngcontent-c25="" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
     <qt-tag *ngIf="containerModel.hasTerm('TAG')" [tagTerm]="containerModel.getTerm('TAG')"></qt-tag>
+    <hr *ngIf="containerModel.hasTerm('SEMANTIC')" _ngcontent-c25="" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
     <qt-semantic *ngIf="containerModel.hasTerm('SEMANTIC')"
                  [semanticTerm]="containerModel.getTerm('SEMANTIC')"></qt-semantic>
+    <hr *ngIf="containerModel.hasTerm('BOOLEAN')" _ngcontent-c25="" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
     <app-qt-bool *ngIf="containerModel.hasTerm('BOOLEAN')" [boolTerm]="containerModel.getTerm('BOOLEAN')"></app-qt-bool>
   </mat-card-content>
   <mat-card-footer>
