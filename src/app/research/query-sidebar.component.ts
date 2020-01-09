@@ -13,10 +13,10 @@ import {FilterService} from '../core/queries/filter.service';
 
 @Component({
   moduleId: module.id,
-  selector: 'research',
-  templateUrl: 'research.component.html'
+  selector: 'app-query-sidebar',
+  templateUrl: 'query-sidebar.component.html'
 })
-export class ResearchComponent implements OnInit {
+export class QuerySidebarComponent implements OnInit {
   /** QueryContainer's held by the current instance of ResearchComponent. */
   public readonly containers: QueryContainerInterface[] = [];
 
