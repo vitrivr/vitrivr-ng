@@ -1,10 +1,10 @@
-import {Component, Input} from "@angular/core";
-import {Evaluation} from "../shared/model/evaluation/evaluation";
+import {Component, Input} from '@angular/core';
+import {Evaluation} from '../shared/model/evaluation/evaluation';
 
 @Component({
-    moduleId: module.id,
-    selector: 'evaluation-history',
-    template: `
+  moduleId: module.id,
+  selector: 'evaluation-history',
+  template: `
         <div>
             <dl>
                 <dt>Begin</dt>
@@ -37,15 +37,15 @@ import {Evaluation} from "../shared/model/evaluation/evaluation";
     `
 })
 export class EvaluationHistory {
-    @Input("evaluation")
-    private _evaluation: Evaluation;
+  @Input('evaluation')
+  private _evaluation: Evaluation;
 
-    /**
-     * Getter for evaluation.
-     *
-     * @return {Evaluation}
-     */
-    get evaluation() {
-        return this._evaluation;
-    }
+  /**
+   * Getter for evaluation.
+   *
+   * @return {Evaluation}
+   */
+  get evaluation() {
+    return this._evaluation;
+  }
 }

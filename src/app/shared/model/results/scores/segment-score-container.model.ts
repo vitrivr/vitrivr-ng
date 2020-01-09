@@ -11,30 +11,18 @@ import {MediaObjectScoreContainer} from './media-object-score-container.model';
  * score is determined by the actual scores of the segment (per category).
  */
 export class SegmentScoreContainer extends ScoreContainer implements MediaSegment {
-  /** List of scores. Maps per containerId the category and similarity score. */
-  private _scores: Map<number, Map<WeightedFeatureCategory, number>> = new Map();
-
-  /** Map containing the metadata that belongs to the segment. Can be empty! */
-  private _metadata: Map<string, string> = new Map();
-
   /** ID of the object this SegmentScoreContainer belongsTo. */
   public readonly objectId: string;
-
   /** ID of the segment this SegmentScoreContainer belongsTo (objectId + segmentId = unique). */
   public readonly segmentId: string;
-
   /** Sequence number of the MediaSegment within the streams of segments (i.e. i-th segment in the video). */
   public readonly sequenceNumber: number;
-
   /** Start time of the MediaSegment in frames. */
   public readonly start: number;
-
   /** End time of the MediaSegment in frames. */
   public readonly end: number;
-
   /** Absolute start time of the MediaSegment in seconds. */
   public readonly startabs: number;
-
   /** Absolute end time of the MediaSegment in seconds. */
   public readonly endabs: number;
 
@@ -60,6 +48,56 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
     this.end = _mediaSegment.end;
     this.startabs = _mediaSegment.startabs;
     this.endabs = _mediaSegment.endabs;
+  }
+
+  /** List of scores. Maps per containerId the category and similarity score. */
+  private _scores: Map<number, Map<WeightedFeatureCategory, number>> = new Map();
+
+  /**
+   * Returns the map of scores
+   *
+   */
+  get scores(): Map<number, Map<WeightedFeatureCategory, number>> {
+    return this._scores;
+  }
+
+  /** Map containing the metadata that belongs to the segment. Can be empty! */
+  private _metadata: Map<string, string> = new Map();
+
+  /**
+   * Returns the map of metadata.
+   *
+   * @return {Map<string, string>}
+   */
+  get metadata() {
+    return this._metadata;
+  }
+
+  /**
+   * Returns the score per category max pooled over the container (querycontainer)
+   */
+  get scoresPerCategory() {
+    const map = new Map<WeightedFeatureCategory, number>();
+    this._scores.forEach((categoryMap, containerId) => {
+      categoryMap.forEach((score, category) => {
+        if (map.has(category)) {
+          if (map.get(category) < score) {
+            map.set(category, score);
+          }
+        } else {
+          map.set(category, score);
+        }
+      });
+    });
+    return map;
+  }
+
+  /**
+   *
+   * @return {MediaObjectScoreContainer}
+   */
+  get objectScoreContainer(): MediaObjectScoreContainer {
+    return this._objectScoreContainer;
   }
 
   /**
@@ -91,57 +129,12 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
   }
 
   /**
-   * Returns the map of scores
-   *
-   */
-  get scores(): Map<number, Map<WeightedFeatureCategory, number>> {
-    return this._scores;
-  }
-
-  /**
-   * Returns the score per category max pooled over the container (querycontainer)
-   */
-  get scoresPerCategory() {
-    const map = new Map<WeightedFeatureCategory, number>();
-    this._scores.forEach((categoryMap, containerId) => {
-      categoryMap.forEach((score, category) => {
-        if (map.has(category)) {
-          if (map.get(category) < score) {
-            map.set(category, score);
-          }
-        } else {
-          map.set(category, score);
-        }
-      });
-    });
-    return map;
-  }
-
-
-  /**
-   * Returns the map of metadata.
-   *
-   * @return {Map<string, string>}
-   */
-  get metadata() {
-    return this._metadata;
-  }
-
-  /**
    * Returns a metadata entry for the given key.
    *
    * @param key Key for the metadata entry to lookup.
    */
   public metadataForKey(key: string) {
     return this._metadata.get(key);
-  }
-
-  /**
-   *
-   * @return {MediaObjectScoreContainer}
-   */
-  get objectScoreContainer(): MediaObjectScoreContainer {
-    return this._objectScoreContainer;
   }
 
   /**

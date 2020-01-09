@@ -14,10 +14,10 @@ import {AdvancedMediaPlayerModule} from '../shared/components/video/advanced-vid
 import {MetadataDetailsComponent} from './metadata-details.component';
 
 @NgModule({
-    imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, ImageCropperModule, ContainerPipesModule, AdvancedMediaPlayerModule],
-    declarations: [ObjectdetailsComponent, ImagecropComponent, QuickViewerComponent, MetadataDetailsComponent],
-    exports: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent],
-    entryComponents: [ImagecropComponent, QuickViewerComponent, MetadataDetailsComponent]
+  imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, ImageCropperModule, ContainerPipesModule, AdvancedMediaPlayerModule],
+  declarations: [ObjectdetailsComponent, ImagecropComponent, QuickViewerComponent, MetadataDetailsComponent],
+  exports: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent],
+  entryComponents: [ImagecropComponent, QuickViewerComponent, MetadataDetailsComponent]
 })
 
 export class ObjectdetailsModule {

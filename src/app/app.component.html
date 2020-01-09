@@ -3,51 +3,51 @@
 
   <span class="spacer-flex"></span>
 
-  <button mat-icon-button (click)="querysidenav.toggle()" matTooltip="Toggle query sidebar">
+  <button (click)="querysidenav.toggle()" mat-icon-button matTooltip="Toggle query sidebar">
     <mat-icon>search</mat-icon>
   </button>
 
   <span class="spacer-xlarge"></span>
 
-  <a *ngIf="!(config|async).get('vbs.teamid')" mat-icon-button skipLocationChange="true" routerLink="/gallery"
-     routerLinkActive="active" matTooltip="Gallery view">
+  <a *ngIf="!(config|async).get('vbs.teamid')" mat-icon-button matTooltip="Gallery view" routerLink="/gallery"
+     routerLinkActive="active" skipLocationChange="true">
     <mat-icon>grid_on</mat-icon>
   </a>
 
   <span class="spacer-medium"></span>
 
-  <a mat-icon-button routerLink="/mini-gallery" skipLocationChange="true" routerLinkActive="active"
-     matTooltip="Mini-gallery view">
+  <a mat-icon-button matTooltip="Mini-gallery view" routerLink="/mini-gallery" routerLinkActive="active"
+     skipLocationChange="true">
     <mat-icon>view_comfy</mat-icon>
   </a>
 
   <span class="spacer-medium"></span>
 
-  <a mat-icon-button routerLink="/list" skipLocationChange="true" routerLinkActive="active" matTooltip="List view">
+  <a mat-icon-button matTooltip="List view" routerLink="/list" routerLinkActive="active" skipLocationChange="true">
     <mat-icon>list</mat-icon>
   </a>
 
   <span class="spacer-medium"></span>
 
-  <a mat-icon-button routerLink="/temporal-list" skipLocationChange="true" routerLinkActive="active"
-     matTooltip="Temporal Scoring view">
+  <a mat-icon-button matTooltip="Temporal Scoring view" routerLink="/temporal-list" routerLinkActive="active"
+     skipLocationChange="true">
     <mat-icon>filter_list</mat-icon>
   </a>
 
   <span class="spacer-xlarge"></span>
 
-  <a *ngIf="(config|async).get('evaluation.active')" mat-icon-button skipLocationChange="true" routerLink="/evaluation"
-     routerLinkActive="active" matTooltip="Navigate to evaluation module">
+  <a *ngIf="(config|async).get('evaluation.active')" mat-icon-button matTooltip="Navigate to evaluation module" routerLink="/evaluation"
+     routerLinkActive="active" skipLocationChange="true">
     <mat-icon>assessment</mat-icon>
   </a>
 
   <span *ngIf="(config|async).get('evaluation.active')" class="spacer-medium"></span>
 
-  <button mat-icon-button (click)="showHistory()" matTooltip="Show query history.">
+  <button (click)="showHistory()" mat-icon-button matTooltip="Show query history.">
     <mat-icon>history</mat-icon>
   </button>
 
-  <button mat-icon-button (click)="featuressidenav.toggle()" matTooltip="Toggle query refinement sidebar">
+  <button (click)="featuressidenav.toggle()" mat-icon-button matTooltip="Toggle query refinement sidebar">
     <mat-icon>storage</mat-icon>
   </button>
 
@@ -59,11 +59,11 @@
 </mat-toolbar>
 
 <div>
-  <mat-progress-bar mode="query" [attr.color]="'accent'" *ngIf="(loading|async)"></mat-progress-bar>
+  <mat-progress-bar *ngIf="(loading|async)" [attr.color]="'accent'" mode="query"></mat-progress-bar>
 </div>
 
 <mat-sidenav-container fullscreen style="margin-top:75px;">
-  <mat-sidenav #querysidenav mode="side" [opened]="true" class="left">
+  <mat-sidenav #querysidenav [opened]="true" class="left" mode="side">
     <app-query-sidebar></app-query-sidebar>
   </mat-sidenav>
 
@@ -71,7 +71,7 @@
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 
-  <mat-sidenav #featuressidenav mode="side" position="end" class="right">
+  <mat-sidenav #featuressidenav class="right" mode="side" position="end">
     <settings></settings>
   </mat-sidenav>
 </mat-sidenav-container>

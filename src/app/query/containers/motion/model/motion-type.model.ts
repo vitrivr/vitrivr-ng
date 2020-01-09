@@ -1,1 +1,1 @@
-export type MotionType = "FOREGROUND" | "BACKGROUND";
+export type MotionType = 'FOREGROUND' | 'BACKGROUND';

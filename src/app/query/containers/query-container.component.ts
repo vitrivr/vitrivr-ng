@@ -65,7 +65,7 @@ export class QueryContainerComponent {
    * Handler to move this query container one up (in the list of query containers)
    */
   public moveQueryContainerUp() {
-    console.log(`[QueryC.up] Before = ${this.inList}`)
+    console.log(`[QueryC.up] Before = ${this.inList}`);
     const index = this.inList.indexOf(this.containerModel);
     if (index > 0) {
       const container = this.inList[index - 1];
@@ -76,7 +76,7 @@ export class QueryContainerComponent {
   }
 
   public moveQueryContainerDown() {
-    console.log(`[QueryC.down] Before = ${this.inList}`)
+    console.log(`[QueryC.down] Before = ${this.inList}`);
     const index = this.inList.indexOf(this.containerModel);
     if (index > -1 && index < this.inList.length - 1) {
       const container = this.inList[index + 1];

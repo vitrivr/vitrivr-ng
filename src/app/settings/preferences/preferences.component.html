@@ -2,22 +2,26 @@
 
 <mat-list dense>
 
-    <h2 mat-subheader>Cineast</h2>
-    <mat-list-item>{{(cineastEndpoint|async)}}</mat-list-item>
+  <h2 mat-subheader>Cineast</h2>
+  <mat-list-item>{{(cineastEndpoint|async)}}</mat-list-item>
 
-    <h2 mat-subheader>Resources</h2>
-    <mat-list-item>{{(hostObjects|async)}}</mat-list-item>
-    <mat-list-item>{{(hostThumbnails|async)}}</mat-list-item>
+  <h2 mat-subheader>Resources</h2>
+  <mat-list-item>{{(hostObjects|async)}}</mat-list-item>
+  <mat-list-item>{{(hostThumbnails|async)}}</mat-list-item>
 
-    <h2 mat-subheader>Query</h2>
-    <mat-list-item>
-        <mat-slide-toggle (change)="onUseInexactIndexChanged($event)" [checked]="(useInexactIndex|async)">Use inexact indexes</mat-slide-toggle>
-    </mat-list-item>
+  <h2 mat-subheader>Query</h2>
+  <mat-list-item>
+    <mat-slide-toggle (change)="onUseInexactIndexChanged($event)" [checked]="(useInexactIndex|async)">Use inexact
+      indexes
+    </mat-slide-toggle>
+  </mat-list-item>
 
-    <h2 mat-subheader>Reset settings</h2>
-    <mat-list-item fxLayout="row" fxLayoutAlign="center">
-        <button mat-raised-button (click)="onResetButtonClicked()" color="warn" matTooltip="Reset and reload settings from server">Reset</button>
-    </mat-list-item>
+  <h2 mat-subheader>Reset settings</h2>
+  <mat-list-item fxLayout="row" fxLayoutAlign="center">
+    <button (click)="onResetButtonClicked()" color="warn" mat-raised-button
+            matTooltip="Reset and reload settings from server">Reset
+    </button>
+  </mat-list-item>
 </mat-list>
 
 

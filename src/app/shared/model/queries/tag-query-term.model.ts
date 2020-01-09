@@ -1,10 +1,10 @@
-import {AbstractQueryTerm} from "./abstract-query-term.model";
+import {AbstractQueryTerm} from './abstract-query-term.model';
 
 export class TagQueryTerm extends AbstractQueryTerm {
-    /**
-     * Default constructor.
-     */
-    constructor() {
-        super("TAG", ["tags"]);
-    }
+  /**
+   * Default constructor.
+   */
+  constructor() {
+    super('TAG', ['tags']);
+  }
 }

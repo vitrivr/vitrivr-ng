@@ -1,4 +1,4 @@
 export enum FilterType {
-    CHECKBOX = 'CHECKBOX',
-    SLIDER = 'SLIDER'
+  CHECKBOX = 'CHECKBOX',
+  SLIDER = 'SLIDER'
 }

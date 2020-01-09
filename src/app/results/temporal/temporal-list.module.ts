@@ -12,9 +12,9 @@ import {VgCoreModule} from 'videogular2/core';
 import {ResultSegmentPreviewTileModule} from '../result-segment-preview-tile/result-segment-preview-tile.module';
 
 @NgModule({
-    imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule, InfiniteScrollModule, VgCoreModule, ResultSegmentPreviewTileModule],
-    declarations: [TemporalListComponent],
-    exports: [TemporalListComponent]
+  imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule, InfiniteScrollModule, VgCoreModule, ResultSegmentPreviewTileModule],
+  declarations: [TemporalListComponent],
+  exports: [TemporalListComponent]
 })
 export class TemporalListModule {
 }

@@ -3,14 +3,14 @@ import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-s
 
 export class ScoredPath {
 
-    constructor(public readonly path: Path, public readonly score: number) {
-    }
+  constructor(public readonly path: Path, public readonly score: number) {
+  }
 
-    public toString() {
-        return this.path.toString() + '::' + this.score;
-    }
+  get segments(): SegmentScoreContainer[] {
+    return Array.from(this.path.pathMap.values());
+  }
 
-    get segments(): SegmentScoreContainer[] {
-        return Array.from(this.path.pathMap.values());
-    }
+  public toString() {
+    return this.path.toString() + '::' + this.score;
+  }
 }

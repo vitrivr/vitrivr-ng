@@ -24,7 +24,7 @@ import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 })
 export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObjectScoreContainer[]> {
 
-    constructor(_cdr: ChangeDetectorRef,
+  constructor(_cdr: ChangeDetectorRef,
               _queryService: QueryService,
               _filterService: FilterService,
               _selectionService: SelectionService,
@@ -37,19 +37,6 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
               _vbs: VbsSubmissionService
   ) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog, _vbs);
-  }
-  /**
-   * This is a helper method to facilitate updating the the list correct. It is necessary due to nesting in the template (two NgFor). To determine, whether to update the view,
-   * angular only takes the outer observable into account. As long as this observable doesn't change, there is now update. Doe to the hierarchical nature of the data, it is -
-   * however - entirely possible that the outer observable is not changed while segments are being added to the container.
-   *
-   * This function created a unique identifier per MediaObjectScoreContainer which takes the number of segments into account.
-   *
-   * @param index
-   * @param {MediaObjectScoreContainer} item
-   */
-  public trackByFunction(index, item: MediaObjectScoreContainer) {
-    return item.objectId + '_' + item.numberOfSegments;
   }
 
   /**
@@ -67,6 +54,24 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
   }
 
   /**
+   * This is a helper method to facilitate updating the the list correct. It is necessary due to nesting in the template (two NgFor). To determine, whether to update the view,
+   * angular only takes the outer observable into account. As long as this observable doesn't change, there is now update. Doe to the hierarchical nature of the data, it is -
+   * however - entirely possible that the outer observable is not changed while segments are being added to the container.
+   *
+   * This function created a unique identifier per MediaObjectScoreContainer which takes the number of segments into account.
+   *
+   * @param index
+   * @param {MediaObjectScoreContainer} item
+   */
+  public trackByFunction(index, item: MediaObjectScoreContainer) {
+    return item.objectId + '_' + item.numberOfSegments;
+  }
+
+  scrollIncrement(): number {
+    return 50;
+  }
+
+  /**
    * Subscribes to the data exposed by the ResultsContainer.
    *
    * @return {Observable<MediaObjectScoreContainer>}
@@ -75,9 +80,5 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
     if (results) {
       this._dataSource = results.mediaobjectsAsObservable;
     }
-  }
-
-  scrollIncrement(): number {
-    return 50;
   }
 }

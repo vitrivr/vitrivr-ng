@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, Component} from "@angular/core";
+import {Component} from '@angular/core';
 
 @Component({
-    moduleId: module.id,
-    selector: 'settings',
-    templateUrl: './settings.component.html',
-    styleUrls: ['./settings.component.css']
+  moduleId: module.id,
+  selector: 'settings',
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent {}
+export class SettingsComponent {
+}

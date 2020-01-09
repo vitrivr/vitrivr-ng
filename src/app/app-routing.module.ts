@@ -12,28 +12,28 @@ import {TemporalListComponent} from './results/temporal/temporal-list.component'
  * Defines the application's routes.
  */
 const appRoutes: Routes = [
-    {
-        path: 'mediaobject/:objectId',
-        component: ObjectdetailsComponent
-    },
-    {path: 'evaluation', component: EvaluationSelectionComponent},
-    {path: 'evaluation/:participant/:template/:name', component: EvaluationComponent},
-    {path: 'evaluation/:participant', component: EvaluationComponent},
-    {path: 'gallery', component: GalleryComponent},
-    {path: 'list', component: ListComponent},
-    {path: 'temporal-list', component: TemporalListComponent},
-    {path: 'mini-gallery', component: MiniGalleryComponent},
-    {path: '', component: MiniGalleryComponent}
+  {
+    path: 'mediaobject/:objectId',
+    component: ObjectdetailsComponent
+  },
+  {path: 'evaluation', component: EvaluationSelectionComponent},
+  {path: 'evaluation/:participant/:template/:name', component: EvaluationComponent},
+  {path: 'evaluation/:participant', component: EvaluationComponent},
+  {path: 'gallery', component: GalleryComponent},
+  {path: 'list', component: ListComponent},
+  {path: 'temporal-list', component: TemporalListComponent},
+  {path: 'mini-gallery', component: MiniGalleryComponent},
+  {path: '', component: MiniGalleryComponent}
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forRoot(appRoutes)
-    ],
-    exports: [
-        RouterModule
-    ],
-    providers: []
+  imports: [
+    RouterModule.forRoot(appRoutes)
+  ],
+  exports: [
+    RouterModule
+  ],
+  providers: []
 })
 
 export class AppRoutingModule {

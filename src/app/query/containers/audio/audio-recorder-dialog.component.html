@@ -1,19 +1,28 @@
 <mat-toolbar color="primary">
-    <button mat-icon-button (click)="onRecordButtonPressed()" *ngIf="recorder.recordingAvailable()"><mat-icon [attr.class]="recorder.isRecording() ? 'material-icons rec-active' : 'material-icons'">fiber_manual_record</mat-icon></button>
-    <button mat-icon-button (click)="onPlayButtonPressed()"><mat-icon [attr.class]="recorder.isPlaying() ? 'material-icons play-active' : 'material-icons'">play_arrow</mat-icon></button>
+  <button (click)="onRecordButtonPressed()" *ngIf="recorder.recordingAvailable()" mat-icon-button>
+    <mat-icon [attr.class]="recorder.isRecording() ? 'material-icons rec-active' : 'material-icons'">
+      fiber_manual_record
+    </mat-icon>
+  </button>
+  <button (click)="onPlayButtonPressed()" mat-icon-button>
+    <mat-icon [attr.class]="recorder.isPlaying() ? 'material-icons play-active' : 'material-icons'">play_arrow
+    </mat-icon>
+  </button>
 
-    <span class="spacer-tiny"></span>
+  <span class="spacer-tiny"></span>
 
-    <span class="label" style="color:white;">{{statustext}}</span>
+  <span class="label" style="color:white;">{{statustext}}</span>
 
-    <span class="spacer-flex"></span>
-    <button mat-icon-button (click)="onLoadAudioPressed()"><mat-icon>file_upload</mat-icon></button>
+  <span class="spacer-flex"></span>
+  <button (click)="onLoadAudioPressed()" mat-icon-button>
+    <mat-icon>file_upload</mat-icon>
+  </button>
 
-    <span class="spacer-tiny"></span>
-    <button mat-icon-button (click)="onSaveButtonPressed()">
-        <mat-icon>save</mat-icon>
-    </button>
+  <span class="spacer-tiny"></span>
+  <button (click)="onSaveButtonPressed()" mat-icon-button>
+    <mat-icon>save</mat-icon>
+  </button>
 </mat-toolbar>
 
 <record-audio #recorder></record-audio>
-<input #audioloader type="file" (change)="onFileAvailable($event)" hidden>
+<input #audioloader (change)="onFileAvailable($event)" hidden type="file">

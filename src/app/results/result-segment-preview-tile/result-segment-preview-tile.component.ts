@@ -125,6 +125,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   public showVbsSubmitButton(): Observable<boolean> {
     return this._vbs.isOn;
   }
+
   /**
    * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
    *

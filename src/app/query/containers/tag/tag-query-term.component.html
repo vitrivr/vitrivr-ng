@@ -1,18 +1,20 @@
 <div [style.padding-left]="'10px'" [style.text-align]="'left'">
-    <mat-form-field class="textinput">
-        <input matInput placeholder="Enter a tag" aria-label="Enter a tag" [matAutocomplete]="auto" [formControl]="field.formControl">
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
-            <mat-option *ngFor="let tag of field.filteredTags | async" [value]="tag">
-                {{tag.name}}
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
-    <mat-chip-list>
-        <mat-chip *ngFor="let tag of tags" [selectable]="true" [removable]="true" (removed)="removeTag(tag)" id="{{tag.id}}">
-            {{tag.name}}
-            <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-    </mat-chip-list>
+  <mat-form-field class="textinput">
+    <input [formControl]="field.formControl" [matAutocomplete]="auto" aria-label="Enter a tag" matInput
+           placeholder="Enter a tag">
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
+      <mat-option *ngFor="let tag of field.filteredTags | async" [value]="tag">
+        {{tag.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  <mat-chip-list>
+    <mat-chip (removed)="removeTag(tag)" *ngFor="let tag of tags" [removable]="true" [selectable]="true"
+              id="{{tag.id}}">
+      {{tag.name}}
+      <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+  </mat-chip-list>
 </div>
 
-<hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>
+<hr [style.margin-bottom]="'20px'" [style.margin-top]="'10px'" class="fade"/>

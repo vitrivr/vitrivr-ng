@@ -3,11 +3,11 @@
  * (e.g. a sequence of a video).
  */
 export interface MediaSegment {
-    segmentId : string,
-    objectId : string, /* FK: Used to associate with MediaObject. */
-    sequenceNumber : number,
-    start : number,
-    end : number,
-    startabs : number,
-    endabs : number
+  segmentId: string,
+  objectId: string, /* FK: Used to associate with MediaObject. */
+  sequenceNumber: number,
+  start: number,
+  end: number,
+  startabs: number,
+  endabs: number
 }

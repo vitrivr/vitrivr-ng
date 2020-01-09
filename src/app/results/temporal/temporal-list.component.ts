@@ -84,6 +84,10 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
     return null;
   }
 
+  scrollIncrement(): number {
+    return 100;
+  }
+
   /**
    * Subscribes to the data exposed by the ResultsContainer.
    */
@@ -99,9 +103,5 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
         );
       });
     }
-  }
-
-  scrollIncrement(): number {
-    return 100;
   }
 }

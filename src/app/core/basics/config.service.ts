@@ -13,33 +13,33 @@ import {first, map} from 'rxjs/operators';
 @Injectable()
 export class ConfigService extends BehaviorSubject<Config> {
 
-    constructor(private _http: HttpClient) {
-        super(new Config());
-        this.reset();
-    }
+  constructor(private _http: HttpClient) {
+    super(new Config());
+    this.reset();
+  }
 
-    /**
-     * Reloads config from server
-     */
-    public reset() {
-        this.loadFromServer().subscribe(c => this.next(c));
-    }
+  /**
+   * Reloads config from server
+   */
+  public reset() {
+    this.loadFromServer().subscribe(c => this.next(c));
+  }
 
-    /**
-     * Loads the configuration from the server (config.json) and returns the parsed version as Observable.
-     *
-     * @return {Observable<Config>}
-     */
-    private loadFromServer(): Observable<Config> {
-        return this._http.get('config.json?r=' + UUIDGenerator.suid()).pipe(
-            map((r: Object) => {
-                if (r) {
-                    return Config.deserialize(r)
-                } else {
-                    return null;
-                }
-            }),
-            first()
-        );
-    }
+  /**
+   * Loads the configuration from the server (config.json) and returns the parsed version as Observable.
+   *
+   * @return {Observable<Config>}
+   */
+  private loadFromServer(): Observable<Config> {
+    return this._http.get('config.json?r=' + UUIDGenerator.suid()).pipe(
+      map((r: Object) => {
+        if (r) {
+          return Config.deserialize(r)
+        } else {
+          return null;
+        }
+      }),
+      first()
+    );
+  }
 }

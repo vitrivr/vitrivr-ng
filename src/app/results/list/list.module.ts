@@ -13,8 +13,8 @@ import {ResultSegmentPreviewTileModule} from '../result-segment-preview-tile/res
 
 @NgModule({
   imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule, InfiniteScrollModule, VgCoreModule, ResultSegmentPreviewTileModule],
-    declarations: [ListComponent],
-    exports: [ListComponent]
+  declarations: [ListComponent],
+  exports: [ListComponent]
 })
 export class ListModule {
 }

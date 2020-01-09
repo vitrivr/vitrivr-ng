@@ -1,20 +1,20 @@
-<div id="{{id}}" class="segment" draggable="true" (mouseenter)="focus = true" (mouseleave)="focus = false"
-     (dragstart)="container.onTileDrag($event, segment, segment.objectScoreContainer)"
-     [style.background]="container.backgroundForScore(score,segment)">
-  <img *ngIf="!(this._keyboardService.ctrlPressed | async) || !inFocus"
-       src="{{container._resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false"
-       (click)="onTileClicked($event)"/>
+<div (dragstart)="container.onTileDrag($event, segment, segment.objectScoreContainer)" (mouseenter)="focus = true" (mouseleave)="focus = false" [style.background]="container.backgroundForScore(score,segment)" class="segment"
+     draggable="true"
+     id="{{id}}">
+  <img (click)="onTileClicked($event)"
+       *ngIf="!(this._keyboardService.ctrlPressed | async) || !inFocus" draggable="false"
+       src="{{container._resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}"/>
 
-  <vg-player *ngIf="(playVideo(segment) | async) " (onPlayerReady)="onPlayerReady($event, segment)">
-    <video #media [vgMedia]="media" preload="auto" [autoplay]="true"
+  <vg-player (onPlayerReady)="onPlayerReady($event, segment)" *ngIf="(playVideo(segment) | async) ">
+    <video #media [autoplay]="true" [vgMedia]="media" preload="auto"
            src="{{container._resolver.pathToObject(segment.objectScoreContainer)}}">
     </video>
   </vg-player>
 
   <div *ngIf="inFocus" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
-    <button *ngFor="let tag of container.selectionService.availableTags" mat-icon-button
-            matTooltip="Toggle '{{tag.name}}' tag" (click)="container.onHighlightButtonClicked(segment,tag)"
-            (contextmenu)="container.onHighlightButtonRightClicked($event, segment,tag)">
+    <button (click)="container.onHighlightButtonClicked(segment,tag)" (contextmenu)="container.onHighlightButtonRightClicked($event, segment,tag)"
+            *ngFor="let tag of container.selectionService.availableTags" mat-icon-button
+            matTooltip="Toggle '{{tag.name}}' tag">
       <mat-icon
           [style.color]="container.selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">
         album
@@ -23,25 +23,25 @@
   </div>
 
   <div *ngIf="inFocus" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
-    <button *ngIf="(showVbsSubmitButton() | async)" mat-icon-button
-            (click)="onSubmitButtonClicked()" matTooltip="Submit segment to VBS">
+    <button (click)="onSubmitButtonClicked()" *ngIf="(showVbsSubmitButton() | async)"
+            mat-icon-button matTooltip="Submit segment to VBS">
       <mat-icon>send</mat-icon>
     </button>
 
-    <button mat-icon-button (click)="container.onDetailsButtonClicked(segment)" matTooltip="Show details">
+    <button (click)="container.onDetailsButtonClicked(segment)" mat-icon-button matTooltip="Show details">
       <mat-icon>remove_red_eye</mat-icon>
     </button>
 
-    <button mat-icon-button (click)="container.onInformationButtonClicked(segment)" matTooltip="Feature information">
+    <button (click)="container.onInformationButtonClicked(segment)" mat-icon-button matTooltip="Feature information">
       <mat-icon>help</mat-icon>
     </button>
 
-    <button mat-icon-button (click)="container.onMltButtonClicked(segment)" matTooltip="More-like-this">
+    <button (click)="container.onMltButtonClicked(segment)" mat-icon-button matTooltip="More-like-this">
       <mat-icon>youtube_searched_for</mat-icon>
     </button>
 
-    <button mat-icon-button (click)="onNeighborsButtonClicked()"
-            (contextmenu)="onNeighborsButtonRightClicked($event)"
+    <button (click)="onNeighborsButtonClicked()" (contextmenu)="onNeighborsButtonRightClicked($event)"
+            mat-icon-button
             matTooltip="Load neighboring segments">
       <mat-icon>settings_ethernet</mat-icon>
     </button>

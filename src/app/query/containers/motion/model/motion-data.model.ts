@@ -1,5 +1,6 @@
-import {MotionPath} from "./motion-path.model";
+import {MotionPath} from './motion-path.model';
+
 export interface MotionData {
-    foreground: MotionPath[];
-    background: MotionPath[];
+  foreground: MotionPath[];
+  background: MotionPath[];
 }

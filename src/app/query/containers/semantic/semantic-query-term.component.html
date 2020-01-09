@@ -1,2 +1,3 @@
-<img #previewimg class="previewimg" width="150" style="background-image: url('assets/images/transparent.png')" (click)="onViewerClicked()"  matTooltip="Click to drawn a semantic sketch."/>
-<hr class="fade" [style.margin-top]="'10px'" [style.margin-bottom]="'20px'"/>
+<img #previewimg (click)="onViewerClicked()" class="previewimg" matTooltip="Click to drawn a semantic sketch."
+     style="background-image: url('assets/images/transparent.png')" width="150"/>
+<hr [style.margin-bottom]="'20px'" [style.margin-top]="'10px'" class="fade"/>

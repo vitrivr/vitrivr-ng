@@ -38,6 +38,37 @@ export class BoolAttribute {
   public readonly featureName: string;
 
   /**
+   * @param displayName how the attribute should be displayed
+   * @param featureName how the feature is named in cineast
+   * @param operators if no operator is specified, operators are chosen based on the defaults provided per ValueType
+   * @param valueType type of attribute
+   * @param options for the Options ValueType, a list of strings can be provided which will be displayed in a dropdown
+   * @param range for the Between ValueType, two numbers can be provided. A slider will enable to user to set the desired range.
+   */
+  constructor(displayName: string, featureName: string, valueType: ValueType, operators?: BoolOperator[], options?: string[], range?: [number, number]) {
+    this.displayName = displayName;
+    this.featureName = featureName;
+    this.valueType = valueType;
+    if (operators) {
+      this.operators = operators;
+    } else {
+      this.operators = BoolAttribute.getDefaultOperatorsByValueType(valueType)
+    }
+    if (options) {
+      this.options = options;
+    }
+    if (range) {
+      this.range = range;
+      this.sliderOptions = {
+        floor: range[0],
+        ceil: range[1],
+      };
+      this.minValue = this.sliderOptions.floor;
+      this.maxValue = this.sliderOptions.ceil;
+    }
+  }
+
+  /**
    * Default Operators are available per ValueType
    */
   public static getDefaultOperatorsByValueType(type: ValueType): BoolOperator[] {
@@ -96,36 +127,5 @@ export class BoolAttribute {
     }
     console.error('Could not match operator ' + operator);
     return '';
-  }
-
-  /**
-   * @param displayName how the attribute should be displayed
-   * @param featureName how the feature is named in cineast
-   * @param operators if no operator is specified, operators are chosen based on the defaults provided per ValueType
-   * @param valueType type of attribute
-   * @param options for the Options ValueType, a list of strings can be provided which will be displayed in a dropdown
-   * @param range for the Between ValueType, two numbers can be provided. A slider will enable to user to set the desired range.
-   */
-  constructor(displayName: string, featureName: string, valueType: ValueType, operators?: BoolOperator[], options?: string[], range?: [number, number]) {
-    this.displayName = displayName;
-    this.featureName = featureName;
-    this.valueType = valueType;
-    if (operators) {
-      this.operators = operators;
-    } else {
-      this.operators = BoolAttribute.getDefaultOperatorsByValueType(valueType)
-    }
-    if (options) {
-      this.options = options;
-    }
-    if (range) {
-      this.range = range;
-      this.sliderOptions = {
-        floor: range[0],
-        ceil: range[1],
-      };
-      this.minValue = this.sliderOptions.floor;
-      this.maxValue = this.sliderOptions.ceil;
-    }
   }
 }

@@ -15,72 +15,72 @@ import {webSocket} from 'rxjs/webSocket';
 @Injectable()
 export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Message>> {
 
-    /** Reference to the current Config held by WebSocketFactoryService. */
-    private _config: Config;
+  /** Reference to the current Config held by WebSocketFactoryService. */
+  private _config: Config;
 
-    /** Default constructor. */
-    constructor(@Inject(ConfigService) private _configService: ConfigService) {
-        super(null);
-        this._configService.pipe(
-            filter(c => c.endpoint_ws != null),
-        ).subscribe(c => this.connect(c))
+  /** Default constructor. */
+  constructor(@Inject(ConfigService) private _configService: ConfigService) {
+    super(null);
+    this._configService.pipe(
+      filter(c => c.endpoint_ws != null),
+    ).subscribe(c => this.connect(c))
+  }
+
+  /**
+   * Reconnects the WebSocket using the current settings. If the active WebSocket instance is connected, that connection is dropped.
+   */
+  public reconnect() {
+    /* If there is an active WebSocketSubject then disconnect it. */
+    if (this.getValue() != null) {
+      console.log('disconnecting to reconnect');
+      this.getValue().complete();
     }
 
-    /**
-     * Establishes a connection to the provided endpoint using the provided config. Connection is only established if
-     * endpoint config has changed.
-     */
-    private connect(c: Config) {
+    /* Create observers for WebSocket status. */
+    let openObserver = <NextObserver<Event>>{
+      next: (ev: Event) => {
+        console.log(`WebSocket connected to Cineast (${this._config.endpoint_ws}).`);
+      }
+    };
+    let closeObserver = <NextObserver<CloseEvent>>{
+      next: (ev: CloseEvent) => {
+        console.log(`WebSocket disconnected from Cineast (${this._config.endpoint_ws}, Code: ${ev.code}).`);
+      }
+    };
 
-        /* Check if connection has changed. */
-        if (this._config && this._config.endpoint_ws == c.endpoint_ws) {
-            return false;
+    /* Prepare config and create new WebSocket. */
+    let config: WebSocketSubjectConfig<Message> = <WebSocketSubjectConfig<Message>>{
+      url: this._config.endpoint_ws,
+      openObserver: openObserver,
+      closeObserver: closeObserver,
+      serializer: (m: Message) => JSON.stringify(m, (key, value) => {
+        if (key.startsWith('_')) {
+          return undefined;
+        } else {
+          return value
         }
+      })
+    };
 
-        /* Update local config instance. */
-        this._config = c;
+    /* Publish next WebSocketSubject. */
+    this.next(webSocket(config));
+  }
 
-        /* Reconnect. */
-        this.reconnect()
+  /**
+   * Establishes a connection to the provided endpoint using the provided config. Connection is only established if
+   * endpoint config has changed.
+   */
+  private connect(c: Config) {
+
+    /* Check if connection has changed. */
+    if (this._config && this._config.endpoint_ws == c.endpoint_ws) {
+      return false;
     }
 
-    /**
-     * Reconnects the WebSocket using the current settings. If the active WebSocket instance is connected, that connection is dropped.
-     */
-    public reconnect() {
-        /* If there is an active WebSocketSubject then disconnect it. */
-        if (this.getValue() != null) {
-            console.log('disconnecting to reconnect');
-            this.getValue().complete();
-        }
+    /* Update local config instance. */
+    this._config = c;
 
-        /* Create observers for WebSocket status. */
-        let openObserver = <NextObserver<Event>>{
-            next: (ev: Event) => {
-                console.log(`WebSocket connected to Cineast (${this._config.endpoint_ws}).`);
-            }
-        };
-        let closeObserver = <NextObserver<CloseEvent>>{
-            next: (ev: CloseEvent) => {
-                console.log(`WebSocket disconnected from Cineast (${this._config.endpoint_ws}, Code: ${ev.code}).`);
-            }
-        };
-
-        /* Prepare config and create new WebSocket. */
-        let config: WebSocketSubjectConfig<Message> = <WebSocketSubjectConfig<Message>>{
-            url: this._config.endpoint_ws,
-            openObserver: openObserver,
-            closeObserver: closeObserver,
-            serializer: (m: Message) => JSON.stringify(m, (key, value) => {
-                if (key.startsWith('_')) {
-                    return undefined;
-                } else {
-                    return value
-                }
-            })
-        };
-
-        /* Publish next WebSocketSubject. */
-        this.next(webSocket(config));
-    }
+    /* Reconnect. */
+    this.reconnect()
+  }
 }

@@ -1,11 +1,11 @@
 <mat-card draggable="true" style="margin:10px;padding:10px;">
   <mat-card-header style="margin-bottom:15px;">
-    <div style="width:100%;" fxLayout="col">
-        <!-- TODO Layout and icons. The up/down buttons ideally are chevrons and are on top and below centered-->
-      <button class="icon-button" (click)="moveQueryContainerUp()" matTooltip="Temporally earlier...">^</button>
+    <div fxLayout="col" style="width:100%;">
+      <!-- TODO Layout and icons. The up/down buttons ideally are chevrons and are on top and below centered-->
+      <button (click)="moveQueryContainerUp()" class="icon-button" matTooltip="Temporally earlier...">^</button>
 
-      <div fxLayout="row" fxLayoutWrap fxLayoutGap="15px" style="width:90%;">
-        <button *ngIf="(config|async).get('query.options.image')" (click)="onToggleButtonClicked('IMAGE')"
+      <div fxLayout="row" fxLayoutGap="15px" fxLayoutWrap style="width:90%;">
+        <button (click)="onToggleButtonClicked('IMAGE')" *ngIf="(config|async).get('query.options.image')"
                 class="icon-button" matTooltip="Toggle image query term">
           <mat-icon
               [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -13,7 +13,7 @@
           </mat-icon>
         </button>
 
-        <button *ngIf="(config|async).get('query.options.audio')" (click)="onToggleButtonClicked('AUDIO')"
+        <button (click)="onToggleButtonClicked('AUDIO')" *ngIf="(config|async).get('query.options.audio')"
                 class="icon-button" matTooltip="Toggle audio query term">
           <mat-icon
               [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -21,7 +21,7 @@
           </mat-icon>
         </button>
 
-        <button *ngIf="(config|async).get('query.options.model3d')" (click)="onToggleButtonClicked('MODEL3D')"
+        <button (click)="onToggleButtonClicked('MODEL3D')" *ngIf="(config|async).get('query.options.model3d')"
                 class="icon-button" matTooltip="Toggle 3D query term">
           <mat-icon
               [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -29,7 +29,7 @@
           </mat-icon>
         </button>
 
-        <button *ngIf="(config|async).get('query.options.motion')" (click)="onToggleButtonClicked('MOTION')"
+        <button (click)="onToggleButtonClicked('MOTION')" *ngIf="(config|async).get('query.options.motion')"
                 class="icon-button" matTooltip="Toggle motion query term">
           <mat-icon
               [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -37,7 +37,7 @@
           </mat-icon>
         </button>
 
-        <button *ngIf="(config|async).get('query.options.text')" (click)="onToggleButtonClicked('TEXT')"
+        <button (click)="onToggleButtonClicked('TEXT')" *ngIf="(config|async).get('query.options.text')"
                 class="icon-button" matTooltip="Toggle text query term">
           <mat-icon
               [attr.class]="containerModel.hasTerm('TEXT') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -45,7 +45,7 @@
           </mat-icon>
         </button>
 
-        <button *ngIf="(config|async).get('query.options.tag')" (click)="onToggleButtonClicked('TAG')"
+        <button (click)="onToggleButtonClicked('TAG')" *ngIf="(config|async).get('query.options.tag')"
                 class="icon-button" matTooltip="Toggle tag query term">
           <mat-icon
               [attr.class]="containerModel.hasTerm('TAG') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -53,7 +53,7 @@
           </mat-icon>
         </button>
 
-        <button *ngIf="(config|async).get('query.options.semantic')" (click)="onToggleButtonClicked('SEMANTIC')"
+        <button (click)="onToggleButtonClicked('SEMANTIC')" *ngIf="(config|async).get('query.options.semantic')"
                 class="icon-button" matTooltip="Toggle semantic sketch query term">
           <mat-icon
               [attr.class]="containerModel.hasTerm('SEMANTIC') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -61,7 +61,7 @@
           </mat-icon>
         </button>
 
-        <button *ngIf="(config|async).get('query.options.boolean')" (click)="onToggleButtonClicked('BOOLEAN')"
+        <button (click)="onToggleButtonClicked('BOOLEAN')" *ngIf="(config|async).get('query.options.boolean')"
                 class="icon-button" matTooltip="Toggle boolean query term">
           <mat-icon
               [attr.class]="containerModel.hasTerm('BOOLEAN') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -70,7 +70,7 @@
         </button>
       </div>
       <div style="width:10%;">
-        <button class="icon-button" (click)="onRemoveButtonClicked()" matTooltip="Remove query container">
+        <button (click)="onRemoveButtonClicked()" class="icon-button" matTooltip="Remove query container">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -89,6 +89,6 @@
     <app-qt-bool *ngIf="containerModel.hasTerm('BOOLEAN')" [boolTerm]="containerModel.getTerm('BOOLEAN')"></app-qt-bool>
   </mat-card-content>
   <mat-card-footer>
-    <button class="icon-button" (click)="moveQueryContainerDown()" matTooltip="Temporally later...">V</button>
+    <button (click)="moveQueryContainerDown()" class="icon-button" matTooltip="Temporally later...">V</button>
   </mat-card-footer>
 </mat-card>

@@ -18,27 +18,6 @@ export abstract class ScoreContainer {
   protected _score = 0;
 
   /**
-   * Adds a Similarity object to the ScoreContainer. Usually, that object is somehow used to influence,
-   * change the score of the Container.
-   *
-   * @param category Category for which to add the similarity value.
-   * @param similarity Similarity value
-   * @param containerId The containerId this similarity corresponds to
-   */
-  public abstract addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number): void;
-
-
-  /**
-   * Method can be used to update the score of a ScoreContainer given a list of
-   * feature categories and a weightPercentage function.
-   *
-   * @param features List of results that should be used to calculate the score.
-   * @param func The weightPercentage function that should be used to calculate the score.
-   * @param containerId The containerId this similarity corresponds to
-   */
-  public abstract update(features: WeightedFeatureCategory[], func: FusionFunction, containerId: number): void;
-
-  /**
    * Getter for the container's score.
    */
   get score(): number {
@@ -71,4 +50,24 @@ export abstract class ScoreContainer {
   public static compareAsc(a: ScoreContainer, b: ScoreContainer) {
     return a._score - b._score;
   }
+
+  /**
+   * Adds a Similarity object to the ScoreContainer. Usually, that object is somehow used to influence,
+   * change the score of the Container.
+   *
+   * @param category Category for which to add the similarity value.
+   * @param similarity Similarity value
+   * @param containerId The containerId this similarity corresponds to
+   */
+  public abstract addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number): void;
+
+  /**
+   * Method can be used to update the score of a ScoreContainer given a list of
+   * feature categories and a weightPercentage function.
+   *
+   * @param features List of results that should be used to calculate the score.
+   * @param func The weightPercentage function that should be used to calculate the score.
+   * @param containerId The containerId this similarity corresponds to
+   */
+  public abstract update(features: WeightedFeatureCategory[], func: FusionFunction, containerId: number): void;
 }

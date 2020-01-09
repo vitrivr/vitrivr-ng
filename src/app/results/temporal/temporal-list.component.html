@@ -1,22 +1,22 @@
 <div style="padding:10px;">
-  <p class="background-prompt" *ngIf="!(dataSource | async) && !loading">No results available. Please start a
+  <p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
     search...</p>
 
-  <p class="background-prompt" *ngIf="!(dataSource | async) && loading">
+  <p *ngIf="!(dataSource | async) && loading" class="background-prompt">
     <mat-spinner></mat-spinner>
   </p>
 
-  <div class="list" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true"
-       [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()"
-       (scrolledUp)="decrementCount()">
+  <div (scrolled)="incrementCount()" (scrolledUp)="decrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
+       [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="list"
+       infiniteScroll>
 
     <div
         *ngFor="let objectPathContainer of (((dataSource | async) | OrderObjectByBestPathScorePipe) | FilterPipe: (objectFilter|async) | LimitPipe : count)"
         class="objectPathContainer">
-      <app-result-segment-preview-tile [container]="this"
-                                       *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
-                                       [segment]="pathSegment.segment"
-                                       [score]="pathSegment.score"></app-result-segment-preview-tile>
+      <app-result-segment-preview-tile *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
+                                       [container]="this"
+                                       [score]="pathSegment.score"
+                                       [segment]="pathSegment.segment"></app-result-segment-preview-tile>
     </div>
   </div>
 </div>

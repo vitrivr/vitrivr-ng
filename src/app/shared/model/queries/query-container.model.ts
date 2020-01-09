@@ -9,7 +9,6 @@ import {MotionQueryTerm} from './motion-query-term.model';
 import {TextQueryTerm} from './text-query-term.model';
 import {TagQueryTerm} from './tag-query-term.model';
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
-import {UUIDGenerator} from '../../util/uuid-generator.util';
 
 export class QueryContainer implements QueryContainerInterface {
 

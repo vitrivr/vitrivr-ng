@@ -1,43 +1,44 @@
 <mat-dialog-content>
-    <mat-toolbar color="primary">
-        <mat-icon matTooltip="Pencil size">border_color</mat-icon>
-        <span class="spacer-tiny"></span>
-        <mat-slider min="1" max="100" step="1" [(ngModel)]="linesize" [style.min-width]="'100px'" (change)="onLineSizeChange()" tickInterval="auto"></mat-slider>
+  <mat-toolbar color="primary">
+    <mat-icon matTooltip="Pencil size">border_color</mat-icon>
+    <span class="spacer-tiny"></span>
+    <mat-slider (change)="onLineSizeChange()" [(ngModel)]="linesize" [style.min-width]="'100px'" max="100" min="1"
+                step="1" tickInterval="auto"></mat-slider>
 
-        <span class="spacer-flex"></span>
+    <span class="spacer-flex"></span>
 
-        <button mat-icon-button (click)="onFillCanvasClicked()" matTooltip="Fill canvas with color.">
-            <mat-icon>format_color_fill</mat-icon>
-        </button>
+    <button (click)="onFillCanvasClicked()" mat-icon-button matTooltip="Fill canvas with color.">
+      <mat-icon>format_color_fill</mat-icon>
+    </button>
 
-        <button mat-icon-button (click)="onClearCanvasClicked()" matTooltip="Clear canvas.">
-            <mat-icon>delete</mat-icon>
-        </button>
+    <button (click)="onClearCanvasClicked()" mat-icon-button matTooltip="Clear canvas.">
+      <mat-icon>delete</mat-icon>
+    </button>
 
-        <span class="spacer-flex"></span>
+    <span class="spacer-flex"></span>
 
-        <button mat-icon-button (click)="onLoadImage()"  matTooltip="Load image from computer.">
-            <mat-icon>file_upload</mat-icon>
-        </button>
+    <button (click)="onLoadImage()" mat-icon-button matTooltip="Load image from computer.">
+      <mat-icon>file_upload</mat-icon>
+    </button>
 
-        <button mat-icon-button (click)="close()">
-            <mat-icon matTooltip="Close window and save.">close</mat-icon>
-        </button>
-    </mat-toolbar>
+    <button (click)="close()" mat-icon-button>
+      <mat-icon matTooltip="Close window and save.">close</mat-icon>
+    </button>
+  </mat-toolbar>
 
 
-    <sketch-canvas #sketch [width]="450" [height]="450"></sketch-canvas>
-    <input #imageloader type="file" (change)="onFileAvailable($event)" hidden>
+  <sketch-canvas #sketch [height]="450" [width]="450"></sketch-canvas>
+  <input #imageloader (change)="onFileAvailable($event)" hidden type="file">
 
-    <div class="picker">
-        <span [style.display] = "'none'"
+  <div class="picker">
+        <span (colorPickerChange)="onColorChange()"
               [(colorPicker)]="color"
-              (colorPickerChange)="onColorChange()"
-              [cpDialogDisplay]="'inline'"
-              [cpUseRootViewContainer]="true"
-              [cpToggle]="true"
               [cpAlphaChannel]="'disabled'"
-              [cpPresetColors]="preset">
+              [cpDialogDisplay]="'inline'"
+              [cpPresetColors]="preset"
+              [cpToggle]="true"
+              [cpUseRootViewContainer]="true"
+              [style.display]="'none'">
         </span>
-    </div>
+  </div>
 </mat-dialog-content>
