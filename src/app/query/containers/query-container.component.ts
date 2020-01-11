@@ -7,7 +7,8 @@ import {Observable} from 'rxjs';
 
 @Component({
   selector: 'query-container',
-  templateUrl: 'query-container.component.html'
+  templateUrl: 'query-container.component.html',
+  styleUrls: ['./query-container.component.css']
 })
 
 export class QueryContainerComponent {
@@ -66,8 +67,8 @@ export class QueryContainerComponent {
    */
   public moveQueryContainerUp() {
     console.log(`[QueryC.up] Before = ${this.inList}`);
-    const index = this.inList.indexOf(this.containerModel);
-    if (index > 0) {
+    if (this.isNotFirst) {
+      const index = this.index;
       const container = this.inList[index - 1];
       this.inList[index - 1] = this.containerModel;
       this.inList[index] = container;
@@ -77,12 +78,30 @@ export class QueryContainerComponent {
 
   public moveQueryContainerDown() {
     console.log(`[QueryC.down] Before = ${this.inList}`);
-    const index = this.inList.indexOf(this.containerModel);
-    if (index > -1 && index < this.inList.length - 1) {
+    if (this.isNotLast) {
+      const index = this.index;
       const container = this.inList[index + 1];
       this.inList[index + 1] = this.containerModel;
       this.inList[index] = container;
     }
     console.log(`[QueryC.down] After = ${this.inList}`)
+  }
+
+  /**
+   * Returns true if this container is no the first one
+   */
+  get isNotFirst(): boolean {
+    return this.index > 0;
+  }
+
+  /**
+   * Returns true if this container is not the last one
+   */
+  get isNotLast(): boolean {
+    return this.index > -1 && this.index < this.inList.length - 1;
+  }
+
+  private get index(): number {
+    return this.inList.indexOf(this.containerModel);
   }
 }

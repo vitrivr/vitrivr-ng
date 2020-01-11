@@ -1,0 +1,17 @@
+/* This is a hack to remove this super annoying margin.
+the .mat-card-header-text is automatically added and I don't know how to prevent this.
+ */
+.mat-card-header-text {
+  margin: 0px;
+}
+
+/**
+Puts something in the upper right corner of its parent
+
+Arguments experimentally found.
+ */
+.right-corner {
+  position: absolute;
+  top: -0.75em;
+  right: -0.75em;
+}
