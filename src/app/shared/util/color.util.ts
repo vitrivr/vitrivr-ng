@@ -72,4 +72,20 @@ export class ColorUtil {
     }
     return color
   }
+
+
+  /**
+   * Generates a color on the 'jet' color palette
+   * @param v value between 0 and 1
+   */
+  public static jet(v: number): string {
+    // return clamp(vec3(1.5) - abs(4.0 * vec3(v) + vec3(-3, -2, -1)), vec3(0), vec3(1));
+    return ColorUtil.rgbToHex(
+        255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 3))),
+        255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 2))),
+        255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 1)))
+    );
+  }
+
+
 }
