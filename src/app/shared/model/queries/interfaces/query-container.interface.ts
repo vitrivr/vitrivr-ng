@@ -14,4 +14,8 @@ export interface QueryContainerInterface {
   removeTerm(type: QueryTermType): boolean;
 
   hasTerm(type: QueryTermType): boolean;
+
+  getTerm(type: QueryTermType): QueryTermInterface;
+
+  getTermIndex(type: QueryTermType): number;
 }

@@ -86,14 +86,14 @@
     <ng-container *ngFor="let qt of containerModel.terms" [ngSwitch]="qt.type">
       <!-- PREVIOUS DIVIDER: <hr *ngIf="containerModel.hasTerm('AUDIO')" _ngcontent-c25="" class="fade"
         style="margin-bottom: 20px; margin-top: 10px;"> -->
-      <qt-image *ngSwitchCase="'IMAGE'" [imageTerm]="qt"></qt-image>
-      <qt-audio *ngSwitchCase="'AUDIO'" [audioTerm]="qt"></qt-audio>
-      <qt-m3d *ngSwitchCase="'MODEL3D'" [m3dTerm]="qt"></qt-m3d>
-      <qt-motion *ngSwitchCase="'MOTION'" [motionTerm]="qt"></qt-motion>
-      <qt-text *ngSwitchCase="'TEXT'" [textTerm]="qt"></qt-text>
-      <qt-tag *ngSwitchCase="'TAG'" [tagTerm]="qt"></qt-tag>
-      <qt-semantic *ngSwitchCase="'SEMANTIC'" [semanticTerm]="containerModel.getTerm('SEMANTIC')"></qt-semantic>
-      <app-qt-bool *ngSwitchCase="'BOOLEAN'" [boolTerm]="containerModel.getTerm('BOOLEAN')"></app-qt-bool>
+      <qt-image *ngSwitchCase="'IMAGE'" [imageTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-image>
+      <qt-audio *ngSwitchCase="'AUDIO'" [audioTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-audio>
+      <qt-m3d *ngSwitchCase="'MODEL3D'" [m3dTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-m3d>
+      <qt-motion *ngSwitchCase="'MOTION'" [motionTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-motion>
+      <qt-text *ngSwitchCase="'TEXT'" [textTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-text>
+      <qt-tag *ngSwitchCase="'TAG'" [tagTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-tag>
+      <qt-semantic *ngSwitchCase="'SEMANTIC'" [semanticTerm]="containerModel.getTerm('SEMANTIC')" [hasSuccessor]="hasTermSuccessor(qt)"></qt-semantic>
+      <app-qt-bool *ngSwitchCase="'BOOLEAN'" [boolTerm]="containerModel.getTerm('BOOLEAN')" [hasSuccessor]="hasTermSuccessor(qt)"></app-qt-bool>
     </ng-container>
   </mat-card-content>
   <mat-card-footer *ngIf="isNotLast">

@@ -4,6 +4,7 @@ import {QueryTermType} from '../../shared/model/queries/interfaces/query-term-ty
 import {ConfigService} from '../../core/basics/config.service';
 import {Config} from '../../shared/model/config/config.model';
 import {Observable} from 'rxjs';
+import {QueryTermInterface} from '../../shared/model/queries/interfaces/query-term.interface';
 
 @Component({
   selector: 'query-container',
@@ -37,6 +38,24 @@ export class QueryContainerComponent {
    */
   get config(): Observable<Config> {
     return this._config;
+  }
+
+  /**
+   * Returns true if this container is no the first one
+   */
+  get isNotFirst(): boolean {
+    return this.index > 0;
+  }
+
+  /**
+   * Returns true if this container is not the last one
+   */
+  get isNotLast(): boolean {
+    return this.index > -1 && this.index < this.inList.length - 1;
+  }
+
+  private get index(): number {
+    return this.inList.indexOf(this.containerModel);
   }
 
   /**
@@ -87,21 +106,7 @@ export class QueryContainerComponent {
     console.log(`[QueryC.down] After = ${this.inList}`)
   }
 
-  /**
-   * Returns true if this container is no the first one
-   */
-  get isNotFirst(): boolean {
-    return this.index > 0;
-  }
-
-  /**
-   * Returns true if this container is not the last one
-   */
-  get isNotLast(): boolean {
-    return this.index > -1 && this.index < this.inList.length - 1;
-  }
-
-  private get index(): number {
-    return this.inList.indexOf(this.containerModel);
+  private hasTermSuccessor(qt: QueryTermInterface): boolean {
+    return this.containerModel.getTermIndex(qt.type) !== this.containerModel.terms.length - 1;
   }
 }

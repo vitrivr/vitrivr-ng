@@ -106,4 +106,8 @@ export class QueryContainer implements QueryContainerInterface {
   public getTerm(type: QueryTermType): QueryTermInterface {
     return this._terms_map.get(type)
   }
+
+  public getTermIndex(type: QueryTermType): number {
+    return Array.from(this._terms_map.keys()).indexOf(type);
+  }
 }

@@ -6,13 +6,14 @@ import {first} from 'rxjs/operators';
 import {SemanticSketchDialogComponent} from './semantic-sketch-dialog.component';
 import {SemanticQueryTerm} from '../../../shared/model/queries/semantic/semantic-query-term.model';
 import {SemanticMap} from '../../../shared/model/queries/semantic/semantic-map.model';
+import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-semantic',
   templateUrl: 'semantic-query-term.component.html',
   styleUrls: ['semantic-query-term.component.css']
 })
-export class SemanticQueryTermComponent {
+export class SemanticQueryTermComponent extends AbstractQueryTermComponent{
 
   /** Component used to display a preview of the selected AND/OR sketched image. */
   @ViewChild('previewimg')
@@ -30,6 +31,7 @@ export class SemanticQueryTermComponent {
    * @param _http
    */
   constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {
+    super();
   }
 
   /**
