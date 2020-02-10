@@ -9,7 +9,7 @@ script:
 - ng build
 before_deploy:
 - npm install -g @angular/cli
-- ng build -prod
+- ng build --prod
 - tar -zcvf vitrivr-dist.tar dist
 deploy:
   provider: releases

@@ -45,7 +45,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   @Input() score: number;
 
-  constructor(private _keyboardService: KeyboardService,
+  constructor(readonly _keyboardService: KeyboardService,
               private _queryService: QueryService,
               private _eventBusService: EventBusService,
               private _vbs: VbsSubmissionService,
