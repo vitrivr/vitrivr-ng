@@ -5,6 +5,7 @@ import {SegmentScoreContainer} from '../scores/segment-score-container.model';
 import {MaxpoolFusionFunction} from './maxpool-fusion-function.model';
 import {ScoredPath} from '../../../../results/temporal/scored-path.model';
 import {Path} from '../../../../results/temporal/path.model';
+import {TemporalDistance} from '../../../../query/temporal-distance/temporal-distance.model';
 
 type SegmentId = string;
 type ObjectId = string;
@@ -17,7 +18,7 @@ export class TemporalFusionFunction implements FusionFunction {
 
   /** The current number of query containers */
   static queryContainerCount: number;
-  private static readonly TEMPORAL_DISTANCE_CAP = 30; // 30s
+  private static readonly DEFAULT_TEMPORAL_DISTANCE = new TemporalDistance(30, 'LESS'); // 30s
   private static _instance: TemporalFusionFunction = new TemporalFusionFunction();
   /** The underlying FusionFunction to use for segments */
   private _segmentFusionFunction: FusionFunction = new MaxpoolFusionFunction();
@@ -30,19 +31,14 @@ export class TemporalFusionFunction implements FusionFunction {
 
   private _verbose = false;
 
+  /** The temporal distance in secods **/
+  private _temporalDistance = TemporalFusionFunction.DEFAULT_TEMPORAL_DISTANCE;
+
   private constructor() {
   }
 
   public static instance(): TemporalFusionFunction {
     return TemporalFusionFunction._instance;
-  }
-
-  /**
-   * Check whether a segment is a logical successor to another (e.g. temporally close and increasing container ids)
-   */
-  // tslint:disable-next-line:member-ordering
-  private static isLogicalSuccessor(predecessor: SegmentScoreContainer, predecessorContainerId: ContainerId, successor: SegmentScoreContainer, containerId: ContainerId): boolean {
-    return successor.startabs - predecessor.endabs <= TemporalFusionFunction.TEMPORAL_DISTANCE_CAP && predecessorContainerId < containerId;
   }
 
   /**
@@ -144,6 +140,25 @@ export class TemporalFusionFunction implements FusionFunction {
     return 'temporal';
   }
 
+  /**
+   * Sets the temporal distance, defaults to 30s.
+   *
+   * @param amount Temporal distance in seconds
+   */
+  public setTemporalDistance(amount: TemporalDistance) {
+    const prev = this._temporalDistance;
+    this._temporalDistance = amount;
+    console.log(`[TS.setTempDist] Updating temp dist (prev=${prev}) to ${this._temporalDistance}`);
+  }
+
+  /**
+   * Check whether a segment is a logical successor to another (e.g. temporally close and increasing container ids)
+   */
+  // tslint:disable-next-line:member-ordering
+  private isLogicalSuccessor(predecessor: SegmentScoreContainer, predecessorContainerId: ContainerId, successor: SegmentScoreContainer, containerId: ContainerId): boolean {
+    return this._temporalDistance.matchesTemporally(successor.startabs - predecessor.endabs) && predecessorContainerId < containerId;
+  }
+
   private updateCache(segment: SegmentScoreContainer, containerId: ContainerId, path: Path, score: Score) {
     const identifier = new SegmentContainerIdentifier(segment.segmentId, containerId);
     const start: SegmentContainerIdentifier = this.start(path);
@@ -227,7 +242,7 @@ export class TemporalFusionFunction implements FusionFunction {
       /* iterate over all possible containers in this candidateSegment */
       candidateSegment.scores.forEach((categoryMap, candidateContainerId) => {
         /* if candidateSegment is not temporally close enough or candidateContainerId is lower, exit */
-        if (!TemporalFusionFunction.isLogicalSuccessor(seeker, seekerContainerId, candidateSegment, candidateContainerId)) {
+        if (!this.isLogicalSuccessor(seeker, seekerContainerId, candidateSegment, candidateContainerId)) {
           /* candidateSegment - candidateContainerId combo is not a candidateSegment for further search */
           return;
         }

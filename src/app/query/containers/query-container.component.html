@@ -1,16 +1,22 @@
 <mat-card draggable="true" style="margin:10px;padding:10px;">
-  <button (click)="onRemoveButtonClicked()" mat-icon-button class="icon-button right-corner" matTooltip="Remove query container">
+  <button (click)="onRemoveButtonClicked()" mat-icon-button class="icon-button right-corner"
+          matTooltip="Remove query container">
     <mat-icon>close</mat-icon>
   </button>
   <mat-card-header>
-    <mat-card-title-group>
-      <mat-card-title *ngIf="isNotFirst">
-        <button (click)="moveQueryContainerUp()" class="icon-button" matTooltip="Temporally earlier...">
-          <mat-icon>keyboard_arrow_up</mat-icon>
-        </button>
+    <!-- <mat-card-title-group> -->
+      <mat-card-title>
+        <div *ngIf="isNotFirst" class="temporal-modifiers">
+          <button (click)="moveQueryContainerUp()" class="icon-button" matTooltip="Temporally earlier...">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+          </button>
+          <mat-divider></mat-divider>
+          <app-temporal-distance></app-temporal-distance>
+          <mat-divider></mat-divider>
+        </div>
       </mat-card-title>
       <mat-card-subtitle>
-        <div fxLayout="row" fxLayoutGap="15px" style="width:90%;">
+        <div fxLayout="row" fxLayoutGap="15px" fxLayoutAlign="space-around center" style="width:100%;">
           <button (click)="onToggleButtonClicked('IMAGE')" *ngIf="(config|async).get('query.options.image')"
                   class="icon-button" matTooltip="Toggle image query term">
             <mat-icon
@@ -79,7 +85,7 @@
 
         </div>
       </mat-card-subtitle>
-    </mat-card-title-group>
+    <!--</mat-card-title-group>-->
   </mat-card-header>
   <mat-divider></mat-divider>
   <mat-card-content style="padding-top:10px;">
@@ -92,12 +98,14 @@
       <qt-motion *ngSwitchCase="'MOTION'" [motionTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-motion>
       <qt-text *ngSwitchCase="'TEXT'" [textTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-text>
       <qt-tag *ngSwitchCase="'TAG'" [tagTerm]="qt" [hasSuccessor]="hasTermSuccessor(qt)"></qt-tag>
-      <qt-semantic *ngSwitchCase="'SEMANTIC'" [semanticTerm]="containerModel.getTerm('SEMANTIC')" [hasSuccessor]="hasTermSuccessor(qt)"></qt-semantic>
-      <app-qt-bool *ngSwitchCase="'BOOLEAN'" [boolTerm]="containerModel.getTerm('BOOLEAN')" [hasSuccessor]="hasTermSuccessor(qt)"></app-qt-bool>
+      <qt-semantic *ngSwitchCase="'SEMANTIC'" [semanticTerm]="containerModel.getTerm('SEMANTIC')"
+                   [hasSuccessor]="hasTermSuccessor(qt)"></qt-semantic>
+      <app-qt-bool *ngSwitchCase="'BOOLEAN'" [boolTerm]="containerModel.getTerm('BOOLEAN')"
+                   [hasSuccessor]="hasTermSuccessor(qt)"></app-qt-bool>
     </ng-container>
   </mat-card-content>
   <mat-card-footer *ngIf="isNotLast">
-  <mat-divider></mat-divider>
+    <mat-divider></mat-divider>
     <button (click)="moveQueryContainerDown()" class="icon-button" matTooltip="Temporally later...">
       <mat-icon>keyboard_arrow_down</mat-icon>
     </button>

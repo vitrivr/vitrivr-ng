@@ -1,8 +1,13 @@
 /* This is a hack to remove this super annoying margin.
 the .mat-card-header-text is automatically added and I don't know how to prevent this.
  */
-.mat-card-header-text {
-  margin: 0px;
+:host /deep/ .mat-card-header-text {
+  margin: 0!important;
+  width:100%!important;
+}
+
+.temporal-modifiers {
+  max-width: 100%;
 }
 
 /**

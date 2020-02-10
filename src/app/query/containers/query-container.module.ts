@@ -12,6 +12,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {TagQueryTermModule} from './tag/tag-query-term.module';
 import {SemanticQueryTermModule} from './semantic/semantic-query-term.module';
 import {BoolQueryTermModule} from './bool/bool-query-term.module';
+import {TemporalDistanceModule} from '../temporal-distance/temporal-distance.module';
 
 @NgModule({
   imports: [
@@ -26,7 +27,8 @@ import {BoolQueryTermModule} from './bool/bool-query-term.module';
     TextQueryTermModule,
     TagQueryTermModule,
     SemanticQueryTermModule,
-    BoolQueryTermModule
+    BoolQueryTermModule,
+    TemporalDistanceModule
   ],
   declarations: [QueryContainerComponent],
   exports: [QueryContainerComponent]
