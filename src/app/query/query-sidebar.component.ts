@@ -59,6 +59,7 @@ export class QuerySidebarComponent implements OnInit {
         const context: Map<ContextKey, any> = new Map();
         context.set('q:categories', t.categories);
         switch (t.type) {
+          // TODO Why is there no boolean case?
           case 'IMAGE':
             return new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context);
           case 'AUDIO':

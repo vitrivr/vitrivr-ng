@@ -25,8 +25,8 @@
     "text": {
       "categories": [
         ["ocr", "Text on Screen"],
-	    ["asr", "Audio"],
-	    ["scenecaption", "Description"]
+        ["asr", "Audio"],
+        ["scenecaption", "Description"]
       ]
     }
   },
