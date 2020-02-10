@@ -37,19 +37,19 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
     }
 
     /* Create observers for WebSocket status. */
-    let openObserver = <NextObserver<Event>>{
+    const openObserver = <NextObserver<Event>>{
       next: (ev: Event) => {
         console.log(`WebSocket connected to Cineast (${this._config.endpoint_ws}).`);
       }
     };
-    let closeObserver = <NextObserver<CloseEvent>>{
+    const closeObserver = <NextObserver<CloseEvent>>{
       next: (ev: CloseEvent) => {
         console.log(`WebSocket disconnected from Cineast (${this._config.endpoint_ws}, Code: ${ev.code}).`);
       }
     };
 
     /* Prepare config and create new WebSocket. */
-    let config: WebSocketSubjectConfig<Message> = <WebSocketSubjectConfig<Message>>{
+    const config: WebSocketSubjectConfig<Message> = <WebSocketSubjectConfig<Message>>{
       url: this._config.endpoint_ws,
       openObserver: openObserver,
       closeObserver: closeObserver,
@@ -73,7 +73,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
   private connect(c: Config) {
 
     /* Check if connection has changed. */
-    if (this._config && this._config.endpoint_ws == c.endpoint_ws) {
+    if (this._config && this._config.endpoint_ws === c.endpoint_ws) {
       return false;
     }
 

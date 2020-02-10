@@ -11,10 +11,10 @@ import {WebSocketSubject} from 'rxjs/webSocket';
 @Injectable()
 export class PingService extends BehaviorSubject<ApiStatus> {
   /** Timestamp of the last PING packet. */
-  private _last: number = 0;
+  private _last = 0;
 
   /** Number of packets in transit. Reset after every response. */
-  private _transit: number = 0;
+  private _transit = 0;
 
   /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
   private _socket: WebSocketSubject<Message>;
@@ -37,7 +37,7 @@ export class PingService extends BehaviorSubject<ApiStatus> {
       });
 
     /* Subscribes to changes in the configuration file and dispatches the ping timer. */
-    _config.asObservable().pipe(flatMap(c => timer(0, c.ping_interval))).subscribe(() => this.onTimer())
+    _config.asObservable().pipe(flatMap(c => timer(0, c.get<number>('api.ping_interval')))).subscribe(() => this.onTimer())
   }
 
   /**
@@ -64,7 +64,7 @@ export class PingService extends BehaviorSubject<ApiStatus> {
    * @param msg The Ping message received.
    */
   private onPingResponse(msg: Ping) {
-    let now = Date.now();
+    const now = Date.now();
     this._transit -= 1;
     this.next(new ApiStatus(now, msg.status, now - this._last));
   }

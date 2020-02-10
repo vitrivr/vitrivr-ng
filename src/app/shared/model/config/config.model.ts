@@ -155,8 +155,6 @@ export class Config {
 
   /**
    * Returns URL to WebSocket endpoint for Vitrivr NG.
-   *
-   * @return {string}
    */
   get endpoint_ws(): string {
     const scheme = this._config.api.ws_secure ? 'wss://' : 'ws://';
@@ -169,9 +167,6 @@ export class Config {
 
   /**
    * Full URL to HTTP/RESTful endpoint for Vitrivr NG.
-   *
-   * @return {string}
-   *
    */
   get endpoint_http(): string {
     const scheme = this._config.api.ws_secure ? 'https://' : 'http://';
@@ -180,56 +175,6 @@ export class Config {
     } else {
       return null;
     }
-  }
-
-  /**
-   * Getter for Path/URL to host of thumbnails
-   *
-   * @return {string}
-   * @deprecated
-   */
-  get host_thumbnails(): string {
-    return this._config.resources.host_thumbnails;
-  }
-
-  /**
-   * Getter for Path/URL to host of multimedia-objects
-   *
-   * @return {string}
-   * @deprecated
-   */
-  get host_object(): string {
-    return this._config.resources.host_objects;
-  }
-
-  /**
-   * Getter for PING interval (WebSocket & RestFul interface).
-   *
-   * @return {number}
-   * @deprecated
-   */
-  get ping_interval(): number {
-    return this._config.api.ping_interval;
-  }
-
-  /**
-   * Getter for default suffix.
-   *
-   * @return {string}
-   * @deprecated
-   */
-  get suffix_default(): string {
-    return this._config.resources.suffix_default;
-  }
-
-  /**
-   * Getter for per-mediatype suffix definition.
-   *
-   * @return {{}|any}
-   * @deprecated
-   */
-  get suffix(): any {
-    return this._config.resources.suffix;
   }
 
   /**
