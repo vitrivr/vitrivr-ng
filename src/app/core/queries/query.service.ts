@@ -123,7 +123,7 @@ export class QueryService {
    */
   public findSimilar(containers: QueryContainerInterface[]): boolean {
     if (this._running > 0) {
-      console.warn('Query Service not running, not executing similarity query');
+      console.warn('There is already a query running, not executing similarity query');
       return false;
     }
     if (!this._socket) {

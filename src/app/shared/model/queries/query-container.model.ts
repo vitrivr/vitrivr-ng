@@ -98,11 +98,6 @@ export class QueryContainer implements QueryContainerInterface {
     return this._terms_map.has(type);
   }
 
-  /**
-   *
-   * @param type
-   * @returns {boolean}
-   */
   public getTerm(type: QueryTermType): QueryTermInterface {
     return this._terms_map.get(type)
   }
