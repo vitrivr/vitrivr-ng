@@ -12,6 +12,6 @@ Arguments experimentally found.
  */
 .right-corner {
   position: absolute;
-  top: -0.75em;
-  right: -0.75em;
+  top: 0;
+  right: 0;
 }
