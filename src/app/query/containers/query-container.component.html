@@ -8,19 +8,19 @@
 
 
     <!-- move container up for temporal context -->
-    <div class="temporal-arrow"
-         style="display: inline-flex;justify-content: center;align-items: center;" *ngIf="isNotFirst">
-        <button (click)="moveQueryContainerUp()" class="icon-button" matTooltip="Temporally earlier...">
-            <mat-icon>access_time</mat-icon>
-            <mat-icon>keyboard_arrow_up</mat-icon>
-        </button>
-    </div>
-    <div *ngIf="isNotFirst">
-        <mat-divider></mat-divider>
-    </div>
+  <div *ngIf="isNotFirst" class="temporal-modifiers">
+    <button (click)="moveQueryContainerUp()" class="icon-button" matTooltip="Temporally earlier...">
+      <mat-icon>access_time</mat-icon>
+      <mat-icon>keyboard_arrow_up</mat-icon>
+    </button>
+    <mat-divider></mat-divider>
+    <app-temporal-distance></app-temporal-distance>
+    <mat-divider></mat-divider>
+  </div>
+
     <!-- all available query modes -->
     <div>
-        <div fxLayout="row inline" fxLayoutGap="15px" style="width:80%">
+        <div fxLayout="row inline" fxLayoutGap="15px" fxLayoutAlign="space-around center" style="width:80%;">
             <button (click)="onToggleButtonClicked('IMAGE')" *ngIf="(config|async).get('query.options.image')"
                     class="icon-button" matTooltip="Toggle image query term">
                 <mat-icon

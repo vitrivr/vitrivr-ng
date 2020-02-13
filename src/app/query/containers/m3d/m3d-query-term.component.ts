@@ -8,13 +8,14 @@ import {Model3DFileLoader} from '../../../shared/util/m3d-file-loader.util';
 import {first} from 'rxjs/operators';
 import {M3DQueryTerm} from '../../../shared/model/queries/m3d-query-term.model';
 import Mesh = THREE.Mesh;
+import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-m3d',
   templateUrl: 'm3d-query-term.component.html',
   styleUrls: ['m3d-query-term.component.css']
 })
-export class M3DQueryTermComponent {
+export class M3DQueryTermComponent extends AbstractQueryTermComponent{
   /** Value of the slider. */
   public sliderSetting: number;
   /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
@@ -35,6 +36,7 @@ export class M3DQueryTermComponent {
    * @param dialog
    */
   constructor(private dialog: MatDialog) {
+    super();
   }
 
   /**

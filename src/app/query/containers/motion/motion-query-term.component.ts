@@ -4,13 +4,14 @@ import {MotionSketchDialogComponent} from './motion-sketch-dialog.component';
 import {MatDialog} from '@angular/material';
 import {MotionData} from './model/motion-data.model';
 import {first} from 'rxjs/operators';
+import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-motion',
   templateUrl: 'motion-query-term.component.html',
   styleUrls: ['motion-query-term.component.css']
 })
-export class MotionQueryTermComponent {
+export class MotionQueryTermComponent extends AbstractQueryTermComponent{
   /** The MotionQueryTerm object associated with this MotionQueryTermComponent. That object holds all the query-settings. */
   @Input()
   private motionTerm: MotionQueryTerm;
@@ -25,6 +26,7 @@ export class MotionQueryTermComponent {
    * @param _dialog
    */
   constructor(private _dialog: MatDialog) {
+    super();
   }
 
   /**

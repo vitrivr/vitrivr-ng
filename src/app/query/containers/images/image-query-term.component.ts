@@ -6,13 +6,14 @@ import {ResolverService} from '../../../core/basics/resolver.service';
 import {HttpClient} from '@angular/common/http';
 import {MediaSegmentDragContainer} from '../../../shared/model/internal/media-segment-drag-container.model';
 import {first} from 'rxjs/operators';
+import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-image',
   templateUrl: 'image-query-term.component.html',
   styleUrls: ['image-query-term.component.css']
 })
-export class ImageQueryTermComponent implements OnInit {
+export class ImageQueryTermComponent extends AbstractQueryTermComponent implements OnInit {
 
   /** Slider to adjust the query-term settings; i.e. to select the refinement used for image-queries. */
   public sliderSetting: number = 1;
@@ -31,6 +32,7 @@ export class ImageQueryTermComponent implements OnInit {
    * @param _http
    */
   constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {
+    super()
   }
 
   /**

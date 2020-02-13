@@ -7,13 +7,14 @@ import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-tag',
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
 })
-export class TagQueryTermComponent {
+export class TagQueryTermComponent extends AbstractQueryTermComponent{
 
   /** The TagQueryTerm object associated with this TagQueryTermComponent. That object holds all the query settings. */
   @Input()
@@ -26,6 +27,7 @@ export class TagQueryTermComponent {
    * @param {MatSnackBar} _matsnackbar The Snackbar to tell people they should really only use a tag once
    */
   constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
+    super();
     this._field = new FieldGroup(_tagService);
   }
 

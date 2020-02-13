@@ -4,6 +4,7 @@ import {BoolAttribute, ValueType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {BoolTermComponent} from './individual/bool-term.component';
 import {ConfigService} from '../../../core/basics/config.service';
+import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'app-qt-bool',
@@ -11,7 +12,7 @@ import {ConfigService} from '../../../core/basics/config.service';
   styleUrls: ['bool-query-term.component.css']
 })
 @Injectable()
-export class BoolQueryTermComponent implements OnInit {
+export class BoolQueryTermComponent extends AbstractQueryTermComponent implements OnInit {
 
   // TODO add logic to store multiple queries with a combination.
   //  1) the BoolQueryTerm should support it,
@@ -25,6 +26,7 @@ export class BoolQueryTermComponent implements OnInit {
   );
 
   constructor(_configService: ConfigService) {
+    super();
     _configService.subscribe(c => {
       const next = [];
       c.get<[string, string, string][]>('query.boolean').forEach(v => {

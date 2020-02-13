@@ -4,13 +4,14 @@ import {MatDialog} from '@angular/material';
 import {AudioRecorderDialogComponent} from './audio-recorder-dialog.component';
 import {AudioQueryTerm} from '../../../shared/model/queries/audio-query-term.model';
 import {first} from 'rxjs/operators';
+import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-audio',
   templateUrl: 'audio-query-term.component.html',
   styleUrls: ['audio-query-term.component.css']
 })
-export class AudioQueryTermComponent {
+export class AudioQueryTermComponent extends AbstractQueryTermComponent{
   /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the query-settings. */
   @Input() audioTerm: AudioQueryTerm;
   /** Value of the slider. */
@@ -24,6 +25,7 @@ export class AudioQueryTermComponent {
    * @param dialog
    */
   constructor(private dialog: MatDialog) {
+    super();
   }
 
   /**
