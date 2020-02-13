@@ -8,18 +8,17 @@ import {Model3DFileLoader} from '../../../shared/util/m3d-file-loader.util';
 import {first} from 'rxjs/operators';
 import {M3DQueryTerm} from '../../../shared/model/queries/m3d-query-term.model';
 import Mesh = THREE.Mesh;
-import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-m3d',
   templateUrl: 'm3d-query-term.component.html',
   styleUrls: ['m3d-query-term.component.css']
 })
-export class M3DQueryTermComponent extends AbstractQueryTermComponent{
+export class M3DQueryTermComponent {
   /** Value of the slider. */
   public sliderSetting: number;
   /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
-  public sketch: boolean = false;
+  public sketch = false;
   /** Component used to display a preview of the selected 3D model. */
   @ViewChild('previewmodel')
   private preview: M3DLoaderComponent;
@@ -36,7 +35,6 @@ export class M3DQueryTermComponent extends AbstractQueryTermComponent{
    * @param dialog
    */
   constructor(private dialog: MatDialog) {
-    super();
   }
 
   /**
@@ -139,7 +137,7 @@ export class M3DQueryTermComponent extends AbstractQueryTermComponent{
    * @param data Optional data that should be handed to the component.
    */
   private openM3DDialog(data?: any) {
-    let dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data: data});
+    const dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data: data});
     dialogRef.afterClosed().pipe(first()).subscribe((result: Mesh) => {
       if (result) {
         this.preview.setMesh(result);
@@ -154,7 +152,7 @@ export class M3DQueryTermComponent extends AbstractQueryTermComponent{
    * result of the dialog into preview image canvas.
    */
   private openSketchDialog(data?: any) {
-    let dialogRef = this.dialog.open(BinarySketchDialogComponent, {data: data});
+    const dialogRef = this.dialog.open(BinarySketchDialogComponent, {data: data});
     dialogRef.afterClosed().pipe(first()).subscribe(result => {
       if (result) {
         this.previewimg.nativeElement.src = result;

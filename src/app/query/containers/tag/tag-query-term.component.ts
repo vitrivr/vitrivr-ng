@@ -7,18 +7,22 @@ import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-tag',
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
 })
-export class TagQueryTermComponent extends AbstractQueryTermComponent{
+export class TagQueryTermComponent {
 
   /** The TagQueryTerm object associated with this TagQueryTermComponent. That object holds all the query settings. */
   @Input()
   private tagTerm: TagQueryTerm;
+
+  /** List of tag fields  currently displayed. */
+  private _field: FieldGroup;
+  /** List of tag fields  currently displayed. */
+  private _tags: Tag[] = [];
 
   /**
    * Constructor for TagQueryTermComponent
@@ -27,30 +31,13 @@ export class TagQueryTermComponent extends AbstractQueryTermComponent{
    * @param {MatSnackBar} _matsnackbar The Snackbar to tell people they should really only use a tag once
    */
   constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
-    super();
     this._field = new FieldGroup(_tagService);
   }
 
-  /** List of tag fields  currently displayed. */
-  private _tags: Tag[] = [];
-
-  /**
-   * Getter for form control.
-   *
-   * @return {any}
-   */
   get tags() {
     return this._tags;
   }
 
-  /** List of tag fields  currently displayed. */
-  private _field: FieldGroup;
-
-  /**
-   * Getter for form control.
-   *
-   * @return {any}
-   */
   get field() {
     return this._field;
   }
@@ -134,6 +121,9 @@ export class FieldGroup {
 
   public currentlyDisplayedTags: Array<Tag> = new Array<Tag>();
 
+  /** The currently selected tag. */
+  private _selection: Tag;
+
   /**
    * Constructor for FieldGroup
    *
@@ -158,21 +148,10 @@ export class FieldGroup {
     });
   }
 
-  /** The currently selected tag. */
-  private _selection: Tag;
-
-  /**
-   *
-   * @return {Tag}
-   */
   get selection(): Tag {
     return this._selection;
   }
 
-  /**
-   *
-   * @param {Tag} value
-   */
   set selection(value: Tag) {
     this._selection = value;
   }

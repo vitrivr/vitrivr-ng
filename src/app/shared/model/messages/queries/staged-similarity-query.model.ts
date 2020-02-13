@@ -8,6 +8,6 @@ import {QueryTermInterface} from '../../queries/interfaces/query-term.interface'
 export class StagedSimilarityQuery {
   public readonly messageType: MessageType = 'Q_SSIM';
 
-  constructor(public readonly stages: QueryContainerInterface[], public readonly config: QueryConfig = null) {
+  constructor(public readonly containers: QueryContainerInterface[], public readonly config: QueryConfig = null) {
   }
 }

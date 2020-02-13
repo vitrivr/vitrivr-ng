@@ -4,14 +4,13 @@ import {MotionSketchDialogComponent} from './motion-sketch-dialog.component';
 import {MatDialog} from '@angular/material';
 import {MotionData} from './model/motion-data.model';
 import {first} from 'rxjs/operators';
-import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-motion',
   templateUrl: 'motion-query-term.component.html',
   styleUrls: ['motion-query-term.component.css']
 })
-export class MotionQueryTermComponent extends AbstractQueryTermComponent{
+export class MotionQueryTermComponent {
   /** The MotionQueryTerm object associated with this MotionQueryTermComponent. That object holds all the query-settings. */
   @Input()
   private motionTerm: MotionQueryTerm;
@@ -26,7 +25,6 @@ export class MotionQueryTermComponent extends AbstractQueryTermComponent{
    * @param _dialog
    */
   constructor(private _dialog: MatDialog) {
-    super();
   }
 
   /**
@@ -35,7 +33,7 @@ export class MotionQueryTermComponent extends AbstractQueryTermComponent{
    */
   public onViewerClicked() {
     /* Initialize the correct dialog-component. */
-    let dialogRef = this._dialog.open(MotionSketchDialogComponent, {height: '450px'});
+    const dialogRef = this._dialog.open(MotionSketchDialogComponent, {height: '450px'});
     dialogRef.afterClosed().pipe(first()).subscribe((result: [string, MotionData]) => {
       if (result) {
         this.previewimg.nativeElement.src = result[0];

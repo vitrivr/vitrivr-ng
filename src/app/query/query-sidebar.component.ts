@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, HostListener, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, HostListener, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {QueryContainerInterface} from '../shared/model/queries/interfaces/query-container.interface';
 import {QueryContainer} from '../shared/model/queries/query-container.model';
@@ -56,7 +56,7 @@ export class QuerySidebarComponent implements OnInit {
   public onSearchClicked() {
     if (this.queryContainers && this.queryContainers.length >= 2) {
       const tempDist = this.getTemporalDistance();
-      if(tempDist){
+      if (tempDist) {
         TemporalFusionFunction.instance().setTemporalDistance(tempDist);
       }
     }

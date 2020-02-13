@@ -6,14 +6,13 @@ import {first} from 'rxjs/operators';
 import {SemanticSketchDialogComponent} from './semantic-sketch-dialog.component';
 import {SemanticQueryTerm} from '../../../shared/model/queries/semantic/semantic-query-term.model';
 import {SemanticMap} from '../../../shared/model/queries/semantic/semantic-map.model';
-import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-semantic',
   templateUrl: 'semantic-query-term.component.html',
   styleUrls: ['semantic-query-term.component.css']
 })
-export class SemanticQueryTermComponent extends AbstractQueryTermComponent{
+export class SemanticQueryTermComponent {
 
   /** Component used to display a preview of the selected AND/OR sketched image. */
   @ViewChild('previewimg')
@@ -31,7 +30,6 @@ export class SemanticQueryTermComponent extends AbstractQueryTermComponent{
    * @param _http
    */
   constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {
-    super();
   }
 
   /**
@@ -54,11 +52,11 @@ export class SemanticQueryTermComponent extends AbstractQueryTermComponent{
    */
   private openSketchDialog(data?: SemanticMap) {
     /* Prepare config & initialize the correct dialog-component. */
-    let config = new MatDialogConfig<SemanticMap>();
+    const config = new MatDialogConfig<SemanticMap>();
     config.height = '450px';
     config.data = data;
 
-    let dialogRef = this._dialog.open(SemanticSketchDialogComponent, config);
+    const dialogRef = this._dialog.open(SemanticSketchDialogComponent, config);
 
     /* Register the onClose callback. */
     dialogRef.afterClosed().pipe(first()).subscribe(result => {

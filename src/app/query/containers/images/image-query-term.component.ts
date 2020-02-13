@@ -6,17 +6,16 @@ import {ResolverService} from '../../../core/basics/resolver.service';
 import {HttpClient} from '@angular/common/http';
 import {MediaSegmentDragContainer} from '../../../shared/model/internal/media-segment-drag-container.model';
 import {first} from 'rxjs/operators';
-import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-image',
   templateUrl: 'image-query-term.component.html',
   styleUrls: ['image-query-term.component.css']
 })
-export class ImageQueryTermComponent extends AbstractQueryTermComponent implements OnInit {
+export class ImageQueryTermComponent implements OnInit {
 
   /** Slider to adjust the query-term settings; i.e. to select the refinement used for image-queries. */
-  public sliderSetting: number = 1;
+  public sliderSetting = 1;
   /** Component used to display a preview of the selected AND/OR sketched image. */
   @ViewChild('previewimg')
   private previewimg: any;
@@ -24,15 +23,7 @@ export class ImageQueryTermComponent extends AbstractQueryTermComponent implemen
   @Input()
   private imageTerm: ImageQueryTerm;
 
-  /**
-   * Default constructor.
-   *
-   * @param _dialog
-   * @param _resolver
-   * @param _http
-   */
   constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {
-    super()
   }
 
   /**
@@ -82,8 +73,6 @@ export class ImageQueryTermComponent extends AbstractQueryTermComponent implemen
 
   /**
    * Fired whenever something is dragged and enters the preview image.
-   *
-   * @param event
    */
   public onViewerDragEnter(event: any) {
     event.preventDefault();
@@ -92,8 +81,6 @@ export class ImageQueryTermComponent extends AbstractQueryTermComponent implemen
 
   /**
    * Fired whenever something is dragged over the preview image.
-   *
-   * @param event
    */
   public onViewerDragOver(event: any) {
     event.preventDefault();
@@ -101,8 +88,6 @@ export class ImageQueryTermComponent extends AbstractQueryTermComponent implemen
 
   /**
    * Fired whenever something is dragged and exits the preview image.
-   *
-   * @param event
    */
   public onViewerDragExit(event: any) {
     event.preventDefault();
@@ -124,7 +109,7 @@ export class ImageQueryTermComponent extends AbstractQueryTermComponent implemen
     event.target.classList.remove('ondrag');
 
     /* Prepare file reader (just in case). */
-    let reader = new FileReader();
+    const reader = new FileReader();
     reader.addEventListener('load', () => {
       this.applyImageData(<string>reader.result);
     });
@@ -137,8 +122,8 @@ export class ImageQueryTermComponent extends AbstractQueryTermComponent implemen
       reader.readAsDataURL(event.dataTransfer.files.item(0));
     } else if (event.dataTransfer.getData('application/vitrivr-mediasegment')) {
       /* Case 2: Object is of type 'application/vitrivr-mediasegment' - use its thumbnail as image. */
-      let drag: MediaSegmentDragContainer = MediaSegmentDragContainer.fromJSON(event.dataTransfer.getData(MediaSegmentDragContainer.FORMAT));
-      let url = this._resolver.pathToThumbnail(drag.object, drag.segment);
+      const drag: MediaSegmentDragContainer = MediaSegmentDragContainer.fromJSON(event.dataTransfer.getData(MediaSegmentDragContainer.FORMAT));
+      const url = this._resolver.pathToThumbnail(drag.object, drag.segment);
       this._http.get(url, {responseType: 'blob'}).pipe(first()).subscribe(data => {
         reader.readAsDataURL(data);
       });
@@ -164,7 +149,7 @@ export class ImageQueryTermComponent extends AbstractQueryTermComponent implemen
    */
   private openSketchDialog(data?: any) {
     /* Initialize the correct dialog-component. */
-    let dialogRef = this._dialog.open(SketchDialogComponent, {data: data, width: '750px', height: '690px'});
+    const dialogRef = this._dialog.open(SketchDialogComponent, {data: data, width: '750px', height: '690px'});
     dialogRef.afterClosed().pipe(first()).subscribe(result => {
       if (result) {
         this.applyImageData(result);

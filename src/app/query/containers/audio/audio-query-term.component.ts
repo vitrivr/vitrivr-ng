@@ -4,14 +4,13 @@ import {MatDialog} from '@angular/material';
 import {AudioRecorderDialogComponent} from './audio-recorder-dialog.component';
 import {AudioQueryTerm} from '../../../shared/model/queries/audio-query-term.model';
 import {first} from 'rxjs/operators';
-import {AbstractQueryTermComponent} from '../abstract-query-term.component';
 
 @Component({
   selector: 'qt-audio',
   templateUrl: 'audio-query-term.component.html',
   styleUrls: ['audio-query-term.component.css']
 })
-export class AudioQueryTermComponent extends AbstractQueryTermComponent{
+export class AudioQueryTermComponent {
   /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the query-settings. */
   @Input() audioTerm: AudioQueryTerm;
   /** Value of the slider. */
@@ -25,14 +24,12 @@ export class AudioQueryTermComponent extends AbstractQueryTermComponent{
    * @param dialog
    */
   constructor(private dialog: MatDialog) {
-    super();
   }
 
   /**
    * This method is invoked whenever the slider value changes. Updates the feature categories for this AudioQueryTerm based
    * on a linear, numerical scale.
    *
-   * @param event
    */
   public onSliderChanged(event: any) {
     switch (this.sliderSetting) {
@@ -69,8 +66,6 @@ export class AudioQueryTermComponent extends AbstractQueryTermComponent{
 
   /**
    * Fired whenever something is dragged and enters the audio player.
-   *
-   * @param event
    */
   public onAudioDragEnter(event: any) {
     event.preventDefault();
@@ -79,8 +74,6 @@ export class AudioQueryTermComponent extends AbstractQueryTermComponent{
 
   /**
    * Fired whenever something is dragged over the audio player.
-   *
-   * @param event
    */
   public onAudioDragOver(event: any) {
     event.preventDefault();
@@ -88,8 +81,6 @@ export class AudioQueryTermComponent extends AbstractQueryTermComponent{
 
   /**
    * Fired whenever something is dragged and exits the audio player.
-   *
-   * @param event
    */
   public onAudioDragExit(event: any) {
     event.preventDefault();
@@ -112,7 +103,7 @@ export class AudioQueryTermComponent extends AbstractQueryTermComponent{
 
     /** */
     if (event.dataTransfer.files.length > 0) {
-      let file = event.dataTransfer.files.item(0);
+      const file = event.dataTransfer.files.item(0);
       this.openAudioRecorderDialog(file);
     }
   }
@@ -124,16 +115,16 @@ export class AudioQueryTermComponent extends AbstractQueryTermComponent{
    * @param data Optional data that should be handed to the component.
    */
   private openAudioRecorderDialog(data?: any) {
-    let dialogRef = this.dialog.open(AudioRecorderDialogComponent, {data: data});
-    let subscription = dialogRef.afterClosed().pipe(first()).subscribe(result => {
+    const dialogRef = this.dialog.open(AudioRecorderDialogComponent, {data: data});
+    const subscription = dialogRef.afterClosed().pipe(first()).subscribe(result => {
       if (result) {
-        result.then((data: Blob) => {
-          this.player.nativeElement.src = URL.createObjectURL(data);
-          let reader = new FileReader();
+        result.then((receivedData: Blob) => {
+          this.player.nativeElement.src = URL.createObjectURL(receivedData);
+          const reader = new FileReader();
           reader.onloadend = () => {
             this.audioTerm.data = <string>reader.result;
           };
-          reader.readAsDataURL(data);
+          reader.readAsDataURL(receivedData);
         })
       }
       subscription.unsubscribe();
