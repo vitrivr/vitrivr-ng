@@ -14,7 +14,7 @@ The Vitrivr NG project was created with [Angular CLI](https://cli.angular.io) so
 npm install -g @angular/cli
 ```
 
-Then run
+Then, install the dependencies using
 ```bash
 npm install
 ```
