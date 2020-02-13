@@ -1,0 +1,33 @@
+<!-- where everything lives. This layout would maybe be prettier if the buttons were on the left -->
+<div>
+    <!-- div for the up / down buttons -->
+    <div *ngIf="notFirst() && stagedQEnabled()">
+        <button (click)="onPushUpClicked()" mat-icon-button color="primary" matTooltip="Use as an earlier filter">
+            <mat-icon>search</mat-icon>
+            <mat-icon>keyboard_arrow_up</mat-icon>
+        </button>
+    </div>
+
+    <!-- div for the actual query term to formulate the query -->
+    <div>
+        <qt-image *ngIf="queryTerm.type==='IMAGE'" [imageTerm]="queryTerm"></qt-image>
+        <qt-audio *ngIf="queryTerm.type==='AUDIO'" [audioTerm]="queryTerm"></qt-audio>
+        <qt-m3d *ngIf="queryTerm.type==='MODEL3D'" [m3dTerm]="queryTerm"></qt-m3d>
+        <qt-motion *ngIf="queryTerm.type==='MOTION'" [motionTerm]="queryTerm"></qt-motion>
+        <qt-text *ngIf="queryTerm.type==='TEXT'" [textTerm]="queryTerm"></qt-text>
+        <qt-tag *ngIf="queryTerm.type==='TAG'" [tagTerm]="queryTerm"></qt-tag>
+        <qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></qt-semantic>
+        <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
+    </div>
+
+    <!--
+    There is a design discussion to be had on whether or not you want this button.
+    <div *ngIf="notLast()">
+        <button (click)="onPushDownClicked()" mat-icon-button color="primary" aria-label="Use as a later filter">
+            <mat-icon>search</mat-icon>
+            <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+    </div>
+    -->
+    <hr class="fade" style="margin-bottom: 20px; margin-top: 10px;">
+</div>

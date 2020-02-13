@@ -12,7 +12,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {TagQueryTermModule} from './tag/tag-query-term.module';
 import {SemanticQueryTermModule} from './semantic/semantic-query-term.module';
 import {BoolQueryTermModule} from './bool/bool-query-term.module';
-import {QueryTermModule} from './query-term.module';
+import {QueryTermComponent} from './query-term.component';
 
 @NgModule({
   imports: [
@@ -27,12 +27,11 @@ import {QueryTermModule} from './query-term.module';
     TextQueryTermModule,
     TagQueryTermModule,
     SemanticQueryTermModule,
-    BoolQueryTermModule,
-    QueryTermModule
+    BoolQueryTermModule
   ],
-  declarations: [QueryContainerComponent],
-  exports: [QueryContainerComponent]
+  declarations: [QueryTermComponent],
+  exports: [QueryTermComponent]
 })
 
-export class QueryContainerModule {
+export class QueryTermModule {
 }
