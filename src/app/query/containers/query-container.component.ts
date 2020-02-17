@@ -14,7 +14,7 @@ import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.
 })
 
 export class QueryContainerComponent {
-  /** The QueryContainer this QueryContainerComponent is associated to. */
+  /** The StagedQueryContainer this QueryContainerComponent is associated to. */
   @Input() containerModel: QueryContainerInterface;
 
   /** A reference to the lists of QueryContainers (to enable removing the container). */
@@ -72,10 +72,6 @@ export class QueryContainerComponent {
     }
   }
 
-  /**
-   *
-   * @param type
-   */
   public onToggleButtonClicked(type: QueryTermType) {
     if (this.containerModel.hasTerm(type)) {
       this.containerModel.removeTerm(type);
@@ -107,9 +103,5 @@ export class QueryContainerComponent {
       this.inList[index] = container;
     }
     console.log(`[QueryC.down] After = ${this.inList}`)
-  }
-
-  private hasTermSuccessor(qt: QueryTermInterface): boolean {
-    return this.containerModel.getTermIndex(qt.type) !== this.containerModel.terms.length - 1;
   }
 }

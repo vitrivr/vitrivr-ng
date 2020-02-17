@@ -1,7 +1,7 @@
 import {Component, HostListener, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {QueryContainerInterface} from '../shared/model/queries/interfaces/query-container.interface';
-import {QueryContainer} from '../shared/model/queries/query-container.model';
+import {StagedQueryContainer} from '../shared/model/queries/query-container.model';
 import {EventBusService} from '../core/basics/event-bus.service';
 import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
@@ -19,19 +19,12 @@ import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fu
   templateUrl: 'query-sidebar.component.html'
 })
 export class QuerySidebarComponent implements OnInit {
-  /** QueryContainer's held by the current instance of ResearchComponent. */
+  /** StagedQueryContainer's held by the current instance of ResearchComponent. */
   public readonly containers: QueryContainerInterface[] = [];
   @ViewChildren(QueryContainerComponent) queryContainers: QueryList<QueryContainerComponent>;
   /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
   private _lastEnter: number = 0;
 
-  /**
-   * Constructor for ResearchComponent. Injects the gloal QueryService and EventBusService instance.
-   *
-   * @param _queryService QueryService instance (Singleton) used to issue queries.
-   * @param _filterService FilterService instance (Singleton) used for when user hits the clear all button.
-   * @param _eventBus EventBusService instance (Singleton) used to publish user interaction information.
-   */
   constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService) {
   }
 
@@ -43,10 +36,10 @@ export class QuerySidebarComponent implements OnInit {
   }
 
   /**
-   * Adds a new QueryContainer to the list of QueryContainers.
+   * Adds a new StagedQueryContainer to the list of QueryContainers.
    */
   public addQueryTermContainer() {
-    this.containers.push(new QueryContainer());
+    this.containers.push(new StagedQueryContainer());
   }
 
   /**
@@ -63,7 +56,8 @@ export class QuerySidebarComponent implements OnInit {
 
     this._queryService.findSimilar(this.containers);
     from(this.containers).pipe(
-      flatMap(c => c.terms),
+      flatMap(c => c.stages),
+      flatMap(s => s.terms),
       map(t => {
         const context: Map<ContextKey, any> = new Map();
         context.set('q:categories', t.categories);

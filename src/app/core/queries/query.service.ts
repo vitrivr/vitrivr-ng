@@ -27,6 +27,7 @@ import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.mo
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
+import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -123,11 +124,9 @@ export class QueryService {
             console.debug('staged similarity querying enabled')
         }
         this._config.pipe(first()).subscribe(config => {
-            let containerId = 0;
-            containers.forEach(container => container.containerId = containerId++);
-            TemporalFusionFunction.queryContainerCount = containerId;
+            TemporalFusionFunction.queryContainerCount = containers.length;
             if (ssqEnabled) {
-                const query = new StagedSimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
+                const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
                 this._socket.next(query)
             } else {
                 const query = new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));

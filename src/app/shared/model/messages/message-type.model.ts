@@ -5,7 +5,7 @@ export type MessageType =
     'INIT'
     | 'PING'
     | 'Q_SIM'
-    | 'Q_SSIM'
+    | 'Q_TEMPORAL'
     | 'Q_MLT'
     | 'Q_NESEG'
     | 'Q_SEG'

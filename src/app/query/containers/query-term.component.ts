@@ -1,6 +1,7 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {QueryTermInterface} from '../../shared/model/queries/interfaces/query-term.interface';
 import {ConfigService} from '../../core/basics/config.service';
+import {StageChangeEvent} from './stage-change-event.model';
 
 @Component({
   selector: 'app-query-component',
@@ -12,39 +13,25 @@ export class QueryTermComponent {
 
   @Input() queryTerm: QueryTermInterface;
 
-  @Input() qtList: QueryTermInterface[];
+  @Input() firstStage: boolean;
+  @Input() lastStage: boolean;
+
+  @Input() lastInStage: boolean;
+
+  /**
+   * 1 = move up in filter sequence (e.g. stage 1 goes to stage 0), -1 = move down in filter sequence (e.g. stage 1 goes to stage 2)
+   */
+  @Output() stageChange = new EventEmitter<StageChangeEvent>();
 
   constructor(private readonly _config: ConfigService) {
   }
 
   onPushUpClicked() {
-    const index = this.qtList.indexOf(this.queryTerm);
-    if (index > 0) {
-      const qt = this.qtList[index - 1];
-      this.qtList[index - 1] = this.queryTerm;
-      this.qtList[index] = qt;
-    } else {
-      console.warn(`element ${this.queryTerm} is first in the list and can therefore not be pushed up`)
-    }
+    this.stageChange.emit(StageChangeEvent.EARLIER_STAGE);
   }
 
   onPushDownClicked() {
-    const index = this.qtList.indexOf(this.queryTerm);
-    if (index < this.qtList.length - 1) {
-      const qt = this.qtList[index + 1];
-      this.qtList[index + 1] = this.queryTerm;
-      this.qtList[index] = qt;
-    } else {
-      console.warn(`element ${this.queryTerm} is last in the list and can therefore not be pushed down`)
-    }
-  }
-
-  notLast() {
-    return this.qtList.indexOf(this.queryTerm) < this.qtList.length - 1;
-  }
-
-  notFirst() {
-    return this.qtList.indexOf(this.queryTerm) > 0;
+    this.stageChange.emit(StageChangeEvent.LATER_STAGE);
   }
 
   stagedQEnabled() {

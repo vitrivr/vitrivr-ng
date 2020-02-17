@@ -3,7 +3,7 @@ import {QueryContainerInterface} from '../../../queries/interfaces/query-contain
 
 /**
  * Basic interfaces of a SimilarityQueryMessage. Upon reception, Cineast will execute a similarity query based on the
- * provided QueryContainer.
+ * provided StagedQueryContainer.
  */
 export interface SimilarityQueryMessage extends Message {
   containers: QueryContainerInterface[]

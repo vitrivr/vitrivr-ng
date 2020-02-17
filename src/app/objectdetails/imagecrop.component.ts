@@ -3,7 +3,7 @@ import {CropperSettings, ImageCropperComponent} from 'ng2-img-cropper';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {HttpClient} from '@angular/common/http';
 import {QueryService} from '../core/queries/query.service';
-import {QueryContainer} from '../shared/model/queries/query-container.model';
+import {StagedQueryContainer} from '../shared/model/queries/query-container.model';
 import {first} from 'rxjs/operators';
 import {ImageQueryTerm} from '../shared/model/queries/image-query-term.model';
 
@@ -78,7 +78,7 @@ export class ImagecropComponent implements OnInit {
    *
    */
   public onSearchClicked() {
-    let qq = new QueryContainer();
+    let qq = new StagedQueryContainer();
     qq.addTerm('IMAGE');
     (<ImageQueryTerm>qq.getTerm('IMAGE')).data = this._data.image;
     qq.getTerm('IMAGE').setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
