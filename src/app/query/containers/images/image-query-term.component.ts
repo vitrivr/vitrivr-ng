@@ -30,6 +30,12 @@ export class ImageQueryTermComponent implements OnInit {
    * Update settings based on preset.
    */
   ngOnInit(): void {
+    /* If there already is data present, we don't need to reset the slider*/
+    if (this.imageTerm.data) {
+      this.applyImageData(this.imageTerm.data);
+      this.sliderSetting = this.imageTerm.sliderSetting;
+      return;
+    }
     this.onSettingsChanged(null);
   }
 
@@ -40,6 +46,7 @@ export class ImageQueryTermComponent implements OnInit {
    * @param event
    */
   public onSettingsChanged(event: any) {
+    this.imageTerm.sliderSetting = this.sliderSetting;
     // FIXME there are debates about the usefulness of this slider...
     switch (this.sliderSetting) {
       case 0:

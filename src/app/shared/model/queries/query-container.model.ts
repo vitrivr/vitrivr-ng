@@ -60,6 +60,9 @@ export class StagedQueryContainer implements QueryContainerInterface {
       default:
         return false;
     }
+    if (this.stages.length === 0) {
+      this.stages.push(new QueryStage());
+    }
     /* We insert new queryterms at the lowest levels. */
     this.stages[this.stages.length - 1].terms.push(this._cache.get(type));
     return true;

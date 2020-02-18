@@ -1,9 +1,9 @@
-import {Component, Injectable, Input, OnInit} from '@angular/core';
+import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, ValueType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs/Rx';
-import {BoolTermComponent} from './individual/bool-term.component';
 import {ConfigService} from '../../../core/basics/config.service';
+import {BoolTerm} from './individual/bool-term';
 
 @Component({
   selector: 'app-qt-bool',
@@ -15,16 +15,24 @@ export class BoolQueryTermComponent implements OnInit {
 
   // TODO add logic to store multiple queries with a combination.
   //  1) the BoolQueryTerm should support it,
-  public readonly containers: BoolTermComponent[] = [];
   //  2) we need + / - logic
   /** This object holds all the query settings. */
   @Input()
   protected boolTerm: BoolQueryTerm;
+
   protected possibleAttributes: BehaviorSubject<BoolAttribute[]> = new BehaviorSubject(
     [new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT)]
   );
 
-  constructor(_configService: ConfigService) {
+  public ngOnInit() {
+    /* only add an empty term if there are none currently present*/
+    if (this.boolTerm.terms.length != 0) {
+      return;
+    }
+    this.addBoolTermComponent();
+  }
+
+  constructor(_configService: ConfigService, private _resolver: ComponentFactoryResolver) {
     _configService.subscribe(c => {
       const next = [];
       c.get<[string, string, string][]>('query.boolean').forEach(v => {
@@ -34,28 +42,7 @@ export class BoolQueryTermComponent implements OnInit {
     })
   }
 
-  /**
-   * Getter for the data value of textTerm (for ngModel for input field).
-   * @return {string}
-   */
-  get inputValue(): string {
-    return this.boolTerm.data;
-  }
-
-  /**
-   * Setter for the data value of textTerm (for ngModel for input field).
-   *
-   * @param {string} value
-   */
-  set inputValue(value: string) {
-    this.boolTerm.data = value;
-  }
-
-  public ngOnInit() {
-    this.addBoolTermComponent();
-  }
-
   public addBoolTermComponent() {
-    this.containers.push(new BoolTermComponent())
+    this.boolTerm.terms.push(new BoolTerm(this.possibleAttributes.getValue()[0].featureName, this.possibleAttributes.getValue()[0].operators[0], null));
   }
 }

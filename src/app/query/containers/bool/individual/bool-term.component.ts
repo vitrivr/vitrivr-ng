@@ -3,7 +3,6 @@ import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.mo
 import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {BoolTerm} from './bool-term';
-import {Base64Util} from '../../../../shared/util/base64.util';
 
 @Component({
   selector: 'app-qt-bool-component',
@@ -15,26 +14,22 @@ export class BoolTermComponent implements OnInit {
 
   // TODO add logic to store multiple queries with an OR
   /** This object holds all the query settings. */
-  @Input()
-  public boolTerm: BoolQueryTerm;
+  @Input() public boolTerm: BoolQueryTerm;
 
-  @Input()
-  public readonly containers: BoolTermComponent[];
+  @Input() public readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
 
-  @Input()
-  public readonly self: BoolTermComponent;
-
-  @Input()
-  public readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
   /** Current selection */
   public currentAttributeObservable: BehaviorSubject<BoolAttribute> =
     new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT));
+
   /** Current BoolTerm */
-  public term: BoolTerm;
+  @Input() public term: BoolTerm;
+
   /** Currently selected operator */
   currentOperator: BoolOperator;
-
   // TODO Currently slider values are not stored anywhere
+
+  private _value: string;
 
   get currentAttribute(): Observable<BoolAttribute> {
     return this.currentAttributeObservable;
@@ -47,9 +42,12 @@ export class BoolTermComponent implements OnInit {
   set attribute(value: BoolAttribute) {
     this.currentAttributeObservable.next(value);
     this.currentOperator = value.operators[0];
-    this.updateTerms();
+    this.updateTerm();
   }
 
+  /**
+   * By default, the operator is set to equals since that is supported by all boolean types
+   */
   get operatorValue(): BoolOperator {
     if (this.currentOperator == null) {
       return BoolOperator.EQ;
@@ -57,9 +55,12 @@ export class BoolTermComponent implements OnInit {
     return this.currentOperator;
   }
 
+  /**
+   * Updates both the variable storing the current operator and the boolterm
+   */
   set operatorValue(value: BoolOperator) {
     this.currentOperator = value;
-    this.updateTerms();
+    this.updateTerm();
   }
 
   /**
@@ -67,10 +68,7 @@ export class BoolTermComponent implements OnInit {
    * @return {string}
    */
   get inputValue(): string {
-    if (this.term == null) {
-      return '';
-    }
-    return this.term.values;
+    return this._value;
   }
 
   /**
@@ -79,57 +77,67 @@ export class BoolTermComponent implements OnInit {
    * @param {string} value
    */
   set inputValue(value: string) {
-    console.log('new input value: ' + value);
-    this.updateTerms(value)
-  }
-
-  public onRemoveButtonClicked() {
-    console.log('removing this component from the list');
-    const index = this.containers.indexOf(this.self);
-    if (index > -1) {
-      console.log('found at index ' + index);
-      this.containers.splice(index, 1)
-    }
-    if (this.term == null) {
-      return;
-    }
-    this.removeTermFromData();
-  }
-
-  public removeTermFromData() {
-    const termIdx = this.boolTerm.terms.indexOf(this.term);
-    if (termIdx > -1) {
-      console.log('found query term to remove at index ' + termIdx + ', removing');
-      this.boolTerm.terms.splice(termIdx, 1);
-      this.updateData();
-    }
-  }
-
-  public updateData() {
-    console.log('current terms: ' + JSON.stringify(this.boolTerm.terms));
-    this.boolTerm.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.boolTerm.terms));
+    this._value = value;
+    this.updateTerm()
   }
 
   /**
-   * @param value input value for the term (e.g. 150 or 'basel')
+   * Removes this term from the term container, causing all views and data to be updated
    */
-  public addTermToData(value?: string) {
-    this.term = new BoolTerm(this.currentAttributeObservable.getValue().featureName,
-      BoolAttribute.getOperatorName(this.currentOperator),
-      value == null ? (this.term == null ? '' : this.term.values) : value);
-    console.log('Adding new term: ' + JSON.stringify(this.term));
-    this.boolTerm.terms.push(this.term);
-    this.updateData()
+  public onRemoveButtonClicked() {
+    this.boolTerm.removeTerm(this.term);
   }
 
-  public updateTerms(value?: string) {
-    if (this.term != null) {
-      this.removeTermFromData();
-    }
-    this.addTermToData(value);
+  /**
+   * Update with the provided new value. All values are serialized to Strings anyway :)
+   */
+  public updateTerm() {
+    this.term.attribute = this.currentAttributeObservable.getValue().featureName;
+    this.term.operator = BoolAttribute.getOperatorName(this.currentOperator);
+    this.term.values = this._value;
+    this.boolTerm.update();
   }
 
+
+  private attributeIsText(attr: BoolAttribute) {
+    return attr.valueType.valueOf() == 2 || attr.valueType.valueOf() == 3;
+  }
+
+  /**
+   * Be aware that you should not use the setters in this method, because they will call an update() which will destroy cached term-information
+   */
   ngOnInit(): void {
-    this.attribute = this.possibleAttributes.getValue()[0];
+    /* Check if we need to initialize the attribute */
+    if (!this.term.attribute) {
+      this.attribute = this.possibleAttributes.getValue()[0];
+    } else {
+      const match = this.possibleAttributes.getValue().find(attr => attr.featureName === this.term.attribute);
+      if (match) {
+        this.currentAttributeObservable.next(match);
+      } else {
+        console.error(`no matching attribute found for term ${this.term} in attribute list ${this.possibleAttributes.getValue()}`)
+      }
+    }
+    if (this.term.operator) {
+      this.currentOperator = BoolOperator[this.term.operator];
+    } else {
+      this.currentOperator = BoolAttribute.getDefaultOperatorsByValueType(this.attribute.valueType)[0];
+    }
+    if (this.term.values) {
+      switch (this.attribute.valueType) {
+        case ValueType.OPTIONS:
+        case ValueType.DATE:
+        case ValueType.NUMERIC:
+        case ValueType.TEXT:
+          this.inputValue = this.term.values;
+          break;
+        case ValueType.RANGE:
+          //TODO
+          console.error('TODO not implemented yet');
+          this.inputValue = this.term.values;
+          break;
+      }
+    }
+
   }
 }

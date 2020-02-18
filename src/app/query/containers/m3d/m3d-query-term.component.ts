@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import {Component, Input, ViewChild} from '@angular/core';
-import {MatDialog} from '@angular/material';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {MatDialog, MatSnackBar} from '@angular/material';
 import {M3DLoaderDialogComponent} from './m3d-loader-dialog.component';
 import {M3DLoaderComponent} from '../../../shared/components/m3d/m3d-loader.component';
 import {BinarySketchDialogComponent} from './binary-sketch-dialog.component';
@@ -14,7 +14,8 @@ import Mesh = THREE.Mesh;
   templateUrl: 'm3d-query-term.component.html',
   styleUrls: ['m3d-query-term.component.css']
 })
-export class M3DQueryTermComponent {
+export class M3DQueryTermComponent implements OnInit {
+
   /** Value of the slider. */
   public sliderSetting: number;
   /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
@@ -26,15 +27,19 @@ export class M3DQueryTermComponent {
   @ViewChild('previewimg')
   private previewimg: any;
   /** The M3DQueryTerm object associated with this M3DQueryTermComponent. That object holds all the query-settings. */
-  @Input()
-  private m3dTerm: M3DQueryTerm;
+  @Input() private m3dTerm: M3DQueryTerm;
 
-  /**
-   * Default constructor.
-   *
-   * @param dialog
-   */
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog, private _snackBar: MatSnackBar) {
+  }
+
+  ngOnInit(): void {
+    if (this.m3dTerm.data) {
+      this.sliderSetting = this.m3dTerm.sliderSetting;
+      this._snackBar.open(`Transfering 3D-Sketches or meshes between stages is currently not supported`, '', {
+        duration: 5000,
+      });
+      this.onSliderChanged();
+    }
   }
 
   /**
@@ -49,6 +54,7 @@ export class M3DQueryTermComponent {
    * This method is invoked whenever the slider value changes. Updates the feature-categories for this M3DQueryTerm based on a linear, numerical scale.
    */
   public onSliderChanged() {
+    this.m3dTerm.sliderSetting = this.sliderSetting;
     switch (this.sliderSetting) {
       case 0:
         this.m3dTerm.setCategories(['sphericalharmonicslow']);
