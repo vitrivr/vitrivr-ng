@@ -35,7 +35,8 @@ export class M3DQueryTermComponent implements OnInit {
   ngOnInit(): void {
     if (this.m3dTerm.data) {
       this.sliderSetting = this.m3dTerm.sliderSetting;
-      this._snackBar.open(`Transfering 3D-Sketches or meshes between stages is currently not supported`, '', {
+      // TODO go from the base64-data back to what we can actually store in the previewimg
+      this._snackBar.open(`Transferring 3D-Sketches or meshes between stages is currently not supported`, '', {
         duration: 5000,
       });
       this.onSliderChanged();

@@ -1,6 +1,6 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 
-import {MatDialog} from '@angular/material';
+import {MatDialog, MatSnackBar} from '@angular/material';
 import {AudioRecorderDialogComponent} from './audio-recorder-dialog.component';
 import {AudioQueryTerm} from '../../../shared/model/queries/audio-query-term.model';
 import {first} from 'rxjs/operators';
@@ -10,7 +10,8 @@ import {first} from 'rxjs/operators';
   templateUrl: 'audio-query-term.component.html',
   styleUrls: ['audio-query-term.component.css']
 })
-export class AudioQueryTermComponent {
+export class AudioQueryTermComponent implements OnInit {
+
   /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the query-settings. */
   @Input() audioTerm: AudioQueryTerm;
   /** Value of the slider. */
@@ -18,12 +19,17 @@ export class AudioQueryTermComponent {
   /** Component used to display a preview of the recorded/selected audio. */
   @ViewChild('player') private player: any;
 
-  /**
-   * Default constructor.
-   *
-   * @param dialog
-   */
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog, private _snackBar: MatSnackBar) {
+  }
+
+  ngOnInit(): void {
+    if (this.audioTerm.data) {
+      this.sliderSetting = this.audioTerm.sliderSetting;
+      // TODO go from the base64-data back to what we can actually store in the previewimg
+      this._snackBar.open(`Transferring audio between stages is currently not supported`, '', {
+        duration: 5000,
+      });
+    }
   }
 
   /**
@@ -32,6 +38,7 @@ export class AudioQueryTermComponent {
    *
    */
   public onSliderChanged(event: any) {
+    this.audioTerm.sliderSetting = this.sliderSetting;
     switch (this.sliderSetting) {
       case 0:
         this.audioTerm.setCategories(['audiofingerprint']);

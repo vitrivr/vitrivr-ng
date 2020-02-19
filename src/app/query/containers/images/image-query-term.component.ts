@@ -16,9 +16,11 @@ export class ImageQueryTermComponent implements OnInit {
 
   /** Slider to adjust the query-term settings; i.e. to select the refinement used for image-queries. */
   public sliderSetting = 1;
+
   /** Component used to display a preview of the selected AND/OR sketched image. */
   @ViewChild('previewimg')
   private previewimg: any;
+
   /** The ImageQueryTerm object associated with this ImageQueryTermComponent. That object holds all the settings. */
   @Input()
   private imageTerm: ImageQueryTerm;

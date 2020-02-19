@@ -2,15 +2,13 @@ import {AbstractQueryTerm} from '../abstract-query-term.model';
 import {SemanticCategory} from './semantic-category.model';
 
 export class SemanticQueryTerm extends AbstractQueryTerm {
-  /**
-   * Default constructor.
-   */
-  constructor() {
-    super('SEMANTIC', ['semantic']);
-  }
 
   /** The image data associated with this SemanticQueryTerm. */
   private _image: string;
+
+  constructor() {
+    super('SEMANTIC', ['semantic']);
+  }
 
   /**
    * Getter for image.
