@@ -14,13 +14,13 @@
     "history": 5,
     "options": {
       "image": true,
-      "audio": true,
+      "audio": false,
       "model3d": false,
       "motion": false,
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": false
+      "boolean": true
     },
     "text": {
       "categories": [
