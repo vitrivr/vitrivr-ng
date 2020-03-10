@@ -21,7 +21,7 @@ export class FeatureDetailsComponent {
    */
   constructor(@Inject(MAT_SNACK_BAR_DATA) data: SegmentScoreContainer) {
     this._title = data.segmentId + ' (' + (data.score * 100).toFixed(2) + '%)';
-    this._lines.push(`Score for ${data.objectScoreContainer.objectId} : ${data.objectScoreContainer.scorePercentage}%`);
+    this._lines.push(`Score for obj (${data.objectScoreContainer.objectId}) : ${data.objectScoreContainer.scorePercentage}%`);
     data.scores.forEach((map, containerID) => {
       map.forEach((score, category) => {
         this._lines.push('(c:' + containerID + ').' + category.name + ': ' + Math.round(score * 1000) / 1000);
