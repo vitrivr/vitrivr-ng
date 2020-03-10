@@ -31,7 +31,7 @@
   <input #imageloader (change)="onFileAvailable($event)" hidden type="file">
 
   <div class="picker">
-        <span (colorPickerChange)="onColorChange()"
+        <span (colorPickerChange)="onColorChange($event)"
               [(colorPicker)]="color"
               [cpAlphaChannel]="'disabled'"
               [cpDialogDisplay]="'inline'"

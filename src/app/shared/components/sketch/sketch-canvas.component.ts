@@ -4,8 +4,8 @@ import {Point} from './model/point.model';
 @Component({
   selector: 'sketch-canvas',
   template: `
-    <canvas #sketch width='{{width}}' height='{{height}}' style="display: block; border: solid 1px; background-image: url(\'assets/images/transparent.png\')" (mousedown)="onMousedown($event)"
-            (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
+      <canvas #sketch width='{{width}}' height='{{height}}' style="display: block; border: solid 1px; background-image: url(\'assets/images/transparent.png\')" (mousedown)="onMousedown($event)"
+              (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
 })
 
 export class SketchCanvas implements OnInit {
@@ -142,7 +142,8 @@ export class SketchCanvas implements OnInit {
    * @param color Hex-color string.
    */
   public setActiveColor(color: string) {
-    this.context.strokeStyle = this.context.fillStyle = color;
+    this.context.strokeStyle = color;
+    this.context.fillStyle = color;
   }
 
   /**
