@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 import {QueryStage} from '../../shared/model/queries/query-stage.model';
 import {QueryTermInterface} from '../../shared/model/queries/interfaces/query-term.interface';
 import {StageChangeEvent} from './stage-change-event.model';
+import {ConfigService} from '../../core/basics/config.service';
 
 @Component({
   selector: 'app-query-stage',
@@ -14,6 +15,10 @@ export class QueryStageComponent {
   @Input() queryStage: QueryStage;
 
   @Input() qsList: QueryStage[];
+
+  constructor(private _configService: ConfigService) {
+
+  }
 
   public index() {
     return this.qsList.indexOf(this.queryStage);
@@ -51,5 +56,9 @@ export class QueryStageComponent {
 
   private isLastStage() {
     return this.qsList.indexOf(this.queryStage) == this.qsList.length - 1;
+  }
+
+  sqEnabled(): boolean {
+    return this._configService.getValue().get<boolean>('query.staged')
   }
 }

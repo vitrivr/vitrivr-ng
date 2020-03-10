@@ -2,6 +2,9 @@ import {QueryTermInterface} from './query-term.interface';
 import {QueryTermType} from './query-term-type.interface';
 import {QueryStage} from '../query-stage.model';
 
+/**
+ * The Query Container corresponds to one StagedSimilarityQuery. It has multiple stages, which can each contain multiple queryterms. Each type of queryterm can only occur once in a query container interface.
+ */
 export interface QueryContainerInterface {
 
   stages: QueryStage[];

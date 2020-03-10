@@ -1,7 +1,7 @@
 import {Component, HostListener, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {QueryContainerInterface} from '../shared/model/queries/interfaces/query-container.interface';
-import {StagedQueryContainer} from '../shared/model/queries/query-container.model';
+import {StagedQueryContainer} from '../shared/model/queries/staged-query-container.model';
 import {EventBusService} from '../core/basics/event-bus.service';
 import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';

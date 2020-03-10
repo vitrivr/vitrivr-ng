@@ -18,7 +18,7 @@ export class BoolQueryTermComponent implements OnInit {
   //  2) we need + / - logic
   /** This object holds all the query settings. */
   @Input()
-  protected boolTerm: BoolQueryTerm;
+  boolTerm: BoolQueryTerm;
 
   protected possibleAttributes: BehaviorSubject<BoolAttribute[]> = new BehaviorSubject(
     [new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT)]

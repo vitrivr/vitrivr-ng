@@ -1,7 +1,7 @@
 import {QueryTermType} from './query-term-type.interface';
 
 /**
- * General interface of a QueryTerm.
+ * General interface of a QueryTerm (e.g. text, tag, sketch)
  */
 export interface QueryTermInterface {
   /**

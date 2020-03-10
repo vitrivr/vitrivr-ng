@@ -1,9 +1,10 @@
+
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {CropperSettings, ImageCropperComponent} from 'ng2-img-cropper';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {HttpClient} from '@angular/common/http';
 import {QueryService} from '../core/queries/query.service';
-import {StagedQueryContainer} from '../shared/model/queries/query-container.model';
+import {StagedQueryContainer} from '../shared/model/queries/staged-query-container.model';
 import {first} from 'rxjs/operators';
 import {ImageQueryTerm} from '../shared/model/queries/image-query-term.model';
 

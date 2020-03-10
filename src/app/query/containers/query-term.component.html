@@ -20,7 +20,7 @@
         <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
     </div>
 
-    <div>
+    <div *ngIf="stagedQEnabled()">
         <button (click)="onPushDownClicked()" mat-icon-button color="primary" aria-label="Use as a later filter">
             <mat-icon>search</mat-icon>
             <mat-icon>keyboard_arrow_down</mat-icon>
