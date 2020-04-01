@@ -15,7 +15,7 @@ enum Token {
   OBJECT_TYPE_LOWER = ':t', /* The object's media type in lowercase letters.*/
   OBJECT_TYPE_UPPER = ':T', /* The object's media type in uppercase letters.*/
   SEGMENT_ID = ':s',  /* ID of the media segment .*/
-  SEGMENT_ID_NO_PREFIX = ':p',  /* ID of the media segment .*/
+  SEGMENT_ID_NO_PREFIX = ':S',  /* ID of the media segment .*/
   SUFFIX = ':x' /* Suffix of the thumbnail file as defined in the config.*/
 }
 
