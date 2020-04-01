@@ -14,7 +14,8 @@ enum Token {
   OBJECT_PATH = ':p', /* The path of the media object. */
   OBJECT_TYPE_LOWER = ':t', /* The object's media type in lowercase letters.*/
   OBJECT_TYPE_UPPER = ':T', /* The object's media type in uppercase letters.*/
-  SEGMENT_ID = ':s',  /* ID of the media segment (only for thumbnails) .*/
+  SEGMENT_ID = ':s',  /* ID of the media segment .*/
+  SEGMENT_ID_NO_PREFIX = ':p',  /* ID of the media segment .*/
   SUFFIX = ':x' /* Suffix of the thumbnail file as defined in the config.*/
 }
 
@@ -36,12 +37,12 @@ export class ResolverService {
   /** The RegEx pattern used for replacement. */
   private _regex = new RegExp('(' + [
     Token.OBJECT_ID,
-    Token.OBJECT_ID,
     Token.OBJECT_NAME,
     Token.OBJECT_PATH,
     Token.OBJECT_TYPE_LOWER,
     Token.OBJECT_TYPE_UPPER,
     Token.SEGMENT_ID,
+    Token.SEGMENT_ID_NO_PREFIX,
     Token.SUFFIX
   ].join('|') + ')', 'g');
 
@@ -112,6 +113,25 @@ export class ResolverService {
     rep[Token.OBJECT_TYPE_UPPER] = segment.objectScoreContainer.mediatype;
     rep[Token.SUFFIX] = this.suffices.get(segment.objectScoreContainer.mediatype);
     rep[Token.SEGMENT_ID] = segment.segmentId;
+    rep[Token.SEGMENT_ID_NO_PREFIX] = segment.segmentId.replace(ResolverService.prefixForMediatype(segment.objectScoreContainer.mediatype), '');
     return this.host_objects.replace(this._regex, (match) => rep[match] || match);
+  }
+
+
+  private static prefixForMediatype(mediatype: MediaType) {
+    switch (mediatype) {
+      case 'AUDIO':
+        return 'a_';
+      case 'IMAGE':
+        return 'i_';
+      case 'IMAGE_SEQUENCE':
+        return 'is_';
+      case 'MODEL3D':
+        return 'm_';
+      case 'VIDEO':
+        return 'v_';
+      default:
+        return '';
+    }
   }
 }
