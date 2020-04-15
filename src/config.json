@@ -9,7 +9,7 @@
   "vbs": {
     "teamid": 1,
     "toolid": 1,
-    "endpoint": "http://10.34.58.83:8080/vbs",
+    "endpoint": "http://10.34.58.83:8080/lsc",
     "log": false
   },
   "mlt": {

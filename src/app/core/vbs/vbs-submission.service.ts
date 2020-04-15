@@ -190,8 +190,8 @@ export class VbsSubmissionService {
     this._submitSubscription = this._submitSubject.pipe(
       flatMap(([segment, frame]) => {
         /* Prepare VBS submission. */
-        const imageId = segment.segmentId;
-        const params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('imageId', imageId);
+        const imageId = segment.segmentId.replace('is_','');
+        const params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('image', imageId);
         const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params});
 
         /* Do some logging and catch HTTP errors. */
