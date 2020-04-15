@@ -188,22 +188,15 @@ export class VbsSubmissionService {
 
     /* Setup submission subscription, which is triggered manually. */
     this._submitSubscription = this._submitSubject.pipe(
-      map(([segment, time]): [SegmentScoreContainer, number] => {
-        let fps = Number.parseFloat(segment.objectScoreContainer.metadataForKey('technical.fps'));
-        if (Number.isNaN(fps) || !Number.isFinite(fps)) {
-          fps = VideoUtil.bestEffortFPS(segment);
-        }
-        return [segment, VbsSubmissionService.timeToFrame(time, fps)]
-      }),
       flatMap(([segment, frame]) => {
         /* Prepare VBS submission. */
-        const videoId = parseInt(segment.objectId.replace('v_', ''), 10).toString();
-        const params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', videoId).set('frame', String(frame));
+        const imageId = segment.segmentId;
+        const params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('imageId', imageId);
         const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params});
 
         /* Do some logging and catch HTTP errors. */
         return observable.pipe(
-          tap(o => console.log(`Submitting video to VBS server; id: ${videoId}, frame: ${frame}`)),
+          tap(o => console.log(`Submitting segment to LSC server; id: ${imageId}`)),
           catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
         );
       }),
