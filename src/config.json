@@ -6,6 +6,12 @@
     "host_thumbnails" : "http://10.34.58.146/thumbnails/:o/:s.png",
     "host_objects": "http://10.34.58.146/objects/:n/:p.jpg"
   },
+  "vbs": {
+    "teamid": 1,
+    "toolid": 1,
+    "endpoint": "http://10.34.58.83:8080/vbs/submit",
+    "log": false
+  },
   "mlt": {
     "VIDEO": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"],
     "IMAGE": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"]
