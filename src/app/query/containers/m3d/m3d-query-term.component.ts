@@ -138,7 +138,7 @@ export class M3DQueryTermComponent {
    */
   private openM3DDialog(data?: any) {
     let dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data: data});
-    dialogRef.afterClosed().pipe(first()).subscribe((result: Mesh) => {
+    dialogRef.beforeClosed().pipe(first()).subscribe((result: Mesh) => {
       if (result) {
         this.preview.setMesh(result);
         this.preview.render();

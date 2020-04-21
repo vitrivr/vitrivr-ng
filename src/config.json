@@ -15,7 +15,7 @@
     "options": {
       "image": true,
       "audio": true,
-      "model3d": false,
+      "model3d": true,
       "motion": false,
       "text": true,
       "tag": true,
