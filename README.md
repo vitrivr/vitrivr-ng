@@ -11,7 +11,7 @@ For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/
 ## Development server
 
 From the project folder, run `ng serve` to start a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-If you wish to prevent automatic reloading, run `ng serve --liveReload=false`
+If you wish to prevent automatic reloading, run `ng serve --live-reload=false`
 
 ## Build
 
