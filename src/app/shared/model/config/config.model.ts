@@ -41,24 +41,28 @@ export class Config {
       active: false,
       templates: [] /* URLs */
     },
-    vbs: {
-      /* The team number within the VBS contest. */
+    competition: {
+      /* The team number within the competition contest. */
       teamid: null,
 
-      /* The tool number within the VBS context (each instance should have its own ID). */
+      /* The tool number within the competition context (each instance should have its own ID). */
       toolid: null,
 
-      /* URL to the VBS endpoint. */
+      /* URL to the competition endpoint. */
       endpoint: null,
 
       /* Whether or not logging (interaction & results) should be enabled. */
       log: false,
 
-      /* The timer interval at which logs are submitted to the VBS server. */
+      /* The timer interval at which logs are submitted to the competition server. */
       loginterval: 5000,
 
       /* URL to the Collabordinator endpoint. */
-      collabordinator: null
+      collabordinator: null,
+
+      lsc: false,
+
+      competition: false
     },
     tags: [
       new Tag('Red', 0),
@@ -116,12 +120,12 @@ export class Config {
    * @param resources Optional resources configuration as, e.g. loaded from a file.
    * @param evaluation Optional evaluation configuration as, e.g. loaded from a file.
    * @param query Optional query configuration, e.g. loaded from a file.
-   * @param vbs Optional VBS configuration as, e.g. loaded from a file.
+   * @param competition Optional competition configuration as, e.g. loaded from a file.
    * @param tags Optional tag configurations as, e.g. loaded from a file.
    * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
    * @param refinement Optional refinement configuration
    */
-  constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, vbs?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
+  constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
     const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
     if (api) {
       this._config.api = DEEPMERGE(this._config.api, api, {arrayMerge: overwriteMerge});
@@ -135,8 +139,8 @@ export class Config {
     if (query) {
       this._config.query = DEEPMERGE(this._config.query, query, {arrayMerge: overwriteMerge});
     }
-    if (vbs) {
-      this._config.vbs = DEEPMERGE(this._config.vbs, vbs, {arrayMerge: overwriteMerge});
+    if (competition) {
+      this._config.competition = DEEPMERGE(this._config.competition, competition, {arrayMerge: overwriteMerge});
     }
     if (tags) {
       this._config.tags = DEEPMERGE(this._config.tags, tags, {arrayMerge: overwriteMerge});
@@ -188,8 +192,8 @@ export class Config {
     if (typeof object === 'string') {
       object = JSON.parse(object);
     }
-    if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['vbs'] || object['tags'] || object['mlt'] || object['refinement']) {
-      return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['vbs'], object['tags'], object['mlt'], object['refinement']);
+    if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
+      return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
     } else {
       return null;
     }

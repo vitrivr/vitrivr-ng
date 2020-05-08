@@ -28,7 +28,7 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
   constructor(@Inject(ConfigService) _config: ConfigService) {
     super();
     _config.pipe(
-      filter(c => c.get<string>('vbs.collabordinator') != null)
+      filter(c => c.get<string>('competition.collabordinator') != null)
     ).subscribe(c => {
       this._config = c;
       this.connect();
@@ -84,7 +84,7 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
     if (this._webSocket) {
       this._webSocket.complete();
     }
-    this._webSocket = webSocket<CollabordinatorMessage>(this._config.get<string>('vbs.collabordinator'));
+    this._webSocket = webSocket<CollabordinatorMessage>(this._config.get<string>('competition.collabordinator'));
     this._webSocket.subscribe(
       v => this.next(v),
       e => {
