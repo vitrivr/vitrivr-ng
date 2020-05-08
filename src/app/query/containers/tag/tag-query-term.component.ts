@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
@@ -13,42 +13,31 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
 })
-export class TagQueryTermComponent {
+export class TagQueryTermComponent implements OnInit {
 
   /** The TagQueryTerm object associated with this TagQueryTermComponent. That object holds all the query settings. */
   @Input()
   private tagTerm: TagQueryTerm;
 
-  /**
-   * Constructor for TagQueryTermComponent
-   *
-   * @param {TagsLookupService} _tagService Service used to load tags from Cineast.
-   * @param {MatSnackBar} _matsnackbar The Snackbar to tell people they should really only use a tag once
-   */
+  /** List of tag fields currently displayed. */
+  private _field: FieldGroup;
+  /** List of tag fields currently displayed. */
+  private _tags: Tag[] = [];
+
   constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
     this._field = new FieldGroup(_tagService);
   }
 
-  /** List of tag fields  currently displayed. */
-  private _tags: Tag[] = [];
+  ngOnInit(): void {
+    if (this.tagTerm.data) {
+      this._tags = this.tagTerm.tags;
+    }
+  }
 
-  /**
-   * Getter for form control.
-   *
-   * @return {any}
-   */
   get tags() {
     return this._tags;
   }
 
-  /** List of tag fields  currently displayed. */
-  private _field: FieldGroup;
-
-  /**
-   * Getter for form control.
-   *
-   * @return {any}
-   */
   get field() {
     return this._field;
   }
@@ -85,6 +74,7 @@ export class TagQueryTermComponent {
   public addTag(tag: Tag) {
     this._tags.push(tag);
     this.field.formControl.setValue('');
+    this.tagTerm.tags = this._tags;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
     })));
@@ -110,6 +100,7 @@ export class TagQueryTermComponent {
     if (index > -1) {
       this._tags.splice(index, 1);
     }
+    this.tagTerm.tags = this._tags;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
     })));
@@ -131,6 +122,9 @@ export class FieldGroup {
   public readonly filteredTags: Observable<Tag[]>;
 
   public currentlyDisplayedTags: Array<Tag> = new Array<Tag>();
+
+  /** The currently selected tag. */
+  private _selection: Tag;
 
   /**
    * Constructor for FieldGroup
@@ -156,21 +150,10 @@ export class FieldGroup {
     });
   }
 
-  /** The currently selected tag. */
-  private _selection: Tag;
-
-  /**
-   *
-   * @return {Tag}
-   */
   get selection(): Tag {
     return this._selection;
   }
 
-  /**
-   *
-   * @param {Tag} value
-   */
   set selection(value: Tag) {
     this._selection = value;
   }

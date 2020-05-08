@@ -1,9 +1,8 @@
 import {AbstractQueryTerm} from './abstract-query-term.model';
 
 export class ImageQueryTerm extends AbstractQueryTerm {
-  /**
-   * Default constructor.
-   */
+  sliderSetting: number;
+
   constructor() {
     super('IMAGE', [])
   }

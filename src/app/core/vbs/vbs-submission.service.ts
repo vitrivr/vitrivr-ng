@@ -39,6 +39,10 @@ export class VbsSubmissionService {
   /** Reference to the subscription to the vitrivr NG configuration. */
   private _configSubscription: Subscription;
 
+  private _vbs = false;
+
+  private _lsc = false;
+
   /**
    * Constructor for VbsSubmissionService.
    *
@@ -58,12 +62,16 @@ export class VbsSubmissionService {
               private _http: HttpClient,
               private _snackBar: MatSnackBar) {
 
+    _config.subscribe(config => {
+      this._lsc = config.get<boolean>('competition.lsc');
+      this._vbs = config.get<boolean>('competition.vbs');
+    });
+
     /* */
     this._config = _config.asObservable().pipe(
-      filter(c => c.get<string>('vbs.endpoint') != null),
-      map(c => <[string, string, number, boolean, number]>[c.get<string>('vbs.endpoint').endsWith('/') ? c.get<string>('vbs.endpoint').slice(0, -1) : c.get<string>('vbs.endpoint'), c.get<string>('vbs.teamid'), c.get<number>('vbs.toolid'), c.get<boolean>('vbs.log'), c.get<number>('vbs.loginterval')])
+      filter(c => c.get<string>('competition.endpoint') != null),
+      map(c => <[string, string, number, boolean, number]>[c.get<string>('competition.endpoint').endsWith('/') ? c.get<string>('competition.endpoint').slice(0, -1) : c.get<string>('competition.endpoint'), c.get<string>('competition.teamid'), c.get<number>('competition.toolid'), c.get<boolean>('competition.log'), c.get<number>('competition.loginterval')])
     );
-
 
     /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
     this._configSubscription = this._config.subscribe(([endpoint, team, tool, log, loginterval]) => {
@@ -189,21 +197,35 @@ export class VbsSubmissionService {
     /* Setup submission subscription, which is triggered manually. */
     this._submitSubscription = this._submitSubject.pipe(
       map(([segment, time]): [SegmentScoreContainer, number] => {
-        let fps = Number.parseFloat(segment.objectScoreContainer.metadataForKey('technical.fps'));
-        if (Number.isNaN(fps) || !Number.isFinite(fps)) {
-          fps = VideoUtil.bestEffortFPS(segment);
+        if (this._vbs) {
+          let fps = Number.parseFloat(segment.objectScoreContainer.metadataForKey('technical.fps'));
+          if (Number.isNaN(fps) || !Number.isFinite(fps)) {
+            fps = VideoUtil.bestEffortFPS(segment);
+          }
+          return [segment, VbsSubmissionService.timeToFrame(time, fps)]
         }
-        return [segment, VbsSubmissionService.timeToFrame(time, fps)]
+        if (this._lsc) {
+          return [segment, time];
+        }
+        return [segment, time];
       }),
       flatMap(([segment, frame]) => {
         /* Prepare VBS submission. */
-        const videoId = parseInt(segment.objectId.replace('v_', ''), 10).toString();
-        const params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', videoId).set('frame', String(frame));
+        let id: string;
+        let params: HttpParams
+        if (this._lsc) {
+          id = segment.segmentId.replace('is_', '');
+          params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('image', id);
+        }
+        if (this._vbs) {
+          id = parseInt(segment.objectId.replace('v_', ''), 10).toString();
+          params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', id).set('frame', String(frame));
+        }
         const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params});
 
         /* Do some logging and catch HTTP errors. */
         return observable.pipe(
-          tap(o => console.log(`Submitting video to VBS server; id: ${videoId}, frame: ${frame}`)),
+          tap(o => console.log(`Submitting element to server; id: ${id}`)),
           catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
         );
       }),

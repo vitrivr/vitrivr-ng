@@ -404,10 +404,9 @@ export class ResultsContainer {
    * of all the affected MediaObjectScoreContainers.
    *
    * @param sim SimilarityQueryResult message
-   * @param query Optionally, the similarity query which originally was issued to get this result
    * @return {boolean} True, if SimilarityQueryResult was processed i.e. queryId corresponded with that of the message.
    */
-  public processSimilarityMessage(sim: SimilarityQueryResult, query?: SimilarityQuery) {
+  public processSimilarityMessage(sim: SimilarityQueryResult) {
     if (sim.queryId !== this.queryId) {
       console.warn(`similarity result query id ${sim.queryId} does not match query id ${this.queryId}`);
       return false;

@@ -1,10 +1,18 @@
 {
   "api": {
-    "host" : "default"
+    "host" : "10.34.58.146"
   },
   "resources": {
-    "host_thumbnails" : "http://localhost/V3C1/V3C1jpg/:o/:s.jpg",
-    "host_objects": "http://localhost/V3C1/video/:o.mp4"
+    "host_thumbnails" : "http://10.34.58.146/thumbnails/:o/:s.png",
+    "host_objects": "http://10.34.58.146/objects/:n/:p.jpg"
+  },
+  "competition": {
+    "teamid": 6,
+    "toolid": 1,
+    "endpoint": "http://10.34.58.83:8080/lsc",
+    "log": false,
+    "lsc": true,
+    "vbs": false
   },
   "mlt": {
     "VIDEO": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"],
@@ -14,21 +22,32 @@
     "history": 5,
     "options": {
       "image": true,
-      "audio": true,
-      "model3d": true,
+      "audio": false,
+      "model3d": false,
       "motion": false,
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": false
+      "boolean": true
     },
     "text": {
       "categories": [
         ["ocr", "Text on Screen"],
-	    ["asr", "Audio"],
-	    ["scenecaption", "Description"]
+        ["asr", "Audio"],
+        ["scenecaption", "Description"]
       ]
-    }
+    },
+    "boolean": [
+      ["Location", "TEXT", "features_daily.location"],
+      ["Skin Temperature", "NUMERIC", "features_daily.skin_temp"],
+      ["Heart Rate", "NUMERIC", "features_daily.heart_rate"],
+      ["Calories", "NUMERIC", "features_daily.calories"],
+      ["GSR", "NUMERIC", "features_daily.gsr"],
+      ["Steps", "NUMERIC", "features_daily.steps"],
+      ["Annotation", "TEXT", "features_wsdmtiannotations.annotation"],
+      ["Object", "TEXT", "features_wsdmtiannotations.object"]
+    ],
+    "staged": true
   },
   "refinement": {
     "filters": [

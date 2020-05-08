@@ -10,7 +10,6 @@ import {ConfigService} from '../../../core/basics/config.service';
 })
 export class TextQueryTermComponent {
 
-
   /**
    * List of tuples that designate the available categories.
    *
@@ -64,5 +63,9 @@ export class TextQueryTermComponent {
     } else {
       this.textTerm.removeCategory(event.source.value)
     }
+  }
+
+  isChecked(category: [string, string]) {
+    return this.textTerm.categories.indexOf(category[0]) > -1;
   }
 }

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import {Component, Input, ViewChild} from '@angular/core';
-import {MatDialog} from '@angular/material';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {MatDialog, MatSnackBar} from '@angular/material';
 import {M3DLoaderDialogComponent} from './m3d-loader-dialog.component';
 import {M3DLoaderComponent} from '../../../shared/components/m3d/m3d-loader.component';
 import {BinarySketchDialogComponent} from './binary-sketch-dialog.component';
@@ -14,11 +14,12 @@ import Mesh = THREE.Mesh;
   templateUrl: 'm3d-query-term.component.html',
   styleUrls: ['m3d-query-term.component.css']
 })
-export class M3DQueryTermComponent {
+export class M3DQueryTermComponent implements OnInit {
+
   /** Value of the slider. */
   public sliderSetting: number;
   /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
-  public sketch: boolean = false;
+  public sketch = false;
   /** Component used to display a preview of the selected 3D model. */
   @ViewChild('previewmodel')
   private preview: M3DLoaderComponent;
@@ -26,15 +27,20 @@ export class M3DQueryTermComponent {
   @ViewChild('previewimg')
   private previewimg: any;
   /** The M3DQueryTerm object associated with this M3DQueryTermComponent. That object holds all the query-settings. */
-  @Input()
-  private m3dTerm: M3DQueryTerm;
+  @Input() private m3dTerm: M3DQueryTerm;
 
-  /**
-   * Default constructor.
-   *
-   * @param dialog
-   */
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog, private _snackBar: MatSnackBar) {
+  }
+
+  ngOnInit(): void {
+    if (this.m3dTerm.data) {
+      this.sliderSetting = this.m3dTerm.sliderSetting;
+      // TODO go from the base64-data back to what we can actually store in the previewimg
+      this._snackBar.open(`Transferring 3D-Sketches or meshes between stages is currently not supported`, '', {
+        duration: 5000,
+      });
+      this.onSliderChanged();
+    }
   }
 
   /**
@@ -49,6 +55,7 @@ export class M3DQueryTermComponent {
    * This method is invoked whenever the slider value changes. Updates the feature-categories for this M3DQueryTerm based on a linear, numerical scale.
    */
   public onSliderChanged() {
+    this.m3dTerm.sliderSetting = this.sliderSetting;
     switch (this.sliderSetting) {
       case 0:
         this.m3dTerm.setCategories(['sphericalharmonicslow']);
@@ -137,7 +144,7 @@ export class M3DQueryTermComponent {
    * @param data Optional data that should be handed to the component.
    */
   private openM3DDialog(data?: any) {
-    let dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data: data});
+    const dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data: data});
     dialogRef.beforeClosed().pipe(first()).subscribe((result: Mesh) => {
       if (result) {
         this.preview.setMesh(result);
@@ -152,7 +159,7 @@ export class M3DQueryTermComponent {
    * result of the dialog into preview image canvas.
    */
   private openSketchDialog(data?: any) {
-    let dialogRef = this.dialog.open(BinarySketchDialogComponent, {data: data});
+    const dialogRef = this.dialog.open(BinarySketchDialogComponent, {data: data});
     dialogRef.afterClosed().pipe(first()).subscribe(result => {
       if (result) {
         this.previewimg.nativeElement.src = result;

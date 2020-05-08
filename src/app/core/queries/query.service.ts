@@ -13,7 +13,6 @@ import {ResultsContainer} from '../../shared/model/results/scores/results-contai
 import {NeighboringSegmentQuery} from '../../shared/model/messages/queries/neighboring-segment-query.model';
 import {ReadableQueryConfig} from '../../shared/model/messages/queries/readable-query-config.model';
 import {ConfigService} from '../basics/config.service';
-import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
 import {FeatureCategories} from '../../shared/model/results/feature-categories.model';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
@@ -27,6 +26,8 @@ import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
+import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
+import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -46,25 +47,19 @@ export type QueryChange = 'STARTED' | 'ENDED' | 'ERROR' | 'UPDATED' | 'FEATURE' 
 export class QueryService {
   /** Subject that allows Observers to subscribe to changes emitted from the QueryService. */
   private _subject: Subject<QueryChange> = new Subject();
-  /** The currenty query. May be empty. */
-  private _query: SimilarityQuery;
-  /** The Vitrivr NG configuration as observable */
-  private _config: Observable<Config>;
   /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
   private _socket: WebSocketSubject<Message>;
   private _scoreFunction: string;
 
-  /**
-   * Default constructor.
-   *
-   * @param _history
-   * @param _factory Reference to the WebSocketFactoryService. Gets injected by DI.
-   * @param _config
-   */
+  /** Results of a query. May be empty. */
+  private _results: ResultsContainer;
+
+  /** Flag indicating whether a query is currently being executed. */
+  private _running = 0;
+
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
-              @Inject(ConfigService) _config: ConfigService) {
-    this._config = _config.asObservable();
+              @Inject(ConfigService) private _config: ConfigService) {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
       this._socket.pipe(
@@ -79,9 +74,6 @@ export class QueryService {
     })
   }
 
-  /** Flag indicating whether a query is currently being executed. */
-  private _running = 0;
-
   /**
    * Getter for running.
    *
@@ -90,9 +82,6 @@ export class QueryService {
   get running(): boolean {
     return this._running > 0;
   }
-
-  /** Results of a query. May be empty. */
-  private _results: ResultsContainer;
 
   /**
    * Getter for results.
@@ -131,12 +120,9 @@ export class QueryService {
       return false;
     }
     this._config.pipe(first()).subscribe(config => {
-      let containerId = 0;
-      containers.forEach(container => container.containerId = containerId++);
-      TemporalFusionFunction.queryContainerCount = containerId;
-      const query = new SimilarityQuery(containers, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
-      this._query = query;
-      this._socket.next(query);
+      TemporalFusionFunction.queryContainerCount = containers.length;
+      const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
+      this._socket.next(query)
     });
   }
 
@@ -307,7 +293,7 @@ export class QueryService {
         break;
       case 'QR_SIMILARITY':
         const sim = <SimilarityQueryResult>message;
-        if (this._results && this._results.processSimilarityMessage(sim, this._query)) {
+        if (this._results && this._results.processSimilarityMessage(sim)) {
           this._subject.next('UPDATED');
         }
         break;
@@ -346,7 +332,6 @@ export class QueryService {
       if (this._scoreFunction) {
         this._results.setScoreFunction(this._scoreFunction);
       }
-      this._query.config.queryId = queryId;
     }
     this._running += 1;
     this._subject.next('STARTED' as QueryChange);

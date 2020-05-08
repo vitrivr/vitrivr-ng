@@ -1,4 +1,4 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {ResolverService} from '../../../core/basics/resolver.service';
 import {HttpClient} from '@angular/common/http';
@@ -12,7 +12,7 @@ import {SemanticMap} from '../../../shared/model/queries/semantic/semantic-map.m
   templateUrl: 'semantic-query-term.component.html',
   styleUrls: ['semantic-query-term.component.css']
 })
-export class SemanticQueryTermComponent {
+export class SemanticQueryTermComponent implements OnInit {
 
   /** Component used to display a preview of the selected AND/OR sketched image. */
   @ViewChild('previewimg')
@@ -22,14 +22,14 @@ export class SemanticQueryTermComponent {
   @Input()
   private semanticTerm: SemanticQueryTerm;
 
-  /**
-   * Default constructor.
-   *
-   * @param _dialog
-   * @param _resolver
-   * @param _http
-   */
   constructor(private _dialog: MatDialog, private _resolver: ResolverService, private _http: HttpClient) {
+  }
+
+
+  ngOnInit(): void {
+    if (this.semanticTerm.image) {
+      this.previewimg.nativeElement.src = this.semanticTerm.image;
+    }
   }
 
   /**
@@ -52,11 +52,11 @@ export class SemanticQueryTermComponent {
    */
   private openSketchDialog(data?: SemanticMap) {
     /* Prepare config & initialize the correct dialog-component. */
-    let config = new MatDialogConfig<SemanticMap>();
+    const config = new MatDialogConfig<SemanticMap>();
     config.height = '450px';
     config.data = data;
 
-    let dialogRef = this._dialog.open(SemanticSketchDialogComponent, config);
+    const dialogRef = this._dialog.open(SemanticSketchDialogComponent, config);
 
     /* Register the onClose callback. */
     dialogRef.afterClosed().pipe(first()).subscribe(result => {

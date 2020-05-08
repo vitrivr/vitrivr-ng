@@ -1,6 +1,6 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 
-import {MatDialog} from '@angular/material';
+import {MatDialog, MatSnackBar} from '@angular/material';
 import {AudioRecorderDialogComponent} from './audio-recorder-dialog.component';
 import {AudioQueryTerm} from '../../../shared/model/queries/audio-query-term.model';
 import {first} from 'rxjs/operators';
@@ -10,7 +10,8 @@ import {first} from 'rxjs/operators';
   templateUrl: 'audio-query-term.component.html',
   styleUrls: ['audio-query-term.component.css']
 })
-export class AudioQueryTermComponent {
+export class AudioQueryTermComponent implements OnInit {
+
   /** The AudioQueryTerm object associated with this AudioQueryTermComponent. That object holds all the query-settings. */
   @Input() audioTerm: AudioQueryTerm;
   /** Value of the slider. */
@@ -18,21 +19,26 @@ export class AudioQueryTermComponent {
   /** Component used to display a preview of the recorded/selected audio. */
   @ViewChild('player') private player: any;
 
-  /**
-   * Default constructor.
-   *
-   * @param dialog
-   */
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog, private _snackBar: MatSnackBar) {
+  }
+
+  ngOnInit(): void {
+    if (this.audioTerm.data) {
+      this.sliderSetting = this.audioTerm.sliderSetting;
+      // TODO go from the base64-data back to what we can actually store in the previewimg
+      this._snackBar.open(`Transferring audio between stages is currently not supported`, '', {
+        duration: 5000,
+      });
+    }
   }
 
   /**
    * This method is invoked whenever the slider value changes. Updates the feature categories for this AudioQueryTerm based
    * on a linear, numerical scale.
    *
-   * @param event
    */
   public onSliderChanged(event: any) {
+    this.audioTerm.sliderSetting = this.sliderSetting;
     switch (this.sliderSetting) {
       case 0:
         this.audioTerm.setCategories(['audiofingerprint']);
@@ -67,8 +73,6 @@ export class AudioQueryTermComponent {
 
   /**
    * Fired whenever something is dragged and enters the audio player.
-   *
-   * @param event
    */
   public onAudioDragEnter(event: any) {
     event.preventDefault();
@@ -77,8 +81,6 @@ export class AudioQueryTermComponent {
 
   /**
    * Fired whenever something is dragged over the audio player.
-   *
-   * @param event
    */
   public onAudioDragOver(event: any) {
     event.preventDefault();
@@ -86,8 +88,6 @@ export class AudioQueryTermComponent {
 
   /**
    * Fired whenever something is dragged and exits the audio player.
-   *
-   * @param event
    */
   public onAudioDragExit(event: any) {
     event.preventDefault();
@@ -110,7 +110,7 @@ export class AudioQueryTermComponent {
 
     /** */
     if (event.dataTransfer.files.length > 0) {
-      let file = event.dataTransfer.files.item(0);
+      const file = event.dataTransfer.files.item(0);
       this.openAudioRecorderDialog(file);
     }
   }
@@ -122,16 +122,16 @@ export class AudioQueryTermComponent {
    * @param data Optional data that should be handed to the component.
    */
   private openAudioRecorderDialog(data?: any) {
-    let dialogRef = this.dialog.open(AudioRecorderDialogComponent, {data: data});
-    let subscription = dialogRef.afterClosed().pipe(first()).subscribe(result => {
+    const dialogRef = this.dialog.open(AudioRecorderDialogComponent, {data: data});
+    const subscription = dialogRef.afterClosed().pipe(first()).subscribe(result => {
       if (result) {
-        result.then((data: Blob) => {
-          this.player.nativeElement.src = URL.createObjectURL(data);
-          let reader = new FileReader();
+        result.then((receivedData: Blob) => {
+          this.player.nativeElement.src = URL.createObjectURL(receivedData);
+          const reader = new FileReader();
           reader.onloadend = () => {
             this.audioTerm.data = <string>reader.result;
           };
-          reader.readAsDataURL(data);
+          reader.readAsDataURL(receivedData);
         })
       }
       subscription.unsubscribe();
