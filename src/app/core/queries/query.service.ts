@@ -53,6 +53,8 @@ export class QueryService {
 
   /** Results of a query. May be empty. */
   private _results: ResultsContainer;
+  /** Rerank handler of the ResultsContainer. */
+  private _interval: number;
 
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
@@ -329,6 +331,7 @@ export class QueryService {
     /* Start the actual query. */
     if (!this._results || (this._results && this._results.queryId !== queryId)) {
       this._results = new ResultsContainer(queryId);
+      this._interval = setInterval(() => this._results.checkUpdate(), 2500);
       if (this._scoreFunction) {
         this._results.setScoreFunction(this._scoreFunction);
       }
@@ -343,6 +346,8 @@ export class QueryService {
    * This method triggers an observable change in the QueryService class.
    */
   private finalizeQuery() {
+    // be sure that rerank has runned one last time
+    setTimeout(() => clearInterval(this._interval), 2500);
     this._running -= 1;
     this._subject.next('ENDED' as QueryChange);
     if (this._results.segmentCount > 0) {
