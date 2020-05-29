@@ -67,14 +67,14 @@ export class ResultsContainer {
     // set upper limit, to avoid call in avalanche of responses
     if (this._rerank > 0) {
       // check upper limit to avoid call in avalanche of responses
-      if (this._rerank < 20) {
+      if (this._rerank < 100) {
         this.rerank();
       } else { // mark unranked changes for next round
         this._rerank = 1;
       }
     } else if (this._next > 0) {
       // check upper limit to avoid call in avalanche of responses
-      if (this._next < 20) {
+      if (this._next < 100) {
         this.next();
       } else { // mark unpublished changes for next round
         this._next = 1;
