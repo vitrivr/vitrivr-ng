@@ -348,9 +348,10 @@ export class QueryService {
   private finalizeQuery(queryId: string) {
     if (this._interval_map.has(queryId)) {
       window.clearInterval(this._interval_map.get(queryId));
+      this._interval_map.delete(queryId);
     }
     // be sure that updates are checked one last time
-    this._results.checkUpdate();
+    this._results.doUpdate();
     this._running -= 1;
     this._subject.next('ENDED' as QueryChange);
     if (this._results.segmentCount > 0) {
@@ -366,6 +367,7 @@ export class QueryService {
   private errorOccurred(message: QueryError) {
     if (this._interval_map.has(message.queryId)) {
       window.clearInterval(this._interval_map.get(message.queryId));
+      this._interval_map.delete(message.queryId);
     }
     this._running -= 1;
     this._subject.next('ERROR' as QueryChange);

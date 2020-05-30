@@ -64,7 +64,6 @@ export class ResultsContainer {
   }
 
   public checkUpdate() {
-    // set upper limit, to avoid call in avalanche of responses
     if (this._rerank > 0) {
       // check upper limit to avoid call in avalanche of responses
       if (this._rerank < 100) {
@@ -72,13 +71,22 @@ export class ResultsContainer {
       } else { // mark unranked changes for next round
         this._rerank = 1;
       }
-    } else if (this._next > 0) {
+    } else if (this._next > 0) { // else if as rerank already calls next
       // check upper limit to avoid call in avalanche of responses
       if (this._next < 100) {
         this.next();
       } else { // mark unpublished changes for next round
         this._next = 1;
       }
+    }
+  }
+
+  // force update if there are changes, e.g. on query end
+  public doUpdate() {
+    if (this._rerank > 0) {
+      this.rerank();
+    } else if (this._next > 0) { // else if as rerank already calls next
+      this.next();
     }
   }
 
