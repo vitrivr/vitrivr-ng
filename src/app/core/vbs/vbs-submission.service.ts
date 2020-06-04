@@ -67,7 +67,7 @@ export class VbsSubmissionService {
             this._lsc = config.get<boolean>('competition.lsc');
             this._vbs = config.get<boolean>('competition.vbs');
             this._dres = config.get<boolean>('competition.dres');
-            this._sessionId = config.get<string>('competition.sessionsid')
+            this._sessionId = config.get<string>('competition.sessionid')
         });
 
         /* */

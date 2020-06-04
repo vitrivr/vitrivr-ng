@@ -14,7 +14,7 @@
     "log": false,
     "lsc": false,
     "vbs": false,
-    "dres": true,
+    "dres": true
   },
   "mlt": {
     "VIDEO": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"],
