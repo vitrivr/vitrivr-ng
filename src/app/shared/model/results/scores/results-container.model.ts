@@ -49,6 +49,11 @@ export class ResultsContainer {
   /** A subject that can be used to publish changes to the results. */
   private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
 
+  /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
+  private _rerank: number = 0;
+  /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
+  private _next: number = 0;
+
   /**
    * Constructor for ResultsContainer.
    *
@@ -56,6 +61,33 @@ export class ResultsContainer {
    * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
    */
   constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
+  }
+
+  public checkUpdate() {
+    if (this._rerank > 0) {
+      // check upper limit to avoid call in avalanche of responses
+      if (this._rerank < 100) {
+        this.rerank();
+      } else { // mark unranked changes for next round
+        this._rerank = 1;
+      }
+    } else if (this._next > 0) { // else if as rerank already calls next
+      // check upper limit to avoid call in avalanche of responses
+      if (this._next < 100) {
+        this.next();
+      } else { // mark unpublished changes for next round
+        this._next = 1;
+      }
+    }
+  }
+
+  // force update if there are changes, e.g. on query end
+  public doUpdate() {
+    if (this._rerank > 0) {
+      this.rerank();
+    } else if (this._next > 0) { // else if as rerank already calls next
+      this.next();
+    }
   }
 
   /** List of all the results that were returned and hence are known to the results container. */
@@ -276,6 +308,7 @@ export class ResultsContainer {
    * @param {FusionFunction} weightFunction
    */
   public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
+    this._rerank = 0;
     if (!features) {
       console.debug(`no features given for rerank(), using features inherent to the results container: ${this.features}`);
       features = this.features;
@@ -323,7 +356,7 @@ export class ResultsContainer {
     }
 
     /* Re-rank on the UI side - this also invokes next(). */
-    this.rerank();
+    this._rerank += 1;
 
     /* Return true. */
     return true;
@@ -353,7 +386,7 @@ export class ResultsContainer {
     }
 
     /* Re-rank on the UI side - this also invokes next(). */
-    this.rerank();
+    this._rerank += 1;
 
     /* Return true. */
     return true;
@@ -376,7 +409,7 @@ export class ResultsContainer {
       }
     }
 
-    this.next()
+    this._next += 1;
   }
 
   /**
@@ -396,7 +429,7 @@ export class ResultsContainer {
       }
     }
 
-    this.next()
+    this._next += 1;
   }
 
   /**
@@ -425,7 +458,7 @@ export class ResultsContainer {
 
 
     /* Re-rank the results (calling this method also causes an invocation of next(). */
-    this.rerank();
+    this._rerank += 1;
     return true;
   }
 
@@ -476,6 +509,7 @@ export class ResultsContainer {
    * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
    */
   private next() {
+    this._next = 0;
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);

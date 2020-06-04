@@ -53,6 +53,8 @@ export class QueryService {
 
   /** Results of a query. May be empty. */
   private _results: ResultsContainer;
+  /** Rerank handler of the ResultsContainer. */
+  private _interval_map: Map<string, number> = new Map();
 
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
@@ -315,7 +317,7 @@ export class QueryService {
         break;
       case 'QR_END':
         console.timeEnd(`Query (${(<QueryError>message).queryId})`);
-        this.finalizeQuery();
+        this.finalizeQuery((<QueryError>message).queryId);
         break;
     }
   }
@@ -329,6 +331,7 @@ export class QueryService {
     /* Start the actual query. */
     if (!this._results || (this._results && this._results.queryId !== queryId)) {
       this._results = new ResultsContainer(queryId);
+      this._interval_map.set(queryId, window.setInterval(() => this._results.checkUpdate(), 2500));
       if (this._scoreFunction) {
         this._results.setScoreFunction(this._scoreFunction);
       }
@@ -342,7 +345,13 @@ export class QueryService {
    *
    * This method triggers an observable change in the QueryService class.
    */
-  private finalizeQuery() {
+  private finalizeQuery(queryId: string) {
+    if (this._interval_map.has(queryId)) {
+      window.clearInterval(this._interval_map.get(queryId));
+      this._interval_map.delete(queryId);
+    }
+    // be sure that updates are checked one last time
+    this._results.doUpdate();
     this._running -= 1;
     this._subject.next('ENDED' as QueryChange);
     if (this._results.segmentCount > 0) {
@@ -356,6 +365,10 @@ export class QueryService {
    * This method triggers an observable change in the QueryService class.
    */
   private errorOccurred(message: QueryError) {
+    if (this._interval_map.has(message.queryId)) {
+      window.clearInterval(this._interval_map.get(message.queryId));
+      this._interval_map.delete(message.queryId);
+    }
     this._running -= 1;
     this._subject.next('ERROR' as QueryChange);
     console.log('QueryService received error: ' + message.message);
