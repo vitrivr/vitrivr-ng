@@ -405,7 +405,7 @@ export class ResultsContainer {
     for (const metadata of met.content) {
       const ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
       if (ssc) {
-        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
 
@@ -423,9 +423,9 @@ export class ResultsContainer {
       return false;
     }
     for (const metadata of met.content) {
-      const ssc = this._objectid_to_object_map.get(metadata.objectId);
-      if (ssc) {
-        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+      const mosc = this._objectid_to_object_map.get(metadata.objectId);
+      if (mosc) {
+        mosc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
 
