@@ -487,7 +487,7 @@ export class ResultsContainer {
       }
     }
     return result;
-  };
+  }
 
   /**
    * Serializes this ResultsContainer into a plain JavaScript object.
