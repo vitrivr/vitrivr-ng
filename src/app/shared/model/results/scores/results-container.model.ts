@@ -501,14 +501,14 @@ export class ResultsContainer {
       segments: this._results_segments.map(seg => seg.serialize()),
       objectMetadata: this.flatten(this._results_objects.map(obj => {
         const metadata: MediaObjectMetadata[] = [];
-        obj.metadata.forEach((k, v) => {
+        obj.metadata.forEach((v, k) => {
           metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
       })),
       segmentMetadata: this.flatten(this._results_segments.map(seg => {
         const metadata: MediaSegmentMetadata[] = [];
-        seg.metadata.forEach((k, v) => {
+        seg.metadata.forEach((v, k) => {
           metadata.push({segmentId: seg.segmentId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
