@@ -471,6 +471,12 @@ export class ResultsContainer {
     this._results_features_subject.complete();
   }
 
+  /**
+   * Flattens arrays with any level of nesting.
+   *
+   * @param arr The nested arrays to flatten.
+   * @return {any[]} An one dimensional array consisting of all objects found in the input arrays.
+   */
   public flatten(arr, result = []) {
     for (let i = 0; i < arr.length; i++) {
       const value = arr[i];
