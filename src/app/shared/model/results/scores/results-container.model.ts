@@ -405,7 +405,7 @@ export class ResultsContainer {
     for (const metadata of met.content) {
       const ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
       if (ssc) {
-        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
 
@@ -423,9 +423,9 @@ export class ResultsContainer {
       return false;
     }
     for (const metadata of met.content) {
-      const ssc = this._objectid_to_object_map.get(metadata.objectId);
-      if (ssc) {
-        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+      const mosc = this._objectid_to_object_map.get(metadata.objectId);
+      if (mosc) {
+        mosc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
 
@@ -472,6 +472,24 @@ export class ResultsContainer {
   }
 
   /**
+   * Flattens arrays with any level of nesting.
+   *
+   * @param arr The nested arrays to flatten.
+   * @return {any[]} An one dimensional array consisting of all objects found in the input arrays.
+   */
+  public flatten(arr, result = []) {
+    for (let i = 0; i < arr.length; i++) {
+      const value = arr[i];
+      if (Array.isArray(value)) {
+        this.flatten(value, result);
+      } else {
+        result.push(value);
+      }
+    }
+    return result;
+  }
+
+  /**
    * Serializes this ResultsContainer into a plain JavaScript object.
    */
   public serialize() {
@@ -487,20 +505,20 @@ export class ResultsContainer {
       queryId: this.queryId,
       objects: this._results_objects.map(obj => obj.serialize()),
       segments: this._results_segments.map(seg => seg.serialize()),
-      objectMetadata: this._results_objects.map(obj => {
+      objectMetadata: this.flatten(this._results_objects.map(obj => {
         const metadata: MediaObjectMetadata[] = [];
-        obj.metadata.forEach((k, v) => {
+        obj.metadata.forEach((v, k) => {
           metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
-      }).reduce((x, y) => x.concat(y), []),
-      segmentMetadata: this._results_segments.map(seg => {
+      })),
+      segmentMetadata: this.flatten(this._results_segments.map(seg => {
         const metadata: MediaSegmentMetadata[] = [];
-        seg.metadata.forEach((k, v) => {
+        seg.metadata.forEach((v, k) => {
           metadata.push({segmentId: seg.segmentId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
-      }).reduce((x, y) => x.concat(y), []),
+      })),
       similarity: similarityList
     };
   }
