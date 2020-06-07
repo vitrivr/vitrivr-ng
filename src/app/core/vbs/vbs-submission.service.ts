@@ -234,23 +234,28 @@ export class VbsSubmissionService {
 
         /* Do some logging and catch HTTP errors. */
         return observable.pipe(
-          tap(o => console.log(`Submitting element to server; id: ${id}`)),
-          catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
+          tap(o => console.log(`Submitting element to server; id: ${id}`), err => console.log(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)),
+          catchError(err => of(err.error))
         );
       }),
       map((msg: string) => {
           console.log(msg);
           if (this._dres) {
-            const res = JSON.parse(msg);
-            msg = res.description;
-            if (msg.indexOf('incorrect') > -1) {
-              return [msg, 'snackbar-error']
-            }
-            if (res.status == false) {
-              return [msg, 'snackbar-warning']
-            }
-            if (res.status == true) {
-              return [msg, 'snackbar-success']
+            try {
+              const res = JSON.parse(msg);
+              msg = res.description;
+              if (msg.indexOf('incorrect') > -1) {
+                return [msg, 'snackbar-error']
+              }
+              if (res.status == false) {
+                return [msg, 'snackbar-warning']
+              }
+              if (res.status == true) {
+                return [msg, 'snackbar-success']
+              }
+            } catch(e) {
+              /* We have to catch invalid json responses. */
+              return [msg, 'snackbar-error'];
             }
           }
           if (msg.indexOf('Correct') > -1) {
