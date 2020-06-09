@@ -30,7 +30,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
    * @param _router The Router used for navigation
    * @param _snackBar The MatSnackBar component used to display the SnackBar.
    * @param _resolver
-   * @param _historyService used to track changes to navigation
    */
   constructor(_cdr: ChangeDetectorRef, _queryService: QueryService, _filterService: FilterService, _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router, _snackBar: MatSnackBar, protected _resolver: ResolverService) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);

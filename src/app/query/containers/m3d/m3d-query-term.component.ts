@@ -145,7 +145,7 @@ export class M3DQueryTermComponent implements OnInit {
    */
   private openM3DDialog(data?: any) {
     const dialogRef = this.dialog.open(M3DLoaderDialogComponent, {data: data});
-    dialogRef.afterClosed().pipe(first()).subscribe((result: Mesh) => {
+    dialogRef.beforeClosed().pipe(first()).subscribe((result: Mesh) => {
       if (result) {
         this.preview.setMesh(result);
         this.preview.render();

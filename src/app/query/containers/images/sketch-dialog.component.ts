@@ -65,8 +65,6 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
   /**
    * Change listener for the input field (File chooser). Handles the
    * image upload.
-   *
-   * @param event
    */
   public onFileAvailable(event: any) {
     this._sketchpad.setImageBase64(window.URL.createObjectURL(event.target.files[0]));
@@ -75,11 +73,9 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
 
   /**
    * Triggered when a color value is selected.
-   *
-   * @param color
    */
-  public onColorChange() {
-    this._sketchpad.setActiveColor(this.color);
+  public onColorChange(newColor: string) {
+    this._sketchpad.setActiveColor(newColor);
   }
 
   /**

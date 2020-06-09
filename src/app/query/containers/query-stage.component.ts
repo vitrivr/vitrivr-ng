@@ -28,12 +28,10 @@ export class QueryStageComponent {
    * Notification from child that a queryterm should be moved up or down a stage
    */
   onStageChange($event: StageChangeEvent, qt: QueryTermInterface) {
-    console.log(qt);
     this.removeQueryTerm(qt);
     switch ($event) {
       case StageChangeEvent.EARLIER_STAGE:
         this.qsList[this.index() - 1].terms.push(qt);
-        console.log(this.qsList[this.index() - 1]);
         break;
       case StageChangeEvent.LATER_STAGE:
         /* Insert new stage if there are no terms yet*/
@@ -41,7 +39,6 @@ export class QueryStageComponent {
           this.qsList.push(new QueryStage())
         }
         this.qsList[this.index() + 1].terms.push(qt);
-        console.log(JSON.stringify(this.qsList[this.index() + 1]));
         break;
     }
     /* remove this querystage from the list if there are no terms left*/
