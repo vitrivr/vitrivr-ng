@@ -153,10 +153,11 @@ export class VbsSubmissionService {
         flatMap((submission: VbsInteractionLog) => {
           /* Prepare log submission. */
           const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          const params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
+          let params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
           let url = String(`${endpoint}/log`);
           if (this._dres) { // DRES has different endpoints
             url += '/query';
+            params = new HttpParams();
           }
           const observable = this._http.post(url, JSON.stringify(submission), {
             responseType: 'text',
@@ -186,10 +187,11 @@ export class VbsSubmissionService {
         flatMap((submission: VbsResultsLog) => {
           /* Prepare log submission. */
           const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          const params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
+          let params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
           let url = String(`${endpoint}/log`);
           if (this._dres) { // DRES has different endpoints
             url += '/result';
+            params = new HttpParams();
           }
           const observable = this._http.post(url, JSON.stringify(submission), {
             responseType: 'json',
