@@ -40,7 +40,8 @@ export class VbsSubmissionService {
   private _configSubscription: Subscription;
 
   private _vbs = false;
-
+  private _dres = false;
+  private _sessionId = undefined;
   private _lsc = false;
 
   /**
@@ -65,6 +66,8 @@ export class VbsSubmissionService {
     _config.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
       this._vbs = config.get<boolean>('competition.vbs');
+      this._dres = config.get<boolean>('competition.dres');
+      this._sessionId = config.get<string>('competition.sessionid') // technically, with withCredentials not needed anymore
     });
 
     /* */
@@ -150,11 +153,17 @@ export class VbsSubmissionService {
         flatMap((submission: VbsInteractionLog) => {
           /* Prepare log submission. */
           const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          const params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
-          const observable = this._http.post(String(`${endpoint}/log`), JSON.stringify(submission), {
+          let params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
+          let url = String(`${endpoint}/log`);
+          if (this._dres) { // DRES has different endpoints
+            url += '/query';
+            params = new HttpParams();
+          }
+          const observable = this._http.post(url, JSON.stringify(submission), {
             responseType: 'text',
             params: params,
-            headers: headers
+            headers: headers,
+            withCredentials: this._dres // Only use withCredentials with DRES
           });
 
           /* Do some logging and catch HTTP errors. */
@@ -178,16 +187,22 @@ export class VbsSubmissionService {
         flatMap((submission: VbsResultsLog) => {
           /* Prepare log submission. */
           const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          const params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
-          const observable = this._http.post(String(`${endpoint}/log`), JSON.stringify(submission), {
-            responseType: 'text',
+          let params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
+          let url = String(`${endpoint}/log`);
+          if (this._dres) { // DRES has different endpoints
+            url += '/result';
+            params = new HttpParams();
+          }
+          const observable = this._http.post(url, JSON.stringify(submission), {
+            responseType: 'json',
             params: params,
-            headers: headers
+            headers: headers,
+            withCredentials: this._dres // Only use withCredentials with DRES
           });
 
           /* Do some logging and catch HTTP errors. */
           return observable.pipe(
-            tap(o => console.log(`Submitting interaction log to VBS server.`)),
+            tap(o => console.log(`Submitting result log to VBS server.`)),
             catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
           );
         })
@@ -197,7 +212,7 @@ export class VbsSubmissionService {
     /* Setup submission subscription, which is triggered manually. */
     this._submitSubscription = this._submitSubject.pipe(
       map(([segment, time]): [SegmentScoreContainer, number] => {
-        if (this._vbs) {
+        if (this._vbs || this._dres) {
           let fps = Number.parseFloat(segment.objectScoreContainer.metadataForKey('technical.fps'));
           if (Number.isNaN(fps) || !Number.isFinite(fps)) {
             fps = VideoUtil.bestEffortFPS(segment);
@@ -221,16 +236,41 @@ export class VbsSubmissionService {
           id = parseInt(segment.objectId.replace('v_', ''), 10).toString();
           params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', id).set('frame', String(frame));
         }
-        const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params});
+        if (this._dres && this._sessionId) {
+          // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
+          id = segment.objectId.replace('v_', '');
+          //params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
+          params = new HttpParams().set('item', String(id)).set('frame', String(frame));
+        }
+
+        const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params, withCredentials: this._dres});
 
         /* Do some logging and catch HTTP errors. */
         return observable.pipe(
-          tap(o => console.log(`Submitting element to server; id: ${id}`)),
-          catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
+          tap(o => console.log(`Submitting element to server; id: ${id}`), err => console.log(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)),
+          catchError(err => of(err.error))
         );
       }),
       map((msg: string) => {
           console.log(msg);
+          if (this._dres) {
+            try {
+              const res = JSON.parse(msg);
+              msg = res.description;
+              if (msg.indexOf('incorrect') > -1) {
+                return [msg, 'snackbar-error']
+              }
+              if (res.status == false) {
+                return [msg, 'snackbar-warning']
+              }
+              if (res.status == true) {
+                return [msg, 'snackbar-success']
+              }
+            } catch (e) {
+              /* We have to catch invalid json responses. */
+              return [msg, 'snackbar-error'];
+            }
+          }
           if (msg.indexOf('Correct') > -1) {
             return [msg, 'snackbar-success'];
           } else if (msg.indexOf('Wrong') > -1) {

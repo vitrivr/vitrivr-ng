@@ -49,6 +49,11 @@ export class ResultsContainer {
   /** A subject that can be used to publish changes to the results. */
   private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
 
+  /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
+  private _rerank: number = 0;
+  /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
+  private _next: number = 0;
+
   /**
    * Constructor for ResultsContainer.
    *
@@ -56,6 +61,33 @@ export class ResultsContainer {
    * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
    */
   constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
+  }
+
+  public checkUpdate() {
+    if (this._rerank > 0) {
+      // check upper limit to avoid call in avalanche of responses
+      if (this._rerank < 100) {
+        this.rerank();
+      } else { // mark unranked changes for next round
+        this._rerank = 1;
+      }
+    } else if (this._next > 0) { // else if as rerank already calls next
+      // check upper limit to avoid call in avalanche of responses
+      if (this._next < 100) {
+        this.next();
+      } else { // mark unpublished changes for next round
+        this._next = 1;
+      }
+    }
+  }
+
+  // force update if there are changes, e.g. on query end
+  public doUpdate() {
+    if (this._rerank > 0) {
+      this.rerank();
+    } else if (this._next > 0) { // else if as rerank already calls next
+      this.next();
+    }
   }
 
   /** List of all the results that were returned and hence are known to the results container. */
@@ -276,6 +308,7 @@ export class ResultsContainer {
    * @param {FusionFunction} weightFunction
    */
   public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
+    this._rerank = 0;
     if (!features) {
       console.debug(`no features given for rerank(), using features inherent to the results container: ${this.features}`);
       features = this.features;
@@ -323,7 +356,7 @@ export class ResultsContainer {
     }
 
     /* Re-rank on the UI side - this also invokes next(). */
-    this.rerank();
+    this._rerank += 1;
 
     /* Return true. */
     return true;
@@ -353,7 +386,7 @@ export class ResultsContainer {
     }
 
     /* Re-rank on the UI side - this also invokes next(). */
-    this.rerank();
+    this._rerank += 1;
 
     /* Return true. */
     return true;
@@ -372,11 +405,11 @@ export class ResultsContainer {
     for (const metadata of met.content) {
       const ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
       if (ssc) {
-        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
 
-    this.next()
+    this._next += 1;
   }
 
   /**
@@ -390,13 +423,13 @@ export class ResultsContainer {
       return false;
     }
     for (const metadata of met.content) {
-      const ssc = this._objectid_to_object_map.get(metadata.objectId);
-      if (ssc) {
-        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+      const mosc = this._objectid_to_object_map.get(metadata.objectId);
+      if (mosc) {
+        mosc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
 
-    this.next()
+    this._next += 1;
   }
 
   /**
@@ -425,7 +458,7 @@ export class ResultsContainer {
 
 
     /* Re-rank the results (calling this method also causes an invocation of next(). */
-    this.rerank();
+    this._rerank += 1;
     return true;
   }
 
@@ -436,6 +469,24 @@ export class ResultsContainer {
     this._results_objects_subject.complete();
     this._results_segments_subject.complete();
     this._results_features_subject.complete();
+  }
+
+  /**
+   * Flattens arrays with any level of nesting.
+   *
+   * @param arr The nested arrays to flatten.
+   * @return {any[]} An one dimensional array consisting of all objects found in the input arrays.
+   */
+  public flatten(arr, result = []) {
+    for (let i = 0; i < arr.length; i++) {
+      const value = arr[i];
+      if (Array.isArray(value)) {
+        this.flatten(value, result);
+      } else {
+        result.push(value);
+      }
+    }
+    return result;
   }
 
   /**
@@ -454,20 +505,20 @@ export class ResultsContainer {
       queryId: this.queryId,
       objects: this._results_objects.map(obj => obj.serialize()),
       segments: this._results_segments.map(seg => seg.serialize()),
-      objectMetadata: this._results_objects.map(obj => {
+      objectMetadata: this.flatten(this._results_objects.map(obj => {
         const metadata: MediaObjectMetadata[] = [];
-        obj.metadata.forEach((k, v) => {
+        obj.metadata.forEach((v, k) => {
           metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
-      }).reduce((x, y) => x.concat(y), []),
-      segmentMetadata: this._results_segments.map(seg => {
+      })),
+      segmentMetadata: this.flatten(this._results_segments.map(seg => {
         const metadata: MediaSegmentMetadata[] = [];
-        seg.metadata.forEach((k, v) => {
+        seg.metadata.forEach((v, k) => {
           metadata.push({segmentId: seg.segmentId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
-      }).reduce((x, y) => x.concat(y), []),
+      })),
       similarity: similarityList
     };
   }
@@ -476,6 +527,7 @@ export class ResultsContainer {
    * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
    */
   private next() {
+    this._next = 0;
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);

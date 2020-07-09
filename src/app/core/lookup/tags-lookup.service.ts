@@ -28,6 +28,11 @@ export class TagsLookupService extends CineastRestAPI {
    * @param {string} filter Filter predicate.
    */
   public matching(filter: string): Observable<Tag[]> {
-    return this.get<Tag[]>('find/tags/by/matchingname/' + filter).pipe(first());
+    return this.get<TagQueryResult>('find/tags/by/matchingname/' + filter).pipe(first()).map(res => res.tags);
   }
+}
+
+class TagQueryResult {
+  public queryId: string;
+  public tags: Tag[];
 }

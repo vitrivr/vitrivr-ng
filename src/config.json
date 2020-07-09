@@ -9,10 +9,12 @@
   "competition": {
     "teamid": 6,
     "toolid": 1,
-    "endpoint": "http://10.34.58.83:8080/lsc",
+    "sessionid": "yoursessionid",
+    "endpoint": "http://localhost:8080/",
     "log": false,
-    "lsc": true,
-    "vbs": false
+    "lsc": false,
+    "vbs": false,
+    "dres": true
   },
   "mlt": {
     "VIDEO": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"],
@@ -60,7 +62,8 @@
       ["dominantcolor.color", "CHECKBOX"],
       ["technical.duration", "SLIDER"],
       ["LSCMETA.semantic_name", "CHECKBOX"],
-      ["LSCMETA.timezone", "CHECKBOX"]
+      ["LSCMETA.timezone", "CHECKBOX"],
+      ["LSCMETA.p_day_of_week", "CHECKBOX"]
     ]
   }
 }
