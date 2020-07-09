@@ -67,7 +67,7 @@ export class VbsSubmissionService {
       this._lsc = config.get<boolean>('competition.lsc');
       this._vbs = config.get<boolean>('competition.vbs');
       this._dres = config.get<boolean>('competition.dres');
-      this._sessionId = config.get<string>('competition.sessionid')
+      this._sessionId = config.get<string>('competition.sessionid') // technically, with withCredentials not needed anymore
     });
 
     /* */
@@ -153,11 +153,17 @@ export class VbsSubmissionService {
         flatMap((submission: VbsInteractionLog) => {
           /* Prepare log submission. */
           const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          const params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
-          const observable = this._http.post(String(`${endpoint}/log`), JSON.stringify(submission), {
+          let params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
+          let url = String(`${endpoint}/log`);
+          if (this._dres) { // DRES has different endpoints
+            url += '/query';
+            params = new HttpParams();
+          }
+          const observable = this._http.post(url, JSON.stringify(submission), {
             responseType: 'text',
             params: params,
-            headers: headers
+            headers: headers,
+            withCredentials: this._dres // Only use withCredentials with DRES
           });
 
           /* Do some logging and catch HTTP errors. */
@@ -181,16 +187,22 @@ export class VbsSubmissionService {
         flatMap((submission: VbsResultsLog) => {
           /* Prepare log submission. */
           const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          const params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
-          const observable = this._http.post(String(`${endpoint}/log`), JSON.stringify(submission), {
-            responseType: 'text',
+          let params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
+          let url = String(`${endpoint}/log`);
+          if (this._dres) { // DRES has different endpoints
+            url += '/result';
+            params = new HttpParams();
+          }
+          const observable = this._http.post(url, JSON.stringify(submission), {
+            responseType: 'json',
             params: params,
-            headers: headers
+            headers: headers,
+            withCredentials: this._dres // Only use withCredentials with DRES
           });
 
           /* Do some logging and catch HTTP errors. */
           return observable.pipe(
-            tap(o => console.log(`Submitting interaction log to VBS server.`)),
+            tap(o => console.log(`Submitting result log to VBS server.`)),
             catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
           );
         })
@@ -227,10 +239,11 @@ export class VbsSubmissionService {
         if (this._dres && this._sessionId) {
           // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
           id = segment.objectId.replace('v_', '');
-          params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
+          //params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
+          params = new HttpParams().set('item', String(id)).set('frame', String(frame));
         }
 
-        const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params});
+        const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params, withCredentials: this._dres});
 
         /* Do some logging and catch HTTP errors. */
         return observable.pipe(
@@ -253,7 +266,7 @@ export class VbsSubmissionService {
               if (res.status == true) {
                 return [msg, 'snackbar-success']
               }
-            } catch(e) {
+            } catch (e) {
               /* We have to catch invalid json responses. */
               return [msg, 'snackbar-error'];
             }
