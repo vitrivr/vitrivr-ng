@@ -1,8 +1,10 @@
-<h1 class="title" matDialogTitle>
-  {{mediaobject.objectId}} - {{mediaobject.name}}
-</h1>
+<h1 class="title" matDialogTitle>{{mediaobject.objectId}} ({{mediaobject.name}})</h1>
+<p><strong>Segment:</strong> {{segment.segmentId}}</p>
 <div class="content" mat-dialog-content>
   <app-advanced-media-player *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" [auto]="true" [focus]="segment" [mediaobject]="mediaobject" [width]="'600'"></app-advanced-media-player>
-  <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE' || mediaobject.mediatype == 'IMAGE_SEQUENCE'" src="{{mediaobject.mediatype == 'IMAGE' ? _resolver.pathToObject(mediaobject) : _resolver.pathToSegment(segment)}}" style="max-width:100%; height:auto;"/>
+  <div *ngIf="mediaobject.mediatype == 'IMAGE' || mediaobject.mediatype == 'IMAGE_SEQUENCE'">
+    <img #imageviewer src="{{mediaobject.mediatype == 'IMAGE' ? _resolver.pathToObject(mediaobject) : _resolver.pathToSegment(segment)}}" style="max-width:100%; height:auto;"/>
+    <button *ngIf="(_vbs.isOn | async)" mat-button (click)="onSubmitPressed()"><mat-icon>send</mat-icon></button>
+  </div>
   <m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'" [height]="400" [interaction]="true" [width]="400" src="{{_resolver.pathToObject(mediaobject)}}"></m3d-loader>
 </div>

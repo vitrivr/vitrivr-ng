@@ -4,7 +4,7 @@
   },
   "resources": {
     "host_thumbnails" : "http://10.34.58.146/thumbnails/:o/:s.png",
-    "host_objects": "http://10.34.58.146/objects/:n/:p.jpg"
+    "host_objects": "http://10.34.58.146/objects/:n/:S.jpg"
   },
   "competition": {
     "teamid": 6,
