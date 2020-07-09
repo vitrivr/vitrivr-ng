@@ -1,5 +1,5 @@
 <h1 class="title" matDialogTitle>{{mediaobject.objectId}} ({{mediaobject.name}})</h1>
-<p>{{segment.segmentId}}</p>
+<p><strong>Segment:</strong> {{segment.segmentId}}</p>
 <div class="content" mat-dialog-content>
   <app-advanced-media-player *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'" [auto]="true" [focus]="segment" [mediaobject]="mediaobject" [width]="'600'"></app-advanced-media-player>
   <div *ngIf="mediaobject.mediatype == 'IMAGE' || mediaobject.mediatype == 'IMAGE_SEQUENCE'">
