@@ -35,6 +35,9 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
   }
 
+  /** Name of this GalleryComponent. */
+  protected name = 'object_gallery';
+
   /** Reference to the MediaObjectScoreContainer that is currently in focus. */
   protected _focus: MediaObjectScoreContainer;
 

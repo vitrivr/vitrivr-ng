@@ -26,6 +26,8 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   protected _filterServiceSubscription;
   /** Local reference to the subscription of the SelectionService. */
   protected _selectionServiceSubscription;
+  /** Name of this AbstractResultsViewComponent. */
+  protected abstract name;
 
   /**
    * Default constructor.
@@ -115,6 +117,11 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
       this._cdr.markForCheck()
     });
     this.subscribe(this._queryService.results);
+
+    /* Publish navigation event. */
+    const context = new Map<ContextKey,string>();
+    context.set('n:component', this.name);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.NAVIGATE, context)))
   }
 
   /**

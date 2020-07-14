@@ -16,7 +16,7 @@ export class VbsResultsLog implements VbsSubmission {
   /** Constant, since vitrivr NG always returns the top K results. */
   public readonly resultSetAvailability: string = 'top';
 
-  constructor(public readonly teamId: string, public readonly memberId: number) {
+  constructor(public readonly teamId: string, public readonly memberId: number,  public readonly context: string) {
   }
 
   /**
@@ -24,18 +24,20 @@ export class VbsResultsLog implements VbsSubmission {
    *
    * @param teamId The ID of the VBS team.
    * @param memberId The ID of the VBS team member.
+   * @param context A UI context identifier.
    * @param list The list of {SegmentScoreContainer}s to convert.
    * @param limit The number of entries to retain (defaults to 500)
    * @return List of {VbsResultsLog}
    */
-  public static mapSegmentScoreContainer(teamId: string, memberId: number, list: SegmentScoreContainer[], limit = 500): VbsResultsLog {
-    const results = new VbsResultsLog(teamId, memberId);
+  public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: SegmentScoreContainer[], limit = 500): VbsResultsLog {
+    const results = new VbsResultsLog(teamId, memberId, context);
     list.splice(limit);
     list.forEach((segmentScoreContainer, index) => {
       results.results.push(<VbsResult>{
         video: segmentScoreContainer.objectId,
         shot: segmentScoreContainer.sequenceNumber,
         score: segmentScoreContainer.score,
+        context: context,
         rank: index
       });
       segmentScoreContainer.scores.forEach((categoryScoreMap, containerId) => {

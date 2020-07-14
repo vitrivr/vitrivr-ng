@@ -4,7 +4,7 @@ import {MetadataLookupService} from '../lookup/metadata-lookup.service';
 import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {ConfigService} from '../basics/config.service';
-import {Observable, of, Subject, Subscription} from 'rxjs';
+import {combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material';
 import {Config} from '../../shared/model/config/config.model';
 import {EventBusService} from '../basics/event-bus.service';
@@ -14,6 +14,8 @@ import {SelectionService} from '../selection/selection.service';
 import {QueryService} from '../queries/query.service';
 import {VbsInteraction} from '../../shared/model/vbs/interfaces/vbs-interaction.model';
 import {VbsResultsLog} from './vbs-results-log.model';
+import {DatabaseService} from "../basics/database.service";
+import Dexie from "dexie";
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -39,10 +41,18 @@ export class VbsSubmissionService {
   /** Reference to the subscription to the vitrivr NG configuration. */
   private _configSubscription: Subscription;
 
+  /** Table for persisting result logs. */
+  private _resultsLogTable: Dexie.Table<VbsResultsLog, number>;
+
+  /** Table for persisting interaction logs. */
+  private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
+
+
   private _vbs = false;
   private _dres = false;
   private _sessionId = undefined;
   private _lsc = false;
+
 
   /**
    * Constructor for VbsSubmissionService.
@@ -61,7 +71,8 @@ export class VbsSubmissionService {
               private _selection: SelectionService,
               private _metadata: MetadataLookupService,
               private _http: HttpClient,
-              private _snackBar: MatSnackBar) {
+              private _snackBar: MatSnackBar,
+              _db: DatabaseService) {
 
     _config.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
@@ -70,7 +81,7 @@ export class VbsSubmissionService {
       this._sessionId = config.get<string>('competition.sessionid') // technically, with withCredentials not needed anymore
     });
 
-    /* */
+    /* Configuration */
     this._config = _config.asObservable().pipe(
       filter(c => c.get<string>('competition.endpoint') != null),
       map(c => <[string, string, number, boolean, number]>[c.get<string>('competition.endpoint').endsWith('/') ? c.get<string>('competition.endpoint').slice(0, -1) : c.get<string>('competition.endpoint'), c.get<string>('competition.teamid'), c.get<number>('competition.toolid'), c.get<boolean>('competition.log'), c.get<number>('competition.loginterval')])
@@ -79,6 +90,8 @@ export class VbsSubmissionService {
     /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
     this._configSubscription = this._config.subscribe(([endpoint, team, tool, log, loginterval]) => {
       if (endpoint && team) {
+        this._resultsLogTable = _db.db.table('log_results');
+        this._interactionLogTable = _db.db.table('log_interaction');
         this.reset(endpoint, team, tool, log, loginterval)
       } else {
         this.cleanup()
@@ -124,7 +137,7 @@ export class VbsSubmissionService {
    * @param time The video timestamp to submit.
    */
   public submit(segment: SegmentScoreContainer, time: number) {
-    console.debug(`submitting segment ${segment.segmentId} @ ${time}`);
+    console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
     this._selection.add(this._selection.availableTags[0], segment.segmentId);
   }
@@ -168,20 +181,29 @@ export class VbsSubmissionService {
 
           /* Do some logging and catch HTTP errors. */
           return observable.pipe(
-            tap(o => console.log(`Submitting interaction log to VBS server.`)),
-            catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
+            tap(o => {
+              console.log(`Submitting interaction log to VBS server.`);
+              this._interactionLogTable.add(submission);
+            }),
+            catchError((err) => {
+              this._interactionLogTable.add(submission);
+              return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
+            })
           );
         })
       ).subscribe();
 
-      /* Setup results subscription, which is triggered upon change to the resultset. */
+      /* Setup results subscription, which is triggered upon change to the result set. */
 
-      this._resultsSubscription = this._queryService.observable.pipe(
-        filter(f => f === 'ENDED'),
-        flatMap(f => this._queryService.results.segmentsAsObservable),
-        debounceTime(1000), /* IMPORTANT: Limits the number of submissions to one per second. */
-        map(r => {
-          return VbsResultsLog.mapSegmentScoreContainer(team, tool, r)
+      const results = this._queryService.observable.pipe(
+          filter(f => f === 'ENDED'),
+          flatMap(f => this._queryService.results.segmentsAsObservable),
+          debounceTime(1000)
+        ); /* IMPORTANT: Limits the number of submissions to one per second. */
+
+      this._resultsSubscription = combineLatest(results, this._eventbus.currentView()).pipe(
+        map(([context, segments]) => {
+          return VbsResultsLog.mapSegmentScoreContainer(team, tool, segments, context)
         }),
         filter(submission => submission != null),
         flatMap((submission: VbsResultsLog) => {
@@ -202,8 +224,14 @@ export class VbsSubmissionService {
 
           /* Do some logging and catch HTTP errors. */
           return observable.pipe(
-            tap(o => console.log(`Submitting result log to VBS server.`)),
-            catchError((err) => of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`))
+            tap(o => {
+              console.log(`Submitting result log to VBS server.`);
+              this._resultsLogTable.add(submission);
+            }),
+            catchError((err) => {
+              this._resultsLogTable.add(submission);
+              return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
+            })
           );
         })
       ).subscribe();

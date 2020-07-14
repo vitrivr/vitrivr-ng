@@ -10,7 +10,9 @@ export class DatabaseService {
   constructor() {
     DatabaseService.DB.version(1).stores({
       config: 'id,config',
-      history: '++id,timestamp'
+      history: '++id,timestamp',
+      log_results: '++id,log',
+      log_interaction: '++id,log'
     });
   }
 
