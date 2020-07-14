@@ -14,6 +14,7 @@
         *ngFor="let objectPathContainer of (((dataSource | async) | OrderObjectByBestPathScorePipe) | FilterPipe: (objectFilter|async) | LimitPipe : count)"
         class="objectPathContainer">
       <app-result-segment-preview-tile *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
+                                       [mltEnabled]="false"
                                        [container]="this"
                                        [score]="pathSegment.score"
                                        [segment]="pathSegment.segment" class="{{pathSegment.mark ? 'marked' : ''}}"></app-result-segment-preview-tile>
