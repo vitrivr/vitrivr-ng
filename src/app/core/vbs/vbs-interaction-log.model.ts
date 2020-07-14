@@ -117,6 +117,8 @@ export class VbsInteractionLog implements VbsSubmission {
         return <VbsInteraction>{category: 'Browsing', type: ['rankedList'], timestamp: timestamp};
       case InteractionEventType.CLEAR:
         return <VbsInteraction>{category: 'Browsing', type: ['resetAll'], timestamp: timestamp};
+      case InteractionEventType.NAVIGATE:
+        return <VbsInteraction>{category: 'Browsing', type: ['navigate'], value: component.context.get('n:component'), timestamp: timestamp};
       default:
         break;
     }
