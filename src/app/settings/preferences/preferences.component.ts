@@ -5,6 +5,12 @@ import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
 import {MatSlideToggleChange} from '@angular/material';
 import {first, map} from 'rxjs/operators';
+import {DatabaseService} from "../../core/basics/database.service";
+import Dexie from "dexie";
+import {VbsResultsLog} from "../../core/vbs/vbs-results-log.model";
+import {VbsInteractionLog} from "../../core/vbs/vbs-interaction-log.model";
+import {fromPromise} from "rxjs/internal-compatibility";
+import * as JSZip from "jszip";
 
 @Component({
   moduleId: module.id,
@@ -17,11 +23,19 @@ export class PreferencesComponent {
   /** The current configuration as observable. */
   private _config: Observable<Config>;
 
+  /** Table for persisting result logs. */
+  private _resultsLogTable: Dexie.Table<VbsResultsLog, number>;
+
+  /** Table for persisting interaction logs. */
+  private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
+
   /**
    * Constructor for PreferencesComponent
    */
-  constructor(private _configService: ConfigService) {
+  constructor(private _configService: ConfigService, private _db: DatabaseService) {
     this._config = this._configService.asObservable();
+    this._resultsLogTable = _db.db.table('log_results');
+    this._interactionLogTable = _db.db.table('log_interaction');
   }
 
   /**
@@ -64,11 +78,79 @@ export class PreferencesComponent {
   }
 
   /**
-   *
+   * Resets the config and reloads it.
    */
   public onResetButtonClicked() {
     this._configService.reset();
   }
+
+  /**
+   * Downloads the interaction logs as zipped JSON.
+   */
+  public onDownloadInteractionLog() {
+    fromPromise(this._interactionLogTable.orderBy('id').toArray())
+      .pipe(
+        first(),
+        map(h => {
+          let zip = new JSZip();
+          let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
+          zip.file('vitrivrng-interaction-log.json', JSON.stringify(h, null, 2), options);
+          return zip
+        })
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob'}).then(
+          (result) => {
+            window.open(window.URL.createObjectURL(result));
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      });
+  }
+
+  /**
+   * Downloads the results logs as zipped JSON.
+   */
+  public onDownloadResultsLog() {
+    fromPromise(this._resultsLogTable.orderBy('id').toArray())
+      .pipe(
+        first(),
+        map(h => {
+          let zip = new JSZip();
+          let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
+          zip.file('vitrivrng-results-log.json', JSON.stringify(h, null, 2), options);
+          return zip
+        })
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob'}).then(
+          (result) => {
+            window.open(window.URL.createObjectURL(result));
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      });
+  }
+
+  /**
+   * Clears the interaction logs.
+   */
+  public onClearInteractionLog() {
+    this._interactionLogTable.clear().then(() => console.log('Interaction logs cleared.'))
+
+  }
+
+  /**
+   * Clears the results logs.
+   */
+  public onClearResultsLog() {
+    this._resultsLogTable.clear().then(() => console.log('Results logs cleared.'))
+  }
+
 
   /**
    * Triggered whenever the user changes the value of the UseInexactIndex setting.
