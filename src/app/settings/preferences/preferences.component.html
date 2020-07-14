@@ -24,4 +24,21 @@
   </mat-list-item>
 </mat-list>
 
+<h3>Logs</h3>
+<mat-list dense>
+  <h2 mat-subheader>Interaction log</h2>
+  <mat-list-item fxLayout="row" fxLayoutAlign="center">
+    <button (click)="onDownloadInteractionLog()" mat-raised-button matTooltip="Reset and reload settings from server"><mat-icon>delete</mat-icon></button>
+    <button (click)="onClearInteractionLog()" color="warn" mat-raised-button matTooltip="Reset and reload settings from server"><mat-icon>delete</mat-icon></button>
+
+  </mat-list-item>
+
+  <h2 mat-subheader>Results log</h2>
+  <mat-list-item fxLayout="row" fxLayoutAlign="center">
+    <button (click)="onDownloadResultsLog()" mat-raised-button matTooltip="Reset and reload settings from server">Download</button>
+    <button (click)="onClearResultsLog()" color="warn" mat-raised-button matTooltip="Reset and reload settings from server">Reset</button>
+  </mat-list-item>
+</mat-list>
+
+
 
