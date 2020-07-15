@@ -3,8 +3,8 @@
     "host" : "default"
   },
   "resources": {
-    "host_thumbnails" : "http://localhost/V3C1/V3C1jpg/:o/:s.jpg",
-    "host_objects": "http://localhost/V3C1/video/:o.mp4"
+    "host_thumbnails" : "http://default/V3C1/V3C1jpg/:o/:s.jpg",
+    "host_objects": "http://default/V3C1/video/:o.mp4"
   },
   "competition": {
     "teamid": 2,
@@ -17,8 +17,8 @@
     "dres": true
   },
   "mlt": {
-    "VIDEO": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"],
-    "IMAGE": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"]
+    "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
+    "IMAGE": ["scenecaption", "localfeatures", "objectInstances"]
   },
   "query": {
     "history": 5,
@@ -30,7 +30,7 @@
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": true
+      "boolean": false
     },
     "text": {
       "categories": [
