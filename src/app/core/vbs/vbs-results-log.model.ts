@@ -46,7 +46,6 @@ export class VbsResultsLog implements VbsSubmission {
         video: segmentScoreContainer.objectId,
         shot: segmentScoreContainer.sequenceNumber,
         score: segmentScoreContainer.score,
-        context: context,
         rank: index
       });
       segmentScoreContainer.scores.forEach((categoryScoreMap, containerId) => {
