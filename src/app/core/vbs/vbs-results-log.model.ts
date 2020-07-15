@@ -34,13 +34,11 @@ export class VbsResultsLog implements VbsSubmission {
    * @param memberId The ID of the VBS team member.
    * @param context A UI context identifier.
    * @param list The list of {SegmentScoreContainer}s to convert.
-   * @param limit The number of entries to retain (defaults to 500)
    * @return List of {VbsResultsLog}
    */
-  public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: SegmentScoreContainer[], limit = 500): VbsResultsLog {
+  public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: SegmentScoreContainer[]): VbsResultsLog {
     const results = new VbsResultsLog(teamId, memberId);
     results.sortType.push(context);
-    list.splice(limit);
     list.forEach((segmentScoreContainer, index) => {
       results.results.push(<VbsResult>{
         video: segmentScoreContainer.objectId,
