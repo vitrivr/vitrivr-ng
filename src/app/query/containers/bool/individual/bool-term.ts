@@ -7,19 +7,11 @@ export class BoolTerm {
   /* name of the corresponding feature */
   public attribute: string;
   public operator: string;
-  private _values: string;
+  public values: string;
 
   constructor(attribute: string, operator: string, value: string) {
     this.attribute = attribute;
     this.operator = operator;
-    this._values = value;
-  }
-
-  get values() {
-    return this._values;
-  }
-
-  set values(values: string) {
-    this._values = values;
+    this.values = value;
   }
 }
