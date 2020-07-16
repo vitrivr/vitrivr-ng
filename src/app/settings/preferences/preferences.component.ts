@@ -88,13 +88,14 @@ export class PreferencesComponent {
    * Downloads the interaction logs as zipped JSON.
    */
   public onDownloadInteractionLog() {
-    fromPromise(this._interactionLogTable.orderBy('id').toArray())
+    const data = [];
+    fromPromise(this._resultsLogTable.orderBy('id').each((o,c) => {data.push(o)}))
       .pipe(
         first(),
         map(h => {
           let zip = new JSZip();
           let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
-          zip.file('vitrivrng-interaction-log.json', JSON.stringify(h, null, 2), options);
+          zip.file('vitrivrng-interaction-log.json', JSON.stringify(data, null, 2), options);
           return zip
         })
       )
@@ -114,13 +115,14 @@ export class PreferencesComponent {
    * Downloads the results logs as zipped JSON.
    */
   public onDownloadResultsLog() {
-    fromPromise(this._resultsLogTable.orderBy('id').toArray())
+    const data = [];
+    fromPromise(this._resultsLogTable.orderBy('id').each((o,c) => {data.push(o)}))
       .pipe(
         first(),
-        map(h => {
+        map(() => {
           let zip = new JSZip();
           let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
-          zip.file('vitrivrng-results-log.json', JSON.stringify(h, null, 2), options);
+          zip.file('vitrivrng-results-log.json', JSON.stringify(data, null, 2), options);
           return zip
         })
       )
