@@ -94,7 +94,7 @@ export class PreferencesComponent {
         first(),
         map(h => {
           const stride = 100;
-          const max = data.length / stride
+          const max = Math.ceil(data.length / stride)
           const zip = new JSZip();
           const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
           for (let i = 0; i < max; i++) {
@@ -125,7 +125,7 @@ export class PreferencesComponent {
         first(),
         map(() => {
           const stride = 100;
-          const max = data.length / stride
+          const max = Math.ceil(data.length / stride)
           const zip = new JSZip();
           const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
           for (let i = 0; i < max; i++) {
