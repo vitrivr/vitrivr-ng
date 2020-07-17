@@ -93,9 +93,13 @@ export class PreferencesComponent {
       .pipe(
         first(),
         map(h => {
-          let zip = new JSZip();
-          let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
-          zip.file('vitrivrng-interaction-log.json', JSON.stringify(data, null, 2), options);
+          const stride = 100;
+          const max = data.length / stride
+          const zip = new JSZip();
+          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
+          for (let i = 0; i < max; i++) {
+            zip.file(`vitrivrng-interaction-log_${i}.json`, JSON.stringify(data.slice(stride, Math.max((i + 1) * stride, data.length)), null, 2), options);
+          }
           return zip
         })
       )
@@ -120,9 +124,13 @@ export class PreferencesComponent {
       .pipe(
         first(),
         map(() => {
-          let zip = new JSZip();
-          let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
-          zip.file('vitrivrng-results-log.json', JSON.stringify(data, null, 2), options);
+          const stride = 100;
+          const max = data.length / stride
+          const zip = new JSZip();
+          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
+          for (let i = 0; i < max; i++) {
+            zip.file(`vitrivrng-results-log_${i}.json`, JSON.stringify(data.slice(i * stride, Math.max((i + 1) * stride, data.length)), null, 2), options);
+          }
           return zip
         })
       )
