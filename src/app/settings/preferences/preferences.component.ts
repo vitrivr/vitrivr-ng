@@ -102,7 +102,7 @@ export class PreferencesComponent {
         })
       )
       .subscribe(zip => {
-        zip.generateAsync({type: 'blob'}).then(
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
@@ -131,7 +131,7 @@ export class PreferencesComponent {
         })
       )
       .subscribe(zip => {
-        zip.generateAsync({type: 'blob'}).then(
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
