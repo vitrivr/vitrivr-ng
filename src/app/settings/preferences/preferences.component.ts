@@ -89,16 +89,16 @@ export class PreferencesComponent {
    */
   public onDownloadInteractionLog() {
     const data = [];
-    fromPromise(this._resultsLogTable.orderBy('id').each((o,c) => {data.push(o)}))
+    fromPromise(this._interactionLogTable.orderBy('id').each((o,c) => {data.push(o)}))
       .pipe(
         first(),
         map(h => {
           const stride = 100;
-          const max = Math.ceil(data.length / stride)
+          const max = Math.ceil(data.length / stride);
           const zip = new JSZip();
           const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
           for (let i = 0; i < max; i++) {
-            zip.file(`vitrivrng-interaction-log_${i}.json`, JSON.stringify(data.slice(stride, Math.max((i + 1) * stride, data.length)), null, 2), options);
+            zip.file(`vitrivrng-interaction-log_${i}.json`, JSON.stringify(data.slice(i * stride, Math.max((i + 1) * stride, data.length)), null, 2), options);
           }
           return zip
         })
@@ -125,7 +125,7 @@ export class PreferencesComponent {
         first(),
         map(() => {
           const stride = 100;
-          const max = Math.ceil(data.length / stride)
+          const max = Math.ceil(data.length / stride);
           const zip = new JSZip();
           const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
           for (let i = 0; i < max; i++) {
