@@ -9,12 +9,10 @@
   "competition": {
     "teamid": 6,
     "toolid": 1,
-    "sessionid": "yoursessionid",
-    "endpoint": "http://localhost:8080/",
+    "endpoint": "http://10.34.58.83:8080/lsc",
     "log": false,
-    "lsc": false,
-    "vbs": false,
-    "dres": true
+    "lsc": true,
+    "vbs": false
   },
   "mlt": {
     "VIDEO": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"],
@@ -41,10 +39,10 @@
     },
     "boolean": [
       ["Location Semantic", "TEXT", "features_table_lsc20meta.semantic_name"],
-      ["Day of Week", "TEXT", "features_table_lsc20meta.p_day_of_week"],
+      ["Day of Week", "OPTIONS", "features_table_lsc20meta.p_day_of_week", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
       ["Phase of Day", "TEXT", "features_table_lsc20meta.p_phase_of_day"],
       ["Year", "TEXT", "features_table_lsc20meta.p_year"],
-      ["Month", "TEXT", "features_table_lsc20meta.p_month"],
+      ["Month", "OPTIONS", "features_table_lsc20meta.p_month", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY","AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"],
       ["Activity Type (Transport)", "TEXT", "features_table_lsc20meta.activity_type"],
       ["[Segment Id]", "TEXT", "features_table_lsc20meta.segmentid"],
       ["Minute Id", "TEXT", "features_table_lsc20meta.minute_id"],
@@ -53,7 +51,8 @@
       ["(Speed)", "NUMERIC", "features_table_lsc20meta.speed"],
       ["(Heart)", "NUMERIC", "features_table_lsc20meta.heart"],
       ["(Calories)", "TEXT", "features_table_lsc20meta.calories"],
-      ["Tags", "TEXT", "features_segment"]
+      ["Tags", "TEXT", "features_segment"],
+      ["Hour", "RANGE", "features_table_lsc20meta.p_hour", 1, 24]
     ],
     "staged": true
   },
