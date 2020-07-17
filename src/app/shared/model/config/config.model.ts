@@ -17,7 +17,7 @@ export class Config {
   /** Default display duration for Snackbar messages. */
   public static SNACKBAR_DURATION = 2500;
 
-  private _config = {
+  _config = {
     api: {
       host: window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
       port: 4567, /* Port for the API. */

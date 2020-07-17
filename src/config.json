@@ -15,8 +15,8 @@
     "vbs": false
   },
   "mlt": {
-    "VIDEO": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"],
-    "IMAGE": ["localcolor", "scenecaption", "edge", "localfeatures", "globalcolor"]
+    "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
+    "IMAGE": ["scenecaption", "localfeatures", "objectInstances"]
   },
   "query": {
     "history": 5,

@@ -40,7 +40,7 @@
       <mat-icon>youtube_searched_for</mat-icon>
     </button>
 
-    <button (click)="onNeighborsButtonClicked()" (contextmenu)="onNeighborsButtonRightClicked($event)"
+    <button *ngIf="mltEnabled" (click)="onNeighborsButtonClicked()" (contextmenu)="onNeighborsButtonRightClicked($event)"
             mat-icon-button
             matTooltip="Load neighboring segments">
       <mat-icon>settings_ethernet</mat-icon>

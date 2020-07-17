@@ -3,7 +3,7 @@ import {VbsResult} from '../../shared/model/vbs/interfaces/vbs-result.model';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 
 export class VbsResultsLog implements VbsSubmission {
-  /** Timestam of the VbsInteractionLog. */
+  /** Timestamp of the VbsInteractionLog. */
   public readonly timestamp: number = Date.now();
   /** Type of the VbsInteractionLog. */
   public readonly type: SubmissionType = 'result';
@@ -13,6 +13,14 @@ export class VbsResultsLog implements VbsSubmission {
   public readonly usedCategories: string[] = [];
   /** List of types that were used  to create this {VbsResultsLog}. */
   public readonly usedTypes: string[] = [];
+  /** List of types that were used  to create this {VbsResultsLog}. */
+  public readonly values: string[] = [];
+  /** List of types that were used to sort the results in this {VbsResultsLog}.
+   *
+   * For vitrivr-ng, the value in this field constitutes a post-processing instruction since all value in the log
+   * are sorted in the order they were returned by the back-end.
+   */
+  public readonly sortType: string[] = [];
   /** Constant, since vitrivr NG always returns the top K results. */
   public readonly resultSetAvailability: string = 'top';
 
@@ -24,13 +32,13 @@ export class VbsResultsLog implements VbsSubmission {
    *
    * @param teamId The ID of the VBS team.
    * @param memberId The ID of the VBS team member.
+   * @param context A UI context identifier.
    * @param list The list of {SegmentScoreContainer}s to convert.
-   * @param limit The number of entries to retain (defaults to 500)
    * @return List of {VbsResultsLog}
    */
-  public static mapSegmentScoreContainer(teamId: string, memberId: number, list: SegmentScoreContainer[], limit = 500): VbsResultsLog {
+  public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: SegmentScoreContainer[]): VbsResultsLog {
     const results = new VbsResultsLog(teamId, memberId);
-    list.splice(limit);
+    results.sortType.push(context);
     list.forEach((segmentScoreContainer, index) => {
       results.results.push(<VbsResult>{
         video: segmentScoreContainer.objectId,

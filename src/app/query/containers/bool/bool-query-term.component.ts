@@ -35,9 +35,27 @@ export class BoolQueryTermComponent implements OnInit {
   constructor(_configService: ConfigService, private _resolver: ComponentFactoryResolver) {
     _configService.subscribe(c => {
       const next = [];
-      c.get<[string, string, string][]>('query.boolean').forEach(v => {
-        next.push(new BoolAttribute(v[0], v[2], ValueType[v[1]]))
+      c._config.query.boolean.forEach( v => {
+        const type = <number> <unknown> ValueType[v[1]];
+        switch(type){
+          case ValueType.DATE.valueOf():
+          case ValueType.NUMERIC.valueOf():
+          case ValueType.TEXT.valueOf():
+            next.push(new BoolAttribute(v[0], v[2], ValueType[<string>v[1]]));
+            break;
+          case ValueType.RANGE.valueOf():
+            next.push(new BoolAttribute(v[0], v[2],  ValueType[<string>v[1]], null, null,[v[3], v[4]]));
+            break;
+          case ValueType.OPTIONS.valueOf():
+            next.push(new BoolAttribute(v[0], v[2],  ValueType[<string>v[1]], null, v.slice(3, v.length),null));
+            break;
+          default:
+            console.error(`no type ${type} found, ${ValueType.TEXT.valueOf()}`)
+        }
       });
+      /*c.get<[string, string, string][]>('query.boolean').forEach(v => {
+        next.push(new BoolAttribute(v[0], v[2], ValueType[v[1]]))
+      });*/
       this.possibleAttributes.next(next);
     })
   }

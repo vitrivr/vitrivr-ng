@@ -9,6 +9,7 @@ export type ContextKey =
   | 'i:mediaobject' /* The item that was interacted with (mediaobject). */
   | 'i:mediasegment' /* The item that was interacted with (mediasegment). */
   | 'w:weights' /* The categories and weights after a re-weighting action. */
+  | 'n:component' /* The name of the UI component, the UI navigated to. */
 
 
 /**

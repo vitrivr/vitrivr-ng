@@ -1,4 +1,4 @@
-/** A type of user interaction as possible within Vitrivr NG. */
+/** A type of user interaction as possible within vitrivr NG. */
 export enum InteractionEventType {
   QUERY_IMAGE,
   QUERY_AUDIO,
@@ -16,5 +16,6 @@ export enum InteractionEventType {
   SCROLL,
   EXPAND,
   EXAMINE,
-  PLAY
+  PLAY,
+  NAVIGATE
 }

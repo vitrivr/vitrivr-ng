@@ -28,6 +28,8 @@ import {Observable} from 'rxjs';
 })
 export class ResultSegmentPreviewTileComponent implements OnInit {
 
+  @Input() mltEnabled = true;
+
   /**
    * The segment this preview is for
    */

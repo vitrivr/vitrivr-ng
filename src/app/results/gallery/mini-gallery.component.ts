@@ -38,6 +38,9 @@ export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<Se
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog, _vbs);
   }
 
+  /** Name of this MiniGalleryComponent. */
+  protected name = 'segment_gallery';
+
   scrollIncrement(): number {
     return 500;
   }

@@ -39,6 +39,9 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog, _vbs);
   }
 
+  /** Name of this ListComponent. */
+  protected name = 'segment_list';
+
   /**
    * Getter for the filters that should be applied to SegmentScoreContainer.
    */
