@@ -27,9 +27,8 @@ export class BoolTermComponent implements OnInit {
 
   /** Currently selected operator */
   currentOperator: BoolOperator;
-  // TODO Currently slider values are not stored anywhere
 
-  private _value: string;
+  private _value: any[] = [];
 
   get currentAttribute(): Observable<BoolAttribute> {
     return this.currentAttributeObservable;
@@ -68,7 +67,7 @@ export class BoolTermComponent implements OnInit {
    * @return {string}
    */
   get inputValue(): string {
-    return this._value;
+    return this._value[0];
   }
 
   /**
@@ -77,8 +76,33 @@ export class BoolTermComponent implements OnInit {
    * @param {string} value
    */
   set inputValue(value: string) {
-    this._value = value;
-    this.updateTerm()
+    this._value = [value];
+    this.updateTerm();
+  }
+
+
+  private updateRangeValue() {
+    this._value = [this.minValue, this.highValue]
+  }
+
+  get highValue(): number {
+    return this.currentAttributeObservable.getValue().maxValue
+  }
+
+  set highValue(value: number) {
+    this.currentAttributeObservable.getValue().maxValue = value;
+    this.updateRangeValue();
+    this.updateTerm();
+  }
+
+  get minValue(): number {
+    return this.currentAttributeObservable.getValue().minValue
+  }
+
+  set minValue(value: number) {
+    this.currentAttributeObservable.getValue().minValue = value;
+    this.updateRangeValue();
+    this.updateTerm();
   }
 
   /**
@@ -129,15 +153,14 @@ export class BoolTermComponent implements OnInit {
         case ValueType.DATE:
         case ValueType.NUMERIC:
         case ValueType.TEXT:
-          this.inputValue = this.term.values;
+          this.inputValue = this.term.values[0];
           break;
         case ValueType.RANGE:
-          //TODO
-          console.error('TODO not implemented yet');
-          this.inputValue = this.term.values;
+          // no init
           break;
       }
     }
 
   }
+
 }
