@@ -1,6 +1,6 @@
 {
   "api": {
-    "host" : "10.34.58.146"
+    "host" : "default"
   },
   "resources": {
     "host_thumbnails" : "http://10.34.58.146/thumbnails/:o/:s.png",
@@ -38,21 +38,22 @@
       ]
     },
     "boolean": [
-      ["Location Semantic", "TEXT", "features_table_lsc20meta.semantic_name"],
+      ["Hour", "RANGE", "features_table_lsc20meta.p_hour", 0, 23],
       ["Day of Week", "OPTIONS", "features_table_lsc20meta.p_day_of_week", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
-      ["Phase of Day", "TEXT", "features_table_lsc20meta.p_phase_of_day"],
+      ["Location Semantic", "TEXT", "features_table_lsc20meta.semantic_name"],
       ["Year", "TEXT", "features_table_lsc20meta.p_year"],
       ["Month", "OPTIONS", "features_table_lsc20meta.p_month", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY","AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"],
       ["Activity Type (Transport)", "TEXT", "features_table_lsc20meta.activity_type"],
-      ["[Segment Id]", "TEXT", "features_table_lsc20meta.segmentid"],
-      ["Minute Id", "TEXT", "features_table_lsc20meta.minute_id"],
       ["Timezone", "TEXT", "features_table_lsc20meta.timezone"],
+      ["[Segment Id]", "TEXT", "features_table_lsc20meta.segmentid"],
+      ["(Minute Id)", "TEXT", "features_table_lsc20meta.minute_id"],
       ["(Elevation)", "NUMERIC", "features_table_lsc20meta.elevation"],
       ["(Speed)", "NUMERIC", "features_table_lsc20meta.speed"],
       ["(Heart)", "NUMERIC", "features_table_lsc20meta.heart"],
       ["(Calories)", "TEXT", "features_table_lsc20meta.calories"],
-      ["Tags", "TEXT", "features_segment"],
-      ["Hour", "RANGE", "features_table_lsc20meta.p_hour", 1, 24]
+      ["Phase of Day", "TEXT", "features_table_lsc20meta.p_phase_of_day"],
+      ["Tags", "TEXT", "features_segment"]
+
     ],
     "staged": true
   },
