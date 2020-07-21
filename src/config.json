@@ -59,11 +59,10 @@
   },
   "refinement": {
     "filters": [
-      ["dominantcolor.color", "CHECKBOX"],
-      ["technical.duration", "SLIDER"],
       ["LSCMETA.semantic_name", "CHECKBOX"],
       ["LSCMETA.timezone", "CHECKBOX"],
-      ["LSCMETA.p_day_of_week", "CHECKBOX"]
+      ["LSCMETA.p_day_of_week", "CHECKBOX"],
+      ["LSCMETA.p_hour", "SLIDER"]
     ]
   }
 }
