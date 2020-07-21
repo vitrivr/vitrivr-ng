@@ -41,6 +41,10 @@ export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<Se
   /** Name of this MiniGalleryComponent. */
   protected name = 'segment_gallery';
 
+  public segmentTracking(index, item: SegmentScoreContainer) {
+    return item.segmentId
+  }
+
   scrollIncrement(): number {
     return 500;
   }

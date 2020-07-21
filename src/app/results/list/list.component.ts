@@ -42,6 +42,7 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
   /** Name of this ListComponent. */
   protected name = 'segment_list';
 
+
   /**
    * Getter for the filters that should be applied to SegmentScoreContainer.
    */
@@ -68,6 +69,10 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
    */
   public trackByFunction(index, item: MediaObjectScoreContainer) {
     return item.objectId + '_' + item.numberOfSegments;
+  }
+
+  public segmentTracking(index, item: SegmentScoreContainer) {
+    return item.segmentId
   }
 
   scrollIncrement(): number {

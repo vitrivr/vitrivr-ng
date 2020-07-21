@@ -9,6 +9,6 @@
      [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="mini-gallery"
      infiniteScroll>
   <app-result-segment-preview-tile
-      *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count"
+      *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count; trackBy: segmentTracking"
       [container]="this" [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
 </div>
