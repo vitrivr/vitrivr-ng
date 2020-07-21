@@ -156,11 +156,15 @@ export class BoolTermComponent implements OnInit {
           this.inputValue = this.term.values[0];
           break;
         case ValueType.RANGE:
-          // no init
+          this.minValue = this.term.values[0];
+          this.highValue = this.term.values[1];
           break;
       }
     }
-
+    if(this.currentAttributeObservable.getValue().valueType == ValueType.RANGE){
+      this.updateRangeValue();
+    }
+    this.updateTerm();
   }
 
 }
