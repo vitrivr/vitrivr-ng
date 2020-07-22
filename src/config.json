@@ -3,18 +3,16 @@
     "host" : "default"
   },
   "resources": {
-    "host_thumbnails" : "http://default/V3C1/V3C1jpg/:o/:s.jpg",
-    "host_objects": "http://default/V3C1/video/:o.mp4"
+    "host_thumbnails" : "http://10.34.58.146/thumbnails/:o/:s.png",
+    "host_objects": "http://10.34.58.146/objects/:n/:S.jpg"
   },
   "competition": {
-    "teamid": 2,
+    "teamid": 8,
     "toolid": 1,
-    "sessionid": "yoursessionid",
-    "endpoint": "https://interactivevideoretrieval.com/",
-    "log": true,
-    "lsc": false,
-    "vbs": false,
-    "dres": true
+    "endpoint": "http://10.34.58.83:8080/lsc",
+    "log": false,
+    "lsc": true,
+    "vbs": false
   },
   "mlt": {
     "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
@@ -30,7 +28,7 @@
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": false
+      "boolean": true
     },
     "text": {
       "categories": [
@@ -40,18 +38,28 @@
       ]
     },
     "boolean": [
-      ["Example Freetext", "TEXT", "features_daily.text"],
-      ["Example Dropdown", "OPTIONS", "features.option", "ONE", "TWO", "THREE"],
-      ["Example Range", "RANGE", "features.range", 5, 20],
-      ["Example Dynamic Options", "DYNAMICOPTIONS", "features.option", "features", "option"]
+      ["Hour", "RANGE", "features_table_lsc20meta.p_hour", 0, 23],
+      ["Day of Week", "OPTIONS", "features_table_lsc20meta.p_day_of_week", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+      ["Location Semantic", "DYNAMICOPTIONS", "features_table_lsc20meta.semantic_name", "features_table_lsc20meta", "semantic_name"],
+      ["Year", "DYNAMICOPTIONS", "features_table_lsc20meta.p_year", "features_table_lsc20meta", "p_year"],
+      ["Month", "DYNAMICOPTIONS", "features_table_lsc20meta.p_month", "features_table_lsc20meta","p_month"],
+      ["Activity Type (Transport)", "DYNAMICOPTIONS", "features_table_lsc20meta.activity_type", "features_table_lsc20meta","activity_type"],
+      ["Timezone", "DYNAMICOPTIONS", "features_table_lsc20meta.timezone", "features_table_lsc20meta", "timezone"],
+      ["[Segment Id]", "TEXT", "features_table_lsc20meta.segmentid"],
+      ["(Minute Id)", "TEXT", "features_table_lsc20meta.minute_id"],
+      ["(Elevation)", "NUMERIC", "features_table_lsc20meta.elevation"],
+      ["(Speed)", "NUMERIC", "features_table_lsc20meta.speed"],
+      ["(Heart)", "NUMERIC", "features_table_lsc20meta.heart"],
+      ["(Calories)", "TEXT", "features_table_lsc20meta.calories"]
     ],
     "staged": true
   },
   "refinement": {
     "filters": [
-      ["dominantcolor.color", "CHECKBOX"],
-      ["technical.duration", "SLIDER"],
-      ["LSCMETA.semantic_name", "CHECKBOX"]
+      ["LSCMETA.semantic_name", "CHECKBOX"],
+      ["LSCMETA.timezone", "CHECKBOX"],
+      ["LSCMETA.p_day_of_week", "CHECKBOX"],
+      ["LSCMETA.p_hour", "SLIDER"]
     ]
   }
 }
