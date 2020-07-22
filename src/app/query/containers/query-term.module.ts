@@ -10,6 +10,7 @@ import {TextQueryTermModule} from './text/text-query-term.module';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TagQueryTermModule} from './tag/tag-query-term.module';
 import {SemanticQueryTermModule} from './semantic/semantic-query-term.module';
+import {PoseQueryTermModule} from './pose/pose-query-term.module';
 import {BoolQueryTermModule} from './bool/bool-query-term.module';
 import {QueryTermComponent} from './query-term.component';
 
@@ -26,6 +27,7 @@ import {QueryTermComponent} from './query-term.component';
     TextQueryTermModule,
     TagQueryTermModule,
     SemanticQueryTermModule,
+    PoseQueryTermModule,
     BoolQueryTermModule
   ],
   declarations: [QueryTermComponent],

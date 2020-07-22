@@ -1,0 +1,20 @@
+<svg #pose attr.viewBox="0 0 {{width}} {{height}}" attr.preserveAspectRatio="xMinYMin" style="max-height: 100%;">
+  <ng-container *ngFor="let node of nodes">
+    <circle
+      *ngIf="node.drawable"
+      [attr.cx]="node.kp[0]"
+      [attr.cy]="node.kp[1]"
+      [attr.r]="node.active ? nodeActiveRadius : nodeRadius"
+      [attr.fill]="node.active ? nodeActiveColor : nodeColor" />
+  </ng-container>
+  <ng-container *ngFor="let edge of edges">
+    <line
+      *ngIf="edge.drawable"
+      [attr.x1]="edge.start[0]"
+      [attr.y1]="edge.start[1]"
+      [attr.x2]="edge.end[0]"
+      [attr.y2]="edge.end[1]"
+      [attr.stroke-width]="edge.active ? edgeActiveWidth : edgeWidth"
+      [attr.stroke]="edge.active ? edgeActiveColor : edgeColor" />
+  </ng-container>
+</svg>

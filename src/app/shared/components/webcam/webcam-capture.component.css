@@ -1,0 +1,86 @@
+.mirror {
+    transform: scaleX(-1);
+}
+
+video {
+    max-width: 100%;
+}
+
+.controls {
+    margin-top: 5px;
+}
+
+.right-control {
+    margin-left: auto;
+}
+
+.overlay-container {
+    position: relative;
+    max-width: 100%;
+}
+
+.overlay-container > img {
+    width: 100%;
+    height: auto;
+}
+
+.no-webcam {
+    text-align: center;
+    min-height: 30em;
+    display: grid;
+    align-items: center;
+    background: black;
+    cursor: pointer;
+}
+
+.no-webcam > h1 {
+    margin: 1em;
+    color: white;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+}
+
+.delay-overlay {
+    justify-content: center;
+    align-content: center;
+}
+
+.delay-overlay > h1 {
+    font-size: 160px;
+    opacity: 0.5;
+    color: white;
+}
+
+.img-overlay.loading-skel {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.img-overlay > .loading-msg {
+    text-align: center;
+    margin: auto;
+    color: white;
+}
+
+.img-overlay > .loading-msg > mat-spinner {
+    display: inline-block;
+    margin-bottom: 1em;
+}
+
+.flash {
+    background: white;
+    opacity: 0;
+    animation: flash 1s cubic-bezier(0.32, 0, 0.67, 0);
+;
+}
+
+@keyframes flash {
+    0% { opacity: 0.9; }
+    100% { opacity: 0;  }
+}

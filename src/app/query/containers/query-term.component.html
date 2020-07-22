@@ -17,6 +17,7 @@
         <qt-text *ngIf="queryTerm.type==='TEXT'" [textTerm]="queryTerm"></qt-text>
         <qt-tag *ngIf="queryTerm.type==='TAG'" [tagTerm]="queryTerm"></qt-tag>
         <qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></qt-semantic>
+        <qt-pose *ngIf="queryTerm.type==='POSE'" [poseTerm]="queryTerm"></qt-pose>
         <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
     </div>
 

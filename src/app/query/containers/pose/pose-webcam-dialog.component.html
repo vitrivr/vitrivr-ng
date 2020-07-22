@@ -1,0 +1,19 @@
+<mat-dialog-content>
+  <mat-toolbar color="primary">
+    <span class="spacer-flex"></span>
+
+    <button (click)="onLoadImage()" mat-icon-button matTooltip="Load image from computer.">
+      <mat-icon>file_upload</mat-icon>
+    </button>
+
+    <button (click)="onSaveClicked()" mat-icon-button matTooltip="Close window and save.">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <webcam-capture [mode]="mode" #webcam></webcam-capture>
+
+  <skel-selector [(curMode)]="mode"></skel-selector>
+
+  <input #imageloader (change)="onFileAvailable($event)" hidden type="file">
+</mat-dialog-content>

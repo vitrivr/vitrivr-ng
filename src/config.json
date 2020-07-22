@@ -30,7 +30,9 @@
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": false
+      "boolean": false,
+      "pose": true,
+      "boolean": true
     },
     "text": {
       "categories": [

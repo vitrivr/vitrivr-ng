@@ -1,0 +1,39 @@
+<div [hidden]="!hasPhoto" class="overlay-container">
+  <img [width]="width" [height]="height" #img />
+  <div class="overlay img-overlay" [ngClass]="{'loading-skel': !hasSkelResult}">
+    <div class="loading-msg" *ngIf="!hasSkelResult">
+      <mat-spinner></mat-spinner>
+      <h3>Loading skeleton&hellip;</h3>
+    </div>
+    <div class="loading-msg" *ngIf="hasSkelResult && !hasSkel">
+      <h3>No poses found in photo!</h3>
+    </div>
+    <pose-svg *ngIf="hasSkel" [poseData]="skelData" [mode]="mode" [width]="width" [height]="height"></pose-svg>
+  </div>
+  <div *ngIf="hasPhoto" class="overlay flash"></div>
+</div>
+<div *ngIf="noWebcam && !hasPhoto" class="overlay-container no-webcam" (click)="startRecording()">
+  <h1>If you would like to use your webcam to record poses, please give permission to this page.</h1>
+</div>
+<div [hidden]="hasPhoto || noWebcam" class="overlay-container">
+  <video #video class="mirror" autoplay playsinline></video>
+  <div *ngIf="delayRemaining > 0" class="overlay delay-overlay">
+    <h1>
+      {{ delayRemaining }}
+    </h1>
+  </div>
+</div>
+<div class="controls" fxLayout="row" fxLayoutAlign="space-between">
+  <mat-form-field *ngIf="!noWebcam" appearance="outline" style="width: 8em">
+    <mat-icon matPrefix>schedule</mat-icon>
+    <mat-label>Delay</mat-label>
+    <input matInput type="number" min="0" [(ngModel)]="delayValue">
+    <mat-hint>(in seconds)</mat-hint>
+  </mat-form-field>
+  <button class="right-control" *ngIf="!noWebcam && !hasPhoto" (click)="triggerPhoto()" mat-fab color="accent" aria-label="Take photo">
+    <mat-icon>photo_camera</mat-icon>
+  </button>
+  <button class="right-control" *ngIf="hasPhoto" (click)="discardPhoto()" mat-fab color="warn" aria-label="Discard photo">
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>

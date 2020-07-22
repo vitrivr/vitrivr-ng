@@ -22,3 +22,7 @@ the .mat-card-header-text is automatically added and I don't know how to prevent
   justify-content: center;
   align-items: center;
 }
+
+mat-icon {
+  width: 1em;
+}

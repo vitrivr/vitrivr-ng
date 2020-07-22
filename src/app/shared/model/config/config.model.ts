@@ -1,7 +1,7 @@
 import {Tag} from '../../../core/selection/tag.model';
 import {FeatureCategories} from '../results/feature-categories.model';
 import {QuerySettings} from './query-settings.model';
-import * as DEEPMERGE from 'deepmerge';
+import DEEPMERGE from 'deepmerge';
 
 
 export class Config {

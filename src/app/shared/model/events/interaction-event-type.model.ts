@@ -7,6 +7,7 @@ export enum InteractionEventType {
   QUERY_FULLTEXT,
   QUERY_TAG,
   QUERY_SEMANTIC,
+  QUERY_POSE,
   MLT,
   CLEAR,
   REFINE,

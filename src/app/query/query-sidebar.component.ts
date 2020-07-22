@@ -71,6 +71,8 @@ export class QuerySidebarComponent implements OnInit {
             return new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context);
           case 'MODEL3D':
             return new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context);
+          case 'POSE':
+            return new InteractionEventComponent(InteractionEventType.QUERY_POSE, context);
           case 'SEMANTIC':
             return new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context);
           case 'TEXT':

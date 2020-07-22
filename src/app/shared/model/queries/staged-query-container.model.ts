@@ -8,6 +8,7 @@ import {BoolQueryTerm} from './bool-query-term.model';
 import {MotionQueryTerm} from './motion-query-term.model';
 import {TextQueryTerm} from './text-query-term.model';
 import {TagQueryTerm} from './tag-query-term.model';
+import {PoseQueryTerm} from './pose-query-term.model';
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
 import {QueryStage} from './query-stage.model';
 
@@ -50,6 +51,9 @@ export class StagedQueryContainer implements QueryContainerInterface {
         break;
       case 'TAG':
         this._cache.set(type, new TagQueryTerm());
+        break;
+      case 'POSE':
+        this._cache.set(type, new PoseQueryTerm());
         break;
       case 'SEMANTIC':
         this._cache.set(type, new SemanticQueryTerm());

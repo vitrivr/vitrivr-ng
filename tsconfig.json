@@ -19,6 +19,10 @@
       "three",
       "jszip"
     ],
-    "lib": ["es2015", "dom"]
+    "lib": ["es2017", "dom"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "importHelpers": true
   }
 }
