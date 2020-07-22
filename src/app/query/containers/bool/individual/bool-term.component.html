@@ -43,7 +43,7 @@
 
         <!-- Slider for Range -->
         <div *ngIf="currentAttrAsync.valueType.valueOf()==4" class="options">
-            <ng5-slider [(highValue)]="highValue" [(value)]="minValue"
+            <ng5-slider [(highValue)]="maxValue" [(value)]="minValue"
                         [options]="currentAttrAsync.sliderOptions"></ng5-slider>
         </div>
 
