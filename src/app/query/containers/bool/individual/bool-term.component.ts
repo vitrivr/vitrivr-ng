@@ -41,6 +41,7 @@ export class BoolTermComponent implements OnInit {
   set attribute(value: BoolAttribute) {
     this.currentAttributeObservable.next(value);
     this.currentOperator = value.operators[0];
+    this._value = [];
     this.updateTerm();
   }
 
@@ -82,14 +83,14 @@ export class BoolTermComponent implements OnInit {
 
 
   private updateRangeValue() {
-    this._value = [this.minValue, this.highValue]
+    this._value = [this.minValue, this.maxValue]
   }
 
-  get highValue(): number {
+  get maxValue(): number {
     return this.currentAttributeObservable.getValue().maxValue
   }
 
-  set highValue(value: number) {
+  set maxValue(value: number) {
     this.currentAttributeObservable.getValue().maxValue = value;
     this.updateRangeValue();
     this.updateTerm();
@@ -147,20 +148,33 @@ export class BoolTermComponent implements OnInit {
     } else {
       this.currentOperator = BoolAttribute.getDefaultOperatorsByValueType(this.attribute.valueType)[0];
     }
-    if (this.term.values) {
-      switch (this.attribute.valueType) {
-        case ValueType.OPTIONS:
-        case ValueType.DATE:
-        case ValueType.NUMERIC:
-        case ValueType.TEXT:
+    switch (this.attribute.valueType) {
+      case ValueType.OPTIONS:
+      case ValueType.DATE:
+      case ValueType.NUMERIC:
+      case ValueType.TEXT:
+        if (this.term.values && this.term.values != []) {
           this.inputValue = this.term.values[0];
-          break;
-        case ValueType.RANGE:
-          // no init
-          break;
-      }
+        } else {
+          this.inputValue = '';
+        }
+        break;
+      case ValueType.RANGE:
+        if (this.term.values && this.term.values != []) {
+          const min = this.term.values[0];
+          const max = this.term.values[1];
+          this.minValue = min;
+          this.maxValue = max;
+        } else {
+          this.minValue = this.currentAttributeObservable.getValue().minValue;
+          this.maxValue = this.currentAttributeObservable.getValue().maxValue;
+        }
+        break;
     }
-
+    if (this.currentAttributeObservable.getValue().valueType == ValueType.RANGE) {
+      this.updateRangeValue();
+    }
+    this.updateTerm();
   }
 
 }
