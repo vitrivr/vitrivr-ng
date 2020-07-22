@@ -150,6 +150,7 @@ export class BoolTermComponent implements OnInit {
     }
     switch (this.attribute.valueType) {
       case ValueType.OPTIONS:
+      case ValueType.DYNAMICOPTIONS:
       case ValueType.DATE:
       case ValueType.NUMERIC:
       case ValueType.TEXT:
@@ -177,4 +178,7 @@ export class BoolTermComponent implements OnInit {
     this.updateTerm();
   }
 
+  isOption(): boolean {
+    return this.attribute.valueType.valueOf() == 0 || this.attribute.valueType.valueOf() == 5;
+  }
 }

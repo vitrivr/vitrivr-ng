@@ -42,7 +42,8 @@
     "boolean": [
       ["Example Freetext", "TEXT", "features_daily.text"],
       ["Example Dropdown", "OPTIONS", "features.option", "ONE", "TWO", "THREE"],
-      ["Example Range", "RANGE", "features.range", 5, 20]
+      ["Example Range", "RANGE", "features.range", 5, 20],
+      ["Example Dynamic Options", "DYNAMICOPTIONS", "features.option", "features", "option"]
     ],
     "staged": true
   },
