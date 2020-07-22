@@ -21,7 +21,7 @@
     "IMAGE": ["scenecaption", "localfeatures", "objectInstances"]
   },
   "query": {
-    "history": 5,
+    "history": 0,
     "options": {
       "image": true,
       "audio": false,
