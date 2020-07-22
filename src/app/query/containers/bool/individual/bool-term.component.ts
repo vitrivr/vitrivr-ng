@@ -156,8 +156,10 @@ export class BoolTermComponent implements OnInit {
           this.inputValue = this.term.values[0];
           break;
         case ValueType.RANGE:
-          this.minValue = this.term.values[0];
-          this.highValue = this.term.values[1];
+          const min = this.term.values[0];
+          const max = this.term.values[1];
+          this.minValue = min;
+          this.highValue = max;
           break;
       }
     }
