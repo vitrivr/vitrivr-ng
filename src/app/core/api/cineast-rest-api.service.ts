@@ -54,7 +54,7 @@ export class CineastRestAPI {
    * @param parameters Optional (GET) query parameters.
    * @return Observable<T>
    */
-  public post<T>(service: string, body: any, parameters: HttpParams | { [param: string]: string | string[]; }): Observable<T> {
+  public post<T>(service: string, body: any, parameters?: HttpParams | { [param: string]: string | string[]; }): Observable<T> {
     return this._httpClient.post<T>(this.resolve(service), body, {observe: 'body', responseType: 'json', params: parameters})
   }
 

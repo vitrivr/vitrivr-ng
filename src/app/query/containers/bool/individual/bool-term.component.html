@@ -30,7 +30,7 @@
         </mat-form-field>
 
         <!-- Dropdown for Options -->
-        <mat-select *ngIf="currentAttrAsync.valueType.valueOf()==0" [(ngModel)]="inputValue" class="options" required>
+        <mat-select *ngIf="isOption()" [(ngModel)]="inputValue" class="options" required>
             <mat-option *ngFor="let option of currentAttrAsync.options" [value]="option">
                 {{option}}
             </mat-option>
