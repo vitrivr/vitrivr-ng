@@ -27,7 +27,6 @@ import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxr
 import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
 import {Config} from '../../config/config.model';
 import {FilterType} from '../../../../settings/refinement/filtertype.model';
-import {SimilarityQuery} from '../../messages/queries/similarity-query.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
@@ -137,18 +136,10 @@ export class ResultsContainer {
     return this._results_segments.length;
   }
 
-  /**
-   *
-   * @return {Subscription<MediaObjectScoreContainer[]>}
-   */
   get mediaobjectsAsObservable(): Observable<MediaObjectScoreContainer[]> {
     return this._results_objects_subject.asObservable()
   }
 
-  /**
-   *
-   * @return {Subscription<MediaObjectScoreContainer[]>}
-   */
   get segmentsAsObservable(): Observable<SegmentScoreContainer[]> {
     return this._results_segments_subject.asObservable();
   }
@@ -250,20 +241,10 @@ export class ResultsContainer {
     this.rerank()
   }
 
-  /**
-   *
-   * @param {string} objectId
-   * @return {boolean}
-   */
   public hasObject(objectId: string) {
     return this._objectid_to_object_map.has(objectId);
   }
 
-  /**
-   *
-   * @param {string} objectId
-   * @return {boolean}
-   */
   public getObject(objectId: string) {
     return this._objectid_to_object_map.get(objectId);
   }
@@ -376,6 +357,7 @@ export class ResultsContainer {
       console.warn('query result id ' + seg.queryId + ' does not match query id ' + this.queryId);
       return false;
     }
+    console.time(`Processing Segment Message (${this.queryId})`);
     for (const segment of seg.content) {
       const mosc = this.uniqueMediaObjectScoreContainer(segment.objectId);
       const ssc = mosc.addMediaSegment(segment);
@@ -384,6 +366,7 @@ export class ResultsContainer {
         this._segmentid_to_segment_map.set(segment.segmentId, ssc);
       }
     }
+    console.timeEnd(`Processing Segment Message (${this.queryId})`);
 
     /* Re-rank on the UI side - this also invokes next(). */
     this._rerank += 1;
@@ -402,12 +385,16 @@ export class ResultsContainer {
       console.warn('segment metadata result id ' + met.queryId + ' does not match query id ' + this.queryId);
       return false;
     }
+
+    console.time(`Processing Segment Metadata Message (${this.queryId})`);
+
     for (const metadata of met.content) {
       const ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
       if (ssc) {
         ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
+    console.timeEnd(`Processing Segment Metadata Message (${this.queryId})`);
 
     this._next += 1;
   }
@@ -422,12 +409,14 @@ export class ResultsContainer {
       console.warn('object metadata result id ' + met.queryId + ' does not match query id ' + this.queryId);
       return false;
     }
+    console.time(`Processing Object Metadata Message (${this.queryId})`);
     for (const metadata of met.content) {
       const mosc = this._objectid_to_object_map.get(metadata.objectId);
       if (mosc) {
         mosc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
+    console.timeEnd(`Processing Object Metadata Message (${this.queryId})`);
 
     this._next += 1;
   }
