@@ -1,5 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatCheckboxChange, MatSliderChange, MatSlideToggleChange} from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatSliderChange } from '@angular/material/slider';
 import {QueryChange, QueryService} from '../../core/queries/query.service';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
 import {EMPTY, Observable} from 'rxjs';

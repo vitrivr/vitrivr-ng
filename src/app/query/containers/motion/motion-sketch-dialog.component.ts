@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {MatDialogRef} from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import {TrackingSketchCanvasComponent} from '../../../shared/components/sketch/tracking-sketch-canvas.component';
 import {MotionData} from './model/motion-data.model';
 import {MotionArrowFactory} from './model/motion-arrow-factory.model';

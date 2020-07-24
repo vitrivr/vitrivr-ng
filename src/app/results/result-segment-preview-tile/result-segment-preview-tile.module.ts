@@ -8,7 +8,7 @@ import {ContainerPipesModule} from '../../shared/pipes/containers/container-pipe
 import {VbsModule} from '../../core/vbs/vbs.module';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {ResultSegmentPreviewTileComponent} from './result-segment-preview-tile.component';
-import {VgCoreModule} from 'videogular2/compiled/src/core/core';
+import {VgCoreModule} from '@videogular/ngx-videogular/core';
 
 @NgModule({
   imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule, InfiniteScrollModule, VgCoreModule],

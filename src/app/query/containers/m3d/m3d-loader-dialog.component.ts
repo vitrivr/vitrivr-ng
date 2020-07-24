@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {M3DLoaderComponent} from '../../../shared/components/m3d/m3d-loader.component';
-import {MatDialogRef} from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 
 
 @Component({

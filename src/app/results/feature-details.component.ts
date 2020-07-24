@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_SNACK_BAR_DATA} from '@angular/material';
+import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import {WeightedFeatureCategory} from '../shared/model/results/weighted-feature-category.model';
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 

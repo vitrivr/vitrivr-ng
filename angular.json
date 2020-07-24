@@ -25,7 +25,6 @@
             ],
             "styles": [
               "src/vitrivr-theme.scss",
-              "node_modules/videogular2/fonts/videogular.css"
             ],
             "scripts": []
           },
@@ -82,7 +81,6 @@
             "scripts": [],
             "styles": [
               "src/vitrivr-theme.css",
-              "node_modules/videogular2/fonts/videogular.css"
             ],
             "assets": [
               "src/assets",

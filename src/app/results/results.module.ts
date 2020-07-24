@@ -6,7 +6,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {HistoryComponent} from './history.component';
 import {MaterialModule} from '../material.module';
 import {TemporalListModule} from './temporal/temporal-list.module';
-import {VgCoreModule} from 'videogular2/compiled/src/core/core';
+import {VgCoreModule} from '@videogular/ngx-videogular/core';
 
 @NgModule({
   imports: [GalleryModule, ListModule, TemporalListModule, BrowserModule, MaterialModule, VgCoreModule],

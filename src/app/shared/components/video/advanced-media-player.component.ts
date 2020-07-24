@@ -5,7 +5,7 @@ import {ResolverService} from '../../../core/basics/resolver.service';
 import {VbsSubmissionService} from '../../../core/vbs/vbs-submission.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
-import {VgAPI} from 'videogular2/compiled/src/core/services/vg-api';
+import {VgApiService} from '@videogular/ngx-videogular/core';
 
 
 declare var VTTCue;
@@ -34,7 +34,7 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
   public width = 500;
 
   /** The internal VgAPI reference used to interact with the media player. */
-  private _api: VgAPI;
+  private _api: VgApiService;
 
   constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService, private _cdRef: ChangeDetectorRef) {
     this._track = new BehaviorSubject<TextTrack>(null)
@@ -67,7 +67,7 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
    *
    * @param api VgAPI instance.
    */
-  public onPlayerReady(api: VgAPI) {
+  public onPlayerReady(api: VgApiService) {
     this._api = api;
 
     /* Adds a text track and creates a cue per segment in the media object. */

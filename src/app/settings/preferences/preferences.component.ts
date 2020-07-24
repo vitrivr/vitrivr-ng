@@ -3,7 +3,7 @@ import {ConfigService} from '../../core/basics/config.service';
 import {Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
-import {MatSlideToggleChange} from '@angular/material';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from "../../core/basics/database.service";
 import Dexie from "dexie";

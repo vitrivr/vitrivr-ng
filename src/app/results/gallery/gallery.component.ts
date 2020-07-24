@@ -9,7 +9,7 @@ import {SelectionService} from '../../core/selection/selection.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {FilterService} from '../../core/queries/filter.service';
 import {Observable} from 'rxjs';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'gallery',

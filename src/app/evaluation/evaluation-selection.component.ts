@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {Router} from '@angular/router';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {ConfigService} from '../core/basics/config.service';
 import {UUIDGenerator} from '../shared/util/uuid-generator.util';
 import {first} from 'rxjs/operators';

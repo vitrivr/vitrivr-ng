@@ -5,7 +5,7 @@ import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {ConfigService} from '../basics/config.service';
 import {combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
 import {EventBusService} from '../basics/event-bus.service';
 import {VbsInteractionLog} from './vbs-interaction-log.model';

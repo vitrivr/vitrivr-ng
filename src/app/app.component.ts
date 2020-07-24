@@ -5,7 +5,7 @@ import {Config} from './shared/model/config/config.model';
 import {Observable} from 'rxjs';
 import {EventBusService} from './core/basics/event-bus.service';
 import {filter, first, map} from 'rxjs/operators';
-import {MatBottomSheet} from '@angular/material';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import {HistoryComponent} from './results/history.component';
 import {DistinctElementLookupService} from './core/lookup/distinct-element-lookup.service';
 import {ValueType} from './query/containers/bool/bool-attribute';
