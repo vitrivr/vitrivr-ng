@@ -12,7 +12,6 @@ import {VgCoreModule} from 'videogular2/compiled/src/core/core';
   imports: [GalleryModule, ListModule, TemporalListModule, BrowserModule, MaterialModule, VgCoreModule],
   declarations: [FeatureDetailsComponent, HistoryComponent],
   exports: [GalleryModule, ListModule, TemporalListModule],
-  entryComponents: [FeatureDetailsComponent, HistoryComponent]
 })
 export class ResultsModule {
 }

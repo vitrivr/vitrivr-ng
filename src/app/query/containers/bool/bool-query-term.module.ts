@@ -9,7 +9,6 @@ import {BoolTermModule} from './individual/bool-term.module';
   imports: [MaterialModule, BrowserModule, FormsModule, BoolTermModule],
   declarations: [BoolQueryTermComponent],
   exports: [BoolQueryTermComponent],
-  entryComponents: []
 })
 export class BoolQueryTermModule {
 }

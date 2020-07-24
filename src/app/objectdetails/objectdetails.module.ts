@@ -15,7 +15,6 @@ import {MetadataDetailsComponent} from './metadata-details.component';
   imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, ContainerPipesModule, AdvancedMediaPlayerModule],
   declarations: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent],
   exports: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent],
-  entryComponents: [QuickViewerComponent, MetadataDetailsComponent]
 })
 
 export class ObjectdetailsModule {

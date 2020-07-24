@@ -9,7 +9,6 @@ import {Ng5SliderModule} from 'ng5-slider';
   imports: [MaterialModule, BrowserModule, FormsModule, Ng5SliderModule],
   declarations: [BoolTermComponent],
   exports: [BoolTermComponent],
-  entryComponents: []
 })
 export class BoolTermModule {
 }

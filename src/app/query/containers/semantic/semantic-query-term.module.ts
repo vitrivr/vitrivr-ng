@@ -10,7 +10,6 @@ import {SketchModule} from '../../../shared/components/sketch/sketch.module';
   imports: [MaterialModule, BrowserModule, FormsModule, ReactiveFormsModule, SketchModule],
   declarations: [SemanticQueryTermComponent, SemanticSketchDialogComponent],
   exports: [SemanticQueryTermComponent],
-  entryComponents: [SemanticSketchDialogComponent]
 })
 
 export class SemanticQueryTermModule {
