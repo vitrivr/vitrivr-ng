@@ -2,10 +2,10 @@ import {AfterViewChecked, ChangeDetectorRef, Component, Input} from '@angular/co
 import {MediaObjectScoreContainer} from '../../model/results/scores/media-object-score-container.model';
 import {SegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
 import {ResolverService} from '../../../core/basics/resolver.service';
-import {VgAPI} from 'videogular2/core';
 import {VbsSubmissionService} from '../../../core/vbs/vbs-submission.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
+import {VgAPI} from 'videogular2/compiled/src/core/services/vg-api';
 
 
 declare var VTTCue;

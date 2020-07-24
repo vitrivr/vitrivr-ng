@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
-import {VgAPI} from 'videogular2/core';
 import {first} from 'rxjs/operators';
 import {KeyboardService} from '../../core/basics/keyboard.service';
 import {QueryService} from '../../core/queries/query.service';
@@ -15,6 +14,7 @@ import {InteractionEventType} from '../../shared/model/events/interaction-event-
 import {MatDialog} from '@angular/material/dialog';
 import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
 import {Observable} from 'rxjs';
+import {VgAPI} from 'videogular2/compiled/src/core/services/vg-api';
 
 /**
  * Dedicated component for the preview of a segment.

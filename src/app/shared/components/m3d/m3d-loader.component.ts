@@ -48,7 +48,7 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
   /** Boolean indicating whether current model should auto-rotate. */
   private rotate: boolean = false;
   /** HTML element in which the rendering-context will be placed. */
-  @ViewChild('visualize')
+  @ViewChild('visualize', {static: false})
   private container: any;
   /** THREE Trackball Controls */
   private controls: THREE.TrackballControls;

@@ -21,10 +21,10 @@ export class M3DQueryTermComponent implements OnInit {
   /** Slider to onToggleButtonClicked between normal image / sketch mode and 3D-sketch mode. */
   public sketch = false;
   /** Component used to display a preview of the selected 3D model. */
-  @ViewChild('previewmodel')
+  @ViewChild('previewmodel', {static: false})
   private preview: M3DLoaderComponent;
   /** Component used to display a preview of the sketched image (binary). */
-  @ViewChild('previewimg')
+  @ViewChild('previewimg', {static: false})
   private previewimg: any;
   /** The M3DQueryTerm object associated with this M3DQueryTermComponent. That object holds all the query-settings. */
   @Input() private m3dTerm: M3DQueryTerm;

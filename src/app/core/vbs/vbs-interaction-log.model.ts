@@ -2,10 +2,11 @@ import {Observable} from 'rxjs';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
-import {catchError, filter, flatMap} from 'rxjs/operators';
+import {catchError, filter} from 'rxjs/operators';
 import {SubmissionType, VbsSubmission} from '../../shared/model/vbs/interfaces/vbs-submission.model';
 import {InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {VbsInteraction} from '../../shared/model/vbs/interfaces/vbs-interaction.model';
+import {flatMap} from 'rxjs/internal/operators';
 
 export class VbsInteractionLog implements VbsSubmission {
 
@@ -36,7 +37,7 @@ export class VbsInteractionLog implements VbsSubmission {
       flatMap(e => {
         if (e.components.length > 1) {
           let composit = e.components.map(c => VbsInteractionLog.mapAtomicEvent(c, e.timestamp));
-          return Observable.from<VbsInteraction>(composit);
+          return Observable.from(composit);
         } else {
           return Observable.of(<VbsInteraction>(VbsInteractionLog.mapAtomicEvent(e.components[0], e.timestamp)));
         }

@@ -14,7 +14,7 @@ import {Point} from '../../../shared/components/sketch/model/point.model';
 })
 export class MotionSketchDialogComponent implements AfterViewInit {
   /** Sketch-canvas component. */
-  @ViewChild('sketch')
+  @ViewChild('sketch', {static: false})
   private _sketchpad: TrackingSketchCanvasComponent;
 
   /** The factory for the drawable items. */

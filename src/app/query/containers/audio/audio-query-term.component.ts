@@ -17,7 +17,7 @@ export class AudioQueryTermComponent implements OnInit {
   /** Value of the slider. */
   public sliderSetting: number;
   /** Component used to display a preview of the recorded/selected audio. */
-  @ViewChild('player') private player: any;
+  @ViewChild('player', {static: false}) private player: any;
 
   constructor(private dialog: MatDialog, private _snackBar: MatSnackBar) {
   }
