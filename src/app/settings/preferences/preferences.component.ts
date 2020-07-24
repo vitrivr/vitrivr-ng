@@ -13,7 +13,7 @@ import {fromPromise} from "rxjs/internal-compatibility";
 import * as JSZip from "jszip";
 
 @Component({
-  moduleId: module.id,
+
   selector: 'preferences',
   templateUrl: './preferences.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush

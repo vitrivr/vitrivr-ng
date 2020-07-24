@@ -21,7 +21,6 @@ import {MetadataDetailsComponent} from './metadata-details.component';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 @Component({
-  moduleId: module.id,
   selector: 'objectdetails',
   templateUrl: 'objectdetails.component.html',
   styleUrls: ['objectdetails.component.css']

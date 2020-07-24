@@ -4,7 +4,7 @@ import {MatDialogRef} from '@angular/material';
 
 
 @Component({
-  moduleId: module.id,
+
   selector: 'm3dloader-dialog',
   templateUrl: 'm3d-loader-dialog.component.html'
 })

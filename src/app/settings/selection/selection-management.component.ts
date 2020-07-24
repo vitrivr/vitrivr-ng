@@ -5,7 +5,7 @@ import {Tag} from '../../core/selection/tag.model';
 import {QueryService} from '../../core/queries/query.service';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'selection-management',
   templateUrl: './selection-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush

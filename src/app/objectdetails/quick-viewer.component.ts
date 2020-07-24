@@ -5,7 +5,7 @@ import {SegmentScoreContainer} from '../shared/model/results/scores/segment-scor
 import {ResolverService} from '../core/basics/resolver.service';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'quick-viewer',
   templateUrl: 'quick-viewer.component.html',
   styleUrls: ['quick-viewer.component.css']

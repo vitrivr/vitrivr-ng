@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {SketchCanvas} from '../../../shared/components/sketch/sketch-canvas.component';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'sketchpad',
   templateUrl: 'sketch-dialog.component.html',
   styleUrls: ['sketch-dialog.component.css']

@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {EvaluationScenario} from '../shared/model/evaluation/evaluation-scenario';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'scenario-details',
   template: `
     <div>

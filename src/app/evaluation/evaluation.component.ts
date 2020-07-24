@@ -24,7 +24,7 @@ import {FilterService} from '../core/queries/filter.service';
 type DisplayType = 'NONE' | 'SCENARIO' | 'GALLERY' | 'HISTORY';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'evaluation',
   templateUrl: 'evaluation.component.html',
   styleUrls: ['evaluation.component.css']

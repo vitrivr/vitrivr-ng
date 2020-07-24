@@ -8,7 +8,7 @@ import {MotionPath} from './model/motion-path.model';
 import {Point} from '../../../shared/components/sketch/model/point.model';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'motion-sketchpad',
   templateUrl: 'motion-sketch-dialog.component.html',
 })

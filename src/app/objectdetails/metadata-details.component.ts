@@ -6,7 +6,6 @@ import {SegmentScoreContainer} from '../shared/model/results/scores/segment-scor
  * Popup for metadata details associated to segment
  */
 @Component({
-  moduleId: module.id,
   selector: 'metadata-details',
   template: `
         <h3>{{title}}</h3>

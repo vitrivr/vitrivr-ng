@@ -11,7 +11,7 @@ import {VgAPI} from 'videogular2/compiled/src/core/services/vg-api';
 declare var VTTCue;
 
 @Component({
-  moduleId: module.id,
+
   selector: 'app-advanced-media-player',
   templateUrl: 'advanced-media-player.component.html',
   styleUrls: ['advanced-media-player.component.css']

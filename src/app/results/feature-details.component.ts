@@ -4,7 +4,7 @@ import {WeightedFeatureCategory} from '../shared/model/results/weighted-feature-
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'feature-details',
   template: `
     <h3>{{title}}</h3>

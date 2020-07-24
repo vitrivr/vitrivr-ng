@@ -7,7 +7,7 @@ import {first} from 'rxjs/operators';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'evaluation-selection',
   templateUrl: 'evaluation-selection.component.html'
 })

@@ -11,7 +11,7 @@ import {DistinctElementLookupService} from './core/lookup/distinct-element-looku
 import {ValueType} from './query/containers/bool/bool-attribute';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'vitrivr',
   templateUrl: 'app.component.html',
   styleUrls: ['./app.component.css'],

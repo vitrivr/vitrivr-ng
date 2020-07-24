@@ -9,7 +9,7 @@ import {startWith} from 'rxjs/operators';
 import {map} from 'rxjs/internal/operators/map';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'semantic-sketchpad',
   templateUrl: 'semantic-sketch-dialog.component.html',
   styleUrls: ['semantic-sketch-dialog.component.css']

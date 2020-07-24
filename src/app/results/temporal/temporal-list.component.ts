@@ -18,7 +18,7 @@ import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'app-temporal-list',
   templateUrl: 'temporal-list.component.html',
   styleUrls: ['temporal-list.component.css'],

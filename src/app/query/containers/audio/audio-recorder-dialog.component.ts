@@ -8,7 +8,7 @@ import {timestamp} from 'rxjs/operators';
 
 
 @Component({
-  moduleId: module.id,
+
   selector: 'audio-recorder',
   templateUrl: 'audio-recorder-dialog.component.html',
   styles: [

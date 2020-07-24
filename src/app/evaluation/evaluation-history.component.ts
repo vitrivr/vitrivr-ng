@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {Evaluation} from '../shared/model/evaluation/evaluation';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'evaluation-history',
   template: `
         <div>

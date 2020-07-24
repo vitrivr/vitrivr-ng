@@ -20,7 +20,7 @@ import {SelectionService} from '../../core/selection/selection.service';
 import {Tag} from '../../core/selection/tag.model';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'app-refinement',
   templateUrl: './refinement.component.html',
   styleUrls: ['./refinement.component.css']
