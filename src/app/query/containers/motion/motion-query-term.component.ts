@@ -16,7 +16,7 @@ export class MotionQueryTermComponent implements OnInit {
   private motionTerm: MotionQueryTerm;
 
   /** Component used to display a preview of the selected AND/OR sketched image. */
-  @ViewChild('previewimg', {static: false})
+  @ViewChild('previewimg')
   private previewimg: any;
 
   constructor(private _dialog: MatDialog, private _snackBar: MatSnackBar) {

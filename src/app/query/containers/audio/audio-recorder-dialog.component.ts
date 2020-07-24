@@ -18,7 +18,7 @@ import {timestamp} from 'rxjs/operators';
 })
 export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
   /** Hidden input for image upload. */
-  @ViewChild('audioloader', {static: false})
+  @ViewChild('audioloader')
   private audioloader: any;
   /** Current recorder status. */
   private status: RecorderStatus = 'Idle';
@@ -36,7 +36,7 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
   }
 
   /** Audio-recorder component. */
-  @ViewChild('recorder', {static: false})
+  @ViewChild('recorder')
   private _recorder: AudioRecorderComponent;
 
   /**

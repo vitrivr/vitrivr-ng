@@ -21,7 +21,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
   @Input() width: number = 400;
   @Input() height: number = 150;
   /** Canvas used for visualization. */
-  @ViewChild('visualize', {static: false}) private canvas: any;
+  @ViewChild('visualize') private canvas: any;
   /** AudioContext used for audio signal processing. */
   private audiocontext: AudioContext;
 

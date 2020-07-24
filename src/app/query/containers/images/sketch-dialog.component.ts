@@ -28,10 +28,10 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
     '#FFFFFF', '#DCDCDC', '#C0C0C0', '#808080', '#696969', '#000000' /* B & W. */
   ];
   /** Hidden input for image upload. */
-  @ViewChild('imageloader', {static: false})
+  @ViewChild('imageloader')
   private imageloader: any;
   /** Sketch-canvas component. */
-  @ViewChild('sketch', {static: false})
+  @ViewChild('sketch')
   private _sketchpad: SketchCanvas;
 
   /**

@@ -27,10 +27,10 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
   /** Observable for all currently used SemanticCategories. */
   private _used: BehaviorSubject<SemanticCategory[]> = new BehaviorSubject([]);
   /** Hidden input for image upload. */
-  @ViewChild('imageloader', {static: false})
+  @ViewChild('imageloader')
   private imageloader: any;
   /** Sketch-canvas component. */
-  @ViewChild('sketch', {static: false})
+  @ViewChild('sketch')
   private _sketchpad: SketchCanvas;
 
   /**

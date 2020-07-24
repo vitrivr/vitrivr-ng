@@ -17,7 +17,7 @@ export class TrackingSketchCanvasComponent implements OnInit {
   /** Height of the TrackingSketchCanvasComponent. */
   @Input() public height: number = 400;
   /** Reference to the native canvas element. */
-  @ViewChild('sketch', {static: false}) private canvas: ElementRef;
+  @ViewChild('sketch') private canvas: ElementRef;
   /** The drawing context used by this canvas. */
   private context: CanvasRenderingContext2D;
 

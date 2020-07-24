@@ -16,10 +16,10 @@ export class BinarySketchDialogComponent implements AfterViewInit {
   /** Current linesize (default: DEFAULT_LINESIZE). */
   public linesize: number = BinarySketchDialogComponent.DEFAULT_LINESIZE;
   /** Hidden input for image upload. */
-  @ViewChild('imageloader', {static: false})
+  @ViewChild('imageloader')
   private imageloader: any;
   /** Sketch-canvas component. */
-  @ViewChild('sketch', {static: false})
+  @ViewChild('sketch')
   private _sketchpad: SketchCanvas;
 
   /**

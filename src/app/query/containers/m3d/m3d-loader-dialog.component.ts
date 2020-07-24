@@ -11,11 +11,11 @@ import {MatDialogRef} from '@angular/material';
 
 export class M3DLoaderDialogComponent {
   /** Sketch-canvas component. */
-  @ViewChild('m3dloader', {static: false})
+  @ViewChild('m3dloader')
   private loader: M3DLoaderComponent;
 
   /** Hidden input for image upload. */
-  @ViewChild('fileloader', {static: false})
+  @ViewChild('fileloader')
   private fileloader: any;
 
   /**

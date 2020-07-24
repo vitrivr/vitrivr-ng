@@ -13,15 +13,15 @@ import {ResolverService} from '../core/basics/resolver.service';
 export class QuickViewerComponent {
 
   /** Reference to the audio player. */
-  @ViewChild('audioplayer', {static: false})
+  @ViewChild('audioplayer')
   private audioplayer: any;
 
   /** Reference to the video player. */
-  @ViewChild('videoplayer', {static: false})
+  @ViewChild('videoplayer')
   private videoplayer: any;
 
   /** Reference to the img tag for preview. */
-  @ViewChild('imageviewer', {static: false})
+  @ViewChild('imageviewer')
   private imageviewer: any;
 
   /**

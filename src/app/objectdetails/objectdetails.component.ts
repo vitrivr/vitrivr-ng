@@ -28,15 +28,15 @@ import {PreviousRouteService} from '../core/basics/previous-route.service';
 })
 export class ObjectdetailsComponent {
   /** */
-  @ViewChild('audioplayer', {static: false})
+  @ViewChild('audioplayer')
   private audioplayer: any;
 
   /** */
-  @ViewChild('videoplayer', {static: false})
+  @ViewChild('videoplayer')
   private videoplayer: any;
 
   /* */
-  @ViewChild('imageviewer', {static: false})
+  @ViewChild('imageviewer')
   private imageviewer: any;
 
   /** The observable that provides the MediaObjectMetadata for the active object. */
