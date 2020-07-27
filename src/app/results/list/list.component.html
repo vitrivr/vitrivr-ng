@@ -10,7 +10,7 @@
        [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="list"
        infiniteScroll>
     <div
-        *ngFor="let mediaobject of ((((dataSource | async) | FilterPipe : (objectFilter|async)) | OrderByScorePipe) | LimitPipe : count); trackBy: trackByFunction"
+        *ngFor="let mediaobject of ((((dataSource | async) | FilterPipe : (objectFilter|async)) | OrderByScorePipe) | LimitObjectsPipe : count); trackBy: trackByFunction"
         class="object">
       <app-result-segment-preview-tile *ngFor="let segment of (mediaobject.segments | FilterPipe : (segmentFilter|async) | OrderBySegmentPipe); trackBy: segmentTracking"
                                        [container]="this"

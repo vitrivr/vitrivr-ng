@@ -36,6 +36,7 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
               _vbs: VbsSubmissionService
   ) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog, _vbs);
+    this._count = this.scrollIncrement() * 10;
   }
 
   /** Name of this ListComponent. */
