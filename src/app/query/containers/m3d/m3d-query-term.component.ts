@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatDialog, MatSnackBar} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {M3DLoaderDialogComponent} from './m3d-loader-dialog.component';
 import {M3DLoaderComponent} from '../../../shared/components/m3d/m3d-loader.component';
 import {BinarySketchDialogComponent} from './binary-sketch-dialog.component';

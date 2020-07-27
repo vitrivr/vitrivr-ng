@@ -1,5 +1,5 @@
 import {Component, Inject, OnDestroy, OnInit, Optional, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {AudioRecorderComponent} from '../../../shared/components/audio/audio-recorder.component';
 import {Subscription, timer} from 'rxjs';
 import {TimeFormatterUtil} from '../../../shared/util/timer-formatter.util';
@@ -8,7 +8,7 @@ import {timestamp} from 'rxjs/operators';
 
 
 @Component({
-  moduleId: module.id,
+
   selector: 'audio-recorder',
   templateUrl: 'audio-recorder-dialog.component.html',
   styles: [

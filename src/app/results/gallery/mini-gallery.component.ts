@@ -16,7 +16,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'mini-gallery',
   templateUrl: 'mini-gallery.component.html',
   styleUrls: ['mini-gallery.component.css'],

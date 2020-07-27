@@ -4,15 +4,14 @@ import {QueryService} from '../../core/queries/query.service';
 import {Router} from '@angular/router';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {AbstractResultsViewComponent} from '../abstract-results-view.component';
-import {MatSnackBar} from '@angular/material';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {SelectionService} from '../../core/selection/selection.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {FilterService} from '../../core/queries/filter.service';
 import {Observable} from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  moduleId: module.id,
   selector: 'gallery',
   templateUrl: 'gallery.component.html',
   styleUrls: ['gallery.component.css'],

@@ -2,16 +2,16 @@ import {AfterViewChecked, ChangeDetectorRef, Component, Input} from '@angular/co
 import {MediaObjectScoreContainer} from '../../model/results/scores/media-object-score-container.model';
 import {SegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
 import {ResolverService} from '../../../core/basics/resolver.service';
-import {VgAPI} from 'videogular2/core';
 import {VbsSubmissionService} from '../../../core/vbs/vbs-submission.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
+import {VgApiService} from '@videogular/ngx-videogular/core';
 
 
 declare var VTTCue;
 
 @Component({
-  moduleId: module.id,
+
   selector: 'app-advanced-media-player',
   templateUrl: 'advanced-media-player.component.html',
   styleUrls: ['advanced-media-player.component.css']
@@ -31,10 +31,10 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
 
   /** Width of the media player in pixels. This property will automatically determine the height of the component as well. */
   @Input()
-  public width = 500;
+  public width;
 
   /** The internal VgAPI reference used to interact with the media player. */
-  private _api: VgAPI;
+  private _api: VgApiService;
 
   constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService, private _cdRef: ChangeDetectorRef) {
     this._track = new BehaviorSubject<TextTrack>(null)
@@ -67,7 +67,7 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
    *
    * @param api VgAPI instance.
    */
-  public onPlayerReady(api: VgAPI) {
+  public onPlayerReady(api: VgApiService) {
     this._api = api;
 
     /* Adds a text track and creates a cue per segment in the media object. */

@@ -51,7 +51,7 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
   @ViewChild('visualize')
   private container: any;
   /** THREE Trackball Controls */
-  private controls: THREE.TrackballControls;
+  private controls;
 
   constructor() {
   }

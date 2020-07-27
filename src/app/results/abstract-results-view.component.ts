@@ -7,7 +7,7 @@ import {SelectionService} from '../core/selection/selection.service';
 import {Tag} from '../core/selection/tag.model';
 import {ColorUtil} from '../shared/util/color.util';
 import {EventBusService} from '../core/basics/event-bus.service';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {FeatureDetailsComponent} from './feature-details.component';

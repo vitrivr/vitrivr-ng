@@ -11,7 +11,6 @@ import {ColorPickerModule} from 'ngx-color-picker';
   imports: [MaterialModule, BrowserModule, FormsModule, SketchModule, ColorPickerModule],
   declarations: [ImageQueryTermComponent, SketchDialogComponent],
   exports: [ImageQueryTermComponent],
-  entryComponents: [SketchDialogComponent]
 })
 
 export class ImageQueryTermModule {

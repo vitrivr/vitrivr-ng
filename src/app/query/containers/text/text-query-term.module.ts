@@ -8,7 +8,6 @@ import {TextQueryTermComponent} from './text-query-term.component';
   imports: [MaterialModule, BrowserModule, FormsModule],
   declarations: [TextQueryTermComponent],
   exports: [TextQueryTermComponent],
-  entryComponents: []
 })
 export class TextQueryTermModule {
 }

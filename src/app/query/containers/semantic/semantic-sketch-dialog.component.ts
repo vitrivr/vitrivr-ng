@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Inject, OnInit, Optional, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {SketchCanvas} from '../../../shared/components/sketch/sketch-canvas.component';
 import {SemanticCategory} from '../../../shared/model/queries/semantic/semantic-category.model';
 import {SemanticMap} from '../../../shared/model/queries/semantic/semantic-map.model';
@@ -9,7 +9,7 @@ import {startWith} from 'rxjs/operators';
 import {map} from 'rxjs/internal/operators/map';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'semantic-sketchpad',
   templateUrl: 'semantic-sketch-dialog.component.html',
   styleUrls: ['semantic-sketch-dialog.component.css']

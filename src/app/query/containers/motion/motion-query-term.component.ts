@@ -1,7 +1,8 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MotionQueryTerm} from '../../../shared/model/queries/motion-query-term.model';
 import {MotionSketchDialogComponent} from './motion-sketch-dialog.component';
-import {MatDialog, MatSnackBar} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {MotionData} from './model/motion-data.model';
 import {first} from 'rxjs/operators';
 

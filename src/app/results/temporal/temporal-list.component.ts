@@ -3,7 +3,8 @@ import {QueryService} from '../../core/queries/query.service';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {Router} from '@angular/router';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import {MatDialog, MatSnackBar} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {Observable} from 'rxjs';
 import {VbsSubmissionService} from 'app/core/vbs/vbs-submission.service';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
@@ -18,7 +19,7 @@ import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'app-temporal-list',
   templateUrl: 'temporal-list.component.html',
   styleUrls: ['temporal-list.component.css'],

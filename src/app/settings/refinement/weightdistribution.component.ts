@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'weight-distribution',
   template: `
     <div class="weight-distribution">

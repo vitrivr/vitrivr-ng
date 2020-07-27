@@ -1,12 +1,11 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_SNACK_BAR_DATA} from '@angular/material';
+import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 
 /**
  * Popup for metadata details associated to segment
  */
 @Component({
-  moduleId: module.id,
   selector: 'metadata-details',
   template: `
         <h3>{{title}}</h3>
