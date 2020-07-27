@@ -13,7 +13,8 @@ import {VgBufferingModule} from '@videogular/ngx-videogular/buffering';
 @NgModule({
   imports: [MaterialModule, CommonModule, BrowserModule, VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule, VbsModule],
   declarations: [AdvancedMediaPlayerComponent],
-  exports: [AdvancedMediaPlayerComponent]
+  exports: [AdvancedMediaPlayerComponent],
+  bootstrap: [AdvancedMediaPlayerComponent]
 })
 export class AdvancedMediaPlayerModule {
 }

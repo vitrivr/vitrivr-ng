@@ -31,7 +31,7 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
 
   /** Width of the media player in pixels. This property will automatically determine the height of the component as well. */
   @Input()
-  public width = 500;
+  public width;
 
   /** The internal VgAPI reference used to interact with the media player. */
   private _api: VgApiService;
