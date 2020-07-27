@@ -1,79 +1,99 @@
 <h2 class="mat-h2">Query refinement</h2>
 
 <div *ngIf="(features | async)">
-  <h3 class="mat-h3">Weights</h3>
-  <div *ngFor="let feature of features | async" [style.color]="feature.displayColor" class="slider-group">
-    <span class="label constrained">{{feature.name}}</span>
-    <mat-slider (change)="onValueChanged(feature, $event)" [max]="100" [min]="0"
-                value="{{feature.weightPercentage}}"></mat-slider>
-    <span class="label constrained"> {{feature.weightPercentage}}%</span>
-  </div>
-  <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
-
-  <h3 class="mat-h3">Filters</h3>
-
-  <div>
-    <h5 class="mat-h5">Display only objects of type:</h5>
-    <section class="checkbox-group">
-      <mat-checkbox (change)="onTypeFilterChanged(type,$event)" *ngFor="let type of filter.mediatypeKeys" [checked]="filter.mediatypes.get(type)"
-                    [name]="type">{{type}}</mat-checkbox>
-    </section>
-  </div>
-  <br/>
-  <div>
-    <h5 class="mat-h5">Display only objects with score above:</h5>
-    <span class="label constrained">Threshold</span>
-    <mat-slider (change)="onThresholdValueChanges($event)" [(value)]="filter.threshold" [max]="1.0" [min]="0"
-                [step]="0.01"></mat-slider>
-    <span class="label constrained">{{filter.threshold * 100}}%</span>
-  </div>
-  <br/>
-  <div>
-    <h5 class="mat-h5">Display only objects with tagged segment:</h5>
-    <section class="checkbox-group">
-      <mat-checkbox (change)="onTagFilterChanged(tag,$event)" *ngFor="let tag of _selectionService.availableTags"
-                    [checked]="filter.filterTags.has(tag)"
-                    [name]="tag.name">{{tag.name}}</mat-checkbox>
-    </section>
-  </div>
-
-  <h3 class="mat-h3">Metadata Filter Configuration</h3>
-
-  <mat-slide-toggle (change)="onMdCatOperatorChange($event)" [checked]="mdCatOperatorChecked()">Use OR for multiple
-    categories
-  </mat-slide-toggle>
-
-  <mat-divider style="margin-top: 5px; margin-bottom: 5px;"></mat-divider>
-
-  <button (click)="resetMetadataFilters()" color="primary" mat-raised-button style="width:100%;">Reset All Filters
-  </button>
-
-  <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>
-
-  <div *ngFor="let entry of metadata | async | keyvalue">
-    <!-- Toggle to enable / disable filter category -->
-    <mat-slide-toggle (change)="onFilterCategoryToggle(entry.key, $event)"
-                      [checked]="mdShowFilterCategory(entry.key)">{{entry.key}}</mat-slide-toggle>
-
-    <!-- checkbox -->
-    <div *ngIf="mdShowFilterCategory(entry.key) && isCheckbox(entry.value)" class="scrolling-checkbox-list">
-      <mat-checkbox (change)="onMetadataFilterChanged(entry.key, mdVal,$event)"
-                    *ngFor="let mdVal of checkboxOptions(entry.value) | sortStringSet"
-                    [checked]="mdFilterChecked(entry.key, mdVal)"
-                    class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
+    <h3 class="mat-h3">Weights</h3>
+    <div *ngFor="let feature of features | async" [style.color]="feature.displayColor" class="slider-group">
+        <span class="label constrained">{{feature.name}}</span>
+        <mat-slider (change)="onValueChanged(feature, $event)" [max]="100" [min]="0"
+                    value="{{feature.weightPercentage}}"></mat-slider>
+        <span class="label constrained"> {{feature.weightPercentage}}%</span>
     </div>
+    <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
 
-    <!-- slider -->
-    <div *ngIf="mdShowFilterCategory(entry.key) && isSlider(entry.value)" style="width: 90%;">
-      <ng5-slider (highValueChange)="maxSliderChange(entry.key, $event)" (valueChange)="minSliderChange(entry.key, $event)"
-                  [highValue]="sliderObject(entry.value).max"
-                  [options]="sliderObject(entry.value).sliderOptions()"
-                  [value]="sliderObject(entry.value).min"></ng5-slider>
+    <h3 class="mat-h3">Filters</h3>
+
+    <div>
+        <h5 class="mat-h5">Display only objects of type:</h5>
+        <section class="checkbox-group">
+            <mat-checkbox (change)="onTypeFilterChanged(type,$event)" *ngFor="let type of filter.mediatypeKeys"
+                          [checked]="filter.mediatypes.get(type)"
+                          [name]="type">{{type}}</mat-checkbox>
+        </section>
     </div>
     <br/>
-  </div>
+    <div>
+        <h5 class="mat-h5">Display only objects with score above:</h5>
+        <span class="label constrained">Threshold</span>
+        <mat-slider (change)="onThresholdValueChanges($event)" [(value)]="filter.threshold" [max]="1.0" [min]="0"
+                    [step]="0.01"></mat-slider>
+        <span class="label constrained">{{filter.threshold * 100}}%</span>
+    </div>
+    <br/>
+    <div>
+        <h5 class="mat-h5">Display only objects with tagged segment:</h5>
+        <section class="checkbox-group">
+            <mat-checkbox (change)="onTagFilterChanged(tag,$event)" *ngFor="let tag of _selectionService.availableTags"
+                          [checked]="filter.filterTags.has(tag)"
+                          [name]="tag.name">{{tag.name}}</mat-checkbox>
+        </section>
+    </div>
+
+    <h3 class="mat-h3">Metadata Filter Configuration</h3>
+
+    <mat-slide-toggle (change)="onMdCatOperatorChange($event)" [checked]="mdCatOperatorChecked()">Use OR for multiple
+        categories
+    </mat-slide-toggle>
+
+    <mat-divider style="margin-top: 5px; margin-bottom: 5px;"></mat-divider>
+
+    <button (click)="resetMetadataFilters()" color="primary" mat-raised-button style="width:100%;">Reset All Filters
+    </button>
+
+    <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>
+
+    <div *ngFor="let entry of (metadata | async) | keyvalue">
+        <!-- Toggle to enable / disable filter category -->
+        <mat-slide-toggle (change)="onFilterCategoryToggle(entry.key, $event)"
+                          [checked]="mdShowFilterCategory(entry.key)">{{entry.key}}</mat-slide-toggle>
+
+        <!-- checkbox -->
+        <div *ngIf="mdShowFilterCategory(entry.key) && isCheckbox(entry.value)" class="scrolling-checkbox-list">
+            <mat-checkbox (change)="onMetadataFilterChanged(entry.key, mdVal,$event)"
+                          *ngFor="let mdVal of checkboxOptions(entry.value) | sortStringSet"
+                          [checked]="mdFilterChecked(entry.key, mdVal)"
+                          class="scrolling-checkbox-item">{{mdVal}}</mat-checkbox>
+        </div>
+
+        <!-- slider -->
+        <div *ngIf="mdShowFilterCategory(entry.key) && isSlider(entry.value)" style="width: 90%;">
+            <form class="example-form">
+                <mat-form-field style="width:40%;">
+                    <mat-label>Minimum</mat-label>
+                    <input type="number" matInput (input)="minValue(entry.key, $event.target.value)" [value]="min(entry.key)" placeholder="{{sliderObject(entry.value).min}}">
+                    <mat-hint align="start"><strong>Minimum: {{sliderObject(entry.value).sliderOptions().floor}}</strong></mat-hint>
+                </mat-form-field>
+                <mat-form-field style="width:40%;">
+                    <mat-label>Maximum</mat-label>
+                    <input type="number" matInput (input)="maxValue(entry.key, $event.target.value)" [value]="max(entry.key)" placeholder="{{sliderObject(entry.value).max}}">
+                    <mat-hint align="start"><strong>Maximum: {{sliderObject(entry.value).sliderOptions().ceil}}</strong></mat-hint>
+                </mat-form-field>
+            </form>
+        </div>
+
+        <!--
+        ng5-slider is broken with angular 7+
+        <div *ngIf="mdShowFilterCategory(entry.key) && isSlider(entry.value)" style="width: 90%;">
+            <ng5-slider (highValueChange)="maxSliderChange(entry.key, $event)"
+                        (valueChange)="minSliderChange(entry.key, $event)"
+                        [highValue]="sliderObject(entry.value).max"
+                        [options]="sliderObject(entry.value).sliderOptions()"
+                        [value]="sliderObject(entry.value).min"></ng5-slider>
+        </div>
+        -->
+        <br/>
+    </div>
 </div>
 
 <div *ngIf="!(features | async)">
-  <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>
+    <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>
 </div>
