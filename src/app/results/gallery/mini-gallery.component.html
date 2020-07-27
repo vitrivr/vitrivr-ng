@@ -5,8 +5,8 @@
   <mat-spinner></mat-spinner>
 </p>
 
-<div (scrolled)="incrementCount()" (scrolledUp)="decrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
-     [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="mini-gallery"
+<div (scrolled)="incrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
+     [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="mini-gallery"
      infiniteScroll>
   <app-result-segment-preview-tile
       *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count; trackBy: segmentTracking"

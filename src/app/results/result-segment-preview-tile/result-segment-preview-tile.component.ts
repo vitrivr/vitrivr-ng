@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {first} from 'rxjs/operators';
@@ -24,7 +24,8 @@ import {VgApiService} from '@videogular/ngx-videogular/core';
 @Component({
   selector: 'app-result-segment-preview-tile',
   templateUrl: './result-segment-preview-tile.component.html',
-  styleUrls: ['./result-segment-preview-tile.component.css']
+  styleUrls: ['./result-segment-preview-tile.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResultSegmentPreviewTileComponent implements OnInit {
 
