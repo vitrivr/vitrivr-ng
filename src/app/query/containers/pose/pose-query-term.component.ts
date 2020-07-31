@@ -41,10 +41,7 @@ export class PoseQueryTermComponent implements OnInit {
       }
       this.poseDialogData = result;
       if (result.pose !== null) {
-        this.poseTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify({
-          pose: result.pose,
-          mode: result.mode
-        }));
+        this.poseTerm.update(result.pose, result.mode);
       }
     });
   }
