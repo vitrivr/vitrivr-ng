@@ -41,7 +41,6 @@ export class PoseService {
   }
 
   private onApiMessage(message: Message): void {
-    console.log("onApiMessage", message);
     this._running = 0;
     const obj = <SkelLookupResult>message;
     if (obj.content.length > 0) {

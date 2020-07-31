@@ -32,10 +32,8 @@ export class PoseSvgComponent implements OnChanges {
   }
 
   buildGraph() {
-    console.log('Inputs to pose-svg', this.poseData, this.mode, this.width, this.height);
     const body25Hands = skels['BODY_25_HANDS'];
     this.skelType = skels[this.mode];
-    console.log('this.skelType', this.skelType);
     this.nodes = [];
     for (const kpIdx of Array(body25Hands.max_kp).keys()) {
       const kp = this.poseData.keypoints[kpIdx];
@@ -49,7 +47,6 @@ export class PoseSvgComponent implements OnChanges {
       for (const v of vs) {
         const start = this.poseData.keypoints[kNum];
         const end = this.poseData.keypoints[v];
-        console.log(kNum, v, start, end);
         const drawable = start[2] > 0 && end[2] > 0;
         const active = (
           drawable &&

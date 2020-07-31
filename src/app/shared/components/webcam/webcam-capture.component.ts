@@ -45,7 +45,6 @@ export class WebcamCaptureComponent implements AfterViewInit {
     const trackSettings = stream.getVideoTracks()[0].getSettings();
     this.width = trackSettings.width;
     this.height = trackSettings.height;
-    console.log("this.width, this.height", this.width, this.height);
   }
 
   errorCallback() {
@@ -124,7 +123,6 @@ export class WebcamCaptureComponent implements AfterViewInit {
   }
 
   onPoseResult(poseResult: PoseResult) {
-    console.log('onPoseResult', poseResult, this.discardSkels);
     if (this.discardSkels > 0) {
       this.discardSkels--;
       return;
@@ -132,7 +130,6 @@ export class WebcamCaptureComponent implements AfterViewInit {
     this.hasSkelResult = true;
     if (poseResult.kind === 'pose') {
       this.skelData = poseResult.payload;
-      console.log('this.skelData', this.skelData);
       this.hasSkel = true;
     }
   }

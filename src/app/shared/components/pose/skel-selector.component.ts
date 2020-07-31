@@ -57,7 +57,6 @@ export class SkelSelectorComponent {
   }
 
   onCurModeChange($event) {
-    console.log("this.curMode", this.curMode);
     this.curModeChange.emit(this.curMode);
   }
 }
