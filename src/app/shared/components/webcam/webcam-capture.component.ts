@@ -1,5 +1,5 @@
-import {Component, OnInit, ViewChild, AfterViewInit, Input} from '@angular/core';
-import {PoseService, PoseResult} from '../../../core/pose/pose.service';
+import {Component, OnInit, ViewChild, AfterViewInit, Input, EventEmitter, Output} from '@angular/core';
+import {PoseService, PoseResult, Pose} from '../../../core/pose/pose.service';
 import {PoseKeypoints} from '../../model/pose/pose-keypoints.model';
 import {Config} from '../../model/config/config.model';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -22,6 +22,7 @@ export class WebcamCaptureComponent implements AfterViewInit {
   public discardSkels = 0;
   public noWebcam = true;
   @Input('mode') public mode: string = null
+  @Output('skelChange') skelChange: EventEmitter<PoseKeypoints> = new EventEmitter();
 
   @ViewChild('video') video;
   @ViewChild('img') img;
@@ -122,6 +123,13 @@ export class WebcamCaptureComponent implements AfterViewInit {
     }
   }
 
+  private setSkel(skel: PoseKeypoints) {
+    console.log('setSkel', skel);
+    this.skelData = skel;
+    this.hasSkel = true;
+    this.skelChange.emit(skel);
+  }
+
   onPoseResult(poseResult: PoseResult) {
     if (this.discardSkels > 0) {
       this.discardSkels--;
@@ -129,8 +137,7 @@ export class WebcamCaptureComponent implements AfterViewInit {
     }
     this.hasSkelResult = true;
     if (poseResult.kind === 'pose') {
-      this.skelData = poseResult.payload;
-      this.hasSkel = true;
+      this.setSkel(poseResult.payload);
     }
   }
 
@@ -164,8 +171,7 @@ export class WebcamCaptureComponent implements AfterViewInit {
     this.setPhotoData(data, true);
     if (skel) {
       this.hasSkelResult = true;
-      this.hasSkel = true;
-      this.skelData = skel;
+      this.setSkel(skel);
     } else {
       this.lookupSkel();
     }

@@ -1,7 +1,10 @@
-import {Component, AfterViewInit, ViewChild, ElementRef, Output, EventEmitter, Input} from '@angular/core';
-import skels from './skels.json';
-import modelPose from './pose.json';
+import {Component, AfterViewInit, ViewChild, ElementRef, Output, EventEmitter, Input, SimpleChange, OnChanges} from '@angular/core';
 import {PoseKeypoints} from '../../model/pose/pose-keypoints.model';
+import {SkelSpec} from './skel-spec';
+import modelPose from './pose.json';
+import {Pose, PoseService} from '../../../core/pose/pose.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {Config} from '../../model/config/config.model';
 
 function preprocModelPose(modelPose, targetWidth, padding): [number, [number, number, number][]] {
   const pose: [number, number][] = modelPose['pose_keypoints_2d'];
@@ -38,25 +41,59 @@ const [height, keypoints] = preprocModelPose(modelPose, width, padding);
   templateUrl: 'skel-selector.component.html',
   styleUrls: ['skel-selector.component.css']
 })
-export class SkelSelectorComponent {
+export class SkelSelectorComponent implements OnChanges {
   public width = width;
   public height = height;
   public keypoints: PoseKeypoints = {keypoints};
-  public modes: string[] = [];
-  @Input('curMode') public curMode = 'BODY_25_HANDS';
+  public modes: SkelSpec[] = SkelSpec.specs();
+  public validModes: Set<SkelSpec> = new Set();
+  @Input('pose') public pose: PoseKeypoints = null;
+  @Input('curMode') public curMode: SkelSpec = null;
   @Output('curModeChange') public curModeChange = new EventEmitter();
 
-  constructor() {
-    for (const mode of Object.keys(skels)) {
-      // HAND is a TODO
-      if (mode.startsWith('__') || mode === 'HAND') {
-        continue;
-      }
-      this.modes.push(mode);
+  constructor(private _snackBar: MatSnackBar) {}
+
+  ngOnChanges(changes: { [key: string]: SimpleChange }) {
+    console.log('ngOnChanges', changes)
+    if (changes.hasOwnProperty('pose')) {
+      this.updateModeValidities();
     }
   }
 
-  onCurModeChange($event) {
+  updateModeValidities() {
+    console.log('updateModeValidities');
+    this.validModes.clear();
+    if (!this.pose) {
+      console.log('!this.pose');
+      return
+    }
+    console.log('pose', this.pose);
+    for (const mode of this.modes) {
+      console.log('mode', mode);
+      if (!mode.hasAll(this.pose.keypoints)) {
+        console.log('!mode.hasAll(this.pose)');
+        continue;
+      }
+      this.validModes.add(mode);
+    }
+    if (this.curMode !== null && this.validModes.has(this.curMode)) {
+      this.curMode = null;
+      this.onCurModeChange();
+    }
+  }
+
+  onCurModeChange() {
     this.curModeChange.emit(this.curMode);
+  }
+
+  cannotSelect(mode: SkelSpec) {
+    if (this.validModes.has(mode)) {
+      return;
+    }
+    this._snackBar.open(
+      'Cannot use this pose specification/model with current pose since it is missing required keypoints',
+      null,
+      {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'}
+    );
   }
 }

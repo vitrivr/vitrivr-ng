@@ -1,5 +1,16 @@
-<label *ngFor="let mode of modes" [ngStyle]="{'font-weight': curMode === mode ? 600 : 400}">
-  <input type="radio" name="skelMode" [(ngModel)]="curMode" (ngModelChange)="onCurModeChange($event)" [value]="mode">
+<label
+  *ngFor="let mode of modes"
+  [ngStyle]="{'font-weight': curMode === mode ? '600' : '400'}"
+  [ngClass]="{'valid': validModes.has(mode)}"
+  (click)="cannotSelect(mode)"
+>
+  <input
+    type="radio"
+    name="skelMode"
+    [(ngModel)]="curMode"
+    (ngModelChange)="onCurModeChange()"
+    [value]="mode" [attr.disabled]="validModes.has(mode) ? null : true"
+  >
   <pose-svg
     [poseData]="keypoints"
     [mode]="mode"
@@ -13,5 +24,5 @@
     edgeActiveColor="red"
     [edgeWidth]="curMode === mode ? 4 : 0.7"
     [edgeActiveWidth]="curMode === mode ? 4 : 0.7"></pose-svg>
-  {{mode}}
+  {{mode.modeName}}
 </label>

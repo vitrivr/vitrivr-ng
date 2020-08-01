@@ -5,3 +5,7 @@ label {
 label > input {
     display: none;
 }
+
+label.valid {
+    cursor: pointer;
+}

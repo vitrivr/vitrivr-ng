@@ -2,6 +2,8 @@ import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {WebcamCaptureComponent} from '../../../shared/components/webcam/webcam-capture.component';
 import {PoseKeypoints} from '../../../shared/model/pose/pose-keypoints.model';
+import {MatDialog} from '@angular/material/dialog';
+import {PoseDiscardConfirmComponent} from './pose-discard-confirm.component';
 
 export interface PoseDialogData {
   img?: string;
@@ -24,13 +26,15 @@ export class PoseWebcamDialogComponent implements OnInit {
   @ViewChild('webcam')
   private _webcam: WebcamCaptureComponent;
 
-  public mode: string = "BODY_25_HANDS";
+  public mode = null;
+  private pose: PoseKeypoints;
 
   /**
    *
    * @param _dialogRef
    */
   constructor(
+    private _dialog: MatDialog,
     private _dialogRef: MatDialogRef<PoseWebcamDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private _data: PoseDialogData
   ) {
@@ -67,18 +71,40 @@ export class PoseWebcamDialogComponent implements OnInit {
   /**
    *  Triggered whenever someone clicks the 'Save' button; Closes the dialog.
    */
-  public onSaveClicked() {
-    const data: PoseDialogData = {mode: this.mode};
+  public onSaveClicked(force) {
+    if (!force && this.pose !== null && this.mode === null) {
+      /* Initialize the correct dialog-component. */
+      const dialogRef = this._dialog.open(
+        PoseDiscardConfirmComponent,
+        {
+          width: '320px',
+          height: '280px'
+        }
+      );
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.onSaveClicked(true);
+        }
+      });
+      return;
+    }
+    const data: PoseDialogData = {};
+    if (this.mode !== null) {
+      data.mode = this.mode;
+    }
     const img = this._webcam.getImage();
     if (img !== null) {
       data.img = img;
     }
     data.width = this._webcam.width;
     data.height = this._webcam.height;
-    const pose = this._webcam.getPose()
-    if (pose !== null) {
-      data.pose = pose;
+    if (this.mode !== null && this.pose !== null) {
+      data.pose = this.pose;
     }
     this._dialogRef.close(data);
+  }
+
+  updateSkel(pose: PoseKeypoints) {
+    this.pose = pose;
   }
 }

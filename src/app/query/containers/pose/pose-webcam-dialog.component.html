@@ -6,14 +6,14 @@
       <mat-icon>file_upload</mat-icon>
     </button>
 
-    <button (click)="onSaveClicked()" mat-icon-button matTooltip="Close window and save.">
+    <button (click)="onSaveClicked(false)" mat-icon-button matTooltip="Close window and save.">
       <mat-icon>close</mat-icon>
     </button>
   </mat-toolbar>
 
-  <webcam-capture [mode]="mode" #webcam></webcam-capture>
+  <webcam-capture [mode]="mode" (skelChange)="updateSkel($event)" #webcam></webcam-capture>
 
-  <skel-selector [(curMode)]="mode"></skel-selector>
+  <skel-selector [(curMode)]="mode" [pose]="pose"></skel-selector>
 
   <input #imageloader (change)="onFileAvailable($event)" hidden type="file">
 </mat-dialog-content>
