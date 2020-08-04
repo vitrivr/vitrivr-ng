@@ -5,13 +5,14 @@
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
       <mat-option *ngFor="let tag of field.filteredTags | async" [value]="tag">
         {{tag.name}}
+        <small>({{tag.id}}) {{tag.description}}</small>
       </mat-option>
     </mat-autocomplete>
   </mat-form-field>
   <mat-chip-list>
     <mat-chip (removed)="removeTag(tag)" *ngFor="let tag of tags" [removable]="true" [selectable]="true"
               id="{{tag.id}}">
-      {{tag.name}}
+      {{tag.name}}&nbsp;<small>({{tag.id}})</small>
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
   </mat-chip-list>
