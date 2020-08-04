@@ -2,7 +2,7 @@
      class="options">
     <!-- Attribute Dropdown -->
     <mat-select [(ngModel)]="attribute" class="options" required>
-        <mat-option *ngFor="let attr of possibleAttributes | async"
+        <mat-option *ngFor="let attr of possibleAttributes | async"
                     [value]="attr">{{attr.displayName}}</mat-option>
     </mat-select>
 

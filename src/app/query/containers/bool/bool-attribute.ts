@@ -67,6 +67,7 @@ export class BoolAttribute {
       this.sliderOptions = {
         floor: range[0],
         ceil: range[1],
+        animate: false,
       };
       this.minValue = this.sliderOptions.floor;
       this.maxValue = this.sliderOptions.ceil;
