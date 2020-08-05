@@ -51,7 +51,7 @@
 
     <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>
 
-    <div *ngFor="let entry of (metadata | async) | keyvalue">
+    <div *ngFor="let entry of (metadata | async) | keyvalue">
         <!-- Toggle to enable / disable filter category -->
         <mat-slide-toggle (change)="onFilterCategoryToggle(entry.key, $event)"
                           [checked]="mdShowFilterCategory(entry.key)">{{entry.key}}</mat-slide-toggle>
