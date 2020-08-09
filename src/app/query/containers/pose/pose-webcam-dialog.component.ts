@@ -4,13 +4,14 @@ import {WebcamCaptureComponent} from '../../../shared/components/webcam/webcam-c
 import {PoseKeypoints} from '../../../shared/model/pose/pose-keypoints.model';
 import {MatDialog} from '@angular/material/dialog';
 import {PoseDiscardConfirmComponent} from './pose-discard-confirm.component';
+import {SkelSpec} from '../../../shared/components/pose/skel-spec';
 
 export interface PoseDialogData {
   img?: string;
   width?: number;
   height?: number;
   pose?: PoseKeypoints;
-  mode?: string;
+  mode?: SkelSpec;
 }
 
 @Component({
@@ -26,7 +27,7 @@ export class PoseWebcamDialogComponent implements OnInit {
   @ViewChild('webcam')
   private _webcam: WebcamCaptureComponent;
 
-  public mode = null;
+  public mode: SkelSpec = null;
   private pose: PoseKeypoints;
 
   /**

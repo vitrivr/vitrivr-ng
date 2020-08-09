@@ -40,8 +40,8 @@ export class PoseQueryTermComponent implements OnInit {
         return;
       }
       this.poseDialogData = result;
-      if (result.pose !== null) {
-        this.poseTerm.update(result.pose, result.mode);
+      if (result.pose !== null && result.mode !== null) {
+        this.poseTerm.update(result.pose, result.mode.modeName);
       }
     });
   }

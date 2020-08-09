@@ -49,7 +49,7 @@ export class SkelSelectorComponent implements OnChanges {
   public validModes: Set<SkelSpec> = new Set();
   @Input('pose') public pose: PoseKeypoints = null;
   @Input('curMode') public curMode: SkelSpec = null;
-  @Output('curModeChange') public curModeChange = new EventEmitter();
+  @Output('curModeChange') public curModeChange: EventEmitter<SkelSpec> = new EventEmitter();
 
   constructor(private _snackBar: MatSnackBar) {}
 
