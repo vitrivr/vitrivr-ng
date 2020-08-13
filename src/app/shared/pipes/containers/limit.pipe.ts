@@ -16,7 +16,7 @@ export class LimitPipe implements PipeTransform {
       return [];
     }
     if (!count) {
-      console.debug(`returning empty array since count is undefined`);
+      console.debug(`returning empty array since count is ${count}`);
       return [];
     }
     if (!apply) {
