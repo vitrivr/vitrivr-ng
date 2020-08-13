@@ -18,7 +18,7 @@ export class LimitObjectsPipe implements PipeTransform {
       return [[], 0];
     }
     if (!count) {
-      console.debug(`returning empty array since count is undefined`);
+      console.debug(`returning empty array since count is ${count}`);
       return [[], 0];
     }
     console.debug(`limiting to ${count} elements`);
@@ -35,6 +35,9 @@ export class LimitObjectsPipe implements PipeTransform {
       _segmentCount += obj.segments.length;
       _return.push(obj)
     })
+    if (_segmentCount <= count) {
+      _segmentsInLastObj = _return[_return.length - 1].segments.length
+    }
     return [_return, _segmentsInLastObj];
   }
 }
