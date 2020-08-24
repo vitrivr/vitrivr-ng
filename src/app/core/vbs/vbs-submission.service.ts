@@ -264,10 +264,10 @@ export class VbsSubmissionService {
           id = parseInt(segment.objectId.replace('v_', ''), 10).toString();
           params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', id).set('frame', String(frame));
         }
-        if (this._dres && this._sessionId) {
+        if (this._dres) {
           // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
-          id = segment.objectId.replace('v_', '');
-          //params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
+          id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
+          // params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
           params = new HttpParams().set('item', String(id)).set('frame', String(frame));
         }
 
