@@ -180,7 +180,7 @@ export class Config {
    * Full URL to HTTP/RESTful endpoint for Vitrivr NG.
    */
   get endpoint_http(): string {
-    const scheme = this._config.api.ws_secure ? 'https://' : 'http://';
+    const scheme = this._config.api.http_secure ? 'https://' : 'http://';
     if (this._config.api.host && this._config.api.port) {
       return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/';
     } else {
