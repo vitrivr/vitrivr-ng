@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
   selector: 'pose-discard-confirm',
@@ -6,21 +7,22 @@ import {Component} from '@angular/core';
     <h2 mat-dialog-title>Discard query?</h2>
     <mat-dialog-content>
       <p>
-          You have specified a pose, but have not selected a pose model
-          and therefore have not specified a valid pose query.
+          {{ data.message }}
       </p>
       <p>
-          Discard your query, or return and fully specify a valid pose query?
+          If you close this dialog now, your image and poses will be discarded.
       </p>
     </mat-dialog-content>
     <mat-dialog-actions>
       <button color="accent" mat-button mat-dialog-close>
-        Cancel
+        Go back
       </button>
       <button color="warn" mat-button [mat-dialog-close]="true">
-        Discard query
+        Close &amp; discard
       </button>
     </mat-dialog-actions>`
 })
 
-export class PoseDiscardConfirmComponent {}
+export class PoseDiscardConfirmComponent {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) { }
+}

@@ -6,14 +6,47 @@
       <mat-icon>file_upload</mat-icon>
     </button>
 
-    <button (click)="onSaveClicked(false)" mat-icon-button matTooltip="Close window and save.">
+    <button (click)="onSaveClicked()" mat-icon-button matTooltip="Close window and save.">
       <mat-icon>close</mat-icon>
     </button>
   </mat-toolbar>
 
-  <webcam-capture [mode]="mode" (skelChange)="updateSkel($event)" #webcam></webcam-capture>
-
-  <skel-selector [(curMode)]="mode" [pose]="pose"></skel-selector>
+  <mat-horizontal-stepper linear [@.disabled]="true" #stepper>
+    <mat-step [completed]="hasSkel">
+      <form>
+        <ng-template matStepLabel>Capture image</ng-template>
+        <webcam-capture
+          [hasSkel]="hasSkel"
+          [hasSkelResult]="hasSkelResult"
+          (discardPhotoSkel)="discardPhotoSkel($event)"
+          (gotPhoto)="gotPhoto($event)" #webcam></webcam-capture>
+      </form>
+    </mat-step>
+    <mat-step [completed]="poseIdx !== null">
+      <form>
+        <ng-template matStepLabel>Select person</ng-template>
+        <pose-selector
+          [photoData]="photoData"
+          [poses]="poses"
+          (chosenPoseIdxChange)="chosenIdxChange($event)"
+        ></pose-selector>
+      </form>
+      <div class="nextprev">
+        <button color="accent" mat-flat-button matStepperPrevious type="button">Back</button>
+        <button color="primary" mat-flat-button matStepperNext type="button">Next</button>
+      </div>
+    </mat-step>
+    <mat-step>
+      <form>
+        <ng-template matStepLabel>Select mode <br>&amp; orientation</ng-template>
+        <skel-selector [(curMode)]="mode" (orientationsChange)="onOrientationsChange($event)" (semanticChange)="onSemanticChange($event)" [pose]="curPose()"></skel-selector>
+      </form>
+      <div class="nextprev">
+        <button color="accent" mat-flat-button matStepperPrevious type="button">Back</button>
+        <button (click)="onSaveClicked()" color="primary" mat-flat-button type="button">Finish</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
 
   <input #imageloader (change)="onFileAvailable($event)" hidden type="file">
 </mat-dialog-content>

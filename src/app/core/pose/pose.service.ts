@@ -14,7 +14,7 @@ export interface NoPose {
 
 export interface Pose {
   kind: 'pose';
-  payload: PoseKeypoints
+  payload: PoseKeypoints[]
 }
 
 export type PoseResult = NoPose | Pose;
@@ -44,7 +44,7 @@ export class PoseService {
     this._running = 0;
     const obj = <SkelLookupResult>message;
     if (obj.content.length > 0) {
-      this._subject.next({kind: 'pose', payload: obj.content[0]});
+      this._subject.next({kind: 'pose', payload: obj.content});
     } else {
       this._subject.next({kind: 'nopose'});
     }

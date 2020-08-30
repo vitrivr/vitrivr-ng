@@ -1,0 +1,38 @@
+<div>
+  <div
+    *ngIf="photoData !== null"
+    class="overlay-container">
+    <img
+      [src]="photoData" #img
+      (mousemove)="onMouseMove($event)"
+      (mouseleave)="hoverOut()"
+      (click)="onClick($event)">
+    <div class="overlay img-overlay">
+      <pose-svg
+        *ngFor="let pose of poses; index as poseIdx"
+        [nodeRadius]="2"
+        [nodeActiveRadius]="4"
+        [edgeWidth]="1"
+        [edgeActiveWidth]="2"
+        [width]="imageWidth"
+        [height]="imageHeight"
+        [mode]="activeIdx() === poseIdx ? body25Hands : null"
+        [poseKps]="pose.keypoints"
+        [unitScale]="unitScale"
+      ></pose-svg>
+    </div>
+  </div>
+  <ul class="pose-list">
+    <li
+      *ngFor="let pose of poses; index as poseIdx"
+      (mouseenter)="hoverIdxChange(poseIdx)"
+      (mouseleave)="hoverOut()"
+      (click)="chosenIdxChange(poseIdx)"
+    >
+      <label>
+        <input name="selectedPose" type="radio" [ngModel]="chosenIdx" [value]="poseIdx">
+        {{ pose.name }}
+      </label>
+    </li>
+  </ul>
+</div>

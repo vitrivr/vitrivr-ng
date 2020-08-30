@@ -4,7 +4,7 @@
       *ngIf="node.drawable"
       [attr.cx]="node.kp[0]"
       [attr.cy]="node.kp[1]"
-      [attr.r]="node.active ? nodeActiveRadius : nodeRadius"
+      [attr.r]="unitScale * (node.active ? nodeActiveRadius : nodeRadius)"
       [attr.fill]="node.active ? nodeActiveColor : nodeColor" />
   </ng-container>
   <ng-container *ngFor="let edge of edges">
@@ -14,7 +14,7 @@
       [attr.y1]="edge.start[1]"
       [attr.x2]="edge.end[0]"
       [attr.y2]="edge.end[1]"
-      [attr.stroke-width]="edge.active ? edgeActiveWidth : edgeWidth"
+      [attr.stroke-width]="unitScale * (edge.active ? edgeActiveWidth : edgeWidth)"
       [attr.stroke]="edge.active ? edgeActiveColor : edgeColor" />
   </ng-container>
 </svg>

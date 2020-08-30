@@ -27,6 +27,7 @@
     "@types/jszip": "^3.1.4",
     "@types/three": "0.93.x",
     "core-js": "^2.5.7",
+    "d3-quadtree": "^1.0.7",
     "deepmerge": "^3.2.0",
     "dexie": "^3.0.0-rc.1",
     "flatted": "2.0.0",

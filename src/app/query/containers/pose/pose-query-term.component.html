@@ -1,10 +1,10 @@
-<div #previewpose (click)="onViewerClicked()" class="previewpose" matTooltip="Click to change pose..." width="150">
+<div #previewpose (click)="onViewerClicked()" class="previewpose" matTooltip="Click to change pose...">
   <pose-svg
-    *ngIf="poseDialogData && poseDialogData.pose"
-    [poseData]="poseDialogData.pose"
+    *ngIf="displayPose !== null"
+    [poseKps]="displayPose.keypoints"
     [mode]="poseDialogData.mode"
-    [width]="poseDialogData.width"
-    [height]="poseDialogData.height"
+    [width]="displayPose.width"
+    [height]="displayPose.height"
     nodeColor="black"
     nodeActiveColor="red"
     nodeRadius="0"

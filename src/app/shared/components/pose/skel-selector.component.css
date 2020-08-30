@@ -1,11 +1,24 @@
-label {
-    text-align: center;
+.skel-selector {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    max-width: 100%;
 }
 
-label > input {
+.skel-selector > label {
+    max-width: 200px;
+    max-height: 320px;
+    min-width: 100px;
+    min-height: 100px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.skel-selector > label > input {
     display: none;
 }
 
-label.valid {
-    cursor: pointer;
+.orientation-selector, .semantic-search-selector, .invalid-modes {
+    margin: 0.5em 0;
 }

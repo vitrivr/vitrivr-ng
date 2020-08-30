@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild, AfterViewInit, Input, EventEmitter, Output} from '@angular/core';
 import {PoseService, PoseResult, Pose} from '../../../core/pose/pose.service';
-import {PoseKeypoints} from '../../model/pose/pose-keypoints.model';
 import {Config} from '../../model/config/config.model';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
@@ -14,24 +13,18 @@ export class WebcamCaptureComponent implements AfterViewInit {
   public delayRemaining = 0;
   public photoData: string = null;
   public hasPhoto = false;
-  public skelData: PoseKeypoints = null;
-  public hasSkelResult = false;
-  public hasSkel = false;
   public width: number;
   public height: number;
-  public discardSkels = 0;
   public noWebcam = true;
-  @Input('mode') public mode: string = null
-  @Output('skelChange') skelChange: EventEmitter<PoseKeypoints> = new EventEmitter();
 
   @ViewChild('video') video;
   @ViewChild('img') img;
+  @Input('hasSkel') hasSkel = false;
+  @Input('hasSkelResult') hasSkelResult = false;
+  @Output('discardPhotoSkel') discardPhotoSkel = new EventEmitter<null>();
+  @Output('gotPhoto') gotPhoto = new EventEmitter<string>();
 
-  constructor(private _poseService: PoseService, private _snackBar: MatSnackBar) {
-    this._poseService.observable.subscribe(
-      (msg) => this.onPoseResult(msg)
-    );
-  }
+  constructor(private _poseService: PoseService, private _snackBar: MatSnackBar) {}
 
   ngAfterViewInit() {
     // set the initial state of the video
@@ -90,7 +83,6 @@ export class WebcamCaptureComponent implements AfterViewInit {
     const context = canvas.getContext('2d');
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     this.setPhotoData(canvas.toDataURL('image/png'));
-    this.lookupSkel();
   }
 
   setDimsFromImg() {
@@ -109,47 +101,12 @@ export class WebcamCaptureComponent implements AfterViewInit {
       this.img.nativeElement.addEventListener('load', onImgLoad);
     }
     this.img.nativeElement.src = this.photoData;
-  }
-
-  private lookupSkel() {
-    const lookupDone = this._poseService.skelLookup(this.photoData);
-    if (!lookupDone) {
-      this._snackBar.open(
-        'Could not lookup skeleton for pose. Please try again in a moment.',
-        null,
-        {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'}
-      );
-      this.discardPhoto(true);
-    }
-  }
-
-  private setSkel(skel: PoseKeypoints) {
-    console.log('setSkel', skel);
-    this.skelData = skel;
-    this.hasSkel = true;
-    this.skelChange.emit(skel);
-  }
-
-  onPoseResult(poseResult: PoseResult) {
-    if (this.discardSkels > 0) {
-      this.discardSkels--;
-      return;
-    }
-    this.hasSkelResult = true;
-    if (poseResult.kind === 'pose') {
-      this.setSkel(poseResult.payload);
-    }
+    this.gotPhoto.emit(this.photoData);
   }
 
   discardPhoto(noDiscardSkel = false) {
-    if (!noDiscardSkel && this.hasPhoto && !this.hasSkelResult) {
-      this.discardSkels++;
-    }
     this.hasPhoto = false;
-    this.hasSkel = false;
-    this.hasSkelResult = false;
-    this.photoData = null;
-    this.skelData = null;
+    this.discardPhotoSkel.emit();
   }
 
   getImage() {
@@ -159,21 +116,7 @@ export class WebcamCaptureComponent implements AfterViewInit {
     return this.photoData;
   }
 
-  getPose() {
-    if (!this.hasSkel) {
-      return null;
-    }
-    return this.skelData;
-  }
-
-  public setImageSkel(data: string, skel?: PoseKeypoints) {
-    this.discardPhoto();
+  public setImage(data: string) {
     this.setPhotoData(data, true);
-    if (skel) {
-      this.hasSkelResult = true;
-      this.setSkel(skel);
-    } else {
-      this.lookupSkel();
-    }
   }
 }

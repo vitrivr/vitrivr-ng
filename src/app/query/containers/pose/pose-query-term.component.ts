@@ -3,6 +3,7 @@ import {MatDialog, MatSnackBar} from '@angular/material';
 import {PoseQueryTerm} from '../../../shared/model/queries/pose-query-term.model';
 import {PoseDialogData, PoseWebcamDialogComponent} from '../pose/pose-webcam-dialog.component';
 import {first} from 'rxjs/operators';
+import {DisplayPose} from '../../../shared/components/pose/display-pose';
 
 @Component({
   selector: 'qt-pose',
@@ -18,6 +19,8 @@ export class PoseQueryTermComponent implements OnInit {
   /** Component used to display a preview of the pose model . */
   @ViewChild('previewpose')
   public poseDialogData: PoseDialogData = {};
+
+  public displayPose: DisplayPose = null;
 
   constructor(private _dialog: MatDialog, private _snackBar: MatSnackBar) {
   }
@@ -40,8 +43,10 @@ export class PoseQueryTermComponent implements OnInit {
         return;
       }
       this.poseDialogData = result;
-      if (result.pose !== null && result.mode !== null) {
-        this.poseTerm.update(result.pose, result.mode.modeName);
+      if (result.poses !== null && result.poseIdx !== null && result.mode !== null) {
+        let pose = result.poses[result.poseIdx];
+        this.displayPose = new DisplayPose(pose.keypoints, 150, 5)
+        this.poseTerm.update(pose, result.mode.modeName, result.orientations, result.semantic);
       }
     });
   }

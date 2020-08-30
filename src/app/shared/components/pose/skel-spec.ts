@@ -19,8 +19,7 @@ export class SkelSpec {
   static modeNames(): string[] {
     const modes: string[] = [];
     for (const mode of Object.keys(skels)) {
-      // HAND is a TODO
-      if (mode.startsWith('__') || mode === 'HAND') {
+      if (mode.startsWith('__')) {
         continue;
       }
       modes.push(mode);
@@ -65,17 +64,13 @@ export class SkelSpec {
 
   public hasAll(pose: number[][]): boolean {
     if (pose === null) {
-      console.log('null pose');
       return false;
     }
     for (const kpIdx of this.nodes) {
-      console.log('checking', kpIdx);
       if (pose[kpIdx][2] <= 0) {
-        console.log('missing', kpIdx);
         return false;
       }
     }
-    console.log('hasAll');
     return true;
   }
 }

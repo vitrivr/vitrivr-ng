@@ -1,28 +1,76 @@
-<label
-  *ngFor="let mode of modes"
-  [ngStyle]="{'font-weight': curMode === mode ? '600' : '400'}"
-  [ngClass]="{'valid': validModes.has(mode)}"
-  (click)="cannotSelect(mode)"
->
-  <input
-    type="radio"
-    name="skelMode"
-    [(ngModel)]="curMode"
-    (ngModelChange)="onCurModeChange()"
-    [value]="mode" [attr.disabled]="validModes.has(mode) ? null : true"
-  >
-  <pose-svg
-    [poseData]="keypoints"
-    [mode]="mode"
-    [width]="width"
-    [height]="height"
-    nodeColor="black"
-    nodeActiveColor="red"
-    nodeRadius="0"
-    nodeActiveRadius="0"
-    edgeColor="black"
-    edgeActiveColor="red"
-    [edgeWidth]="curMode === mode ? 4 : 0.7"
-    [edgeActiveWidth]="curMode === mode ? 4 : 0.7"></pose-svg>
-  {{mode.modeName}}
-</label>
+<div class="skel-selector-all">
+  <div *ngIf="validModes.size === 0">
+    <h2>There are no valid modes for the current pose</h2>
+  </div>
+  <div *ngIf="validModes.size > 0" class="skel-selector">
+    <label
+      *ngFor="let mode of validModes"
+      [matTooltip]="mode.modeName"
+      [ngStyle]="{'font-weight': curMode === mode ? '600' : '400'}"
+      [ngClass]="{'valid': validModes.has(mode)}"
+    >
+      <input
+        type="radio"
+        name="skelMode"
+        [(ngModel)]="curMode"
+        (ngModelChange)="onCurModeChange()"
+        [value]="mode" [attr.disabled]="validModes.has(mode) ? null : true"
+      >
+      <pose-svg
+        [poseKps]="inputPose.keypoints"
+        [mode]="mode"
+        [width]="inputPose.width"
+        [height]="inputPose.height"
+        nodeColor="black"
+        nodeActiveColor="red"
+        nodeRadius="0"
+        nodeActiveRadius="0"
+        edgeColor="black"
+        edgeActiveColor="red"
+        [edgeWidth]="curMode === mode ? 4 : 0.7"
+        [edgeActiveWidth]="curMode === mode ? 4 : 0.7"></pose-svg>
+    </label>
+  </div>
+  <div class="orientation-selector">
+    Search will include the pose in
+    <mat-checkbox [(ngModel)]="normalOrientation"
+                  (ngModelChange)="onOrientationsChange()">
+      its original orientation
+    </mat-checkbox>
+    and
+    <mat-checkbox [(ngModel)]="mirrorOrientation"
+                  (ngModelChange)="onOrientationsChange()">
+      mirrored orientation
+    </mat-checkbox>
+  </div>
+  <div class="semantic-search-selector">
+    <label>
+      <mat-checkbox [(ngModel)]="semantic"
+                    [disabled]="!semanticValid()"
+                    (ngModelChange)="semanticChange.emit($event)">
+        Use semantic search (only available for hands)
+      </mat-checkbox>
+    </label>
+  </div>
+  <div *ngIf="invalidModes.size > 0" class="invalid-modes">
+    <a href="#" (click)="invalidShown = true">Reveal the modes not shown above due to missing keypoints</a>
+    <a *ngIf="invalidShown" href="#" (click)="invalidShown = false">Hide</a>
+    <div *ngIf="invalidShown" class="skel-selector">
+      <pose-svg
+        *ngFor="let mode of invalidModes"
+        [matTooltip]="mode.modeName"
+        [poseKps]="modelPose.keypoints"
+        [mode]="mode"
+        [width]="modelPose.width"
+        [height]="modelPose.height"
+        nodeColor="black"
+        nodeActiveColor="red"
+        nodeRadius="0"
+        nodeActiveRadius="0"
+        edgeColor="black"
+        edgeActiveColor="red"
+        [edgeWidth]="curMode === mode ? 4 : 0.7"
+        [edgeActiveWidth]="curMode === mode ? 4 : 0.7"></pose-svg>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,6 @@
     <div class="loading-msg" *ngIf="hasSkelResult && !hasSkel">
       <h3>No poses found in photo!</h3>
     </div>
-    <pose-svg *ngIf="hasSkel" [poseData]="skelData" [mode]="mode" [width]="width" [height]="height"></pose-svg>
   </div>
   <div *ngIf="hasPhoto" class="overlay flash"></div>
 </div>
