@@ -3,16 +3,17 @@
     "host" : "default"
   },
   "resources": {
-    "host_thumbnails" : "http://10.34.58.146/thumbnails/:o/:s.png",
+    "host_thumbnails" : "http://10.34.58.146/thumbnails/:o/:s.jpg",
     "host_objects": "http://10.34.58.146/objects/:n/:S.jpg"
   },
   "competition": {
-    "teamid": 8,
+    "teamid": 2,
     "toolid": 1,
-    "endpoint": "http://10.34.58.83:8080/lsc",
+    "endpoint": "http://10.34.58.45:9000",
     "log": false,
     "lsc": true,
-    "vbs": false
+    "vbs": false,
+    "dres": true
   },
   "mlt": {
     "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
