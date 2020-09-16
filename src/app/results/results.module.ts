@@ -6,13 +6,12 @@ import {BrowserModule} from '@angular/platform-browser';
 import {HistoryComponent} from './history.component';
 import {MaterialModule} from '../material.module';
 import {TemporalListModule} from './temporal/temporal-list.module';
-import {VgCoreModule} from 'videogular2/core';
+import {VgCoreModule} from '@videogular/ngx-videogular/core';
 
 @NgModule({
   imports: [GalleryModule, ListModule, TemporalListModule, BrowserModule, MaterialModule, VgCoreModule],
   declarations: [FeatureDetailsComponent, HistoryComponent],
   exports: [GalleryModule, ListModule, TemporalListModule],
-  entryComponents: [FeatureDetailsComponent, HistoryComponent]
 })
 export class ResultsModule {
 }

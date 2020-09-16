@@ -27,9 +27,8 @@ export class BoolTermComponent implements OnInit {
 
   /** Currently selected operator */
   currentOperator: BoolOperator;
-  // TODO Currently slider values are not stored anywhere
 
-  private _value: string;
+  private _value: any[] = [];
 
   get currentAttribute(): Observable<BoolAttribute> {
     return this.currentAttributeObservable;
@@ -42,6 +41,7 @@ export class BoolTermComponent implements OnInit {
   set attribute(value: BoolAttribute) {
     this.currentAttributeObservable.next(value);
     this.currentOperator = value.operators[0];
+    this._value = [];
     this.updateTerm();
   }
 
@@ -68,7 +68,7 @@ export class BoolTermComponent implements OnInit {
    * @return {string}
    */
   get inputValue(): string {
-    return this._value;
+    return this._value[0];
   }
 
   /**
@@ -77,8 +77,33 @@ export class BoolTermComponent implements OnInit {
    * @param {string} value
    */
   set inputValue(value: string) {
-    this._value = value;
-    this.updateTerm()
+    this._value = [value];
+    this.updateTerm();
+  }
+
+
+  private updateRangeValue() {
+    this._value = [this.minValue, this.maxValue]
+  }
+
+  get maxValue(): number {
+    return this.currentAttributeObservable.getValue().maxValue
+  }
+
+  set maxValue(value: number) {
+    this.currentAttributeObservable.getValue().maxValue = value;
+    this.updateRangeValue();
+    this.updateTerm();
+  }
+
+  get minValue(): number {
+    return this.currentAttributeObservable.getValue().minValue
+  }
+
+  set minValue(value: number) {
+    this.currentAttributeObservable.getValue().minValue = value;
+    this.updateRangeValue();
+    this.updateTerm();
   }
 
   /**
@@ -123,21 +148,37 @@ export class BoolTermComponent implements OnInit {
     } else {
       this.currentOperator = BoolAttribute.getDefaultOperatorsByValueType(this.attribute.valueType)[0];
     }
-    if (this.term.values) {
-      switch (this.attribute.valueType) {
-        case ValueType.OPTIONS:
-        case ValueType.DATE:
-        case ValueType.NUMERIC:
-        case ValueType.TEXT:
-          this.inputValue = this.term.values;
-          break;
-        case ValueType.RANGE:
-          //TODO
-          console.error('TODO not implemented yet');
-          this.inputValue = this.term.values;
-          break;
-      }
+    switch (this.attribute.valueType) {
+      case ValueType.OPTIONS:
+      case ValueType.DYNAMICOPTIONS:
+      case ValueType.DATE:
+      case ValueType.NUMERIC:
+      case ValueType.TEXT:
+        if (this.term.values && this.term.values != []) {
+          this.inputValue = this.term.values[0];
+        } else {
+          this.inputValue = '';
+        }
+        break;
+      case ValueType.RANGE:
+        if (this.term.values && this.term.values != []) {
+          const min = this.term.values[0];
+          const max = this.term.values[1];
+          this.minValue = min;
+          this.maxValue = max;
+        } else {
+          this.minValue = this.currentAttributeObservable.getValue().minValue;
+          this.maxValue = this.currentAttributeObservable.getValue().maxValue;
+        }
+        break;
     }
+    if (this.currentAttributeObservable.getValue().valueType == ValueType.RANGE) {
+      this.updateRangeValue();
+    }
+    this.updateTerm();
+  }
 
+  isOption(): boolean {
+    return this.attribute.valueType.valueOf() == 0 || this.attribute.valueType.valueOf() == 5;
   }
 }

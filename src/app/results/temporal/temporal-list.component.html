@@ -6,8 +6,8 @@
     <mat-spinner></mat-spinner>
   </p>
 
-  <div (scrolled)="incrementCount()" (scrolledUp)="decrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
-       [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="list"
+  <div (scrolled)="incrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
+       [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="list"
        infiniteScroll>
 
     <div

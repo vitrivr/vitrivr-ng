@@ -5,7 +5,7 @@ import {EMPTY, Observable} from 'rxjs';
 import {Tag} from '../../../shared/model/misc/tag.model';
 import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
-import {MatAutocompleteSelectedEvent} from '@angular/material';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({

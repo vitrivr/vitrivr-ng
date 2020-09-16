@@ -1,9 +1,9 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {EvaluationScenario} from '../shared/model/evaluation/evaluation-scenario';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'scenario-dialog',
   template: `        
         <h2 matDialogTitle>Scenario: {{scenario.name}} (ID: {{scenario.id}})</h2>

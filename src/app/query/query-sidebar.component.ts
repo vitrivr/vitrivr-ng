@@ -14,7 +14,7 @@ import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fu
 
 
 @Component({
-  moduleId: module.id,
+
   selector: 'app-query-sidebar',
   templateUrl: 'query-sidebar.component.html'
 })

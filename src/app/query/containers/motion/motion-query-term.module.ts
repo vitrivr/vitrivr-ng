@@ -10,7 +10,6 @@ import {SketchModule} from '../../../shared/components/sketch/sketch.module';
   imports: [MaterialModule, BrowserModule, FormsModule, SketchModule],
   declarations: [MotionQueryTermComponent, MotionSketchDialogComponent],
   exports: [MotionQueryTermComponent],
-  entryComponents: [MotionSketchDialogComponent]
 })
 export class MotionQueryTermModule {
 }

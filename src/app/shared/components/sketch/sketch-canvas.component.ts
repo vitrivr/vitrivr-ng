@@ -11,7 +11,7 @@ import {Point} from './model/point.model';
 export class SketchCanvas implements OnInit {
   @Input() width: number = 400;
   @Input() height: number = 400;
-  @ViewChild('sketch') private canvas: ElementRef;
+  @ViewChild('sketch', {static: true}) private canvas: ElementRef;
   private context: CanvasRenderingContext2D;
   private paint = false;
   private last: Point = null;

@@ -16,7 +16,6 @@ import {InfiniteScrollModule} from 'ngx-infinite-scroll';
   imports: [BrowserModule, FormsModule, ReactiveFormsModule, MaterialModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, InfiniteScrollModule],
   declarations: [EvaluationComponent, EvaluationSelectionComponent, EvaluationHistory, ScenarioDetailsComponent, ScenarioDetailsDialogComponent],
   exports: [EvaluationComponent, EvaluationSelectionComponent],
-  entryComponents: [ScenarioDetailsDialogComponent]
 })
 
 export class EvaluationModule {

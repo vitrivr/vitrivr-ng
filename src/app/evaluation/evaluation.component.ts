@@ -4,7 +4,8 @@ import {EvaluationEvent} from '../shared/model/evaluation/evaluation-event';
 import {EvaluationState} from '../shared/model/evaluation/evaluation-state';
 import {ResolverService} from '../core/basics/resolver.service';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
-import {MatDialog, MatDialogConfig, MatSnackBar} from '@angular/material';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {EvaluationTemplate} from '../shared/model/evaluation/evaluation-template';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {EvaluationSet} from '../shared/model/evaluation/evaluation-set';
@@ -24,7 +25,7 @@ import {FilterService} from '../core/queries/filter.service';
 type DisplayType = 'NONE' | 'SCENARIO' | 'GALLERY' | 'HISTORY';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'evaluation',
   templateUrl: 'evaluation.component.html',
   styleUrls: ['evaluation.component.css']

@@ -5,8 +5,8 @@
   <mat-spinner></mat-spinner>
 </p>
 
-<div (scrolled)="incrementCount()" (scrolledUp)="decrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
-     [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="gallery"
+<div (scrolled)="incrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
+     [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="gallery"
      infiniteScroll>
   <div (dragstart)="onTileDrag($event, mediaobject.representativeSegment, mediaobject)"
        (mouseenter)="focus = mediaobject"

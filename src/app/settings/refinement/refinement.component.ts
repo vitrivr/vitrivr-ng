@@ -1,5 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatCheckboxChange, MatSliderChange, MatSlideToggleChange} from '@angular/material';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {MatCheckboxChange} from '@angular/material/checkbox';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
+import {MatSliderChange} from '@angular/material/slider';
 import {QueryChange, QueryService} from '../../core/queries/query.service';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
 import {EMPTY, Observable} from 'rxjs';
@@ -20,10 +22,11 @@ import {SelectionService} from '../../core/selection/selection.service';
 import {Tag} from '../../core/selection/tag.model';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'app-refinement',
   templateUrl: './refinement.component.html',
-  styleUrls: ['./refinement.component.css']
+  styleUrls: ['./refinement.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 /**
  * Component that can be used to refine an already executed query. Refinement options currently include
@@ -39,15 +42,21 @@ export class RefinementComponent implements OnInit, OnDestroy {
   protected _queryServiceSubscription;
   private filtersEnabled: Map<string, boolean> = new Map<string, boolean>();
 
+  /** An observable for the current results. */
+  private _features: Observable<WeightedFeatureCategory[]> = EMPTY;
+
+  /** An observable for all possible metadatavalues */
+  private _metadata: Observable<Map<string, AbstractRefinementOption>>;
+
+  private _timer;
+
   constructor(private _queryService: QueryService,
               private _filterService: FilterService,
               private _eventBusService: EventBusService,
               private _configService: ConfigService,
-              private _selectionService: SelectionService) {
+              private _selectionService: SelectionService,
+              private _cdr: ChangeDetectorRef) {
   }
-
-  /** An observable for the current results. */
-  private _features: Observable<WeightedFeatureCategory[]> = EMPTY;
 
   /**
    * Getter for refinement array.
@@ -58,16 +67,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
     return this._features;
   }
 
-  /** An observable for all possible metadatavalues */
-  private _metadata: Observable<Map<string, AbstractRefinementOption>>;
-
   get metadata(): Observable<Map<string, AbstractRefinementOption>> {
     return this._metadata
   }
 
-  /**
-   *
-   */
   get filter(): FilterService {
     return this._filterService;
   }
@@ -98,7 +101,9 @@ export class RefinementComponent implements OnInit, OnDestroy {
   public onQueryStartEnd(msg: QueryChange) {
     if (msg === 'STARTED') {
       this._features = this._queryService.results.featuresAsObservable;
+      this._features.forEach(() => this._cdr.markForCheck());
       this._metadata = this._queryService.results.metadataAsObservable(this._configService);
+      this._metadata.forEach(() => this._cdr.markForCheck());
     } else if (msg === 'CLEAR') {
       this._features = EMPTY;
       this._metadata = EMPTY;
@@ -133,9 +138,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
   /**
    * Triggered whenever the type filter selection changes. Reports the change to the FilterService,
    * which will update the filter settings accordingly.
-   *
-   * @param type
-   * @param event
    */
   public onTypeFilterChanged(type: MediaType, event: MatCheckboxChange) {
     if (!this._queryService.results) {
@@ -225,10 +227,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
-  /**
-   *
-   * @param event
-   */
   public onThresholdValueChanges(event: MatSliderChange) {
     this._filterService.update();
     const context: Map<ContextKey, string> = new Map();
@@ -253,24 +251,50 @@ export class RefinementComponent implements OnInit, OnDestroy {
     return (value as CheckboxRefinementModel).options
   }
 
-  minSliderChange(key: string, min: number) {
+  minValue(key: string, min: number) {
     const prev = this._filterService.filterRangeMetadata.get(key);
     if (prev) {
       this._filterService.filterRangeMetadata.set(key, [min, prev[1]]);
     } else {
       this._filterService.filterRangeMetadata.set(key, [min, null]);
     }
-    this._filterService.update()
+    this.update();
   }
 
-  maxSliderChange(key: string, max: number) {
+
+  min(key: string): string {
+    if (this._filterService.filterRangeMetadata.get(key)) {
+      if (this._filterService.filterRangeMetadata.get(key)[0]) {
+        return this._filterService.filterRangeMetadata.get(key)[0].toString();
+      }
+    }
+    return '';
+  }
+
+  max(key: string): string {
+    if (this._filterService.filterRangeMetadata.get(key)) {
+      if (this._filterService.filterRangeMetadata.get(key)[1]) {
+        return this._filterService.filterRangeMetadata.get(key)[1].toString();
+      }
+    }
+    return '';
+  }
+
+  update() {
+    clearTimeout(this._timer);
+    this._timer = setTimeout(() => {
+      this._filterService.update();
+    }, 100);
+  }
+
+  maxValue(key: string, max: number) {
     const prev = this._filterService.filterRangeMetadata.get(key);
     if (prev) {
       this._filterService.filterRangeMetadata.set(key, [prev[0], max]);
     } else {
       this._filterService.filterRangeMetadata.set(key, [null, max]);
     }
-    this._filterService.update()
+    this.update();
   }
 
   onTagFilterChanged(tag: Tag, $event: MatCheckboxChange) {
@@ -281,4 +305,5 @@ export class RefinementComponent implements OnInit, OnDestroy {
     }
     this._filterService.update();
   }
+
 }

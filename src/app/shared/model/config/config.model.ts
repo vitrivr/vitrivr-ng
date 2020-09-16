@@ -17,7 +17,7 @@ export class Config {
   /** Default display duration for Snackbar messages. */
   public static SNACKBAR_DURATION = 2500;
 
-  private _config = {
+  _config = {
     api: {
       host: window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
       port: 4567, /* Port for the API. */
@@ -177,7 +177,7 @@ export class Config {
    * Full URL to HTTP/RESTful endpoint for Vitrivr NG.
    */
   get endpoint_http(): string {
-    const scheme = this._config.api.ws_secure ? 'https://' : 'http://';
+    const scheme = this._config.api.http_secure ? 'https://' : 'http://';
     if (this._config.api.host && this._config.api.port) {
       return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/';
     } else {

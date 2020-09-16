@@ -16,7 +16,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'mini-gallery',
   templateUrl: 'mini-gallery.component.html',
   styleUrls: ['mini-gallery.component.css'],
@@ -40,6 +40,10 @@ export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<Se
 
   /** Name of this MiniGalleryComponent. */
   protected name = 'segment_gallery';
+
+  public segmentTracking(index, item: SegmentScoreContainer) {
+    return item.segmentId
+  }
 
   scrollIncrement(): number {
     return 500;

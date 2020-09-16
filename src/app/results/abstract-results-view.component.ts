@@ -7,7 +7,7 @@ import {SelectionService} from '../core/selection/selection.service';
 import {Tag} from '../core/selection/tag.model';
 import {ColorUtil} from '../shared/util/color.util';
 import {EventBusService} from '../core/basics/event-bus.service';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {FeatureDetailsComponent} from './feature-details.component';
@@ -52,6 +52,9 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
 
   /** Indicator whether the progress bar should be visible. */
   private _loading = false;
+
+  /** Indicator whether or not we should scroll*/
+  private _updateScroll = false;
 
   get loading(): boolean {
     return this._loading;
@@ -119,7 +122,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     this.subscribe(this._queryService.results);
 
     /* Publish navigation event. */
-    const context = new Map<ContextKey,string>();
+    const context = new Map<ContextKey, string>();
     context.set('n:component', this.name);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.NAVIGATE, context)))
   }
@@ -234,24 +237,52 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * Increments the start value by the count value. Should be called by some kind of pagination control.
    */
   public incrementCount() {
-    this._count += this.scrollIncrement();
-    console.debug(`incrementing count to ${this._count}`);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
-    this._cdr.markForCheck();
+    if (this._updateScroll) {
+      console.debug(`ignoring increment() call because we will already be updating`);
+      return;
+    }
+    this._updateScroll = true;
+    setTimeout(() => {
+      if (!this._updateScroll) {
+        console.debug(`not scrolling down because another scheduled call has scrolled`);
+        return;
+      }
+      this._count += this.scrollIncrement();
+      console.debug(`incrementing count to ${this._count}`);
+      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
+      this._cdr.markForCheck();
+      setTimeout(() => {
+        this._updateScroll = false;
+      }, 250)
+    }, 10);
   }
 
   /**
    * Decrements the start value by the count value. Should be called by some kind of pagination control.
    */
   public decrementCount() {
-    if (this._count - this.scrollIncrement() >= this.scrollIncrement()) {
-      this._count -= this.scrollIncrement();
-    } else {
-      this._count = this.scrollIncrement();
+    if (this._updateScroll) {
+      console.debug(`ignoring decrement() call because we will already be updating`);
+      return;
     }
-    console.debug(`decrementing count to ${this._count}`);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
-    this._cdr.markForCheck();
+    this._updateScroll = true;
+    setTimeout(() => {
+      if (!this._updateScroll) {
+        console.debug(`not scrolling up because another scheduled call has scrolled`);
+        return;
+      }
+      if (this._count - this.scrollIncrement() >= this.scrollIncrement()) {
+        this._count -= this.scrollIncrement();
+      } else {
+        this._count = this.scrollIncrement();
+      }
+      console.debug(`decrementing count to ${this._count}`);
+      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
+      this._cdr.markForCheck();
+      setTimeout(() => {
+        this._updateScroll = false;
+      }, 250)
+    }, 10);
   }
 
   /**

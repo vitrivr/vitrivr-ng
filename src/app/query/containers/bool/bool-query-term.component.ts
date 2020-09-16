@@ -4,6 +4,8 @@ import {BoolAttribute, ValueType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {ConfigService} from '../../../core/basics/config.service';
 import {BoolTerm} from './individual/bool-term';
+import {DistinctElementLookupService} from '../../../core/lookup/distinct-element-lookup.service';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-qt-bool',
@@ -32,11 +34,36 @@ export class BoolQueryTermComponent implements OnInit {
     this.addBoolTermComponent();
   }
 
-  constructor(_configService: ConfigService, private _resolver: ComponentFactoryResolver) {
+  constructor(_configService: ConfigService, private _resolver: ComponentFactoryResolver, _distinctLookupService: DistinctElementLookupService) {
     _configService.subscribe(c => {
       const next = [];
-      c.get<[string, string, string][]>('query.boolean').forEach(v => {
-        next.push(new BoolAttribute(v[0], v[2], ValueType[v[1]]))
+      c._config.query.boolean.forEach(v => {
+        const type = <number><unknown>ValueType[v[1]];
+        const displayName = v[0];
+        const feature: string = v[2];
+        switch (type) {
+          case ValueType.DATE.valueOf():
+          case ValueType.NUMERIC.valueOf():
+          case ValueType.TEXT.valueOf():
+            next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]]));
+            break;
+          case ValueType.OPTIONS.valueOf():
+            next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, v.slice(3, v.length), null));
+            break;
+          case ValueType.RANGE.valueOf():
+            next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, null, [v[3], v[4]]));
+            break;
+          case ValueType.DYNAMICOPTIONS.valueOf():
+            const table: string = v[3];
+            const column: string = v[4];
+            _distinctLookupService.getDistinct(table, column).pipe(first()).forEach(el => {
+              next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, el, null));
+              this.possibleAttributes.next(next);
+            });
+            break;
+          default:
+            console.error(`no type ${type} found, ${ValueType.TEXT.valueOf()}`)
+        }
       });
       this.possibleAttributes.next(next);
     })

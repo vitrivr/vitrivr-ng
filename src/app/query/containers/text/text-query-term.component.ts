@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {TextQueryTerm} from '../../../shared/model/queries/text-query-term.model';
-import {MatCheckboxChange} from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import {ConfigService} from '../../../core/basics/config.service';
 
 @Component({

@@ -23,6 +23,7 @@ export enum ValueType {
   NUMERIC = 2,
   TEXT = 3,
   RANGE = 4,
+  DYNAMICOPTIONS = 5,
 }
 
 export class BoolAttribute {
@@ -30,12 +31,16 @@ export class BoolAttribute {
   public readonly displayName: string;
   public readonly operators: BoolOperator[];
   public readonly valueType: ValueType;
-  public readonly options: string[];
+  public readonly _options: string[];
   public readonly range: [number, number];
   public readonly sliderOptions: Options;
   public minValue: number;
   public maxValue: number;
   public readonly featureName: string;
+
+  public get options(): string[] {
+    return this._options;
+  }
 
   /**
    * @param displayName how the attribute should be displayed
@@ -55,13 +60,14 @@ export class BoolAttribute {
       this.operators = BoolAttribute.getDefaultOperatorsByValueType(valueType)
     }
     if (options) {
-      this.options = options;
+      this._options = options;
     }
     if (range) {
       this.range = range;
       this.sliderOptions = {
         floor: range[0],
         ceil: range[1],
+        animate: false,
       };
       this.minValue = this.sliderOptions.floor;
       this.maxValue = this.sliderOptions.ceil;
@@ -80,6 +86,7 @@ export class BoolAttribute {
         return [BoolOperator.NEQ, BoolOperator.EQ,
           BoolOperator.GEQ, BoolOperator.LEQ, BoolOperator.GREATER, BoolOperator.LESS];
       case ValueType.OPTIONS:
+      case ValueType.DYNAMICOPTIONS:
         return [BoolOperator.EQ, BoolOperator.NEQ];
       case ValueType.RANGE:
         return [BoolOperator.BETWEEN];

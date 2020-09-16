@@ -10,7 +10,6 @@ import {MaterialModule} from '../../../material.module';
   imports: [MaterialModule, BrowserModule, FormsModule, AudioRecorderModule],
   declarations: [AudioQueryTermComponent, AudioRecorderDialogComponent],
   exports: [AudioQueryTermComponent],
-  entryComponents: [AudioRecorderDialogComponent]
 })
 
 export class AudioQueryTermModule {

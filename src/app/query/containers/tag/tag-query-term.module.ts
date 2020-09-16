@@ -9,7 +9,6 @@ import {FlexLayoutModule} from '@angular/flex-layout';
   imports: [MaterialModule, FlexLayoutModule, BrowserModule, FormsModule, ReactiveFormsModule],
   declarations: [TagQueryTermComponent],
   exports: [TagQueryTermComponent],
-  entryComponents: []
 })
 export class TagQueryTermModule {
 }

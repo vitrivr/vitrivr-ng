@@ -12,7 +12,6 @@ import {BinarySketchDialogComponent} from './binary-sketch-dialog.component';
   imports: [MaterialModule, BrowserModule, FormsModule, M3DLoaderModule, SketchModule],
   declarations: [M3DQueryTermComponent, M3DLoaderDialogComponent, BinarySketchDialogComponent],
   exports: [M3DQueryTermComponent],
-  entryComponents: [M3DLoaderDialogComponent, BinarySketchDialogComponent]
 })
 
 export class M3DQueryTermModule {

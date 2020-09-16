@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatDialog, MatDialogConfig} from '@angular/material';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {ResolverService} from '../../../core/basics/resolver.service';
 import {HttpClient} from '@angular/common/http';
 import {first} from 'rxjs/operators';
@@ -15,7 +15,7 @@ import {SemanticMap} from '../../../shared/model/queries/semantic/semantic-map.m
 export class SemanticQueryTermComponent implements OnInit {
 
   /** Component used to display a preview of the selected AND/OR sketched image. */
-  @ViewChild('previewimg')
+  @ViewChild('previewimg', {static: true})
   private previewimg: any;
 
   /** The SemanticQueryTerm object associated with this SemanticQueryTermComponent. That object holds all the query-settings. */

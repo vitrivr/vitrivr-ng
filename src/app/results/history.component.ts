@@ -5,7 +5,7 @@ import {HistoryContainer} from '../shared/model/internal/history-container.model
 import {QueryService} from '../core/queries/query.service';
 
 @Component({
-  moduleId: module.id,
+
   selector: 'history',
   template: `
     <div [style.display]="'flex'">

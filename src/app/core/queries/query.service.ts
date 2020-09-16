@@ -113,13 +113,12 @@ export class QueryService {
    * @returns {boolean} true if query was issued, false otherwise.
    */
   public findSimilar(containers: QueryContainerInterface[]): boolean {
-    if (this._running > 0) {
-      console.warn('There is already a query running, not executing similarity query');
-      return false;
-    }
     if (!this._socket) {
       console.warn('No socket available, not executing similarity query');
       return false;
+    }
+    if (this._running > 0) {
+      console.warn('There is already a query running');
     }
     this._config.pipe(first()).subscribe(config => {
       TemporalFusionFunction.queryContainerCount = containers.length;
@@ -346,10 +345,6 @@ export class QueryService {
    * This method triggers an observable change in the QueryService class.
    */
   private finalizeQuery(queryId: string) {
-    if (this._interval_map.has(queryId)) {
-      window.clearInterval(this._interval_map.get(queryId));
-      this._interval_map.delete(queryId);
-    }
     // be sure that updates are checked one last time
     this._results.doUpdate();
     this._running -= 1;

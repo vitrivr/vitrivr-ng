@@ -6,7 +6,8 @@ import {MediaObject} from '../shared/model/media/media-object.model';
 import {ResolverService} from '../core/basics/resolver.service';
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {Location} from '@angular/common';
-import {MatDialog, MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
 import {MediaObjectDragContainer} from '../shared/model/internal/media-object-drag-container.model';
@@ -21,7 +22,6 @@ import {MetadataDetailsComponent} from './metadata-details.component';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
 
 @Component({
-  moduleId: module.id,
   selector: 'objectdetails',
   templateUrl: 'objectdetails.component.html',
   styleUrls: ['objectdetails.component.css']

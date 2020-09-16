@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {QueryTermInterface} from '../../shared/model/queries/interfaces/query-term.interface';
 import {ConfigService} from '../../core/basics/config.service';
 import {StageChangeEvent} from './stage-change-event.model';
@@ -6,7 +6,8 @@ import {StageChangeEvent} from './stage-change-event.model';
 @Component({
   selector: 'app-query-component',
   templateUrl: 'query-term.component.html',
-  styleUrls: []
+  styleUrls: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class QueryTermComponent {

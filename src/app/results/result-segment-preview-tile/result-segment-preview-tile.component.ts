@@ -1,7 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
-import {VgAPI} from 'videogular2/core';
 import {first} from 'rxjs/operators';
 import {KeyboardService} from '../../core/basics/keyboard.service';
 import {QueryService} from '../../core/queries/query.service';
@@ -15,6 +14,7 @@ import {InteractionEventType} from '../../shared/model/events/interaction-event-
 import {MatDialog} from '@angular/material/dialog';
 import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
 import {Observable} from 'rxjs';
+import {VgApiService} from '@videogular/ngx-videogular/core';
 
 /**
  * Dedicated component for the preview of a segment.
@@ -24,7 +24,8 @@ import {Observable} from 'rxjs';
 @Component({
   selector: 'app-result-segment-preview-tile',
   templateUrl: './result-segment-preview-tile.component.html',
-  styleUrls: ['./result-segment-preview-tile.component.css']
+  styleUrls: ['./result-segment-preview-tile.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResultSegmentPreviewTileComponent implements OnInit {
 
@@ -164,14 +165,14 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    * @param api
    * @param segment
    */
-  public onPlayerReady(api: VgAPI, segment: SegmentScoreContainer) {
+  public onPlayerReady(api: VgApiService, segment: SegmentScoreContainer) {
     api.getDefaultMedia().subscriptions.loadedData.pipe(first()).subscribe(() => this.seekToFocusPosition(api, segment));
   }
 
   /**
    * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
    */
-  public seekToFocusPosition(api: VgAPI, segment: SegmentScoreContainer) {
+  public seekToFocusPosition(api: VgApiService, segment: SegmentScoreContainer) {
     if (segment) {
       api.seekTime(segment.startabs);
     }

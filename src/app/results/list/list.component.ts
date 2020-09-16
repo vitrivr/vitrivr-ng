@@ -16,7 +16,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 
 @Component({
-  moduleId: module.id,
   selector: 'app-list',
   templateUrl: 'list.component.html',
   styleUrls: ['list.component.css'],
@@ -37,6 +36,7 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
               _vbs: VbsSubmissionService
   ) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog, _vbs);
+    this._count = this.scrollIncrement() * 5;
   }
 
   /** Name of this ListComponent. */
@@ -70,8 +70,12 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
     return item.objectId + '_' + item.numberOfSegments;
   }
 
+  public segmentTracking(index, item: SegmentScoreContainer) {
+    return item.segmentId
+  }
+
   scrollIncrement(): number {
-    return 50;
+    return 100;
   }
 
   /**
