@@ -1,0 +1,6 @@
+<h3 *ngIf="sqEnabled()">Stage {{index()}}:</h3>
+<mat-divider *ngIf="sqEnabled()" style="padding-bottom:10px"></mat-divider>
+<app-query-component *ngFor="let qt of queryStage.terms" [queryTerm]="qt" [firstStage]="qsList.indexOf(queryStage)==0"
+                     [lastStage]="isLastStage()"
+                     [lastInStage]="queryStage.terms.indexOf(qt)==queryStage.terms.length-1"
+                     (stageChange)="onStageChange($event, qt)"></app-query-component>

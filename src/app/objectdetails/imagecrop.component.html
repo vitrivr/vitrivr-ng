@@ -1,8 +1,0 @@
-<h1>Imagecrop</h1>
-
-<div>
-    <mat-progress-bar mode="query" [attr.color]="'accent'" *ngIf="!isLoaded"></mat-progress-bar>
-    <img-cropper #cropper [image]="data" [settings]="cropperSettings"></img-cropper><br>
-
-    <button mat-icon-button (click)="onSearchClicked()" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button>
-</div>

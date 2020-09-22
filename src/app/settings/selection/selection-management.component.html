@@ -1,20 +1,23 @@
 <h3>Highlighted items</h3>
 
 <div *ngIf="(selection | async).size == 0">
-    <p class="text-muted">No items highlighted!</p>
+  <p class="text-muted">No items highlighted!</p>
 </div>
 
 <div *ngIf="(selection | async).size > 0">
-    <mat-list>
-        <mat-list-item *ngFor="let current of (selection | async).entries()">
-            <button mat-flat-button (click)="onSegmentClicked(current[0])">{{current[0]}}</button>
-            <button mat-icon-button *ngFor="let tag of current[1].entries()" (click)="onTagButtonClicked(current[0],tag[0])">
-                <mat-icon [style.color]="tag[0].colorForRelevance(1.0)">album</mat-icon>
-            </button>
-        </mat-list-item>
+  <mat-list>
+    <mat-list-item fxLayout="row" fxLayoutAlign="center">
+      <button (click)="onClearSelectionClicked()" color="warn" mat-raised-button matTooltip="Remove all highlighting">
+        Clear
+      </button>
+    </mat-list-item>
 
-        <mat-list-item fxLayout="row" fxLayoutAlign="center">
-            <button mat-raised-button color="warn" (click)="onClearSelectionClicked()" matTooltip="Remove all highlighting">Clear</button>
-        </mat-list-item>
-    </mat-list>
+    <mat-list-item *ngFor="let current of (selection | async).entries()">
+      <button (click)="onSegmentClicked(current[0])" mat-flat-button>{{current[0]}}</button>
+      <button (click)="onTagButtonClicked(current[0],tag[0])" *ngFor="let tag of current[1].entries()" mat-icon-button>
+        <mat-icon [style.color]="tag[0].colorForRelevance(1.0)">album</mat-icon>
+      </button>
+    </mat-list-item>
+
+  </mat-list>
 </div>

@@ -1,3 +1,5 @@
+deploy.log
+
 src/app/**/*.js
 src/app/**/*.map
 

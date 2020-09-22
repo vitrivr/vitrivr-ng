@@ -1,6 +1,5 @@
 import {MediaType} from '../../media/media-type.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
-import {DefaultFusionFunction} from '../fusion/default-fusion-function.model';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
@@ -20,9 +19,17 @@ import 'rxjs-compat/add/operator/map';
 import 'rxjs-compat/add/operator/merge';
 import 'rxjs-compat/add/operator/concat';
 import 'rxjs-compat/add/operator/zip';
-import {FilterService} from '../../../../core/queries/filter.service';
 import 'rxjs-compat/add/operator/filter';
 import 'rxjs-compat/add/operator/combineLatest';
+import {AbstractRefinementOption} from '../../../../settings/refinement/refinementoption.model';
+import {ConfigService} from '../../../../core/basics/config.service';
+import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxrefinement.model';
+import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
+import {Config} from '../../config/config.model';
+import {FilterType} from '../../../../settings/refinement/filtertype.model';
+import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
+import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
+import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -36,9 +43,66 @@ export class ResultsContainer {
 
   /** Internal data structure that contains all SegmentScoreContainers. */
   private _results_segments: SegmentScoreContainer[] = [];
+  /** A subject that can be used to publish changes to the results. */
+  private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
+  /** A subject that can be used to publish changes to the results. */
+  private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
+
+  /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
+  private _rerank: number = 0;
+  /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
+  private _next: number = 0;
+
+  /**
+   * Constructor for ResultsContainer.
+   *
+   * @param {string} queryId Unique ID of the query. Used to filter messages!
+   * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
+   */
+  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
+  }
+
+  public checkUpdate() {
+    if (this._rerank > 0) {
+      // check upper limit to avoid call in avalanche of responses
+      if (this._rerank < 100) {
+        this.rerank();
+      } else { // mark unranked changes for next round
+        this._rerank = 1;
+      }
+    } else if (this._next > 0) { // else if as rerank already calls next
+      // check upper limit to avoid call in avalanche of responses
+      if (this._next < 100) {
+        this.next();
+      } else { // mark unpublished changes for next round
+        this._next = 1;
+      }
+    }
+  }
+
+  // force update if there are changes, e.g. on query end
+  public doUpdate() {
+    if (this._rerank > 0) {
+      this.rerank();
+    } else if (this._next > 0) { // else if as rerank already calls next
+      this.next();
+    }
+  }
 
   /** List of all the results that were returned and hence are known to the results container. */
   private _features: WeightedFeatureCategory[] = [];
+
+  /** A subject that can be used to publish changes to the results. */
+  private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
+
+  /**
+   * Getter for the list of results.
+   *
+   * @returns {WeightedFeatureCategory[]}
+   */
+  get features(): WeightedFeatureCategory[] {
+    return this._features;
+  }
 
   /**
    * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
@@ -49,23 +113,13 @@ export class ResultsContainer {
    */
   private _mediatypes: Map<MediaType, boolean> = new Map();
 
-  /** A subject that can be used to publish changes to the results. */
-  private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
-
-  /** A subject that can be used to publish changes to the results. */
-  private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
-
-  /** A subject that can be used to publish changes to the results. */
-  private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
-
   /**
-   * Constructor for ResultsContainer.
+   * Getter for the list of mediatypes.
    *
-   * @param {string} queryId Unique ID of the query. Used to filter messages!
-   * @param {FusionFunction} weightFunction Function that should be used to calculate the scores.
-   * @param _filterService used to check which metadata should be displayed
+   * @return {Map<MediaType, boolean>}
    */
-  constructor(public readonly queryId: string, private weightFunction: FusionFunction = new DefaultFusionFunction()) {
+  get mediatypes(): Map<MediaType, boolean> {
+    return this._mediatypes;
   }
 
   /**
@@ -82,81 +136,131 @@ export class ResultsContainer {
     return this._results_segments.length;
   }
 
+  get mediaobjectsAsObservable(): Observable<MediaObjectScoreContainer[]> {
+    return this._results_objects_subject.asObservable()
+  }
+
+  get segmentsAsObservable(): Observable<SegmentScoreContainer[]> {
+    return this._results_segments_subject.asObservable();
+  }
+
+  get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
+    return this._results_features_subject.asObservable();
+  }
+
   /**
-   *
-   * @param {string} objectId
-   * @return {boolean}
+   * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
+   * ResultsContainer#serialize().
    */
+  // tslint:disable-next-line:member-ordering
+  public static deserialize(data: any): ResultsContainer {
+    const container = new ResultsContainer(data['queryId']);
+    container.processObjectMessage(<ObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
+    container.processSegmentMessage(<SegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
+    container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
+      queryId: container.queryId,
+      content: <MediaObjectMetadata[]>data['objectMetadata']
+    });
+    container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{
+      queryId: container.queryId,
+      content: <MediaSegmentMetadata[]>data['segmentMetadata']
+    });
+    for (const similiarity of data['similarity']) {
+      if (similiarity.length > 0) {
+        container.processSimilarityMessage(<SimilarityQueryResult>{
+          queryId: container.queryId,
+          category: similiarity[0].category,
+          containerId: similiarity.containerId,
+          content: similiarity
+        });
+      }
+    }
+    return container;
+  }
+
+  // tslint:disable-next-line:member-ordering
+  private static fillMap(map: Map<string, AbstractRefinementOption>, resultList: any, config?: Config) {
+    if (config) {
+      config.get<[string, string][]>('refinement.filters').forEach(el => {
+        switch (el[1]) {
+          case 'CHECKBOX':
+            map.set(el[0], new CheckboxRefinementModel(new Set<string>()));
+            break;
+          case 'SLIDER':
+            map.set(el[0], new SliderRefinementModel(0, 0));
+            break;
+          default:
+            console.error('unknown filter type: ' + el[1]);
+            break;
+        }
+
+      });
+    }
+    resultList.forEach(res => {
+      res.metadata.forEach(((mdValue, mdKey) => {
+        if (!map.has(mdKey)) {
+          return
+        }
+        switch (map.get(mdKey).type) {
+          case FilterType.CHECKBOX:
+            (map.get(mdKey) as CheckboxRefinementModel).options.add(mdValue);
+            break;
+          case FilterType.SLIDER:
+            const slider = map.get(mdKey) as SliderRefinementModel;
+            const num = Number(mdValue);
+            if (!num && num !== 0) {
+              console.error(mdValue + ' is not a number so it cannot be used for category ' + mdKey)
+            }
+            if (num < slider.min) {
+              slider.min = num
+            }
+            if (num > slider.max) {
+              slider.max = num
+            }
+            break;
+          default:
+            console.error('unknown type: ' + map.get(mdKey).type)
+        }
+      }))
+    });
+    return map;
+  }
+
+  public setScoreFunction(scoreFunction: string) {
+    switch (scoreFunction.toUpperCase()) {
+      case 'TEMPORAL':
+        this.scoreFunction = TemporalFusionFunction.instance();
+        break;
+      case 'AVERAGE':
+        this.scoreFunction = new AverageFusionFunction();
+        break;
+      case 'MAXPOOL':
+        this.scoreFunction = new MaxpoolFusionFunction();
+        break;
+    }
+    this.rerank()
+  }
+
   public hasObject(objectId: string) {
     return this._objectid_to_object_map.has(objectId);
   }
 
-  /**
-   *
-   * @param {string} objectId
-   * @return {boolean}
-   */
   public getObject(objectId: string) {
     return this._objectid_to_object_map.get(objectId);
   }
 
   /**
-   * Getter for the list of results.
-   *
-   * @returns {WeightedFeatureCategory[]}
-   */
-  get features(): WeightedFeatureCategory[] {
-    return this._features;
-  }
-
-  /**
-   * Getter for the list of mediatypes.
-   *
-   * @return {Map<MediaType, boolean>}
-   */
-  get mediatypes(): Map<MediaType, boolean> {
-    return this._mediatypes;
-  }
-
-  /**
-   *
-   * @return {Subscription<MediaObjectScoreContainer[]>}
-   */
-  get mediaobjectsAsObservable(): Observable<MediaObjectScoreContainer[]> {
-    return this._results_objects_subject.asObservable()
-  }
-
-  /**
-   *
-   * @return {Subscription<MediaObjectScoreContainer[]>}
-   */
-  get segmentsAsObservable(): Observable<SegmentScoreContainer[]> {
-    return this._results_segments_subject.asObservable();
-  }
-
-  /**
-   * @param _filterService only get metadata which are even possible after applying the filters
+   * @param _configService used to determine filter type for metadata
    * @return a map of all metadata keys with all possible values
    */
-  public metadataAsObservable(_filterService: FilterService): Observable<Map<string, Set<string>>> {
-    return this.segmentsAsObservable.map(resultList => {
-      const map: Map<string, Set<string>> = new Map();
-      resultList.forEach(res => {
-        res.metadata.forEach(((mdValue, mdKey) => map.has(mdKey) ? map.get(mdKey).add(mdValue) : map.set(mdKey, new Set<string>().add(mdValue))))
-      });
-      return map;
-    }).combineLatest(this._results_objects_subject, function (map, objects) {
-      objects.forEach(res => {
-        res.metadata.forEach((mdValue, mdKey) => {
-          map.has(mdKey) ? map.get(mdKey).add(mdValue) : map.set(mdKey, new Set<string>().add(mdValue))
-        })
-      });
-      return map;
-    })
-  }
+  public metadataAsObservable(_configService: ConfigService): Observable<Map<string, AbstractRefinementOption>> {
 
-  get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
-    return this._results_features_subject.asObservable();
+    return this.segmentsAsObservable.combineLatest(_configService, function (resultList, config) {
+      const map: Map<string, AbstractRefinementOption> = new Map();
+      return ResultsContainer.fillMap(map, resultList, config)
+    }).combineLatest(this._results_objects_subject, function (map, objects) {
+      return ResultsContainer.fillMap(map, objects)
+    })
   }
 
   /**
@@ -178,23 +282,34 @@ export class ResultsContainer {
 
   /**
    * Re-ranks the objects and segments, i.e. calculates new scores, using the provided list of
-   * results and weight function. If none are provided, the default ones define in the ResultsContainer
+   * results and weightPercentage function. If none are provided, the default ones define in the ResultsContainer
    * are used.
    *
    * @param {WeightedFeatureCategory[]} features
    * @param {FusionFunction} weightFunction
    */
   public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
+    this._rerank = 0;
     if (!features) {
+      console.debug(`no features given for rerank(), using features inherent to the results container: ${this.features}`);
       features = this.features;
     }
     if (!weightFunction) {
-      weightFunction = this.weightFunction;
+      console.debug(`no weight function given for rerank(), using weight function inherent to the results container: ${this.scoreFunction.name()}`);
+      weightFunction = this.scoreFunction;
     }
+
     console.time(`Rerank (${this.queryId})`);
-    this._results_objects.forEach((value) => {
-      value.update(features, weightFunction);
+
+
+    this._results_objects.forEach((mediaObject) => {
+      mediaObject.update(features, weightFunction);
+      mediaObject.segments.forEach((segment) => {
+        segment.update(features, weightFunction);
+      });
     });
+
+
     /* Other methods calling rerank() depend on this next() call */
     this.next();
     console.timeEnd(`Rerank (${this.queryId})`);
@@ -222,7 +337,7 @@ export class ResultsContainer {
     }
 
     /* Re-rank on the UI side - this also invokes next(). */
-    this.rerank();
+    this._rerank += 1;
 
     /* Return true. */
     return true;
@@ -242,6 +357,7 @@ export class ResultsContainer {
       console.warn('query result id ' + seg.queryId + ' does not match query id ' + this.queryId);
       return false;
     }
+    console.time(`Processing Segment Message (${this.queryId})`);
     for (const segment of seg.content) {
       const mosc = this.uniqueMediaObjectScoreContainer(segment.objectId);
       const ssc = mosc.addMediaSegment(segment);
@@ -250,9 +366,10 @@ export class ResultsContainer {
         this._segmentid_to_segment_map.set(segment.segmentId, ssc);
       }
     }
+    console.timeEnd(`Processing Segment Message (${this.queryId})`);
 
     /* Re-rank on the UI side - this also invokes next(). */
-    this.rerank();
+    this._rerank += 1;
 
     /* Return true. */
     return true;
@@ -268,14 +385,18 @@ export class ResultsContainer {
       console.warn('segment metadata result id ' + met.queryId + ' does not match query id ' + this.queryId);
       return false;
     }
+
+    console.time(`Processing Segment Metadata Message (${this.queryId})`);
+
     for (const metadata of met.content) {
       const ssc = this._segmentid_to_segment_map.get(metadata.segmentId);
       if (ssc) {
-        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
+    console.timeEnd(`Processing Segment Metadata Message (${this.queryId})`);
 
-    this.next()
+    this._next += 1;
   }
 
   /**
@@ -288,14 +409,16 @@ export class ResultsContainer {
       console.warn('object metadata result id ' + met.queryId + ' does not match query id ' + this.queryId);
       return false;
     }
+    console.time(`Processing Object Metadata Message (${this.queryId})`);
     for (const metadata of met.content) {
-      const ssc = this._objectid_to_object_map.get(metadata.objectId);
-      if (ssc) {
-        ssc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+      const mosc = this._objectid_to_object_map.get(metadata.objectId);
+      if (mosc) {
+        mosc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
+    console.timeEnd(`Processing Object Metadata Message (${this.queryId})`);
 
-    this.next()
+    this._next += 1;
   }
 
   /**
@@ -307,7 +430,7 @@ export class ResultsContainer {
    */
   public processSimilarityMessage(sim: SimilarityQueryResult) {
     if (sim.queryId !== this.queryId) {
-      console.warn('similarity query result id ' + sim.queryId + ' does not match query id ' + this.queryId);
+      console.warn(`similarity result query id ${sim.queryId} does not match query id ${this.queryId}`);
       return false;
     }
 
@@ -317,15 +440,14 @@ export class ResultsContainer {
     /* Updates the Similarity lines and re-calculates the scores.  */
     for (const similarity of sim.content) {
       const segment = this._segmentid_to_segment_map.get(similarity.key);
-      if (segment != undefined) {
-        segment.addSimilarity(feature, similarity);
+      if (segment !== undefined) {
+        segment.addSimilarity(feature, similarity, sim.containerId);
       }
     }
 
-    /* Re-rank the results (calling this method also causes an invocation of next(). */
-    this.rerank();
 
-    /* Return true. */
+    /* Re-rank the results (calling this method also causes an invocation of next(). */
+    this._rerank += 1;
     return true;
   }
 
@@ -339,15 +461,66 @@ export class ResultsContainer {
   }
 
   /**
+   * Flattens arrays with any level of nesting.
+   *
+   * @param arr The nested arrays to flatten.
+   * @return {any[]} An one dimensional array consisting of all objects found in the input arrays.
+   */
+  public flatten(arr, result = []) {
+    for (let i = 0; i < arr.length; i++) {
+      const value = arr[i];
+      if (Array.isArray(value)) {
+        this.flatten(value, result);
+      } else {
+        result.push(value);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Serializes this ResultsContainer into a plain JavaScript object.
+   */
+  public serialize() {
+    const similarityList = [];
+    this._results_segments.forEach(seg => {
+      seg.scores.forEach((categoryMap, containerId) => {
+        categoryMap.forEach((score, category) => {
+          similarityList.push(<Similarity>{category: category.name, key: seg.segmentId, value: score, containerId: containerId})
+        })
+      });
+    });
+    return {
+      queryId: this.queryId,
+      objects: this._results_objects.map(obj => obj.serialize()),
+      segments: this._results_segments.map(seg => seg.serialize()),
+      objectMetadata: this.flatten(this._results_objects.map(obj => {
+        const metadata: MediaObjectMetadata[] = [];
+        obj.metadata.forEach((v, k) => {
+          metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
+        });
+        return metadata;
+      })),
+      segmentMetadata: this.flatten(this._results_segments.map(seg => {
+        const metadata: MediaSegmentMetadata[] = [];
+        seg.metadata.forEach((v, k) => {
+          metadata.push({segmentId: seg.segmentId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
+        });
+        return metadata;
+      })),
+      similarity: similarityList
+    };
+  }
+
+  /**
    * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
    */
   private next() {
-    console.debug('publishing next round of changes with ' + this._results_segments.length + ' segments and ' + this._results_objects.length + ' objects');
+    this._next = 0;
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
   }
-
 
   /**
    * Returns a unique MediaObjectScoreContainer instance for the provided objectId. That is, if a MediaObjectScoreContainer
@@ -395,64 +568,5 @@ export class ResultsContainer {
     const feature = new WeightedFeatureCategory(category, category, 100);
     this._features.push(feature);
     return feature;
-  }
-
-
-  /**
-   * Serializes this ResultsContainer into a plain JavaScript object.
-   */
-  public serialize() {
-    return {
-      queryId: this.queryId,
-      objects: this._results_objects.map(obj => obj.serialize()),
-      segments: this._results_segments.map(seg => seg.serialize()),
-      objectMetadata: this._results_objects.map(obj => {
-        const metadata: MediaObjectMetadata[] = [];
-        obj.metadata.forEach((k, v) => {
-          metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
-        });
-        return metadata;
-      }).reduce((x, y) => x.concat(y), []),
-      segmentMetadata: this._results_segments.map(seg => {
-        const metadata: MediaSegmentMetadata[] = [];
-        seg.metadata.forEach((k, v) => {
-          metadata.push({segmentId: seg.segmentId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
-        });
-        return metadata;
-      }).reduce((x, y) => x.concat(y), []),
-      similarity: this.features.map(f => {
-        return this._results_segments.filter(seg => seg.scores.has(f)).map(seg => {
-          return <Similarity>{category: f.name, key: seg.segmentId, value: seg.scores.get(f)};
-        });
-      })
-    };
-  }
-
-  /**
-   * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
-   * ResultsContainer#serialize().
-   */
-  public static deserialize(data: any): ResultsContainer {
-    const container = new ResultsContainer(data['queryId']);
-    container.processObjectMessage(<ObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
-    container.processSegmentMessage(<SegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
-    container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
-      queryId: container.queryId,
-      content: <MediaObjectMetadata[]>data['objectMetadata']
-    });
-    container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{
-      queryId: container.queryId,
-      content: <MediaSegmentMetadata[]>data['segmentMetadata']
-    });
-    for (const similiarity of data['similarity']) {
-      if (similiarity.length > 0) {
-        container.processSimilarityMessage(<SimilarityQueryResult>{
-          queryId: container.queryId,
-          category: similiarity[0].category,
-          content: similiarity
-        });
-      }
-    }
-    return container;
   }
 }

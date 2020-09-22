@@ -1,0 +1,32 @@
+<mat-toolbar color="primary">
+  <span (click)="onColorChange('#FFFFFF')" [style.background-color]="'#FFFFFF'" [style.border-color]="'red'"
+        [style.border-style]="color == '#FFFFFF' ? 'solid' : 'none'" [style.height]="'15px'"
+        [style.width]="'15px'"></span>
+
+  <span class="spacer-tiny"></span>
+
+  <span (click)="onColorChange('#000000')" [style.background-color]="'#000000'" [style.border-color]="'red'"
+        [style.border-style]="color == '#000000' ? 'solid' : 'none'" [style.height]="'15px'"
+        [style.width]="'15px'"></span>
+
+  <span class="spacer-tiny"></span>
+
+  <mat-icon>border_color</mat-icon>
+  <span class="spacer-tiny"></span>
+
+  <mat-slider (change)="onLineSizeChange()" [(ngModel)]="linesize" [style.min-width]="'100px'" max="100" min="1"
+              step="1" tickInterval="auto"></mat-slider>
+  <span class="spacer-flex"></span>
+
+  <button (click)="onClearCanvasClicked()" mat-icon-button matTooltip="Clear canvas">
+    <mat-icon>clear</mat-icon>
+  </button>
+
+  <button (click)="close()" mat-icon-button matTooltip="Save sketch">
+    <mat-icon>save</mat-icon>
+  </button>
+</mat-toolbar>
+
+<sketch-canvas #sketch [height]="300" [width]="300"></sketch-canvas>
+
+<input #imageloader hidden type="file">

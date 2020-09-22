@@ -1,12 +1,12 @@
-import 'hammerjs';
 
-import {NgModule}      from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-import {AppComponent}  from './app.component';
-import {ResearchModule} from './research/research.module';
+import {AppComponent} from './app.component';
+import {QuerySidebarModule} from './query/query-sidebar.module';
 import {PingComponent} from './toolbar/ping.component';
 import {CoreModule} from './core/core.module';
 import {SettingsModule} from './settings/settings.module';
@@ -17,24 +17,24 @@ import {MaterialModule} from './material.module';
 import {ResultsModule} from './results/results.module';
 
 
-
 @NgModule({
   imports: [
-      CoreModule,
-      BrowserModule,
-      MaterialModule,
-      BrowserAnimationsModule,
-      FormsModule,
-      AppRoutingModule,
-      ResultsModule,
-      EvaluationModule,
-      ObjectdetailsModule,
-      ResearchModule,
-      SettingsModule,
+    CoreModule,
+    BrowserModule,
+    MaterialModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    AppRoutingModule,
+    ResultsModule,
+    EvaluationModule,
+    ObjectdetailsModule,
+    SettingsModule,
+    QuerySidebarModule,
   ],
-  declarations: [ AppComponent, PingComponent ],
-  providers:    [ ],
-  bootstrap:    [ AppComponent ]
+  declarations: [AppComponent, PingComponent],
+  providers: [],
+  bootstrap: [AppComponent]
 })
 
-export class AppModule { }
+export class AppModule {
+}

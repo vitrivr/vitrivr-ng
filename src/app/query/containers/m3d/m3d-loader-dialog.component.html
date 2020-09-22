@@ -1,0 +1,19 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button>
+    <mat-icon>rotate_left</mat-icon>
+  </button>
+
+  <span class="spacer-flex"></span>
+
+  <button (click)="onLoadFilePressed()" mat-icon-button>
+    <mat-icon>file_upload</mat-icon>
+  </button>
+
+  <button (click)="onSavePressed()" mat-icon-button>
+    <mat-icon>save</mat-icon>
+  </button>
+</mat-toolbar>
+
+<m3d-loader #m3dloader [height]="300" [interaction]="true" [width]="300"></m3d-loader>
+
+<input #fileloader (change)="onFileAvailable($event)" hidden type="file">

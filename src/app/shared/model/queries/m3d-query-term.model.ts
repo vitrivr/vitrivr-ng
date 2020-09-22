@@ -1,9 +1,9 @@
-import {AbstractQueryTerm} from "./abstract-query-term.model";
+import {AbstractQueryTerm} from './abstract-query-term.model';
+
 export class M3DQueryTerm extends AbstractQueryTerm {
-    /**
-     * Default constructor.
-     */
-    constructor() {
-        super("MODEL3D", ['sphericalharmonicsdefault'])
-    }
+  sliderSetting: number;
+
+  constructor() {
+    super('MODEL3D', ['sphericalharmonicsdefault'])
+  }
 }

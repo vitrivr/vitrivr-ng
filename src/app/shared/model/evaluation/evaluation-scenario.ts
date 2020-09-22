@@ -1,94 +1,95 @@
-import {EvaluationMaterial} from "./evaluation-material";
+import {EvaluationMaterial} from './evaluation-material';
+
 export class EvaluationScenario {
 
 
-    /** Default K value to calculate p@K and number of items a user is supposed to rate. */
-    private _id : string;
+  /**
+   *
+   * @param id
+   * @param name
+   * @param description
+   * @param k
+   * @param illustrations
+   * @param material
+   */
+  constructor(id, name, description, k, illustrations, material) {
+    this._id = id;
+    this._name = name;
+    this._description = description;
+    this._k = k;
+    this._illustrations = illustrations;
+    this._material = material;
+  }
 
-    /** Name of the evaluation scenario. */
-    private _name : string;
+  /** Default K value to calculate p@K and number of items a user is supposed to rate. */
+  private _id: string;
 
-    /** Description of the evaluation scenario. Can be HTML! */
-    private _description : string;
+  /**
+   * Getter for description.
+   *
+   * @return {string}
+   */
+  get id(): string {
+    return this._id;
+  }
 
-    /** Default K value to calculate p@K and number of items a user is supposed to rate. */
-    private _k : number = 15;
+  /** Name of the evaluation scenario. */
+  private _name: string;
 
-    /** Array containing the material that can be used to fulfill the scenario. */
-    private _material: EvaluationMaterial[] = [];
+  /**
+   * Getter for description.
+   *
+   * @return {string}
+   */
+  get name(): string {
+    return this._name;
+  }
 
-    /** Array containing the material that can is used as illustration. */
-    private _illustrations: EvaluationMaterial[] = [];
+  /** Description of the evaluation scenario. Can be HTML! */
+  private _description: string;
 
-    /**
-     *
-     * @param id
-     * @param name
-     * @param description
-     * @param k
-     * @param illustrations
-     * @param material
-     */
-    constructor(id, name, description, k, illustrations, material) {
-        this._id = id;
-        this._name = name;
-        this._description = description;
-        this._k = k;
-        this._illustrations = illustrations;
-        this._material = material;
-    }
+  /**
+   * Getter for description.
+   *
+   * @return {string}
+   */
+  get description(): string {
+    return this._description;
+  }
 
-    /**
-     * Getter for description.
-     *
-     * @return {string}
-     */
-    get id(): string {
-        return this._id;
-    }
+  /** Default K value to calculate p@K and number of items a user is supposed to rate. */
+  private _k: number = 15;
 
-    /**
-     * Getter for K.
-     *
-     * @return {number}
-     */
-    get k(): number {
-        return this._k;
-    }
+  /**
+   * Getter for K.
+   *
+   * @return {number}
+   */
+  get k(): number {
+    return this._k;
+  }
 
-    /**
-     * Getter for description.
-     *
-     * @return {string}
-     */
-    get name(): string {
-        return this._name;
-    }
+  /** Array containing the material that can be used to fulfill the scenario. */
+  private _material: EvaluationMaterial[] = [];
 
-    /**
-     * Getter for description.
-     *
-     * @return {string}
-     */
-    get description(): string {
-        return this._description;
-    }
+  /**
+   * Getter for material.
+   *
+   * @return {EvaluationMaterial[]}
+   */
+  get material(): EvaluationMaterial[] {
+    return this._material;
+  }
 
-    /**
-     * Getter for illustrations
-     *
-     * @return {EvaluationMaterial[]}
-     */
-    get illustrations(): EvaluationMaterial[] {
-        return this._illustrations;
-    }
+  /** Array containing the material that can is used as illustration. */
+  private _illustrations: EvaluationMaterial[] = [];
 
-    /**
-     * Getter for material.
-     *
-     * @return {EvaluationMaterial[]}
-     */
-    get material(): EvaluationMaterial[] {
-        return this._material;
-    }
+  /**
+   * Getter for illustrations
+   *
+   * @return {EvaluationMaterial[]}
+   */
+  get illustrations(): EvaluationMaterial[] {
+    return this._illustrations;
+  }
 }

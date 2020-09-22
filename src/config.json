@@ -1,67 +1,55 @@
 {
   "api": {
-    "host" : "localhost",
-    "port" : 4567,
-    "protocol_http": "http",
-    "protocol_ws": "ws",
-    "ping_interval": 10000
+    "host" : "default"
   },
   "resources": {
-    "host_thumbnails" : "http://localhost/thumbnails/:o/:s:x",
-    "host_objects": "http://localhost/objects/:p",
-    "suffix_default":"jpg",
-    "suffix": {
-      "IMAGE": "png",
-      "VIDEO": "png"
-    }
+    "host_thumbnails" : "http://localhost/thumbnails/:o/:s.jpg",
+    "host_objects": "http://localhost/objects/:o.mp4"
   },
-  "vbs": {
+  "competition": {
     "teamid": 2,
-    "toolid": null,
-    "endpoint": "http://10.34.58.82:3100/lsc/submit",
-    "collabordinator": null
+    "toolid": 1,
+    "endpoint": "https://interactivevideoretrieval.com/",
+    "log": false,
+    "lsc": false,
+    "vbs": false,
+    "dres": false
   },
-  "evaluation": {
-    "active":false,
-    "templates": [
-      {
-        "name": "Test","url": "http://localhost:4200/evaluation.json"
-      }
-    ]
+  "mlt": {
+    "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
+    "IMAGE": ["scenecaption", "localfeatures", "objectInstances"]
   },
-  "mlt" : ["globalcolor", "localcolor", "edge"],
   "query": {
-    "history": 5,
+    "history": 0,
     "options": {
       "image": true,
       "audio": false,
       "model3d": false,
       "motion": false,
       "text": true,
-      "tag": false,
+      "tag": true,
       "semantic": true,
-      "boolean": true
-    },
-    "config": {
-      "hints": ["exact"],
-      "neighboringSegmentLookupCount": 5,
-      "neighboringSegmentLookupAllCount": 2000
+      "boolean": false
     },
     "text": {
       "categories": [
         ["ocr", "Text on Screen"],
-        ["tagsft", "Tags"]
+        ["asr", "Audio"],
+        ["scenecaption", "Description"]
       ]
     },
     "boolean": [
-      ["Location", "TEXT", "features_daily.location"],
-      ["Skin Temperature", "NUMERIC", "features_daily.skin_temp"],
-      ["Heart Rate", "NUMERIC", "features_daily.heart_rate"],
-      ["Calories", "NUMERIC", "features_daily.calories"],
-      ["GSR", "NUMERIC", "features_daily.gsr"],
-      ["Steps", "NUMERIC", "features_daily.steps"],
-      ["Annotation", "TEXT", "features_wsdmtiannotations.annotation"],
-      ["Object", "TEXT", "features_wsdmtiannotations.object"]
+      ["Example Freetext", "TEXT", "features_daily.text"],
+      ["Example Dropdown", "OPTIONS", "features.option", "ONE", "TWO", "THREE"],
+      ["Example Range", "RANGE", "features.range", 5, 20],
+      ["Example Dynamic Options", "DYNAMICOPTIONS", "features.option", "features", "option"]
+    ],
+    "staged": true
+  },
+  "refinement": {
+    "filters": [
+      ["dominantcolor.color", "CHECKBOX"],
+      ["technical.duration", "SLIDER"]
     ]
   }
 }

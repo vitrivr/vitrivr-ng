@@ -1,0 +1,5 @@
+<app-qt-bool-component *ngFor="let term of boolTerm.terms" [boolTerm]="boolTerm" [term] = "term"
+                       [possibleAttributes]="possibleAttributes"></app-qt-bool-component>
+<button (click)="addBoolTermComponent()" mat-icon-button matTooltip="Add boolean query term">
+    <mat-icon>add</mat-icon>
+</button>

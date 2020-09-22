@@ -7,36 +7,28 @@ import {FeatureCategories} from './feature-categories.model';
 
 export class WeightedFeatureCategory {
 
-    public displayColor: string;
-    public weight: number;
+  public displayColor: string;
+  /** From 0 to 1 */
+  public weightPercentage: number;
 
-    /**
-     * Constructor for FeatureCategory
-     *
-     * @param name Name of the category.
-     * @param readableName The human readable name of the category.
-     * @param defaultWeight The default weight for the category.
-     */
-    public constructor(readonly name: FeatureCategories, readonly readableName: string, readonly defaultWeight: number) {
-        this.displayColor = ColorUtil.randomColorHex();
-        this.weight = defaultWeight;
-    }
+  /**
+   * Constructor for FeatureCategory
+   *
+   * @param name Name of the category.
+   * @param readableName The human readable name of the category.
+   * @param defaultWeight The default weightPercentage for the category.
+   */
+  public constructor(readonly name: FeatureCategories, readonly readableName: string, readonly defaultWeight: number) {
+    this.displayColor = ColorUtil.randomColorHex();
+    this.weightPercentage = defaultWeight;
+  }
 
-    /**
-     * Calculates and returns the total weight of a list of FeatureCategory objects.
-     *
-     * @param features The list of results.
-     */
-    public static totalWeight(features: WeightedFeatureCategory[]): number {
-        return features.map(f => f.weight).reduce((a, b) => a + b);
-    }
-
-    /**
-     * Generates a string representation of the FeatureCategory object.
-     *
-     * @return {string}
-     */
-    toString(): string {
-        return this.name;
-    }
+  /**
+   * Generates a string representation of the FeatureCategory object.
+   *
+   * @return {string}
+   */
+  toString(): string {
+    return this.name + ':' + this.weightPercentage;
+  }
 }

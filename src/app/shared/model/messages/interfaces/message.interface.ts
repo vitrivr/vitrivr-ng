@@ -5,10 +5,11 @@
  * @see Cineast: org.vitrivr.cineast.core.data.messages package.
  */
 
-import {MessageType} from "../message-type.model";
+import {MessageType} from '../message-type.model';
+
 /**
  * Basic interfaces of every message.interface.ts, which can be identified by its messageType field.
  */
 export interface Message {
-    messageType : MessageType
+  messageType: MessageType
 }

@@ -1,9 +1,10 @@
-import {NgModule} from "@angular/core";
-import {SelectionService} from "./selection.service";
+import {NgModule} from '@angular/core';
+import {SelectionService} from './selection.service';
 
 @NgModule({
-    imports:      [ ],
-    declarations: [ ],
-    providers:    [ SelectionService ]
+  imports: [],
+  declarations: [],
+  providers: [SelectionService]
 })
-export class SelectionModule { }
+export class SelectionModule {
+}

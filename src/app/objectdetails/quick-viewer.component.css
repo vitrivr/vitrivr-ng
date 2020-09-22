@@ -1,11 +1,11 @@
 .title {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width:600px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 600px;
 }
 
 .content {
-    max-height:600px;
-    max-width:600px;
+  max-height: 600px;
+  max-width: 600px;
 }

@@ -1,50 +1,50 @@
 export class EvaluationMaterial {
-    /** Name of the evaluation scenario. */
-    private _name : string;
+  /**
+   *
+   * @param name
+   * @param description
+   * @param url
+   */
+  constructor(name: string, description: string, url: string) {
+    this._name = name;
+    this._description = description;
+    this._url = url;
+  }
 
-    /** Description of the evaluation scenario. Can be HTML! */
-    private _description : string;
+  /** Name of the evaluation scenario. */
+  private _name: string;
 
-    /** URL to material */
-    private _url : string;
+  /**
+   * Getter for name.
+   *
+   * @return {string}
+   */
+  get name(): string {
+    return this._name;
+  }
 
-    /**
-     *
-     * @param name
-     * @param description
-     * @param url
-     */
-    constructor(name: string, description: string, url: string) {
-        this._name = name;
-        this._description = description;
-        this._url = url;
-    }
+  /** Description of the evaluation scenario. Can be HTML! */
+  private _description: string;
 
-    /**
-     * Getter for name.
-     *
-     * @return {string}
-     */
-    get name(): string {
-        return this._name;
-    }
+  /**
+   * Getter for description.
+   *
+   * @return {string}
+   */
+  get description(): string {
+    return this._description;
+  }
 
-    /**
-     * Getter for description.
-     *
-     * @return {string}
-     */
-    get description(): string {
-        return this._description;
-    }
+  /** URL to material */
+  private _url: string;
 
-    /**
-     * Getter for URL.
-     *
-     * @return {string}
-     */
-    get url(): string {
-        return this._url;
-    }
+  /**
+   * Getter for URL.
+   *
+   * @return {string}
+   */
+  get url(): string {
+    return this._url;
+  }
 }
 

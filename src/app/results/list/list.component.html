@@ -1,42 +1,25 @@
 <div style="padding:10px;">
-    <p class="background-prompt" *ngIf="!(dataSource | async) && !loading">No results available. Please start a search...</p>
+    <p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
+        search...</p>
 
-    <p class="background-prompt" *ngIf="!(dataSource | async) && loading"><mat-spinner></mat-spinner></p>
+    <p *ngIf="!(dataSource | async) && loading" class="background-prompt">
+        <mat-spinner></mat-spinner>
+    </p>
 
-    <div class="list" infiniteScroll [infiniteScrollContainer]="'#scrollable'" [fromRoot]="true" [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" (scrolled)="incrementCount()" (scrolledUp)="decrementCount()">
-        <div *ngFor="let mediaobject of ((((dataSource | async) | OrderByScorePipe) | FilterPipe : (objectFilter|async)) | LimitPipe : count); trackBy: trackByFunction" class="object">
-            <div *ngFor="let segment of (mediaobject.segments | OrderBySegmentPipe | FilterPipe : (segmentFilter|async))" class="{{segment.marked ? 'segment marked' : 'segment'}}" draggable="true" (mouseenter)="focus = segment" (mouseleave)="focus = null" (dragstart)="onTileDrag($event, segment, mediaobject)" [style.background]="backgroundForSegment(segment)">
-
-                <img src="{{_resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}" draggable="false" (click)="onTileClicked($event, segment)"/>
-
-                <div *ngIf="inFocus(segment)" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
-                    <button *ngFor="let tag of selectionService.availableTags" mat-icon-button matTooltip="Toggle '{{tag.name}}' tag" (click)="onHighlightButtonClicked(segment,tag)" (contextmenu)="onHighlightButtonRightClicked($event, segment,tag)">
-                        <mat-icon [style.color]="selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">album</mat-icon>
-                    </button>
-                </div>
-
-                <div *ngIf="inFocus(segment)" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
-                    <button *ngIf="(showVbsSubmitButton(segment) | async)" mat-icon-button (click)="onSubmitButtonClicked(segment)" matTooltip="Submit segment to VBS">
-                        <mat-icon>send</mat-icon>
-                    </button>
-
-                    <button mat-icon-button (click)="onDetailsButtonClicked(segment)" matTooltip="Show details">
-                        <mat-icon>remove_red_eye</mat-icon>
-                    </button>
-
-                    <button mat-icon-button (click)="onInformationButtonClicked(segment)" matTooltip="Feature information">
-                        <mat-icon>help</mat-icon>
-                    </button>
-
-                    <button mat-icon-button (click)="onMltButtonClicked(segment)" matTooltip="More-like-this">
-                        <mat-icon>youtube_searched_for</mat-icon>
-                    </button>
-
-                    <button mat-icon-button (click)="onNeighborsButtonClicked(segment)" (contextmenu)="onNeighborsButtonRightClicked($event, segment)" matTooltip="Load neighboring segments">
-                        <mat-icon>settings_ethernet</mat-icon>
-                    </button>
-                </div>
+    <div (scrolled)="incrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
+         [alwaysCallback]="true"
+         [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="list"
+         infiniteScroll>
+        <ng-container
+                *ngIf="((((dataSource | async) | FilterPipe : (objectFilter|async)) | OrderByScorePipe) | LimitObjectsPipe : count) as pipeRes">
+            <div
+                    *ngFor="let mediaobject of pipeRes[0]; trackBy: trackByFunction; last as lastObject"
+                    class="object">
+                <app-result-segment-preview-tile
+                        *ngFor="let segment of (mediaobject.segments | FilterPipe : (segmentFilter|async) | OrderBySegmentPipe | LimitPipe: pipeRes[1]: lastObject); trackBy: segmentTracking"
+                        [container]="this"
+                        [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
             </div>
-        </div>
+        </ng-container>
     </div>
 </div>

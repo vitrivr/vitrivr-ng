@@ -1,59 +1,79 @@
-<div style="padding:10px;" *ngIf="(mediaobject|async)">
-    <div [style.display]="'inline-flex'">
-        <button mat-icon-button matTooltip="Go back..." (click)="onBackClick()"><mat-icon>keyboard_backspace</mat-icon></button>
-        <h2 [style.margin-top]="'5px'">&nbsp;Media object: {{(mediaobject|async).objectId}}</h2>
+<div *ngIf="(mediaobject|async)" style="padding:10px;">
+  <div [style.display]="'inline-flex'">
+    <button (click)="onBackClick()" mat-icon-button matTooltip="Go back...">
+      <mat-icon>keyboard_backspace</mat-icon>
+    </button>
+    <h2 [style.margin-top]="'5px'">&nbsp;Media object: {{(mediaobject|async).objectId}}</h2>
+  </div>
+
+  <div [style.display]="'flex'" [style.justify-content]="'flex-start'">
+    <div>
+      <div [style.max-height]="'400px'">
+        <video #videoplayer *ngIf="(mediaobject|async).mediatype == 'VIDEO'"
+               [style.width]="'400px'" controls src="{{_resolver.pathToObject((mediaobject|async))}}"></video>
+        <audio #audioplayer *ngIf="(mediaobject|async).mediatype == 'AUDIO'"
+               [style.width]="'400px'" controls src="{{_resolver.pathToObject((mediaobject|async))}}"
+               width="400"></audio>
+        <img #imageviewer *ngIf="(mediaobject|async).mediatype == 'IMAGE'" src="{{_resolver.pathToObject((mediaobject|async))}}"
+             style="max-height: 400px"/>
+        <m3d-loader #modelviewer *ngIf="(mediaobject|async).mediatype == 'MODEL3D'"
+                    [height]="200" [interaction]="true" [width]="200"
+                    src="{{_resolver.pathToObject((mediaobject|async))}}"></m3d-loader>
+      </div>
+
     </div>
 
-    <div [style.display]="'flex'" [style.justify-content]="'flex-start'">
-        <div>
-            <div [style.max-height]="'400px'">
-                <video #videoplayer *ngIf="(mediaobject|async).mediatype == 'VIDEO'" src="{{_resolver.pathToObject((mediaobject|async))}}" controls [style.width]="'400px'"></video>
-                <audio #audioplayer *ngIf="(mediaobject|async).mediatype == 'AUDIO'" src="{{_resolver.pathToObject((mediaobject|async))}}" controls [style.width]="'400px'" width="400"></audio>
-                <img style="max-height: 400px" #imageviewer *ngIf="(mediaobject|async).mediatype == 'IMAGE'" src="{{_resolver.pathToObject((mediaobject|async))}}"/>
-                <m3d-loader #modelviewer *ngIf="(mediaobject|async).mediatype == 'MODEL3D'" src="{{_resolver.pathToObject((mediaobject|async))}}" [width]="200" [height]="200" [interaction]="true"> </m3d-loader>
-            </div>
-
-        </div>
-
-        <div>
-            <dl>
-                <dt>ID</dt>
-                <dd>{{(mediaobject|async).objectId}}</dd>
-                <dt>Filename</dt>
-                <dd>{{(mediaobject|async).name}}</dd>
-                <dt>Path</dt>
-                <dd><a href="{{_resolver.pathToObject((mediaobject|async))}}" download>{{((mediaobject|async)).path}}</a></dd>
-                <dt>Mediatype</dt>
-                <dd>{{(mediaobject|async).mediatype}}</dd>
-            </dl>
-        </div>
+    <div>
+      <dl>
+        <dt>ID</dt>
+        <dd>{{(mediaobject|async).objectId}}</dd>
+        <dt>Filename</dt>
+        <dd>{{(mediaobject|async).name}}</dd>
+        <dt>Path</dt>
+        <dd><a download href="{{_resolver.pathToObject((mediaobject|async))}}">{{((mediaobject|async)).path}}</a></dd>
+        <dt>Mediatype</dt>
+        <dd>{{(mediaobject|async).mediatype}}</dd>
+      </dl>
     </div>
+  </div>
 
-    <mat-tab-group>
-        <mat-tab label="Segments ({{(mediaobject|async).segments.length}})">
-            <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="5px">
-                <div *ngFor="let segment of ((mediaobject|async).segments | OrderByScorePipe)" fxFlex="200px" class="tile" draggable="true" (dragstart)="onSegmentDrag($event, segment)">
-                    <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
-                        <p [style.margin]="'0'">{{segment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
-                        <p [style.margin]="'0'" *ngIf="segment.endabs > 0">{{segment.startabs.toFixed(2)}}-{{segment.endabs.toFixed(2)}}</p>
-                    </div>
+  <mat-tab-group>
+    <mat-tab label="Segments ({{(mediaobject|async).segments.length}})">
+      <div fxLayout="row" fxLayoutGap="5px" fxLayoutWrap="wrap">
+        <div (dragstart)="onSegmentDrag($event, segment)" *ngFor="let segment of ((mediaobject|async).segments | OrderByScorePipe)" class="tile"
+             draggable="true" fxFlex="200px">
+          <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
+            <p [style.margin]="'0'">{{segment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
+            <p *ngIf="segment.endabs > 0" [style.margin]="'0'">{{segment.startabs.toFixed(2)}}
+              -{{segment.endabs.toFixed(2)}}</p>
+          </div>
 
-                    <img class="tile-body" src="{{_resolver.pathToThumbnail(segment.objectScoreContainer,segment)}}" width="200px" height="200px">
+          <img class="tile-body" height="200px" src="{{_resolver.pathToThumbnail(segment.objectScoreContainer,segment)}}"
+               width="200px">
 
-                    <div class="tile-footer" fxLayout="row-reverse">
-                        <button mat-icon-button *ngIf="(mediaobject|async).mediatype == 'VIDEO' || (mediaobject|async).mediatype == 'AUDIO'" (click)="onPlayClick(segment)" matTooltip="Start playback"><mat-icon>play_arrow</mat-icon></button>
-                        <button mat-icon-button (click)="onMltClick(segment)" matTooltip="More-like-this"><mat-icon>youtube_searched_for</mat-icon></button>
-                    </div>
-                </div>
-            </div>
-        </mat-tab>
-        <mat-tab label="Metadata ({{(mediaobject|async).metadata.size}})">
-            <mat-list>
-                <mat-list-item *ngFor="let metadatum of (mediaobject|async).metadata | keyvalue">
-                    <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
-                    <p mat-line style="white-space: pre-wrap;" [innerHTML]="textWithLink(metadatum.value)"></p>
-                </mat-list-item>
-            </mat-list>
-        </mat-tab>
-    </mat-tab-group>
+          <div class="tile-footer" fxLayout="row-reverse">
+            <button (click)="onPlayClick(segment)"
+                    *ngIf="(mediaobject|async).mediatype == 'VIDEO' || (mediaobject|async).mediatype == 'AUDIO'"
+                    mat-icon-button matTooltip="Start playback">
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+            <button (click)="onMltClick(segment)" mat-icon-button matTooltip="More-like-this">
+              <mat-icon>youtube_searched_for</mat-icon>
+            </button>
+            <button (click)="onInformationButtonClicked(segment)" mat-icon-button matTooltip="Metadata">
+              <mat-icon>help</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Metadata ({{(mediaobject|async).metadata.size}})">
+      <mat-list>
+        <mat-list-item *ngFor="let metadatum of (mediaobject|async).metadata | keyvalue">
+          <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
+          <p [innerHTML]="textWithLink(metadatum.value)" mat-line style="white-space: pre-wrap;"></p>
+        </mat-list-item>
+      </mat-list>
+    </mat-tab>
+  </mat-tab-group>
 </div>

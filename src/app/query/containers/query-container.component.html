@@ -1,0 +1,108 @@
+<div class="mat-elevation-z8" draggable="true"
+     style="margin:10px;padding:10px;margin-bottom:15px;margin-top:15px; position:relative">
+
+    <!-- Button to remove the component -->
+    <button (click)="onRemoveButtonClicked()" mat-mini-fab color="warn" class="icon-button right-corner"
+            matTooltip="Remove query container">
+        <mat-icon inline=true style="font-size:1.5em;vertical-align: top">close</mat-icon>
+    </button>
+
+
+    <!-- move container up for temporal context -->
+    <div *ngIf="isNotFirst" class="temporal-modifiers">
+        <button (click)="moveQueryContainerUp()" class="icon-button" matTooltip="Temporally earlier...">
+            <mat-icon>access_time</mat-icon>
+            <mat-icon>keyboard_arrow_up</mat-icon>
+        </button>
+        <mat-divider></mat-divider>
+        <app-temporal-distance></app-temporal-distance>
+        <mat-divider></mat-divider>
+    </div>
+
+    <!-- all available query modes -->
+    <div>
+        <div fxLayout="row inline" fxLayoutGap="15px" fxLayoutAlign="space-around center" style="width:100%;padding-right:20px">
+            <button (click)="onToggleButtonClicked('IMAGE')" *ngIf="(config|async).get('query.options.image')"
+                    class="icon-button" matTooltip="Toggle image query term">
+                <mat-icon
+                        [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    panorama
+                </mat-icon>
+            </button>
+
+            <button (click)="onToggleButtonClicked('AUDIO')" *ngIf="(config|async).get('query.options.audio')"
+                    class="icon-button" matTooltip="Toggle audio query term">
+                <mat-icon
+                        [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    audiotrack
+                </mat-icon>
+            </button>
+
+            <button (click)="onToggleButtonClicked('MODEL3D')"
+                    *ngIf="(config|async).get('query.options.model3d')"
+                    class="icon-button" matTooltip="Toggle 3D query term">
+                <mat-icon
+                        [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    3d_rotation
+                </mat-icon>
+            </button>
+
+            <button (click)="onToggleButtonClicked('MOTION')" *ngIf="(config|async).get('query.options.motion')"
+                    class="icon-button" matTooltip="Toggle motion query term">
+                <mat-icon
+                        [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    directions_run
+                </mat-icon>
+            </button>
+
+            <button (click)="onToggleButtonClicked('TEXT')" *ngIf="(config|async).get('query.options.text')"
+                    class="icon-button" matTooltip="Toggle text query term">
+                <mat-icon
+                        [attr.class]="containerModel.hasTerm('TEXT') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    text_fields
+                </mat-icon>
+            </button>
+
+            <button (click)="onToggleButtonClicked('TAG')" *ngIf="(config|async).get('query.options.tag')"
+                    class="icon-button" matTooltip="Toggle tag query term">
+                <mat-icon
+                        [attr.class]="containerModel.hasTerm('TAG') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    label
+                </mat-icon>
+            </button>
+
+            <button (click)="onToggleButtonClicked('SEMANTIC')"
+                    *ngIf="(config|async).get('query.options.semantic')"
+                    class="icon-button" matTooltip="Toggle semantic sketch query term">
+                <mat-icon
+                        [attr.class]="containerModel.hasTerm('SEMANTIC') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    toys
+                </mat-icon>
+            </button>
+
+            <button (click)="onToggleButtonClicked('BOOLEAN')"
+                    *ngIf="(config|async).get('query.options.boolean')"
+                    class="icon-button" matTooltip="Toggle boolean query term">
+                <mat-icon
+                        [attr.class]="containerModel.hasTerm('BOOLEAN') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    code
+                </mat-icon>
+            </button>
+        </div>
+    </div>
+    <!-- Divider from header to content -->
+    <mat-divider></mat-divider>
+    <!-- actual query container content. -->
+    <div style="padding-top:10px;">
+        <app-query-stage *ngFor="let qs of containerModel.stages" [queryStage]="qs"
+                         [qsList]="containerModel.stages"></app-query-stage>
+    </div>
+    <!-- button to shift temporal context downward -->
+    <div style="display: inline-flex;justify-content: center;align-items: center;width:100%" *ngIf="isNotLast">
+        <mat-divider></mat-divider>
+        <button (click)="moveQueryContainerDown()" class="icon-button" matTooltip="Temporally later...">
+            <mat-icon>access_time</mat-icon>
+            <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+    </div>
+</div>

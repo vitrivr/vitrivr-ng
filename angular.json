@@ -11,6 +11,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -24,12 +25,17 @@
             ],
             "styles": [
               "src/vitrivr-theme.scss",
-              "node_modules/videogular2/fonts/videogular.css"
             ],
             "scripts": []
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -75,7 +81,6 @@
             "scripts": [],
             "styles": [
               "src/vitrivr-theme.css",
-              "node_modules/videogular2/fonts/videogular.css"
             ],
             "assets": [
               "src/assets",
@@ -125,7 +130,7 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "styleext": "css"
+      "style": "css"
     },
     "@schematics/angular:directive": {
       "prefix": "app"
