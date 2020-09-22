@@ -3,13 +3,12 @@
     "host" : "default"
   },
   "resources": {
-    "host_thumbnails" : "http://10.34.58.178/V3C1/V3C1jpg/:o/:s.jpg",
-    "host_objects": "http://10.34.58.178/V3C1/video/:o.mp4"
+    "host_thumbnails" : "http://localhost/thumbnails/:o/:s.jpg",
+    "host_objects": "http://localhost/objects/:o.mp4"
   },
   "competition": {
     "teamid": 2,
     "toolid": 1,
-    "sessionid": "yoursessionid",
     "endpoint": "https://interactivevideoretrieval.com/",
     "log": false,
     "lsc": false,
@@ -50,8 +49,7 @@
   "refinement": {
     "filters": [
       ["dominantcolor.color", "CHECKBOX"],
-      ["technical.duration", "SLIDER"],
-      ["LSCMETA.semantic_name", "CHECKBOX"]
+      ["technical.duration", "SLIDER"]
     ]
   }
 }
