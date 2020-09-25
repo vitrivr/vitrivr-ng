@@ -1,3 +1,19 @@
 .textinput {
   width: 90%;
 }
+
+.grey {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+  font-size: 5em;
+}
+
+.mat-button-toggle-group {
+  line-height: 15px !important;
+}
+
+.mat-button-toggle-label-content {
+  line-height: 15px !important;
+  padding: 0 3px !important;
+}
+

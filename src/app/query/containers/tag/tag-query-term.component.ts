@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
@@ -7,6 +7,34 @@ import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatIconRegistry} from '@angular/material/icon';
+import {DomSanitizer} from '@angular/platform-browser';
+enum Emoji {
+  Should = 'Should',
+  Could = 'Could',
+  Not = 'Not',
+}
+@Injectable({
+  providedIn: 'root'
+})
+export class IconService {
+
+  constructor(
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
+  ) { }
+
+  public registerIcons(): void {
+    this.loadIcons(Object.keys(Emoji), '../assets/svg/icons');
+  }
+
+  private loadIcons(iconKeys: string[], iconUrl: string): void {
+    iconKeys.forEach(key => {
+      this.matIconRegistry.addSvgIcon(key, this.domSanitizer.bypassSecurityTrustResourceUrl(`${iconUrl}/${key}.svg`));
+    });
+  }
+}
+
 
 @Component({
   selector: 'qt-tag',
@@ -108,6 +136,14 @@ export class TagQueryTermComponent implements OnInit {
 
   private getAllTagsWithEqualName(tag: Tag): Tag[] {
     return this._field.currentlyDisplayedTags.filter(t => t.name === tag.name);
+  }
+
+  /**
+   * Detects change of values in emoji toggle buttons
+   * @param {value} of the toggle button
+   *  */
+  private onValChange(value): void {
+    console.log(value)
   }
 }
 

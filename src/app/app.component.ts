@@ -9,6 +9,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import {HistoryComponent} from './results/history.component';
 import {DistinctElementLookupService} from './core/lookup/distinct-element-lookup.service';
 import {ValueType} from './query/containers/bool/bool-attribute';
+import {IconService} from './query/containers/tag/tag-query-term.component';
 
 @Component({
 
@@ -22,7 +23,8 @@ export class AppComponent implements OnInit {
     const config = this._configService.getValue();
     /* Initialize stuff which might take 1s+ on the Cineast-Side*/
     this.initLookup(config, this._distinctLookupService);
-    this._configService.subscribe(config => this.initLookup(config, this._distinctLookupService))
+    this._configService.subscribe(config => this.initLookup(config, this._distinctLookupService));
+    this.iconService.registerIcons();
   }
 
   /**
@@ -32,7 +34,7 @@ export class AppComponent implements OnInit {
    * @param _configService Reference to the singleton ConfigService.
    * @param _eventBusService Reference to the singleton EventBusService.
    */
-  constructor(_queryService: QueryService, private _configService: ConfigService, private _eventBusService: EventBusService, private _bottomSheet: MatBottomSheet, private _distinctLookupService: DistinctElementLookupService) {
+  constructor(_queryService: QueryService, private _configService: ConfigService, private _eventBusService: EventBusService, private _bottomSheet: MatBottomSheet, private _distinctLookupService: DistinctElementLookupService, private iconService: IconService) {
     this._loading = _queryService.observable.pipe(
       filter(msg => ['STARTED', 'ENDED', 'ERROR'].indexOf(msg) > -1),
       map((msg: QueryChange) => {

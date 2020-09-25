@@ -1,6 +1,7 @@
 <div [style.padding-left]="'10px'" [style.text-align]="'left'">
   <mat-form-field class="textinput">
-    <input [formControl]="field.formControl" [matAutocomplete]="auto" aria-label="Enter a tag" matInput
+    <input [formControl]="field.formControl" [matAutocomplete]="auto" aria-label="Enter a tag"
+           matInput
            placeholder="Enter a tag">
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
       <mat-option *ngFor="let tag of field.filteredTags | async" [value]="tag">
@@ -10,10 +11,25 @@
     </mat-autocomplete>
   </mat-form-field>
   <mat-chip-list>
-    <mat-chip (removed)="removeTag(tag)" *ngFor="let tag of tags" [removable]="true" [selectable]="true"
+    <mat-chip (removed)="removeTag(tag)" *ngFor="let tag of tags" [removable]="true"
+              [selectable]="true"
               id="{{tag.id}}">
       {{tag.name}}&nbsp;<small>({{tag.id}})</small>
-      <mat-icon matChipRemove>cancel</mat-icon>
+      <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
+      <mat-button-toggle-group #group="matButtonToggleGroup">
+        <mat-button-toggle (change)="onValChange($event.value)" value="should"
+                           matTooltip="Tag should be included">
+          <mat-icon svgIcon="Should"></mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle (change)="onValChange($event.value)" value="not"
+                           matTooltip="Tag should NOT be included">
+          <mat-icon svgIcon="Not"></mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle (change)="onValChange($event.value)" value="could"
+                           matTooltip="Tag could be included">
+          <mat-icon svgIcon="Could"></mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
     </mat-chip>
   </mat-chip-list>
 </div>
