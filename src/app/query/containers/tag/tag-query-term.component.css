@@ -2,18 +2,29 @@
   width: 90%;
 }
 
-.grey {
+/*.grey {
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
   font-size: 5em;
 }
 
 .mat-button-toggle-group {
-  line-height: 15px !important;
+  line-height: 15px;
+  height: 20px;
+  flex-wrap: nowrap;
+
 }
 
-.mat-button-toggle-label-content {
-  line-height: 15px !important;
-  padding: 0 3px !important;
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 15px;
+  padding: 0 3px;
+  text-align: center;
+  font-size: 18px;
 }
+
+mat-chip-list{
+  width: 236px;
+}*/
+
+
 

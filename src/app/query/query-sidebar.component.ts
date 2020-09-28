@@ -11,6 +11,7 @@ import {bufferCount, flatMap, map} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
 import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fusion-function.model';
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 
 @Component({
@@ -45,6 +46,8 @@ export class QuerySidebarComponent implements OnInit {
   /**
    * Triggers the similarity onSearchClicked by packing all configured QueryContainers into a single
    * SimilarityQuery message, and submitting that message to the QueryService.
+   *
+   * FYI: context is only part of logging for VBS, not part of message sent to cineast
    */
   public onSearchClicked() {
     if (this.queryContainers && this.queryContainers.length >= 2) {
@@ -142,4 +145,5 @@ export class QuerySidebarComponent implements OnInit {
     }
     return null;
   }
+
 }

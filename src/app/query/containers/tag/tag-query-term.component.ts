@@ -10,7 +10,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 enum Emoji {
-  Should = 'Should',
+  Must = 'Must',
   Could = 'Could',
   Not = 'Not',
 }
@@ -142,7 +142,7 @@ export class TagQueryTermComponent implements OnInit {
    * Detects change of values in emoji toggle buttons
    * @param {value} of the toggle button
    *  */
-  private onValChange(value): void {
+  private onPreferenceChange(value): void {
     console.log(value)
   }
 }
@@ -193,4 +193,7 @@ export class FieldGroup {
   set selection(value: Tag) {
     this._selection = value;
   }
+
+
+
 }

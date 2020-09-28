@@ -11,25 +11,65 @@
     </mat-autocomplete>
   </mat-form-field>
   <mat-chip-list>
-    <mat-chip (removed)="removeTag(tag)" *ngFor="let tag of tags" [removable]="true"
+    <mat-chip class="dropdown" (removed)="removeTag(tag)" *ngFor="let tag of tags"
+              [removable]="true"
               [selectable]="true"
               id="{{tag.id}}">
       {{tag.name}}&nbsp;<small>({{tag.id}})</small>
       <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
-      <mat-button-toggle-group #group="matButtonToggleGroup">
-        <mat-button-toggle (change)="onValChange($event.value)" value="should"
-                           matTooltip="Tag should be included">
-          <mat-icon svgIcon="Should"></mat-icon>
+      <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
+              (mouseover)="menuTrigger.openMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" [overlapTrigger]="false">
+    <span (mouseleave)="menuTrigger.closeMenu()">
+      <mat-button-toggle-group>
+      <mat-button-toggle (change)="onPreferenceChange($event.value)" value="must">
+        <span>💚</span>
+      </mat-button-toggle>
+      <mat-button-toggle (change)="onPreferenceChange($event.value)" value="could">
+        <span>👍</span>
+      </mat-button-toggle>
+      <mat-button-toggle (change)="onPreferenceChange($event.value)" value="not">
+        <span>⛔</span>
         </mat-button-toggle>
-        <mat-button-toggle (change)="onValChange($event.value)" value="not"
-                           matTooltip="Tag should NOT be included">
-          <mat-icon svgIcon="Not"></mat-icon>
-        </mat-button-toggle>
-        <mat-button-toggle (change)="onValChange($event.value)" value="could"
-                           matTooltip="Tag could be included">
-          <mat-icon svgIcon="Could"></mat-icon>
-        </mat-button-toggle>
-      </mat-button-toggle-group>
+        </mat-button-toggle-group>
+    </span>
+      </mat-menu>
     </mat-chip>
+
+
+    <!--      <div class="dropdown-content">
+            <mat-button-toggle href="#" (change)="onPreferenceChange($event.value)" value="must">💚</mat-button-toggle>
+            <mat-button-toggle href="#" (change)="onPreferenceChange($event.value)" value="could">👍</mat-button-toggle>
+            <mat-button-toggle href="#" (change)="onPreferenceChange($event.value)" value="not">⛔</mat-button-toggle>
+          </div>-->
+
+
+    <!--<mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>&lt;!&ndash;💚👍⛔&ndash;&gt;
+    <mat-button-toggle-group>
+      <mat-button-toggle (change)="onPreferenceChange($event.value)" value="must"
+                matTooltip="Tag must be included">💚
+      </mat-button-toggle>
+      <mat-button-toggle (change)="onPreferenceChange($event.value)" value="could"
+                matTooltip="Tag could be included">👍
+      </mat-button-toggle>
+      <mat-button-toggle (change)="onPreferenceChange($event.value)" value="not"
+                matTooltip="Tag should NOT be included">⛔
+      </mat-button-toggle>
+    </mat-button-toggle-group>-->
+
+    <!--  <mat-button-toggle (change)="onValChange($event.value)" value="must"
+                               matTooltip="Tag must be included">
+              <mat-icon svgIcon="Must"></mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (change)="onValChange($event.value)" value="not"
+                               matTooltip="Tag should NOT be included">
+              <mat-icon svgIcon="Not"></mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (change)="onValChange($event.value)" value="could"></mat-button-toggle>
+
+            <mat-icon class="grey">👍</mat-icon>-->
+
   </mat-chip-list>
 </div>
