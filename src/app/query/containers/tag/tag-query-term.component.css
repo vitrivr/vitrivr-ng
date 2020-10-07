@@ -2,29 +2,18 @@
   width: 90%;
 }
 
-/*.grey {
-  -webkit-filter: grayscale(100%);
-  filter: grayscale(100%);
-  font-size: 5em;
+.showPreferences {
+   display: none;
+ }
+
+.mat-chip-item:hover .showPreferences {
+  display: block;
 }
 
-.mat-button-toggle-group {
-  line-height: 15px;
-  height: 20px;
-  flex-wrap: nowrap;
 
+.container {
+  display: flex; /* or inline-flex */
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
-
-.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
-  line-height: 15px;
-  padding: 0 3px;
-  text-align: center;
-  font-size: 18px;
-}
-
-mat-chip-list{
-  width: 236px;
-}*/
-
-
-

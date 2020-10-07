@@ -5,15 +5,17 @@ import {EMPTY, Observable} from 'rxjs';
 import {Tag} from '../../../shared/model/misc/tag.model';
 import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
+
 enum Emoji {
   Must = 'Must',
   Could = 'Could',
   Not = 'Not',
 }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,7 +24,8 @@ export class IconService {
   constructor(
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer
-  ) { }
+  ) {
+  }
 
   public registerIcons(): void {
     this.loadIcons(Object.keys(Emoji), '../assets/svg/icons');
@@ -51,9 +54,13 @@ export class TagQueryTermComponent implements OnInit {
   private _field: FieldGroup;
   /** List of tag fields currently displayed. */
   private _tags: Tag[] = [];
+  /** Map of tags and their preference*/
+  private _preferenceMap: Map<string, string>;
+
 
   constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
     this._field = new FieldGroup(_tagService);
+    this._preferenceMap = new Map<string, string>();
   }
 
   ngOnInit(): void {
@@ -68,6 +75,10 @@ export class TagQueryTermComponent implements OnInit {
 
   get field() {
     return this._field;
+  }
+
+  get preferences() {
+    return this._preferenceMap;
   }
 
   /**
@@ -106,6 +117,7 @@ export class TagQueryTermComponent implements OnInit {
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
     })));
+    this.sortTagsByPreference();
   }
 
   /**
@@ -127,6 +139,8 @@ export class TagQueryTermComponent implements OnInit {
     const index = this._tags.indexOf(tag);
     if (index > -1) {
       this._tags.splice(index, 1);
+      // delete tag from _preference map
+      this._preferenceMap.delete(tag.id);
     }
     this.tagTerm.tags = this._tags;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
@@ -139,11 +153,34 @@ export class TagQueryTermComponent implements OnInit {
   }
 
   /**
-   * Detects change of values in emoji toggle buttons
-   * @param {value} of the toggle button
+   * Stores values for preference set for a tag in a Map<String, String>
+   * @param {value} of the toggle button: either 'must', 'could' or 'not'
    *  */
-  private onPreferenceChange(value): void {
-    console.log(value)
+  private onPreferenceChange(preference, tag): void {
+    // console.log('adding to map: ', preference, id);
+    tag.preference = preference;
+    this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
+      return v;
+    })));
+    this.sortTagsByPreference();
+  }
+
+  private getPreference(tag): string {
+    // console.log('getPreference: ', tag.preference);
+    return tag.preference;
+  }
+
+  private ifPreferenceExists(tag): boolean {
+    // console.log('ifPreferenceExists: ', tag.preference != null);
+    return tag.preference != null;
+  }
+
+
+  private sortTagsByPreference(): void {
+    const sort = this._tags.sort(function (a, b) {
+      return a.preference > b.preference ? 1 : a.preference < b.preference ? -1 : 0
+    })
+    // console.log('sorted tags: ', this._tags);
   }
 }
 
@@ -193,7 +230,6 @@ export class FieldGroup {
   set selection(value: Tag) {
     this._selection = value;
   }
-
 
 
 }
