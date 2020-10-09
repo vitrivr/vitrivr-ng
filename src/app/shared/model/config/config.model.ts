@@ -23,7 +23,8 @@ export class Config {
       port: 4567, /* Port for the API. */
       http_secure: false, /* Whether or not TLS should be used for HTTP connection. */
       ws_secure: false, /* Whether or not TLS should be used for WebSocket connection. */
-      ping_interval: 10000 /* Default ping interval in milliseconds. */
+      ping_interval: 10000, /* Default ping interval in milliseconds. */
+      prefix: '/' /* Prefix in case Cineast has been proxied under a particular path */
     },
     resources: {
       host_thumbnails: window.location.protocol + '//' + window.location.hostname + '/vitrivr/thumbnails',
@@ -167,7 +168,7 @@ export class Config {
   get endpoint_ws(): string {
     const scheme = this._config.api.ws_secure ? 'wss://' : 'ws://';
     if (this._config.api.host && this._config.api.port) {
-      return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/websocket';
+      return scheme + this._config.api.host + ':' + this._config.api.port + this._config.api.prefix + Config.CONTEXT + '/' + Config.VERSION + '/websocket';
     } else {
       return null;
     }
@@ -179,7 +180,7 @@ export class Config {
   get endpoint_http(): string {
     const scheme = this._config.api.ws_secure ? 'https://' : 'http://';
     if (this._config.api.host && this._config.api.port) {
-      return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/';
+      return scheme + this._config.api.host + ':' + this._config.api.port + this._config.api.prefix + Config.CONTEXT + '/' + Config.VERSION + '/';
     } else {
       return null;
     }
