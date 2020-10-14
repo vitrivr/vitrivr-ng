@@ -1,0 +1,16 @@
+<h3>Information on result set</h3>
+
+<mat-list dense>
+
+  <h2 mat-subheader>Top 10 related tags</h2>
+
+  <mat-list-item *ngFor="let tag of _tagOccurrenceArray">
+    <p matLine>{{tag.name}}</p>
+
+  </mat-list-item>
+
+  <h2 mat-subheader>Top 10 words in captions</h2>
+
+
+</mat-list>
+

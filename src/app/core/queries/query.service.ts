@@ -6,7 +6,6 @@ import {QueryStart} from '../../shared/model/messages/interfaces/responses/query
 import {SegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
 import {SimilarityQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-similarty.interface';
 import {ObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
-import {SimilarityQuery} from '../../shared/model/messages/queries/similarity-query.model';
 import {MoreLikeThisQuery} from '../../shared/model/messages/queries/more-like-this-query.model';
 import {QueryError} from '../../shared/model/messages/interfaces/responses/query-error.interface';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
@@ -28,6 +27,9 @@ import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-s
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
+import {QueryResultTopTags} from '../../shared/model/messages/interfaces/responses/query-result-top-tags';
+import {ResultSetInfoService} from './result-set-info.service';
+import {TagOcurrenceModel} from '../../shared/model/misc/tagOcurrence.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -59,13 +61,19 @@ export class QueryService {
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
 
+  tagArray: TagOcurrenceModel[];
+  message: string;
+
+
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
-              @Inject(ConfigService) private _config: ConfigService) {
+              @Inject(ConfigService) private _config: ConfigService,
+              @Inject(ResultSetInfoService) private resultSetInfoService
+  ) {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
       this._socket.pipe(
-        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
+        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_METADATA_S', 'QR_METADATA_O', 'QR_TOPTAGS'].indexOf(msg.messageType) > -1)
       ).subscribe((msg: Message) => this.onApiMessage(msg));
     });
     this._config.subscribe(config => {
@@ -73,7 +81,8 @@ export class QueryService {
       if (this._results) {
         this._results.setScoreFunction(this._scoreFunction);
       }
-    })
+    });
+    this.resultSetInfoService.messageSource.subscribe(message => this.message = message);
   }
 
   /**
@@ -172,8 +181,8 @@ export class QueryService {
         return;
       }
       _cat
-        .filter(c => categories.indexOf(c) === -1)
-        .forEach(c => categories.push(c));
+      .filter(c => categories.indexOf(c) === -1)
+      .forEach(c => categories.push(c));
       if (categories.length > 0) {
         this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
       }
@@ -318,8 +327,19 @@ export class QueryService {
         console.timeEnd(`Query (${(<QueryError>message).queryId})`);
         this.finalizeQuery((<QueryError>message).queryId);
         break;
+      case 'QR_TOPTAGS':
+        const topTags = <QueryResultTopTags>message;
+        this.tagArray = topTags.tags;
+        // console.log('query.service: ', topTags);
+        // console.log('QS: tagArray: ', this.tagArray);
+        this.resultSetInfoService.changeMessage(this.tagArray);
+/*        if (this._results && this._results.processTopTagsMessage(topTags)) {
+          this._subject.next('UPDATED');
+        }*/
+        break;
     }
   }
+
 
   /**
    * Updates the local state in response to a QR_START message. This method triggers an observable change in the QueryService class.

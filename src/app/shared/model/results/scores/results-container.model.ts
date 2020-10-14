@@ -30,6 +30,7 @@ import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
+import {QueryResultTopTags} from '../../messages/interfaces/responses/query-result-top-tags';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -52,6 +53,11 @@ export class ResultsContainer {
   private _rerank: number = 0;
   /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
   private _next: number = 0;
+  /** An array that will contain the top 10 related tags to a result set **/
+  public topTagsArray: any[];
+  /** A subject that can be used to publish changes to the results. */
+  private _results_topTags_subject: BehaviorSubject<String[]> = new BehaviorSubject(this.topTagsArray);
+
 
   /**
    * Constructor for ResultsContainer.
@@ -148,6 +154,11 @@ export class ResultsContainer {
     return this._results_features_subject.asObservable();
   }
 
+  get topTagsAsObservable(): Observable<String[]> {
+    return this._results_topTags_subject.asObservable();
+  }
+
+
   /**
    * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
    * ResultsContainer#serialize().
@@ -179,6 +190,7 @@ export class ResultsContainer {
   }
 
   // tslint:disable-next-line:member-ordering
+
   private static fillMap(map: Map<string, AbstractRefinementOption>, resultList: any, config?: Config) {
     if (config) {
       config.get<[string, string][]>('refinement.filters').forEach(el => {
@@ -452,12 +464,28 @@ export class ResultsContainer {
   }
 
   /**
+   * Processes the QueryResultTopTags message
+   *
+   * @param topTags QueryResultTopTags message
+   * @return {boolean} True, if SimilarityQueryResult was processed i.e. queryId corresponded with that of the message.
+   */
+  public processTopTagsMessage(topTags: QueryResultTopTags) {
+    if (topTags.queryId !== this.queryId) {
+      console.warn(`similarity result query id ${topTags.queryId} does not match query id ${this.queryId}`);
+      return false;
+    }
+    this.topTagsArray = topTags.tags;
+    console.log('results-container.model: ', this.topTagsArray);
+  }
+
+  /**
    * Completes the two subjects and invalidates them thereby.
    */
   public complete() {
     this._results_objects_subject.complete();
     this._results_segments_subject.complete();
     this._results_features_subject.complete();
+    this._results_topTags_subject.complete();
   }
 
   /**
@@ -520,6 +548,7 @@ export class ResultsContainer {
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
+    this._results_topTags_subject.next(this.topTagsArray);
   }
 
   /**

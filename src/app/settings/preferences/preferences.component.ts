@@ -3,14 +3,14 @@ import {ConfigService} from '../../core/basics/config.service';
 import {Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {first, map} from 'rxjs/operators';
-import {DatabaseService} from "../../core/basics/database.service";
-import Dexie from "dexie";
-import {VbsResultsLog} from "../../core/vbs/vbs-results-log.model";
-import {VbsInteractionLog} from "../../core/vbs/vbs-interaction-log.model";
-import {fromPromise} from "rxjs/internal-compatibility";
-import * as JSZip from "jszip";
+import {DatabaseService} from '../../core/basics/database.service';
+import Dexie from 'dexie';
+import {VbsResultsLog} from '../../core/vbs/vbs-results-log.model';
+import {VbsInteractionLog} from '../../core/vbs/vbs-interaction-log.model';
+import {fromPromise} from 'rxjs/internal-compatibility';
+import * as JSZip from 'jszip';
 
 @Component({
 
@@ -73,7 +73,7 @@ export class PreferencesComponent {
   get useInexactIndex(): Observable<boolean> {
     return this._config.pipe(
       map(c => c.get<Hint[]>('query.config.hints')),
-      map(h => h.indexOf('inexact') > -1 && h.indexOf('exact') == -1)
+      map(h => h.indexOf('inexact') > -1 && h.indexOf('exact') === -1)
     );
   }
 
@@ -89,28 +89,30 @@ export class PreferencesComponent {
    */
   public onDownloadInteractionLog() {
     const data = [];
-    fromPromise(this._interactionLogTable.orderBy('id').each((o,c) => {data.push(o)}))
-      .pipe(
-        first(),
-        map(h => {
-          const zip = new JSZip();
-          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
-          for (let i = 0; i < data.length; i++) {
-            zip.file(`vitrivrng-interaction-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
-          }
-          return zip
-        })
+    fromPromise(this._interactionLogTable.orderBy('id').each((o, c) => {
+      data.push(o)
+    }))
+    .pipe(
+      first(),
+      map(h => {
+        const zip = new JSZip();
+        const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
+        for (let i = 0; i < data.length; i++) {
+          zip.file(`vitrivrng-interaction-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
+        }
+        return zip
+      })
+    )
+    .subscribe(zip => {
+      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+        (result) => {
+          window.open(window.URL.createObjectURL(result));
+        },
+        (error) => {
+          console.log(error);
+        }
       )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
-          (result) => {
-            window.open(window.URL.createObjectURL(result));
-          },
-          (error) => {
-            console.log(error);
-          }
-        )
-      });
+    });
   }
 
   /**
@@ -118,28 +120,30 @@ export class PreferencesComponent {
    */
   public onDownloadResultsLog() {
     const data = [];
-    fromPromise(this._resultsLogTable.orderBy('id').each((o,c) => {data.push(o)}))
-      .pipe(
-        first(),
-        map(() => {
-          const zip = new JSZip();
-          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
-          for (let i = 0; i < data.length; i++) {
-            zip.file(`vitrivrng-results-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
-          }
-          return zip
-        })
+    fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
+      data.push(o)
+    }))
+    .pipe(
+      first(),
+      map(() => {
+        const zip = new JSZip();
+        const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
+        for (let i = 0; i < data.length; i++) {
+          zip.file(`vitrivrng-results-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
+        }
+        return zip
+      })
+    )
+    .subscribe(zip => {
+      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+        (result) => {
+          window.open(window.URL.createObjectURL(result));
+        },
+        (error) => {
+          console.log(error);
+        }
       )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
-          (result) => {
-            window.open(window.URL.createObjectURL(result));
-          },
-          (error) => {
-            console.log(error);
-          }
-        )
-      });
+    });
   }
 
   /**
@@ -166,7 +170,7 @@ export class PreferencesComponent {
   public onUseInexactIndexChanged(e: MatSlideToggleChange) {
     this._config.pipe(first()).subscribe(c => {
       let hints = c.get<Hint[]>('query.config.hints').filter(h => ['inexact', 'exact'].indexOf(h) == -1);
-      if (e.checked == true) {
+      if (e.checked === true) {
         hints.push('inexact');
       } else {
         hints.push('exact');

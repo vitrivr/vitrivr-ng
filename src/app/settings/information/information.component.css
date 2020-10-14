@@ -1,0 +1,14 @@
+::ng-deep.mat-tab-label, ::ng-deep.mat-tab-label-active{
+  min-width: 0!important;
+  padding: 10px!important;
+  margin: 10px!important;
+}
+
+.mat-list-base[dense] .mat-list-item, .mat-list-base[dense] .mat-list-option {
+  display: block;
+  height: 20px;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  padding: 0;
+  position: relative;
+}
