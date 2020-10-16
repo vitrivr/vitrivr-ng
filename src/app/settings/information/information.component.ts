@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ResultSetInfoService} from '../../core/queries/result-set-info.service';
-import {Tag} from '../../shared/model/misc/tag.model';
 
 
 @Component({
@@ -29,7 +28,6 @@ export class InformationComponent implements OnInit {
     this._resultSetInfoService.currentMessage.subscribe(message => this._tagOccurrenceMap = message);
     // console.log('IC: message: ', this._tagOccurrenceMap);
   }
-
 
 
 }
