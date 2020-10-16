@@ -8,14 +8,14 @@ import {Tag} from '../../shared/model/misc/tag.model';
 })
 export class ResultSetInfoService {
   one = 'one';
-  topTagsArray: Map<string, number>;
+  topTagsArray: Tag[];
   private messageSource = new BehaviorSubject(this.topTagsArray);
   currentMessage = this.messageSource.asObservable();
 
   constructor() {
   }
 
-  changeMessage(message: Map<string, number>) {
+  changeMessage(message: Tag[]) {
     this.messageSource.next(message)
     console.log('CHANGING: ', message)
   }

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ResultSetInfoService} from '../../core/queries/result-set-info.service';
+import {Tag} from '../../shared/model/misc/tag.model';
 
 
 @Component({
@@ -13,7 +14,7 @@ import {ResultSetInfoService} from '../../core/queries/result-set-info.service';
 export class InformationComponent implements OnInit {
   /** The current configuration as observable. */
   /** Local reference to the subscription to the QueryService. */
-  public _tagOccurrenceMap = new Map<string, number>();
+  public _tagOccurrence: Tag[];
   message: string;
 
   // tagOccurrence = new Map([['foo', 3], ['bar', 5], ['tar', 2]]);
@@ -25,7 +26,7 @@ export class InformationComponent implements OnInit {
    * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
    */
   public ngOnInit(): void {
-    this._resultSetInfoService.currentMessage.subscribe(message => this._tagOccurrenceMap = message);
+    this._resultSetInfoService.currentMessage.subscribe(message => this._tagOccurrence = message);
     // console.log('IC: message: ', this._tagOccurrenceMap);
   }
 

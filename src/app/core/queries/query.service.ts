@@ -332,7 +332,6 @@ export class QueryService {
         break;
       case 'QR_TOPTAGS':
         const topTags = <QueryResultTopTags>message;
-        const resolvedTagsMap = new Map<string, number>();
 
         this.tagOccurrenceMap = topTags.tags;
         // console.log('query.service: ', topTags);
@@ -341,11 +340,26 @@ export class QueryService {
                   resolvedTagsMap.set(this.tagsLookupService.getTagById(key), this.tagOccurrenceMap[key]);
                 }*/
 
-        this.tagOccurrenceMap.forEach((value: number, key: string) => {
-          console.log(key, value);
+        const map = new Map<string, number>();
+        this.tagsLookupService.getTagById(Object.keys(this.tagOccurrenceMap)).subscribe(function (tags) {
+          for (let i = 0; i < tags.length; i++) {
+            console.log('tags[id] ', tags[i].id);
+            const id = tags[i].id.toString();
+            tags[i].occurrence = this.tagOccurrenceMap[id];
+          }
+          this.resultSetInfoService.changeMessage(tags);
+        }.bind(this));
+        Object.keys(this.tagOccurrenceMap).forEach((key: string, value: number) => {
+          console.log('key: ', key, 'value: ', this.tagOccurrenceMap[key]);
+          /*          this.tagsLookupService.getTagById(key).subscribe({
+                      next(tag) {
+                        map.set(tag[0].name, this.tagOccurrenceMap[key]);
+                        // console.log('key: ', tag[0].name);
+                      }
+                    });*/
         });
 
-        this.resultSetInfoService.changeMessage(this.tagOccurrenceMap);
+
         /*        if (this._results && this._results.processTopTagsMessage(topTags)) {
                   this._subject.next('UPDATED');
                 }*/

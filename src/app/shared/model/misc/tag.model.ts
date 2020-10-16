@@ -7,6 +7,7 @@ export class Tag {
    * @param {string} description Description of the tag.
    * @param {string} preference of the tag: 'must', 'could', 'not'
    */
+  public occurrence: number;
   constructor(public readonly id: string, public readonly name: String, public readonly description: string, public preference: string) {
   }
 }

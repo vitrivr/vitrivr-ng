@@ -31,8 +31,9 @@ export class TagsLookupService extends CineastRestAPI {
     return this.get<TagQueryResult>('find/tags/by/matchingname/' + filter).pipe(first()).map(res => res.tags);
   }
 
-  public getTagById(id: string): Tag {
-    return this.get<TagQueryResult>('find/tags/by/id/' + id).pipe(first()).map(res => res.tags)[0];
+  public getTagById(ids: string[]): Observable<Tag[]> {
+    // console.log('JSON.stringify(ids):', JSON.stringify(ids));
+    return this.post<TagQueryResult>('tags/by/id/', '{"ids":' + JSON.stringify(ids) + '}').pipe(first()).map(res => res.tags);
   }
 }
 
