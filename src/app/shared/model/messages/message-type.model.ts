@@ -18,4 +18,5 @@ export type MessageType =
   | 'QR_METADATA_O'
   | 'QR_METADATA_S'
   | 'M_LOOKUP'
-  | 'QR_TOPTAGS';
+  | 'QR_TOPTAGS'
+  | 'QR_TOPCAPTIONS';

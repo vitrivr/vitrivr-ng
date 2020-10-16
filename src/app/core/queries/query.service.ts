@@ -30,6 +30,8 @@ import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.
 import {QueryResultTopTags} from '../../shared/model/messages/interfaces/responses/query-result-top-tags';
 import {ResultSetInfoService} from './result-set-info.service';
 import {TagsLookupService} from '../lookup/tags-lookup.service';
+import {QueryResultTopCaptions} from '../../shared/model/messages/interfaces/responses/query-result-top-captions';
+import {Caption} from '../../shared/model/misc/caption.model';
 
 
 /**
@@ -63,6 +65,7 @@ export class QueryService {
   private _running = 0;
 
   tagOccurrenceMap: Map<string, number>;
+  captionsOccurrenceMap: Map<string, number>;
 
   message: string;
 
@@ -76,7 +79,7 @@ export class QueryService {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
       this._socket.pipe(
-        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_METADATA_S', 'QR_METADATA_O', 'QR_TOPTAGS'].indexOf(msg.messageType) > -1)
+        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_METADATA_S', 'QR_METADATA_O', 'QR_TOPTAGS', 'QR_TOPCAPTIONS'].indexOf(msg.messageType) > -1)
       ).subscribe((msg: Message) => this.onApiMessage(msg));
     });
     this._config.subscribe(config => {
@@ -332,37 +335,27 @@ export class QueryService {
         break;
       case 'QR_TOPTAGS':
         const topTags = <QueryResultTopTags>message;
-
         this.tagOccurrenceMap = topTags.tags;
-        // console.log('query.service: ', topTags);
-        // console.log('QS: tagArray: ', this.tagArray);
-        /*        for (const key of this.tagOccurrenceMap.keys()) {
-                  resolvedTagsMap.set(this.tagsLookupService.getTagById(key), this.tagOccurrenceMap[key]);
-                }*/
-
-        const map = new Map<string, number>();
         this.tagsLookupService.getTagById(Object.keys(this.tagOccurrenceMap)).subscribe(function (tags) {
           for (let i = 0; i < tags.length; i++) {
-            console.log('tags[id] ', tags[i].id);
             const id = tags[i].id.toString();
             tags[i].occurrence = this.tagOccurrenceMap[id];
           }
           this.resultSetInfoService.changeMessage(tags);
         }.bind(this));
-        Object.keys(this.tagOccurrenceMap).forEach((key: string, value: number) => {
-          console.log('key: ', key, 'value: ', this.tagOccurrenceMap[key]);
-          /*          this.tagsLookupService.getTagById(key).subscribe({
-                      next(tag) {
-                        map.set(tag[0].name, this.tagOccurrenceMap[key]);
-                        // console.log('key: ', tag[0].name);
-                      }
-                    });*/
-        });
+        break;
+      case 'QR_TOPCAPTIONS':
+        const topCaptions = <QueryResultTopCaptions>message;
+        console.log('topcaptions', topCaptions)
+        this.captionsOccurrenceMap = topCaptions.captions;
+        const captionOccurrences = new Array<Caption>(Object.keys(this.captionsOccurrenceMap).length);
+        Object.keys(this.captionsOccurrenceMap).forEach((value: string, index: number) => {
+            console.log('value: ', value);
+            captionOccurrences[index] = new Caption(value, this.captionsOccurrenceMap[value]);
+          }
+        );
+        this.resultSetInfoService.changeCaption(captionOccurrences);
 
-
-        /*        if (this._results && this._results.processTopTagsMessage(topTags)) {
-                  this._subject.next('UPDATED');
-                }*/
         break;
     }
   }
