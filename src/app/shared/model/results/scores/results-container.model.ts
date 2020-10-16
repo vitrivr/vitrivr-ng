@@ -469,14 +469,14 @@ export class ResultsContainer {
    * @param topTags QueryResultTopTags message
    * @return {boolean} True, if SimilarityQueryResult was processed i.e. queryId corresponded with that of the message.
    */
-  public processTopTagsMessage(topTags: QueryResultTopTags) {
+/*  public processTopTagsMessage(topTags: QueryResultTopTags) {
     if (topTags.queryId !== this.queryId) {
       console.warn(`similarity result query id ${topTags.queryId} does not match query id ${this.queryId}`);
       return false;
     }
     this.topTagsArray = topTags.tags;
     console.log('results-container.model: ', this.topTagsArray);
-  }
+  }*/
 
   /**
    * Completes the two subjects and invalidates them thereby.

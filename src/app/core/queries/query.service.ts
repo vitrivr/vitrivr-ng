@@ -29,7 +29,9 @@ import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {QueryResultTopTags} from '../../shared/model/messages/interfaces/responses/query-result-top-tags';
 import {ResultSetInfoService} from './result-set-info.service';
+import {Tag} from '../../shared/model/misc/tag.model';
 import {TagOcurrenceModel} from '../../shared/model/misc/tagOcurrence.model';
+
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -61,7 +63,7 @@ export class QueryService {
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
 
-  tagArray: TagOcurrenceModel[];
+  tagOccurrenceMap: Map<string, number>;
   message: string;
 
 
@@ -329,13 +331,13 @@ export class QueryService {
         break;
       case 'QR_TOPTAGS':
         const topTags = <QueryResultTopTags>message;
-        this.tagArray = topTags.tags;
+        this.tagOccurrenceMap = topTags.tags;
         // console.log('query.service: ', topTags);
         // console.log('QS: tagArray: ', this.tagArray);
-        this.resultSetInfoService.changeMessage(this.tagArray);
-/*        if (this._results && this._results.processTopTagsMessage(topTags)) {
-          this._subject.next('UPDATED');
-        }*/
+        this.resultSetInfoService.changeMessage(this.tagOccurrenceMap);
+        /*        if (this._results && this._results.processTopTagsMessage(topTags)) {
+                  this._subject.next('UPDATED');
+                }*/
         break;
     }
   }
