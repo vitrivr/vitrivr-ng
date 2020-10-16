@@ -29,8 +29,7 @@ import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {QueryResultTopTags} from '../../shared/model/messages/interfaces/responses/query-result-top-tags';
 import {ResultSetInfoService} from './result-set-info.service';
-import {Tag} from '../../shared/model/misc/tag.model';
-import {TagOcurrenceModel} from '../../shared/model/misc/tagOcurrence.model';
+import {TagsLookupService} from '../lookup/tags-lookup.service';
 
 
 /**
@@ -64,13 +63,15 @@ export class QueryService {
   private _running = 0;
 
   tagOccurrenceMap: Map<string, number>;
+
   message: string;
 
 
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
               @Inject(ConfigService) private _config: ConfigService,
-              @Inject(ResultSetInfoService) private resultSetInfoService
+              @Inject(ResultSetInfoService) private resultSetInfoService,
+              @Inject(TagsLookupService) private tagsLookupService
   ) {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
@@ -331,9 +332,19 @@ export class QueryService {
         break;
       case 'QR_TOPTAGS':
         const topTags = <QueryResultTopTags>message;
+        const resolvedTagsMap = new Map<string, number>();
+
         this.tagOccurrenceMap = topTags.tags;
         // console.log('query.service: ', topTags);
         // console.log('QS: tagArray: ', this.tagArray);
+        /*        for (const key of this.tagOccurrenceMap.keys()) {
+                  resolvedTagsMap.set(this.tagsLookupService.getTagById(key), this.tagOccurrenceMap[key]);
+                }*/
+
+        this.tagOccurrenceMap.forEach((value: number, key: string) => {
+          console.log(key, value);
+        });
+
         this.resultSetInfoService.changeMessage(this.tagOccurrenceMap);
         /*        if (this._results && this._results.processTopTagsMessage(topTags)) {
                   this._subject.next('UPDATED');
