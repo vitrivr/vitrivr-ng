@@ -1,21 +1,22 @@
 <h3>Information on result set</h3>
 
 <mat-list dense>
-  <p>Number of segments in result set</p>
+<!--  <p>Number of segments in result set</p>-->
 
-  <h2 mat-subheader>Top 10 related tags</h2>
+  <h3 class="mat-list-custom">Top 10 related tags</h3>
   <!--  <mat-list-item *ngFor="let item of _tagOccurrenceMap">
       <p matLine>{{item.}}:{{_tagOccurrenceMap.get(item)}}</p>
 
     </mat-list-item>-->
-  <mat-list-item *ngFor="let item of _tagOccurrence">
-    <p matLine>{{item.name}} : {{item.occurrence}}</p>
+  <mat-list-item *ngFor="let item of _tagOccurrence ">
+    <h5 class="mat-h5" matLine>{{item.name}} : {{item.occurrence}}</h5>
   </mat-list-item>
 
-  <h2 mat-subheader>Top 10 words in captions</h2>
+
+  <h3 class="mat-list-custom">Top 10 words in captions</h3>
 
   <mat-list-item *ngFor="let item of _captionOccurrence">
-    <p matLine>{{item.caption}} : {{item.occurrence}}</p>
+    <h5 class="mat-h5" matLine>{{item.caption}} : {{item.occurrence}}</h5>
   </mat-list-item>
 
 
