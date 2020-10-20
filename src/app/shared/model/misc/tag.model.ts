@@ -8,6 +8,9 @@ export class Tag {
    * @param {string} preference of the tag: 'must', 'could', 'not'
    */
   public occurrence: number;
-  constructor(public readonly id: string, public readonly name: String, public readonly description: string, public preference: string) {
+  public preference: string;
+
+  constructor(public readonly id: string, public readonly name: String, public readonly description: string) {
   }
+
 }

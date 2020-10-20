@@ -22,12 +22,12 @@ export class ResultSetInfoService {
 
   changeMessage(message: Tag[]) {
     this.messageSource.next(message)
-    console.log('CHANGING: ', message)
+    // console.log('CHANGING: ', message)
   }
 
   changeCaption(message: Caption[]) {
     this.captionSource.next(message)
-    console.log('CHANGING: ', message)
+   // console.log('CHANGING: ', message)
   }
 
 }

@@ -19,7 +19,7 @@
         {{tag.name}}&nbsp;<small>({{tag.id}})</small>
         <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
         <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
-                (mouseover)="menuTrigger.openMenu()">
+                (mousedown)="menuTrigger.openMenu()">
           <mat-icon *ngIf="ifPreferenceExists(tag)==false">menu</mat-icon>
           <span *ngIf="getPreference(tag)=='must'">💚</span>
           <span *ngIf="getPreference(tag)=='could'">👍</span>
