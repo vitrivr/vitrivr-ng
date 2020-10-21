@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ResultSetInfoService} from '../../core/queries/result-set-info.service';
 import {Tag} from '../../shared/model/misc/tag.model';
 import {Caption} from '../../shared/model/misc/caption.model';
+import {QueryService} from '../../core/queries/query.service';
 
 
 @Component({
@@ -21,7 +22,7 @@ export class InformationComponent implements OnInit {
 
   // tagOccurrence = new Map([['foo', 3], ['bar', 5], ['tar', 2]]);
 
-  constructor(private _resultSetInfoService: ResultSetInfoService) {
+  constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService) {
   }
 
   /**

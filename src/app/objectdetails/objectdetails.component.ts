@@ -48,6 +48,7 @@ export class ObjectdetailsComponent {
   private _captionsPerSegment: string[] = [];
   private _asrPerSegment: string[] = [];
   private _ocrPerSegment: string[] = [];
+  private _activeSegmentId: string;
 
   constructor(private _route: ActivatedRoute,
               private _router: Router,
@@ -143,6 +144,7 @@ export class ObjectdetailsComponent {
     this._captionsPerSegment = [];
     this._asrPerSegment = [];
     this._ocrPerSegment = [];
+    this._activeSegmentId = segment.segmentId;
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
