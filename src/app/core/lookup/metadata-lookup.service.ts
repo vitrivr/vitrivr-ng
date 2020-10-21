@@ -40,6 +40,18 @@ export class MetadataLookupService extends CineastRestAPI {
     );
   }
 
+  public getAsr(segmentId: string): Observable<MediaSegmentFeatureQueryResult> {
+    return this.get<MediaSegmentFeatureQueryResult>('find/segment/asr/by/id/' + segmentId).pipe(
+      first()
+    );
+  }
+
+  public getOcr(segmentId: string): Observable<MediaSegmentFeatureQueryResult> {
+    return this.get<MediaSegmentFeatureQueryResult>('find/segment/ocr/by/id/' + segmentId).pipe(
+      first()
+    );
+  }
+
 
 }
 

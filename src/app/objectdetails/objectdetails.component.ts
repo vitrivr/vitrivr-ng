@@ -46,6 +46,8 @@ export class ObjectdetailsComponent {
 
   private _tagsPerSegment: Tag[] = [];
   private _captionsPerSegment: string[] = [];
+  private _asrPerSegment: string[] = [];
+  private _ocrPerSegment: string[] = [];
 
   constructor(private _route: ActivatedRoute,
               private _router: Router,
@@ -139,6 +141,8 @@ export class ObjectdetailsComponent {
     /* Emit an EXAMINE event on the bus. */
     this._tagsPerSegment = [];
     this._captionsPerSegment = [];
+    this._asrPerSegment = [];
+    this._ocrPerSegment = [];
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
@@ -149,6 +153,12 @@ export class ObjectdetailsComponent {
     }.bind(this));
     this._metadataLookup.getCaptions(segment.segmentId).subscribe(function (captions) {
       this._captionsPerSegment = captions.content;
+    }.bind(this));
+    this._metadataLookup.getAsr(segment.segmentId).subscribe(function (asr) {
+      this._asrPerSegment = asr.content;
+    }.bind(this));
+    this._metadataLookup.getOcr(segment.segmentId).subscribe(function (ocr) {
+      this._ocrPerSegment = ocr.content;
     }.bind(this));
   }
 

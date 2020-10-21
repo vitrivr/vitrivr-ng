@@ -114,4 +114,20 @@
     </li>
   </ul>
 
+  <h4 mat-line *ngIf="_asrPerSegment.length>0"><strong>ASR</strong></h4>
+  <ul>
+    <li *ngFor="let asr of _asrPerSegment">
+      {{asr}}
+    </li>
+  </ul>
+
+  <h4 mat-line *ngIf="_ocrPerSegment.length>0"><strong>OCR</strong></h4>
+  <ul>
+    <li *ngFor="let ocr of _ocrPerSegment">
+      {{ocr}}
+    </li>
+  </ul>
+
+
+
 </div>
