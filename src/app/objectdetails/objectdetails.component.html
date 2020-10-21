@@ -10,11 +10,14 @@
     <div>
       <div [style.max-height]="'400px'">
         <video #videoplayer *ngIf="(mediaobject|async).mediatype == 'VIDEO'"
-               [style.width]="'400px'" controls src="{{_resolver.pathToObject((mediaobject|async))}}"></video>
+               [style.width]="'400px'" controls
+               src="{{_resolver.pathToObject((mediaobject|async))}}"></video>
         <audio #audioplayer *ngIf="(mediaobject|async).mediatype == 'AUDIO'"
-               [style.width]="'400px'" controls src="{{_resolver.pathToObject((mediaobject|async))}}"
+               [style.width]="'400px'" controls
+               src="{{_resolver.pathToObject((mediaobject|async))}}"
                width="400"></audio>
-        <img #imageviewer *ngIf="(mediaobject|async).mediatype == 'IMAGE'" src="{{_resolver.pathToObject((mediaobject|async))}}"
+        <img #imageviewer *ngIf="(mediaobject|async).mediatype == 'IMAGE'"
+             src="{{_resolver.pathToObject((mediaobject|async))}}"
              style="max-height: 400px"/>
         <m3d-loader #modelviewer *ngIf="(mediaobject|async).mediatype == 'MODEL3D'"
                     [height]="200" [interaction]="true" [width]="200"
@@ -30,7 +33,9 @@
         <dt>Filename</dt>
         <dd>{{(mediaobject|async).name}}</dd>
         <dt>Path</dt>
-        <dd><a download href="{{_resolver.pathToObject((mediaobject|async))}}">{{((mediaobject|async)).path}}</a></dd>
+        <dd><a download
+               href="{{_resolver.pathToObject((mediaobject|async))}}">{{((mediaobject|async)).path}}</a>
+        </dd>
         <dt>Mediatype</dt>
         <dd>{{(mediaobject|async).mediatype}}</dd>
       </dl>
@@ -40,7 +45,8 @@
   <mat-tab-group>
     <mat-tab label="Segments ({{(mediaobject|async).segments.length}})">
       <div fxLayout="row" fxLayoutGap="5px" fxLayoutWrap="wrap">
-        <div (dragstart)="onSegmentDrag($event, segment)" *ngFor="let segment of ((mediaobject|async).segments | OrderByScorePipe)" class="tile"
+        <div (dragstart)="onSegmentDrag($event, segment)"
+             *ngFor="let segment of ((mediaobject|async).segments | OrderByScorePipe)" class="tile"
              draggable="true" fxFlex="200px">
           <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
             <p [style.margin]="'0'">{{segment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
@@ -48,7 +54,8 @@
               -{{segment.endabs.toFixed(2)}}</p>
           </div>
 
-          <img class="tile-body" height="200px" src="{{_resolver.pathToThumbnail(segment.objectScoreContainer,segment)}}"
+          <img class="tile-body" height="200px"
+               src="{{_resolver.pathToThumbnail(segment.objectScoreContainer,segment)}}"
                width="200px">
 
           <div class="tile-footer" fxLayout="row-reverse">
@@ -60,8 +67,13 @@
             <button (click)="onMltClick(segment)" mat-icon-button matTooltip="More-like-this">
               <mat-icon>youtube_searched_for</mat-icon>
             </button>
-            <button (click)="onInformationButtonClicked(segment)" mat-icon-button matTooltip="Metadata">
+            <button (click)="onInformationButtonClicked(segment)" mat-icon-button
+                    matTooltip="Score information">
               <mat-icon>help</mat-icon>
+            </button>
+            <button (click)="onMetadataButtonClicked(segment)" mat-icon-button
+                    matTooltip="Metadata">
+              <mat-icon>remove_red_eye</mat-icon>
             </button>
           </div>
         </div>
@@ -71,9 +83,19 @@
       <mat-list>
         <mat-list-item *ngFor="let metadatum of (mediaobject|async).metadata | keyvalue">
           <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
-          <p [innerHTML]="textWithLink(metadatum.value)" mat-line style="white-space: pre-wrap;"></p>
+          <p [innerHTML]="textWithLink(metadatum.value)" mat-line
+             style="white-space: pre-wrap;"></p>
         </mat-list-item>
       </mat-list>
     </mat-tab>
   </mat-tab-group>
+
+
+  <h4 mat-line *ngIf="tagsPerSegment.length>0"><strong>Tags</strong></h4>
+  <ul>
+    <li *ngFor="let tag of tagsPerSegment">
+      {{tag.name}}
+    </li>
+  </ul>
+
 </div>

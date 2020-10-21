@@ -6,8 +6,8 @@ import {MediaObject} from '../shared/model/media/media-object.model';
 import {ResolverService} from '../core/basics/resolver.service';
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {Location} from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
 import {MediaObjectDragContainer} from '../shared/model/internal/media-object-drag-container.model';
@@ -20,6 +20,8 @@ import {InteractionEventType} from '../shared/model/events/interaction-event-typ
 import {EventBusService} from '../core/basics/event-bus.service';
 import {MetadataDetailsComponent} from './metadata-details.component';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
+import {TagsLookupService} from '../core/lookup/tags-lookup.service';
+import {Tag} from '../shared/model/misc/tag.model';
 
 @Component({
   selector: 'objectdetails',
@@ -42,6 +44,8 @@ export class ObjectdetailsComponent {
   /** The observable that provides the MediaObjectMetadata for the active object. */
   private _mediaObjectObservable: Observable<MediaObjectScoreContainer>;
 
+  private tagsPerSegment: Tag[] = [];
+
   constructor(private _route: ActivatedRoute,
               private _router: Router,
               private _snackBar: MatSnackBar,
@@ -51,7 +55,8 @@ export class ObjectdetailsComponent {
               private _location: Location,
               private _resolver: ResolverService,
               private _dialog: MatDialog,
-              private _historyService: PreviousRouteService) {
+              private _historyService: PreviousRouteService,
+              private _tagsLookupService: TagsLookupService) {
 
 
     /** Generate observables required to create the view. */
@@ -127,6 +132,20 @@ export class ObjectdetailsComponent {
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
+  }
+
+  public onMetadataButtonClicked(segment: SegmentScoreContainer) {
+    /* Emit an EXAMINE event on the bus. */
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:mediasegment', segment.segmentId);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
+
+
+    this._tagsLookupService.getTagsPerSegmentId(segment.segmentId).subscribe(function (tagIds) {
+      this._tagsLookupService.getTagById(tagIds).subscribe(function (tags) {
+        this.tagsPerSegment = tags;
+      }.bind(this));
+    }.bind(this));
   }
 
   /**
