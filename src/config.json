@@ -60,7 +60,9 @@
       ["LSCMETA.semantic_name", "CHECKBOX"],
       ["LSCMETA.timezone", "CHECKBOX"],
       ["LSCMETA.p_day_of_week", "CHECKBOX"],
-      ["LSCMETA.p_hour", "SLIDER"]
+      ["LSCMETA.p_hour", "SLIDER"],
+      ["LSCMETA.p_month", "CHECKBOX"],
+      ["LSCMETA.p_year", "CHECKBOX"]
     ]
   }
 }
