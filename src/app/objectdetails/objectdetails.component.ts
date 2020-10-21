@@ -44,7 +44,8 @@ export class ObjectdetailsComponent {
   /** The observable that provides the MediaObjectMetadata for the active object. */
   private _mediaObjectObservable: Observable<MediaObjectScoreContainer>;
 
-  private tagsPerSegment: Tag[] = [];
+  private _tagsPerSegment: Tag[] = [];
+  private _captionsPerSegment: string[] = [];
 
   constructor(private _route: ActivatedRoute,
               private _router: Router,
@@ -136,15 +137,18 @@ export class ObjectdetailsComponent {
 
   public onMetadataButtonClicked(segment: SegmentScoreContainer) {
     /* Emit an EXAMINE event on the bus. */
+    this._tagsPerSegment = [];
+    this._captionsPerSegment = [];
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
-
-
     this._tagsLookupService.getTagsPerSegmentId(segment.segmentId).subscribe(function (tagIds) {
       this._tagsLookupService.getTagById(tagIds).subscribe(function (tags) {
-        this.tagsPerSegment = tags;
+        this._tagsPerSegment = tags;
       }.bind(this));
+    }.bind(this));
+    this._metadataLookup.getCaptions(segment.segmentId).subscribe(function (captions) {
+      this._captionsPerSegment = captions.content;
     }.bind(this));
   }
 
@@ -164,5 +168,12 @@ export class ObjectdetailsComponent {
    */
   public textWithLink(str: string): string {
     return HtmlUtil.replaceUrlByLink(str, '_blank');
+  }
+
+  public onLoadAllButtonClicked(segment: SegmentScoreContainer) {
+    this._query.lookupNeighboringSegments(segment.segmentId, 1000);
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:mediasegment', segment.segmentId);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
   }
 }

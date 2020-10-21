@@ -78,7 +78,16 @@
           </div>
         </div>
       </div>
+      <button *ngIf="(mediaobject|async).segments as segments"
+              (click)="onLoadAllButtonClicked(segments[0])" color="warn" mat-raised-button
+              matTooltip="Load all segments">
+        <mat-icon>all_inclusive</mat-icon>
+        Load all
+      </button>
+
     </mat-tab>
+
+
     <mat-tab label="Metadata ({{(mediaobject|async).metadata.size}})">
       <mat-list>
         <mat-list-item *ngFor="let metadatum of (mediaobject|async).metadata | keyvalue">
@@ -91,10 +100,17 @@
   </mat-tab-group>
 
 
-  <h4 mat-line *ngIf="tagsPerSegment.length>0"><strong>Tags</strong></h4>
+  <h4 mat-line *ngIf="_tagsPerSegment.length>0"><strong>Tags</strong></h4>
   <ul>
-    <li *ngFor="let tag of tagsPerSegment">
+    <li *ngFor="let tag of _tagsPerSegment">
       {{tag.name}}
+    </li>
+  </ul>
+
+  <h4 mat-line *ngIf="_captionsPerSegment.length>0"><strong>Captions</strong></h4>
+  <ul>
+    <li *ngFor="let caption of _captionsPerSegment">
+      {{caption}}
     </li>
   </ul>
 

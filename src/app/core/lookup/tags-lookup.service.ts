@@ -48,7 +48,7 @@ class TagQueryResult {
   public tags: Tag[];
 }
 
-class MediaSegmentFeatureQueryResult {
+export class MediaSegmentFeatureQueryResult {
   public queryId: string;
   public content: string[];
 }
