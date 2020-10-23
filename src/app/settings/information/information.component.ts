@@ -3,6 +3,7 @@ import {ResultSetInfoService} from '../../core/queries/result-set-info.service';
 import {Tag} from '../../shared/model/misc/tag.model';
 import {Caption} from '../../shared/model/misc/caption.model';
 import {QueryService} from '../../core/queries/query.service';
+import {filter, map} from 'rxjs/operators';
 
 
 @Component({
@@ -18,9 +19,8 @@ export class InformationComponent implements OnInit {
   /** Local reference to the subscription to the QueryService. */
   public _tagOccurrence: Tag[];
   public _captionOccurrence: Caption[];
+  public _scores: number[] = [];
   message: string;
-
-  // tagOccurrence = new Map([['foo', 3], ['bar', 5], ['tar', 2]]);
 
   constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService) {
   }
@@ -29,9 +29,59 @@ export class InformationComponent implements OnInit {
    * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
    */
   public ngOnInit(): void {
-    this._resultSetInfoService.currentMessage.subscribe(message => this._tagOccurrence = message);
+    this._resultSetInfoService.currentMessage.subscribe(message => {
+      this._tagOccurrence = message;
+      /*this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.8))
+      ).subscribe(scores => {
+        console.log('segment.score= ', scores);
+        this._scores[0] = scores.length;
+      });*/
+    });
     this._resultSetInfoService.currentCaption.subscribe(message => this._captionOccurrence = message);
-    // console.log('IC: message: ', this._tagOccurrenceMap);
+
+    this.queryService.observable.pipe(
+      filter(msg => {
+        return ['STARTED'].indexOf(msg) > -1;
+      })
+    ).subscribe((msg) => {
+      this._tagOccurrence = []
+      this._captionOccurrence = []
+      this._scores = []
+    });
+
+    this.queryService.observable.pipe(
+      filter(msg => {
+        return ['ENDED'].indexOf(msg) > -1;
+
+      })
+    ).subscribe((msg) => {
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.8))
+      ).subscribe(scores => {
+        this._scores[0] = scores.length;
+      });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.6 && segment.score < 0.8))
+      ).subscribe(scores => {
+        this._scores[1] = scores.length;
+      });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.4 && segment.score < 0.6))
+      ).subscribe(scores => {
+        this._scores[2] = scores.length;
+      });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.0 && segment.score < 0.4))
+      ).subscribe(scores => {
+        this._scores[3] = scores.length;
+      });
+    });
+
+  }
+
+  get queryService(): QueryService {
+    return this._queryService;
   }
 
 

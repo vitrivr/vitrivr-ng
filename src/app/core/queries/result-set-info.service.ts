@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {TagOcurrenceModel} from '../../shared/model/misc/tagOcurrence.model';
 import {Tag} from '../../shared/model/misc/tag.model';
 import {Caption} from '../../shared/model/misc/caption.model';
 
@@ -22,12 +21,10 @@ export class ResultSetInfoService {
 
   changeMessage(message: Tag[]) {
     this.messageSource.next(message)
-    // console.log('CHANGING: ', message)
   }
 
   changeCaption(message: Caption[]) {
     this.captionSource.next(message)
-   // console.log('CHANGING: ', message)
   }
 
 }

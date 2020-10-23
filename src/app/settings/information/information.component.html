@@ -1,7 +1,8 @@
 <h3>Information on result set</h3>
 
 <mat-list dense>
-  <p>Number of segments in result set: {{_queryService.results.segmentCount}}</p>
+  <p *ngIf="queryService.results">Number of segments in result
+    set: {{queryService.results.segmentCount}}</p>
 
   <h3 class="mat-list-custom">Top 10 related tags</h3>
   <!--  <mat-list-item *ngFor="let item of _tagOccurrenceMap">
@@ -9,7 +10,7 @@
 
     </mat-list-item>-->
   <mat-list-item *ngFor="let item of _tagOccurrence ">
-    <h5 class="mat-h5" matLine>{{item.name}} : {{item.occurrence}}</h5>
+    <h5 class="mat-h5" matLine>{{item.name}} ({{item.id}}) : {{item.occurrence}}</h5>
   </mat-list-item>
 
 
@@ -19,6 +20,11 @@
     <h5 class="mat-h5" matLine>{{item.caption}} : {{item.occurrence}}</h5>
   </mat-list-item>
 
+  <h3 class="mat-list-custom">Score distribution</h3>
+  <p *ngIf="_scores.length>0">0.8 - 1.0: {{_scores[0]}}</p>
+  <p *ngIf="_scores.length>0">0.6 - 0.8: {{_scores[1]}}</p>
+  <p *ngIf="_scores.length>0">0.4 - 0.6: {{_scores[2]}}</p>
+  <p *ngIf="_scores.length>0">under 0.4: {{_scores[3]}}</p>
 
 </mat-list>
 

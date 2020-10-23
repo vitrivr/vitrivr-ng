@@ -101,34 +101,74 @@
 
 
   <h4><strong>Features for segment: {{_activeSegmentId}}</strong></h4>
-  <h4 mat-line *ngIf="_tagsPerSegment.length>0"><strong>Tags</strong></h4>
-  <ul>
-    <li *ngFor="let tag of _tagsPerSegment">
-      {{tag.name}}
-    </li>
-  </ul>
+  <mat-tab-group>
+    <mat-tab label="Tags">
+      <h4 mat-line *ngIf="_tagsPerSegment.length>0"><strong>Tags</strong></h4>
+      <ul>
+        <li *ngFor="let tag of _tagsPerSegment">
+          {{tag.name}}
+        </li>
+      </ul>
+    </mat-tab>
 
-  <h4 mat-line *ngIf="_captionsPerSegment.length>0"><strong>Captions</strong></h4>
-  <ul>
-    <li *ngFor="let caption of _captionsPerSegment">
-      {{caption}}
-    </li>
-  </ul>
+    <mat-tab *ngIf="_captionsPerSegment.length>0" label="Captions">
+      <h4 mat-line><strong>Captions</strong></h4>
+      <ul>
+        <li *ngFor="let caption of _captionsPerSegment">
+          {{caption}}
+        </li>
+      </ul>
+    </mat-tab>
 
-  <h4 mat-line *ngIf="_asrPerSegment.length>0"><strong>ASR</strong></h4>
-  <ul>
-    <li *ngFor="let asr of _asrPerSegment">
-      {{asr}}
-    </li>
-  </ul>
+    <mat-tab *ngIf="_asrPerSegment.length>0" label="ASR">
+      <h4 mat-line><strong>ASR</strong></h4>
+      <ul>
+        <li *ngFor="let asr of _asrPerSegment">
+          {{asr}}
+        </li>
+      </ul>
+    </mat-tab>
 
-  <h4 mat-line *ngIf="_ocrPerSegment.length>0"><strong>OCR</strong></h4>
-  <ul>
-    <li *ngFor="let ocr of _ocrPerSegment">
-      {{ocr}}
-    </li>
-  </ul>
+    <mat-tab *ngIf="_ocrPerSegment.length>0" label="OCR">
+      <h4 mat-line><strong>OCR</strong></h4>
+      <ul>
+        <li *ngFor="let ocr of _ocrPerSegment">
+          {{ocr}}
+        </li>
+      </ul>
+    </mat-tab>
 
+  </mat-tab-group>
 
+  <!--  <div class="container">
+      <h4 mat-line *ngIf="_tagsPerSegment.length>0"><strong>Tags</strong></h4>
+      <ul>
+        <li *ngFor="let tag of _tagsPerSegment">
+          {{tag.name}}
+        </li>
+      </ul>
+
+      <h4 mat-line *ngIf="_captionsPerSegment.length>0"><strong>Captions</strong></h4>
+      <ul>
+        <li *ngFor="let caption of _captionsPerSegment">
+          {{caption}}
+        </li>
+      </ul>
+
+      <h4 mat-line *ngIf="_asrPerSegment.length>0"><strong>ASR</strong></h4>
+      <ul>
+        <li *ngFor="let asr of _asrPerSegment">
+          {{asr}}
+        </li>
+      </ul>
+
+      <h4 mat-line *ngIf="_ocrPerSegment.length>0"><strong>OCR</strong></h4>
+      <ul>
+        <li *ngFor="let ocr of _ocrPerSegment">
+          {{ocr}}
+        </li>
+      </ul>
+
+    </div>-->
 
 </div>
