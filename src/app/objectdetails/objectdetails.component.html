@@ -106,7 +106,7 @@
       <h4 mat-line *ngIf="_tagsPerSegment.length>0"><strong>Tags</strong></h4>
       <ul>
         <li *ngFor="let tag of _tagsPerSegment">
-          {{tag.name}}
+          {{tag.name}} ({{tag.id}})
         </li>
       </ul>
     </mat-tab>
