@@ -2,6 +2,7 @@ import {SubmissionType, VbsSubmission} from '../../shared/model/vbs/interfaces/v
 import {VbsResult} from '../../shared/model/vbs/interfaces/vbs-result.model';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
+import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 
 export class VbsResultsLog implements VbsSubmission {
   /** Timestamp of the VbsInteractionLog. */
@@ -41,6 +42,25 @@ export class VbsResultsLog implements VbsSubmission {
   public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: SegmentScoreContainer[], event: InteractionEvent): VbsResultsLog {
     const results = new VbsResultsLog(teamId, memberId);
     event.components.forEach(component => {
+      if (component.type === InteractionEventType.NEW_QUERY_CONTAINER) {
+        results.values.push('NEW_QUERY_CONTAINER')
+        return;
+      }
+      if (component.type === InteractionEventType.NEW_QUERY_STAGE) {
+        results.values.push('NEW_QUERY_STAGE')
+        return;
+      }
+      (component.context.get('q:categories') as string[]).forEach(c => {
+        const category = VbsResultsLog.featureCategoryToVbsCategory(c);
+        const type = VbsResultsLog.featureCategoryToVbsType(c);
+        if (category != null && results.usedCategories.indexOf(category) === -1) {
+          results.usedCategories.push(category)
+        }
+        if (type != null && results.usedTypes.indexOf(type) === -1) {
+          results.usedTypes.push(type)
+        }
+      })
+      results.values.push(component.context.get('q:categories'))
       results.values.push(component.context.get('q:value'))
     })
     results.sortType.push(context);

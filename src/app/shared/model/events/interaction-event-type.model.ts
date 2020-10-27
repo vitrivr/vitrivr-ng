@@ -19,4 +19,6 @@ export enum InteractionEventType {
   EXAMINE,
   PLAY,
   NAVIGATE,
+  NEW_QUERY_STAGE,
+  NEW_QUERY_CONTAINER,
 }

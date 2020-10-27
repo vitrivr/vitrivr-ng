@@ -4,6 +4,7 @@ import {VbsResultsLog} from '../../../core/vbs/vbs-results-log.model';
 import {LscSubmission} from './interfaces/lsc-submission.model';
 import {SegmentScoreContainer} from '../results/scores/segment-score-container.model';
 import {InteractionEvent} from '../events/interaction-event.model';
+import {InteractionEventType} from '../events/interaction-event-type.model';
 
 export class LscUtil {
 
@@ -16,6 +17,25 @@ export class LscUtil {
     const _sortType: string[] = [];
     _sortType.push(context);
     event.components.forEach(component => {
+      if (component.type === InteractionEventType.NEW_QUERY_CONTAINER) {
+        _values.push('NEW_QUERY_CONTAINER')
+        return;
+      }
+      if (component.type === InteractionEventType.NEW_QUERY_STAGE) {
+        _values.push('NEW_QUERY_STAGE')
+        return;
+      }
+      (component.context.get('q:categories') as string[]).forEach(c => {
+        const category = VbsResultsLog.featureCategoryToVbsCategory(c);
+        const type = VbsResultsLog.featureCategoryToVbsType(c);
+        if (category != null && _categories.indexOf(category) === -1) {
+          _categories.push(category)
+        }
+        if (type != null && _types.indexOf(type) === -1) {
+          _types.push(type)
+        }
+      })
+      _values.push(component.context.get('q:categories'))
       _values.push(component.context.get('q:value'))
     });
     list.forEach((segmentScoreContainer, index) => {
