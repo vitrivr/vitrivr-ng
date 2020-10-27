@@ -11,6 +11,9 @@ import {bufferCount, flatMap, map} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
 import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fusion-function.model';
+import {TagQueryTerm} from '../shared/model/queries/tag-query-term.model';
+import {BoolQueryTerm} from '../shared/model/queries/bool-query-term.model';
+import {TextQueryTerm} from '../shared/model/queries/text-query-term.model';
 
 
 @Component({
@@ -61,8 +64,8 @@ export class QuerySidebarComponent implements OnInit {
       map(t => {
         const context: Map<ContextKey, any> = new Map();
         context.set('q:categories', t.categories);
+        context.set('q:value', 'null')
         switch (t.type) {
-          // TODO Why is there no boolean case?
           case 'IMAGE':
             return new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context);
           case 'AUDIO':
@@ -74,17 +77,20 @@ export class QuerySidebarComponent implements OnInit {
           case 'SEMANTIC':
             return new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context);
           case 'TEXT':
-            context.set('q:value', t.data);
+            context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
             return new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context);
+          case 'BOOLEAN':
+            context.set('q:value', (t as BoolQueryTerm).terms)
+            return new InteractionEventComponent(InteractionEventType.QUERY_BOOLEAN, context);
           case 'TAG':
-            context.set('q:value', t.data);
-            // console.log(`[Research] context=${JSON.stringify(context)}`);
-            // FIXME Why is the context empty here? should have at least a q:categories and q:value entry
+            context.set('q:value', (t as TagQueryTerm).tags);
             return new InteractionEventComponent(InteractionEventType.QUERY_TAG, context);
         }
       }),
       bufferCount(Number.MIN_SAFE_INTEGER)
-    ).subscribe(c => this._eventBus.publish(new InteractionEvent(...c)))
+    ).subscribe(c => {
+      this._eventBus.publish(new InteractionEvent(...c));
+    })
   }
 
   /**

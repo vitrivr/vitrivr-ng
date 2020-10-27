@@ -1,6 +1,7 @@
 import {SubmissionType, VbsSubmission} from '../../shared/model/vbs/interfaces/vbs-submission.model';
 import {VbsResult} from '../../shared/model/vbs/interfaces/vbs-result.model';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 
 export class VbsResultsLog implements VbsSubmission {
   /** Timestamp of the VbsInteractionLog. */
@@ -34,10 +35,14 @@ export class VbsResultsLog implements VbsSubmission {
    * @param memberId The ID of the VBS team member.
    * @param context A UI context identifier.
    * @param list The list of {SegmentScoreContainer}s to convert.
+   * @param event the interactionevent of the query
    * @return List of {VbsResultsLog}
    */
-  public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: SegmentScoreContainer[]): VbsResultsLog {
+  public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: SegmentScoreContainer[], event: InteractionEvent): VbsResultsLog {
     const results = new VbsResultsLog(teamId, memberId);
+    event.components.forEach(component => {
+      results.values.push(component.context.get('q:value'))
+    })
     results.sortType.push(context);
     list.forEach((segmentScoreContainer, index) => {
       results.results.push(<VbsResult>{
@@ -68,12 +73,13 @@ export class VbsResultsLog implements VbsSubmission {
    *
    * @param category
    */
-  private static featureCategoryToVbsCategory(category: string): string {
+  public static featureCategoryToVbsCategory(category: string): string {
     switch (category) {
       case 'ocr':
       case 'asr':
       case 'meta':
       case 'tagsft':
+      case 'tags':
       case 'scenecaption':
       case 'boolean':
         return 'TEXT';
@@ -96,7 +102,7 @@ export class VbsResultsLog implements VbsSubmission {
    *
    * @param category
    */
-  private static featureCategoryToVbsType(category: string): string {
+  public static featureCategoryToVbsType(category: string): string {
     switch (category) {
       case 'ocr':
         return 'OCR';
@@ -105,6 +111,7 @@ export class VbsResultsLog implements VbsSubmission {
       case 'meta':
         return 'metadata';
       case 'tagsft':
+      case 'tags':
         return 'concept';
       case 'scenecaption':
         return 'caption';

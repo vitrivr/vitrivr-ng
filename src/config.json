@@ -10,7 +10,7 @@
     "teamid": 2,
     "toolid": 1,
     "endpoint": "http://10.34.58.45:9000",
-    "log": false,
+    "log": true,
     "lsc": true,
     "vbs": false,
     "dres": true

@@ -24,7 +24,7 @@ export class PreferencesComponent {
   private _config: Observable<Config>;
 
   /** Table for persisting result logs. */
-  private _resultsLogTable: Dexie.Table<VbsResultsLog, number>;
+  private _resultsLogTable: Dexie.Table<any, number>;
 
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;

@@ -4,8 +4,8 @@ import {MetadataLookupService} from '../lookup/metadata-lookup.service';
 import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {ConfigService} from '../basics/config.service';
-import {combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {BehaviorSubject, combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
 import {EventBusService} from '../basics/event-bus.service';
 import {VbsInteractionLog} from './vbs-interaction-log.model';
@@ -14,8 +14,10 @@ import {SelectionService} from '../selection/selection.service';
 import {QueryService} from '../queries/query.service';
 import {VbsInteraction} from '../../shared/model/vbs/interfaces/vbs-interaction.model';
 import {VbsResultsLog} from './vbs-results-log.model';
-import {DatabaseService} from "../basics/database.service";
-import Dexie from "dexie";
+import {DatabaseService} from '../basics/database.service';
+import Dexie from 'dexie';
+import {LscUtil} from '../../shared/model/lsc/lsc.util';
+import {LscSubmission} from '../../shared/model/lsc/interfaces/lsc-submission.model';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -42,7 +44,7 @@ export class VbsSubmissionService {
   private _configSubscription: Subscription;
 
   /** Table for persisting result logs. */
-  private _resultsLogTable: Dexie.Table<VbsResultsLog, number>;
+  private _resultsLogTable: Dexie.Table<any, number>;
 
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
@@ -195,26 +197,45 @@ export class VbsSubmissionService {
 
       /* Setup results subscription, which is triggered upon change to the result set. */
 
-      const results = this._queryService.observable.pipe(
-          filter(f => f === 'ENDED'),
-          flatMap(f => this._queryService.results.segmentsAsObservable),
-          debounceTime(1000)
-        ); /* IMPORTANT: Limits the number of submissions to one per second. */
+      const resultSubscription = this._queryService.observable.pipe(
+        filter(f => f === 'ENDED'),
+        flatMap(f => this._queryService.results.segmentsAsObservable),
+        debounceTime(1000)
+      ); /* IMPORTANT: Limits the number of submissions to one per second. */
 
-      this._resultsSubscription = combineLatest(results, this._eventbus.currentView()).pipe(
-        map(([context, segments]) => {
-          return VbsResultsLog.mapSegmentScoreContainer(team, tool, segments, context)
+      const queryInfo = new BehaviorSubject(null);
+      const querySubscription = this._eventbus.observable().pipe(
+        filter(event => event != null),
+        filter(event => event.components.filter(component => component.context.has('q:categories')).length > 0),
+        tap(event => queryInfo.next(event))
+      ).subscribe();
+
+      this._resultsSubscription = combineLatest([resultSubscription, this._eventbus.currentView()]).pipe(
+        map(([results, context]) => {
+          if (this._vbs) {
+            return VbsResultsLog.mapSegmentScoreContainer(team, tool, context, results, queryInfo.getValue())
+          }
+          if (this._lsc) {
+            return LscUtil.mapSegmentScoreContainer(team, tool, context, results, queryInfo.getValue())
+          }
+          console.log(`no competition chosen, not logging`);
+          return null;
         }),
         filter(submission => submission != null),
-        flatMap((submission: VbsResultsLog) => {
+        flatMap((submission: VbsResultsLog | LscSubmission) => {
           /* Prepare log submission. */
           const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          let params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
+          let params = new HttpParams().set('member', String(submission.memberId));
           let url = String(`${endpoint}/log`);
+          if (this._vbs) {
+            params.set('team', (submission as VbsResultsLog).teamId)
+          }
           if (this._dres) { // DRES has different endpoints
             url += '/result';
             params = new HttpParams();
           }
+          this._resultsLogTable.add(submission);
+
           const observable = this._http.post(url, JSON.stringify(submission), {
             responseType: 'json',
             params: params,
@@ -226,10 +247,8 @@ export class VbsSubmissionService {
           return observable.pipe(
             tap(o => {
               console.log(`Submitting result log to VBS server.`);
-              this._resultsLogTable.add(submission);
             }),
             catchError((err) => {
-              this._resultsLogTable.add(submission);
               return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
             })
           );
