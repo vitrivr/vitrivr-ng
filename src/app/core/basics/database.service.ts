@@ -14,7 +14,8 @@ export class DatabaseService {
       config: 'id,config',
       history: '++id,timestamp',
       log_results: '++id,log',
-      log_interaction: '++id,log'
+      log_interaction: '++id,log',
+      log_submission: '++id,log'
     });
   }
 

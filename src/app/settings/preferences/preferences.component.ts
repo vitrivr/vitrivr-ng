@@ -3,14 +3,14 @@ import {ConfigService} from '../../core/basics/config.service';
 import {Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {first, map} from 'rxjs/operators';
-import {DatabaseService} from "../../core/basics/database.service";
-import Dexie from "dexie";
-import {VbsResultsLog} from "../../core/vbs/vbs-results-log.model";
-import {VbsInteractionLog} from "../../core/vbs/vbs-interaction-log.model";
-import {fromPromise} from "rxjs/internal-compatibility";
-import * as JSZip from "jszip";
+import {DatabaseService} from '../../core/basics/database.service';
+import Dexie from 'dexie';
+import {VbsResultsLog} from '../../core/vbs/vbs-results-log.model';
+import {VbsInteractionLog} from '../../core/vbs/vbs-interaction-log.model';
+import {fromPromise} from 'rxjs/internal-compatibility';
+import * as JSZip from 'jszip';
 
 @Component({
 
@@ -26,6 +26,9 @@ export class PreferencesComponent {
   /** Table for persisting result logs. */
   private _resultsLogTable: Dexie.Table<any, number>;
 
+  /** Table for persisting submission log */
+  private _submissionLogTable: Dexie.Table<any, number>;
+
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
 
@@ -36,6 +39,7 @@ export class PreferencesComponent {
     this._config = this._configService.asObservable();
     this._resultsLogTable = _db.db.table('log_results');
     this._interactionLogTable = _db.db.table('log_interaction');
+    this._submissionLogTable = _db.db.table('log_submission');
   }
 
   /**
@@ -89,7 +93,9 @@ export class PreferencesComponent {
    */
   public onDownloadInteractionLog() {
     const data = [];
-    fromPromise(this._interactionLogTable.orderBy('id').each((o,c) => {data.push(o)}))
+    fromPromise(this._interactionLogTable.orderBy('id').each((o, c) => {
+      data.push(o)
+    }))
       .pipe(
         first(),
         map(h => {
@@ -118,7 +124,9 @@ export class PreferencesComponent {
    */
   public onDownloadResultsLog() {
     const data = [];
-    fromPromise(this._resultsLogTable.orderBy('id').each((o,c) => {data.push(o)}))
+    fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
+      data.push(o)
+    }))
       .pipe(
         first(),
         map(() => {
@@ -142,12 +150,43 @@ export class PreferencesComponent {
       });
   }
 
+  public onDownloadSubmissionLog() {
+    const data = [];
+    fromPromise(this._submissionLogTable.orderBy('id').each((o, c) => {
+      data.push(o)
+    }))
+      .pipe(
+        first(),
+        map(() => {
+          const zip = new JSZip();
+          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
+          for (let i = 0; i < data.length; i++) {
+            zip.file(`vitrivrng-submission-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
+          }
+          return zip
+        })
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+          (result) => {
+            window.open(window.URL.createObjectURL(result));
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      });
+  }
+
   /**
    * Clears the interaction logs.
    */
   public onClearInteractionLog() {
     this._interactionLogTable.clear().then(() => console.log('Interaction logs cleared.'))
+  }
 
+  public onClearSubmissionLog() {
+    this._submissionLogTable.clear().then(() => console.log('Submission logs cleared.'))
   }
 
   /**

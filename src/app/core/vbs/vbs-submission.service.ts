@@ -46,6 +46,9 @@ export class VbsSubmissionService {
   /** Table for persisting result logs. */
   private _resultsLogTable: Dexie.Table<any, number>;
 
+  /** Table for persisting submission logs */
+  private _submissionLogTable: Dexie.Table<any, number>;
+
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
 
@@ -94,6 +97,7 @@ export class VbsSubmissionService {
       if (endpoint && team) {
         this._resultsLogTable = _db.db.table('log_results');
         this._interactionLogTable = _db.db.table('log_interaction');
+        this._submissionLogTable = _db.db.table('log_submission');
         this.reset(endpoint, team, tool, log, loginterval)
       } else {
         this.cleanup()
@@ -289,6 +293,9 @@ export class VbsSubmissionService {
           // params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
           params = new HttpParams().set('item', String(id)).set('frame', String(frame));
         }
+
+        params = params.set('client_timestamp', String(Date.now()))
+        this._submissionLogTable.add(params)
 
         const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params, withCredentials: this._dres});
 
