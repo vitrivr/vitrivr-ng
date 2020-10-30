@@ -39,7 +39,7 @@ export class TagsLookupService extends CineastRestAPI {
   public getTagsPerSegmentId(id: string): Observable<string[]> {
     // console.log('JSON.stringify(ids):', JSON.stringify(ids));
     console.log('tags-lookup.service');
-    return this.get<MediaSegmentFeatureQueryResult>('find/segment/tags/by/id/' + id).pipe(first()).map(res => res.content);
+    return this.get<MediaSegmentFeatureQueryResult>('find/segment/tags/by/id/' + id).pipe(first()).map(res => res.featureValues);
   }
 }
 
@@ -50,5 +50,5 @@ class TagQueryResult {
 
 export class MediaSegmentFeatureQueryResult {
   public queryId: string;
-  public content: string[];
+  public featureValues: string[];
 }

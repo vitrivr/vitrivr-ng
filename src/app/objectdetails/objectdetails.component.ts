@@ -156,15 +156,15 @@ export class ObjectdetailsComponent {
     }.bind(this));
     // get the captions associated with a segmentId
     this._metadataLookup.getCaptions(segment.segmentId).subscribe(function (captions) {
-      this._captionsPerSegment = captions.content;
+      this._captionsPerSegment = captions.featureValues;
     }.bind(this));
     // get the ASR data associated with a segmentId
     this._metadataLookup.getAsr(segment.segmentId).subscribe(function (asr) {
-      this._asrPerSegment = asr.content;
+      this._asrPerSegment = asr.featureValues;
     }.bind(this));
     // get the OCR data associated with a segmentId
     this._metadataLookup.getOcr(segment.segmentId).subscribe(function (ocr) {
-      this._ocrPerSegment = ocr.content;
+      this._ocrPerSegment = ocr.featureValues;
     }.bind(this));
   }
 
