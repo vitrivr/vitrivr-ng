@@ -32,6 +32,7 @@ import {ResultSetInfoService} from './result-set-info.service';
 import {TagsLookupService} from '../lookup/tags-lookup.service';
 import {QueryResultTopCaptions} from '../../shared/model/messages/interfaces/responses/query-result-top-captions';
 import {Caption} from '../../shared/model/misc/caption.model';
+import {Tag} from '../../shared/model/misc/tag.model';
 
 
 /**
@@ -64,7 +65,7 @@ export class QueryService {
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
 
-  tagOccurrenceMap: Map<string, number>;
+  tagOccurrenceArray: Tag[];
   captionsOccurrenceMap: Map<string, number>;
 
   message: string;
@@ -335,14 +336,8 @@ export class QueryService {
         break;
       case 'QR_TOPTAGS':
         const topTags = <QueryResultTopTags>message;
-        this.tagOccurrenceMap = topTags.tags;
-        this.tagsLookupService.getTagById(Object.keys(this.tagOccurrenceMap)).subscribe(function (tags) {
-          for (let i = 0; i < tags.length; i++) {
-            const id = tags[i].id.toString();
-            tags[i].occurrence = this.tagOccurrenceMap[id];
-          }
-          this.resultSetInfoService.changeMessage(tags);
-        }.bind(this));
+        this.tagOccurrenceArray = topTags.tags;
+        this.resultSetInfoService.changeMessage(this.tagOccurrenceArray);
         break;
       case 'QR_TOPCAPTIONS':
         const topCaptions = <QueryResultTopCaptions>message;

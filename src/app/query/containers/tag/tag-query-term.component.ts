@@ -2,13 +2,11 @@ import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
-import {Tag} from '../../../shared/model/misc/tag.model';
+import {Preference, Tag} from '../../../shared/model/misc/tag.model';
 import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatIconRegistry} from '@angular/material/icon';
-import {DomSanitizer} from '@angular/platform-browser';
 
 enum Emoji {
   Must = 'Must',
@@ -19,24 +17,6 @@ enum Emoji {
 @Injectable({
   providedIn: 'root'
 })
-export class IconService {
-
-  constructor(
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
-  ) {
-  }
-
-  public registerIcons(): void {
-    this.loadIcons(Object.keys(Emoji), '../assets/svg/icons');
-  }
-
-  private loadIcons(iconKeys: string[], iconUrl: string): void {
-    iconKeys.forEach(key => {
-      this.matIconRegistry.addSvgIcon(key, this.domSanitizer.bypassSecurityTrustResourceUrl(`${iconUrl}/${key}.svg`));
-    });
-  }
-}
 
 
 @Component({
@@ -56,6 +36,9 @@ export class TagQueryTermComponent implements OnInit {
   private _tags: Tag[] = [];
   /** Map of tags and their preference*/
   private _preferenceMap: Map<string, string>;
+  preferenceMust = Preference.MUST;
+  preferenceCould = Preference.COULD;
+  preferenceNot = Preference.NOT;
 
 
   constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
@@ -126,6 +109,7 @@ export class TagQueryTermComponent implements OnInit {
    */
   public addTags(tags: Tag[]) {
     tags.forEach(tag => {
+      tag.preference = Preference.COULD;
       this.addTag(tag);
     })
   }
@@ -157,11 +141,12 @@ export class TagQueryTermComponent implements OnInit {
    * @param {value} of the toggle button: either 'must', 'could' or 'not'
    *  */
   private onPreferenceChange(preference, tag): void {
-    // console.log('adding to map: ', preference, id);
     tag.preference = preference;
+    console.log(this.getPreference(tag));
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
     })));
+    // console.log('adding to map: ', preference, tag);
     this.sortTagsByPreference();
   }
 

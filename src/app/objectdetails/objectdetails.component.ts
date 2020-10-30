@@ -148,17 +148,21 @@ export class ObjectdetailsComponent {
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
+    // get the tags associated with a segmentId
     this._tagsLookupService.getTagsPerSegmentId(segment.segmentId).subscribe(function (tagIds) {
-      this._tagsLookupService.getTagById(tagIds).subscribe(function (tags) {
+      this._tagsLookupService.getTagById(tagIds).subscribe(function (tags) { // needed to receive remaining information for a tag object, since cineast only sends its id
         this._tagsPerSegment = tags;
       }.bind(this));
     }.bind(this));
+    // get the captions associated with a segmentId
     this._metadataLookup.getCaptions(segment.segmentId).subscribe(function (captions) {
       this._captionsPerSegment = captions.content;
     }.bind(this));
+    // get the ASR data associated with a segmentId
     this._metadataLookup.getAsr(segment.segmentId).subscribe(function (asr) {
       this._asrPerSegment = asr.content;
     }.bind(this));
+    // get the OCR data associated with a segmentId
     this._metadataLookup.getOcr(segment.segmentId).subscribe(function (ocr) {
       this._ocrPerSegment = ocr.content;
     }.bind(this));

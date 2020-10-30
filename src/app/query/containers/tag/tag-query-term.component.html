@@ -28,13 +28,13 @@
         <mat-menu #menu="matMenu" [overlapTrigger]="false">
           <span (mouseleave)="menuTrigger.closeMenu()">
             <mat-button-toggle-group>
-            <mat-button-toggle (change)="onPreferenceChange($event.value, tag)" value="must">
+            <mat-button-toggle (change)="onPreferenceChange(preferenceMust, tag)" value="must">
               <span>💚</span>
             </mat-button-toggle>
-            <mat-button-toggle (change)="onPreferenceChange($event.value, tag)" value="could">
+            <mat-button-toggle (change)="onPreferenceChange(preferenceCould, tag)" value="could">
               <span>👍</span>
             </mat-button-toggle>
-            <mat-button-toggle (change)="onPreferenceChange($event.value, tag)" value="not">
+            <mat-button-toggle (change)="onPreferenceChange(preferenceNot, tag)" value="not">
               <span>⛔</span>
               </mat-button-toggle>
               </mat-button-toggle-group>

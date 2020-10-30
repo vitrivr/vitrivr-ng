@@ -13,3 +13,4 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 })
 export class TagQueryTermModule {
 }
+
