@@ -5,7 +5,7 @@ import {BehaviorSubject} from 'rxjs/Rx';
 import {ConfigService} from '../../../core/basics/config.service';
 import {BoolTerm} from './individual/bool-term';
 import {DistinctElementLookupService} from '../../../core/lookup/distinct-element-lookup.service';
-import {first} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-qt-bool',
@@ -56,7 +56,7 @@ export class BoolQueryTermComponent implements OnInit {
           case ValueType.DYNAMICOPTIONS.valueOf():
             const table: string = v[3];
             const column: string = v[4];
-            _distinctLookupService.getDistinct(table, column).pipe(first()).forEach(el => {
+            _distinctLookupService.getDistinct(table, column).pipe(first(), map(list => list.sort())).forEach(el => {
               next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, el, null));
               this.possibleAttributes.next(next);
             });

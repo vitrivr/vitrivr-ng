@@ -22,6 +22,8 @@ export class FilterService {
   /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
   private _segmentFilters: BehaviorSubject<((v: SegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
+  _id: string;
+
   constructor(private _selectionService: SelectionService) {
     MediaTypes.forEach(v => this._mediatypes.set(v, false));
     ColorLabels.forEach(v => this._dominant.set(v, false));
@@ -147,6 +149,7 @@ export class FilterService {
     this._filterRangeMetadata.clear();
     this._filterTags.clear();
     this._threshold = 0.0;
+    this._id = null
     this.update()
   }
 
@@ -167,6 +170,11 @@ export class FilterService {
     /* Prepares the media object and media segment filters. */
     const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[] = [];
     const segmentFilters: ((v: SegmentScoreContainer) => boolean)[] = [];
+
+    if (this._id) {
+      objectFilters.push((o) => o.objectId === this._id)
+      segmentFilters.push((s) => s.objectId === this._id || s.segmentId === this._id)
+    }
 
     /* Inline function for range metadata filters
      * check if the given string is a number and within the range-array
