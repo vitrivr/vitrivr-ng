@@ -4,6 +4,7 @@ import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {Similarity} from '../../media/similarity.model';
 import {MediaSegment} from '../../media/media-segment.model';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
+import {StringDoublePair} from 'app/core/openapi';
 
 /**
  * The SegmentScoreContainer is a ScoreContainer for MediaSegments. It is associated with
@@ -105,7 +106,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * the actual value to their respective arrays. The segmentId of the Similarity object
    * must be equal to the segmentId of the SegmentScoreContainer.
    */
-  public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number): boolean {
+  public addSimilarity(category: WeightedFeatureCategory, similarity: StringDoublePair, containerId: number): boolean {
     if (similarity.key !== this._mediaSegment.segmentId) {
       return false;
     }

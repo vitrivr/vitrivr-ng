@@ -2,9 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
-import {Tag} from '../../../shared/model/misc/tag.model';
-import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
-import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
+import {Tag} from '../../../core/openapi/model/tag';
+import {TagService} from '../../../core/openapi/api/tag.service';
+import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
@@ -24,7 +24,7 @@ export class TagQueryTermComponent implements OnInit {
   /** List of tag fields currently displayed. */
   private _tags: Tag[] = [];
 
-  constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
+  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar) {
     this._field = new FieldGroup(_tagService);
   }
 
@@ -131,13 +131,13 @@ export class FieldGroup {
    *
    * @param {TagsLookupService} _tags
    */
-  constructor(private _tags: TagsLookupService) {
+  constructor(private _tags: TagService) {
     this.filteredTags = this.formControl.valueChanges.pipe(
       debounceTime(250),
       startWith(''),
       map((tag: string) => {
         if (tag.length >= 3) {
-          return this._tags.matching(tag)
+          return this._tags.findTagsBy('matchingname', tag).pipe(first()).map(res => res.tags);
         } else {
           return EMPTY;
         }

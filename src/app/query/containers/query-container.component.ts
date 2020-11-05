@@ -1,11 +1,10 @@
 import {Component, Input, QueryList, ViewChildren} from '@angular/core';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
-import {QueryTermType} from '../../shared/model/queries/interfaces/query-term-type.interface';
 import {ConfigService} from '../../core/basics/config.service';
 import {Config} from '../../shared/model/config/config.model';
 import {Observable} from 'rxjs';
-import {QueryTermInterface} from '../../shared/model/queries/interfaces/query-term.interface';
 import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.component';
+import {QueryTerm} from 'app/core/openapi';
 
 @Component({
   selector: 'query-container',
@@ -72,7 +71,7 @@ export class QueryContainerComponent {
     }
   }
 
-  public onToggleButtonClicked(type: QueryTermType) {
+  public onToggleButtonClicked(type: QueryTerm.TypeEnum) {
     if (this.containerModel.hasTerm(type)) {
       this.containerModel.removeTerm(type);
     } else {
