@@ -1,6 +1,6 @@
+import {StringDoublePair} from 'app/core/openapi';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {Similarity} from '../../media/similarity.model';
 
 /**
  * This class defines an abstract container for compound scores, i.e. scores that are obtained as a result of multiple
@@ -59,7 +59,7 @@ export abstract class ScoreContainer {
    * @param similarity Similarity value
    * @param containerId The containerId this similarity corresponds to
    */
-  public abstract addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number): void;
+  public abstract addSimilarity(category: WeightedFeatureCategory, similarity: StringDoublePair, containerId: number): void;
 
   /**
    * Method can be used to update the score of a ScoreContainer given a list of

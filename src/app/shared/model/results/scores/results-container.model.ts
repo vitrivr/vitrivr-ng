@@ -12,7 +12,6 @@ import {MediaObject} from '../../media/media-object.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
 import {MediaSegment} from '../../media/media-segment.model';
-import {Similarity} from '../../media/similarity.model';
 import {MediaObjectMetadata} from '../../media/media-object-metadata.model';
 import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
 import 'rxjs-compat/add/operator/map';
@@ -30,6 +29,7 @@ import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
+import {StringDoublePair} from 'app/core/openapi';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -486,7 +486,7 @@ export class ResultsContainer {
     this._results_segments.forEach(seg => {
       seg.scores.forEach((categoryMap, containerId) => {
         categoryMap.forEach((score, category) => {
-          similarityList.push(<Similarity>{category: category.name, key: seg.segmentId, value: score, containerId: containerId})
+          similarityList.push(<StringDoublePair>{category: category.name, key: seg.segmentId, value: score, containerId: containerId})
         })
       });
     });

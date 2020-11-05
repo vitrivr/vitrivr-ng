@@ -3,9 +3,9 @@ import {SegmentScoreContainer} from './segment-score-container.model';
 import {MediaObject} from '../../media/media-object.model';
 import {MediaSegment} from '../../media/media-segment.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {Similarity} from '../../media/similarity.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaType} from '../../media/media-type.model';
+import { StringDoublePair } from 'app/core/openapi';
 
 /**
  * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects.
@@ -24,7 +24,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
   private _segmentScores: Map<string, SegmentScoreContainer> = new Map();
   /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet.  string is containerId*/
-  private _cache: Map<string, Array<[WeightedFeatureCategory, Similarity, number]>> = new Map();
+  private _cache: Map<string, Array<[WeightedFeatureCategory, StringDoublePair, number]>> = new Map();
 
   /**
    * Default constructor.
@@ -112,7 +112,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    * @param similarity The actual similarity entry.
    * @param containerId The query container id this similarity corresponds to
    */
-  public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number) {
+  public addSimilarity(category: WeightedFeatureCategory, similarity: StringDoublePair, containerId: number) {
     if (this._segmentScores.has(similarity.key)) {
       this._segmentScores.get(similarity.key).addSimilarity(category, similarity, containerId);
     } else if (this._cache.has(similarity.key)) {

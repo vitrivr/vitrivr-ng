@@ -1,7 +1,6 @@
 import {ScoreContainer} from './compound-score-container.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {Similarity} from '../../media/similarity.model';
 import {MediaSegment} from '../../media/media-segment.model';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
 import {StringDoublePair} from 'app/core/openapi';
