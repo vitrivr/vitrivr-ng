@@ -8,6 +8,13 @@ Vitrivr NG is a web-based user interface developed to be used with the latest ve
 
 For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/wiki)
 
+## OpenAPI
+
+This project requires openapi services to allow communication with Cineast. Make sure the API docs have been exported from Cineast beforehand (with `./gradlew generateOpenApiSpecs`) and that the path to Cineast is adjusted in the following command to match your local directory structure. Then, please start the generator from your root Vitrivr NG folder.
+
+`npx @openapitools/openapi-generator-cli generate -i ../cineast/docs/openapi.json -g typescript-angular -o src/app/core/openapi`
+
+
 ## Development server
 
 From the project folder, run `ng serve` to start a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.

@@ -1,4 +1,5 @@
-
+import {ApiModule} from './core/openapi';
+import {HttpClientModule} from '@angular/common/http';
 
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
@@ -19,6 +20,8 @@ import {ResultsModule} from './results/results.module';
 
 @NgModule({
   imports: [
+    ApiModule,
+    HttpClientModule,
     CoreModule,
     BrowserModule,
     MaterialModule,

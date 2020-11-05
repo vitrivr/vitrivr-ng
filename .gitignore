@@ -2,6 +2,8 @@ deploy.log
 
 src/app/**/*.js
 src/app/**/*.map
+src/app/core/openapi/**
+!src/app/core/openapi/.gitkeep
 
 # compiled output
 /dist
