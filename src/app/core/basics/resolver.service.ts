@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ConfigService} from './config.service';
-import {MediaType, MediaTypes} from '../../shared/model/media/media-type.model';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import {MediaObject} from '../../shared/model/media/media-object.model';
-import {MediaSegment} from '../../shared/model/media/media-segment.model';
+import { MediaObjectDescriptor, MediaSegmentDescriptor } from '../openapi';
 
 /**
  * Definition of the possible tokens that can be used to build the URL.
@@ -26,7 +24,7 @@ enum Token {
 @Injectable()
 export class ResolverService {
   /** A map containing the definition of file-suffices for thumbnails per mediatype */
-  private suffices: Map<MediaType, string> = new Map();
+  private suffices: Map<MediaObjectDescriptor.MediatypeEnum, string> = new Map();
 
   /** Host string used when resolving URL's to thumbnails. */
   private host_thumbnails: string;
@@ -58,7 +56,7 @@ export class ResolverService {
       this.host_objects = config.get('resources.host_objects');
       let default_suffix: string = config.get('resources.suffix_default');
       let suffices = config.get('resources.suffix');
-      for (let type of MediaTypes) {
+      for (let type of Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key])) {
         let suffix: string = suffices[type];
         if (typeof suffix == 'string') {
           this.suffices.set(type, (suffix.charAt(0) == '.' ? '' : '.') + suffix);
@@ -74,7 +72,7 @@ export class ResolverService {
    *
    * @param object The MediaObject for which to return the path.
    */
-  public pathToObject(object: MediaObject) {
+  public pathToObject(object: MediaObjectDescriptor) {
     let rep = {};
     rep[Token.OBJECT_ID] = object.objectId;
     rep[Token.OBJECT_NAME] = object.name;
@@ -92,7 +90,7 @@ export class ResolverService {
    * @param {MediaSegment} segment The MediaSegment for which to return the path / URL
    * @return {string}
    */
-  public pathToThumbnail(object: MediaObject, segment: MediaSegment) {
+  public pathToThumbnail(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor) {
     let rep = {};
     rep[Token.OBJECT_ID] = object.objectId;
     rep[Token.OBJECT_NAME] = object.name;
@@ -118,17 +116,17 @@ export class ResolverService {
   }
 
 
-  private static prefixForMediatype(mediatype: MediaType) {
+  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
     switch (mediatype) {
-      case 'AUDIO':
+      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
         return 'a_';
-      case 'IMAGE':
+      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
         return 'i_';
-      case 'IMAGE_SEQUENCE':
+      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
         return 'is_';
-      case 'MODEL3D':
+      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
         return 'm_';
-      case 'VIDEO':
+      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
         return 'v_';
       default:
         return '';

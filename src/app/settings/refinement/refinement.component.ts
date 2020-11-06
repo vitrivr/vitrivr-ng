@@ -12,7 +12,6 @@ import {ContextKey, InteractionEventComponent} from '../../shared/model/events/i
 import {filter} from 'rxjs/operators';
 import {FilterService} from '../../core/queries/filter.service';
 import {ColorLabel} from '../../shared/model/misc/colorlabel.model';
-import {MediaType} from '../../shared/model/media/media-type.model';
 import {ConfigService} from '../../core/basics/config.service';
 import {AbstractRefinementOption} from './refinementoption.model';
 import {CheckboxRefinementModel} from './checkboxrefinement.model';
@@ -20,6 +19,7 @@ import {SliderRefinementModel} from './sliderrefinement.model';
 import {FilterType} from './filtertype.model';
 import {SelectionService} from '../../core/selection/selection.service';
 import {Tag} from '../../core/selection/tag.model';
+import { MediaObjectDescriptor } from 'app/core/openapi/model/mediaObjectDescriptor';
 
 @Component({
 
@@ -141,7 +141,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
    * Triggered whenever the type filter selection changes. Reports the change to the FilterService,
    * which will update the filter settings accordingly.
    */
-  public onTypeFilterChanged(type: MediaType, event: MatCheckboxChange) {
+  public onTypeFilterChanged(type: MediaObjectDescriptor.MediatypeEnum, event: MatCheckboxChange) {
     if (!this._queryService.results) {
       return;
     }

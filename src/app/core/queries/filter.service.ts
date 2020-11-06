@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {MediaType, MediaTypes} from '../../shared/model/media/media-type.model';
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {ColorLabel, ColorLabels} from '../../shared/model/misc/colorlabel.model';
 import {SelectionService} from '../selection/selection.service';
 import {Tag} from '../selection/tag.model';
+import { MediaObjectDescriptor } from '../openapi/model/mediaObjectDescriptor';
 
 
 /**
@@ -25,7 +25,7 @@ export class FilterService {
   _id: string;
 
   constructor(private _selectionService: SelectionService) {
-    MediaTypes.forEach(v => this._mediatypes.set(v, false));
+    Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._mediatypes.set(v, false));
     ColorLabels.forEach(v => this._dominant.set(v, false));
   }
 
@@ -33,12 +33,12 @@ export class FilterService {
    * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects
    * that match one of the MediaTypes contained in this array will pass the filter.
    */
-  private _mediatypes: Map<MediaType, boolean> = new Map();
+  private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
   /**
    * Returns an editable map of the mediatypes that should be used for filtering
    */
-  get mediatypes(): Map<MediaType, boolean> {
+  get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
     return this._mediatypes;
   }
 
@@ -121,7 +121,7 @@ export class FilterService {
   /**
    * Returns a copy of the list of MediaTypes that should be used for filtering.
    */
-  get mediatypeKeys(): MediaType[] {
+  get mediatypeKeys(): MediaObjectDescriptor.MediatypeEnum[] {
     return Array.from(this._mediatypes.keys());
   }
 

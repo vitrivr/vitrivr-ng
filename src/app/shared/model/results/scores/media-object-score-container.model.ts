@@ -1,20 +1,17 @@
 import {ScoreContainer} from './compound-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
-import {MediaObject} from '../../media/media-object.model';
-import {MediaSegment} from '../../media/media-segment.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
-import {MediaType} from '../../media/media-type.model';
-import { StringDoublePair } from 'app/core/openapi';
+import { MediaObjectDescriptor, MediaSegmentDescriptor, StringDoublePair } from 'app/core/openapi';
 
 /**
  * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects.
  * It corresponds to a single MediaObject (e.g. a video, audio or 3d-model file) and holds the score for that object.
  * That score is determined by the scores of the SegmentScoreContainers hosted by a concrete instance of this class.
  */
-export class MediaObjectScoreContainer extends ScoreContainer implements MediaObject {
+export class MediaObjectScoreContainer extends ScoreContainer implements MediaObjectDescriptor {
   /** Type of the MediaObject. */
-  public mediatype: MediaType;
+  public mediatype: MediaObjectDescriptor.MediatypeEnum;
   /** Name of the MediaObject. */
   public name: string;
   /** Path of the MediaObject. */
@@ -94,7 +91,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    *
    * @param segment MediaSegment to add.
    */
-  public addMediaSegment(segment: MediaSegment): SegmentScoreContainer {
+  public addMediaSegment(segment: MediaSegmentDescriptor): SegmentScoreContainer {
     const ssc = this.uniqueSegmentScoreContainer(segment);
     if (this._cache.has(ssc.segmentId)) {
       this._cache.get(ssc.segmentId).forEach(v => {
@@ -145,8 +142,8 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /**
    * Serializes this MediaObjectScoreContainer into a plan JavaScript object.
    */
-  public serialize(): MediaObject {
-    return <MediaObject>{
+  public serialize(): MediaObjectDescriptor {
+    return <MediaObjectDescriptor>{
       objectId: this.objectId,
       mediatype: this.mediatype,
       name: this.name,
@@ -163,7 +160,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    * @param {string} segment MediaSegment for which to create a SegmentScoreContainer.
    * @return {SegmentScoreContainer}
    */
-  private uniqueSegmentScoreContainer(segment: MediaSegment): SegmentScoreContainer {
+  private uniqueSegmentScoreContainer(segment: MediaSegmentDescriptor): SegmentScoreContainer {
     if (!this._segmentScores.has(segment.segmentId)) {
       const ssc = new SegmentScoreContainer(segment, this);
       this._segmentScores.set(segment.segmentId, ssc);

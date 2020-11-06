@@ -2,7 +2,6 @@ import {Component, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MetadataService} from '../core/openapi/api/metadata.service';
 import {QueryService} from '../core/queries/query.service';
-import {MediaObject} from '../shared/model/media/media-object.model';
 import {ResolverService} from '../core/basics/resolver.service';
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {Location} from '@angular/common';

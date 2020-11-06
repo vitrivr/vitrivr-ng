@@ -1,4 +1,3 @@
-import {MediaType} from '../../media/media-type.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
@@ -8,11 +7,8 @@ import {SegmentQueryResult} from '../../messages/interfaces/responses/query-resu
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FeatureCategories} from '../feature-categories.model';
-import {MediaObject} from '../../media/media-object.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
-import {MediaSegment} from '../../media/media-segment.model';
-import {MediaObjectMetadata} from '../../media/media-object-metadata.model';
 import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
 import 'rxjs-compat/add/operator/map';
 import 'rxjs-compat/add/operator/merge';
@@ -29,7 +25,7 @@ import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
-import {StringDoublePair} from 'app/core/openapi';
+import {MediaObjectDescriptor, MediaObjectMetadataDescriptor, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from 'app/core/openapi';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -111,14 +107,14 @@ export class ResultsContainer {
    * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
    * be filtered).
    */
-  private _mediatypes: Map<MediaType, boolean> = new Map();
+  private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
   /**
    * Getter for the list of mediatypes.
    *
    * @return {Map<MediaType, boolean>}
    */
-  get mediatypes(): Map<MediaType, boolean> {
+  get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
     return this._mediatypes;
   }
 
@@ -155,11 +151,11 @@ export class ResultsContainer {
   // tslint:disable-next-line:member-ordering
   public static deserialize(data: any): ResultsContainer {
     const container = new ResultsContainer(data['queryId']);
-    container.processObjectMessage(<ObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
-    container.processSegmentMessage(<SegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
+    container.processObjectMessage(<ObjectQueryResult>{queryId: container.queryId, content: <MediaObjectDescriptor[]>data['objects']});
+    container.processSegmentMessage(<SegmentQueryResult>{queryId: container.queryId, content: <MediaSegmentDescriptor[]>data['segments']});
     container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
       queryId: container.queryId,
-      content: <MediaObjectMetadata[]>data['objectMetadata']
+      content: <MediaObjectMetadataDescriptor[]>data['objectMetadata']
     });
     container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{
       queryId: container.queryId,
@@ -273,7 +269,7 @@ export class ResultsContainer {
    * @param type MediaType that should be changed.
    * @param active New filter status. True = is visible, false = will be filtered
    */
-  public toggleMediatype(type: MediaType, active: boolean) {
+  public toggleMediatype(type: MediaObjectDescriptor.MediatypeEnum, active: boolean) {
     if (this._mediatypes.has(type)) {
       this._mediatypes.set(type, active);
     }
@@ -495,7 +491,7 @@ export class ResultsContainer {
       objects: this._results_objects.map(obj => obj.serialize()),
       segments: this._results_segments.map(seg => seg.serialize()),
       objectMetadata: this.flatten(this._results_objects.map(obj => {
-        const metadata: MediaObjectMetadata[] = [];
+        const metadata: MediaObjectMetadataDescriptor[] = [];
         obj.metadata.forEach((v, k) => {
           metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
@@ -531,7 +527,7 @@ export class ResultsContainer {
    * @param {MediaObject} object The optional MediaObject. If set, the properties of the unique MediaObjectScoreContainer are updated.
    * @return {MediaObjectScoreContainer}
    */
-  private uniqueMediaObjectScoreContainer(objectId: string, object?: MediaObject): MediaObjectScoreContainer {
+  private uniqueMediaObjectScoreContainer(objectId: string, object?: MediaObjectDescriptor): MediaObjectScoreContainer {
     let mosc;
     if (this._objectid_to_object_map.has(objectId)) {
       mosc = this._objectid_to_object_map.get(objectId);

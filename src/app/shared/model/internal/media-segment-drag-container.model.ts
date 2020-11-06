@@ -1,7 +1,5 @@
-import {MediaType} from '../media/media-type.model';
-import {MediaSegment} from '../media/media-segment.model';
+import { MediaObjectDescriptor, MediaSegmentDescriptor } from 'app/core/openapi';
 import {SegmentScoreContainer} from '../results/scores/segment-score-container.model';
-import {MediaObject} from '../media/media-object.model';
 
 /**
  * This is an internal helper class used for Drag & Drop operatoin. It contains information on a dragged MediaSegment.
@@ -15,7 +13,7 @@ export class MediaSegmentDragContainer {
    * @param {MediaType} _object The MediaObject packaged in this MediaSegmentDragContainer
    * @param {MediaSegment} _segment The MediaSegment packaged in this MediaSegmentDragContainer
    */
-  private constructor(private _object: MediaObject, private _segment: MediaSegment) {
+  private constructor(private _object: MediaObjectDescriptor, private _segment: MediaSegmentDescriptor) {
   }
 
   /**
@@ -23,7 +21,7 @@ export class MediaSegmentDragContainer {
    *
    * @return {MediaType}
    */
-  get object(): MediaObject {
+  get object(): MediaObjectDescriptor {
     return this._object;
   }
 
@@ -32,7 +30,7 @@ export class MediaSegmentDragContainer {
    *
    * @return {MediaSegment}
    */
-  get segment(): MediaSegment {
+  get segment(): MediaSegmentDescriptor {
     return this._segment;
   }
 

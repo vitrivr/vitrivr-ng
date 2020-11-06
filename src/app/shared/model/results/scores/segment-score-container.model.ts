@@ -1,16 +1,15 @@
 import {ScoreContainer} from './compound-score-container.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
-import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {MediaSegment} from '../../media/media-segment.model';
+import {WeightedFeatureCategory} from '../weighted-feature-category.model'
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
-import {StringDoublePair} from 'app/core/openapi';
+import {MediaSegmentDescriptor, StringDoublePair} from 'app/core/openapi';
 
 /**
  * The SegmentScoreContainer is a ScoreContainer for MediaSegments. It is associated with
  * a single segment (e.g. a shot of a video) and holds the score for that segment. That
  * score is determined by the actual scores of the segment (per category).
  */
-export class SegmentScoreContainer extends ScoreContainer implements MediaSegment {
+export class SegmentScoreContainer extends ScoreContainer implements MediaSegmentDescriptor {
   /** ID of the object this SegmentScoreContainer belongsTo. */
   public readonly objectId: string;
   /** ID of the segment this SegmentScoreContainer belongsTo (objectId + segmentId = unique). */
@@ -32,7 +31,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * @param {MediaSegment} _mediaSegment Reference to the MediaSegment this container has been created for.
    * @param {MediaObjectScoreContainer} _objectScoreContainer Reference to the MediaObjectScoreContainer that contains this SegmentScoreContainer.
    */
-  public constructor(private readonly _mediaSegment: MediaSegment, private readonly _objectScoreContainer: MediaObjectScoreContainer) {
+  public constructor(private readonly _mediaSegment: MediaSegmentDescriptor, private readonly _objectScoreContainer: MediaObjectScoreContainer) {
     super();
 
     /* Make a logic check: objectId of MediaSegment must match that of the MediaObjectScoreContainer. */
@@ -140,8 +139,8 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
   /**
    * Serializes this SegmentScoreContainer into a plain JavaScript object.
    */
-  public serialize(): MediaSegment {
-    return <MediaSegment>{
+  public serialize(): MediaSegmentDescriptor {
+    return <MediaSegmentDescriptor>{
       segmentId: this.segmentId,
       objectId: this.objectId,
       sequenceNumber: this.sequenceNumber,

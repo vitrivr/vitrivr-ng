@@ -1,5 +1,4 @@
-import {MediaType} from '../media/media-type.model';
-import {MediaObject} from '../media/media-object.model';
+import { MediaObjectDescriptor } from 'app/core/openapi';
 import {MediaObjectScoreContainer} from '../results/scores/media-object-score-container.model';
 
 /**
@@ -14,7 +13,7 @@ export class MediaObjectDragContainer {
    * @param {MediaType} _mediatype The type of the MediaObject the provided segment belongs to.
    * @param {MediaSegment} _object The MediaObject packaged in this MediaObjectDragContainer
    */
-  private constructor(private _mediatype: MediaType, private _object: MediaObject) {
+  private constructor(private _mediatype: MediaObjectDescriptor.MediatypeEnum, private _object: MediaObjectDescriptor) {
   }
 
   /**
@@ -22,7 +21,7 @@ export class MediaObjectDragContainer {
    *
    * @return {MediaType}
    */
-  get mediatype(): MediaType {
+  get mediatype(): MediaObjectDescriptor.MediatypeEnum {
     return this._mediatype;
   }
 
@@ -31,7 +30,7 @@ export class MediaObjectDragContainer {
    *
    * @return {MediaObject}
    */
-  get object(): MediaObject {
+  get object(): MediaObjectDescriptor {
     return this._object;
   }
 

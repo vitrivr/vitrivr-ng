@@ -27,14 +27,9 @@ export class DistinctElementLookupService extends CineastRestAPI {
     if (this.cache[table + column]) {
       return new BehaviorSubject(this.cache[table + column])
     }
-    return this._miscService.findDistinctElementsByColumn(new ColumnSpecification(table, column)).pipe(first()).map(res => {
+    return this._miscService.findDistinctElementsByColumn({table: table, column: column}).pipe(first()).map(res => {
       this.cache[table + column] = res.distinctElements;
       return res.distinctElements
     });
-  }
-}
-
-class ColumnSpecification {
-  constructor(public table: string, public column: string) {
   }
 }
