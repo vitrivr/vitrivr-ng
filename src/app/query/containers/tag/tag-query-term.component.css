@@ -3,8 +3,8 @@
 }
 
 .showPreferences {
-   display: none;
- }
+  display: none;
+}
 
 .mat-chip-item:hover .showPreferences {
   display: block;
@@ -16,4 +16,16 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
+}
+
+.greene-icon {
+  color: limegreen;
+}
+
+.yellow-icon {
+  color: orange;
+}
+
+.red-icon {
+  color: red;
 }

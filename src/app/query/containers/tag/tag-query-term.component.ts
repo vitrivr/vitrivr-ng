@@ -142,7 +142,7 @@ export class TagQueryTermComponent implements OnInit {
    *  */
   private onPreferenceChange(preference, tag): void {
     tag.preference = preference;
-    console.log(this.getPreference(tag));
+    // console.log(this.getPreference(tag));
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
     })));
