@@ -68,7 +68,7 @@ export class QueryService {
   tagOccurrenceArray: Tag[];
   captionsOccurrenceMap: Map<string, number>;
 
-  message: string;
+  topTags: string;
 
 
   constructor(@Inject(HistoryService) private _history,
@@ -89,7 +89,7 @@ export class QueryService {
         this._results.setScoreFunction(this._scoreFunction);
       }
     });
-    this.resultSetInfoService.messageSource.subscribe(message => this.message = message);
+    this.resultSetInfoService.topTagsSource.subscribe(message => this.topTags = message);
   }
 
   /**

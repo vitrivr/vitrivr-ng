@@ -5,26 +5,66 @@
     set: {{queryService.results.segmentCount}}</p>
 
   <h3 class="mat-list-custom">Top 10 related tags</h3>
-  <!--  <mat-list-item *ngFor="let item of _tagOccurrenceMap">
-      <p matLine>{{item.}}:{{_tagOccurrenceMap.get(item)}}</p>
-
-    </mat-list-item>-->
-  <mat-list-item *ngFor="let item of _tagOccurrence ">
+<!--  <mat-list-item *ngFor="let item of tagOccurrence ">
     <h5 class="mat-h5" matLine>{{item.name}} ({{item.id}}) : {{item.count}}</h5>
-  </mat-list-item>
+  </mat-list-item>-->
+
+  <mat-chip-list>
+    <div class="container">
+      <div *ngFor="let tag of tagOccurrence" class="chip">
+        <mat-chip id="{{tag.id}}">
+          <p class="tag">{{tag.name}} ({{tag.id}})</p>
+          <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
+                  (mousedown)="menuTrigger.openMenu()" matTooltip="Add tag to query"
+                  class="grey-icon">
+            <mat-icon *ngIf="ifPreferenceExists(tag)==false">add_circle</mat-icon>
+            <mat-icon *ngIf="getPreference(tag)=='must'" class="greene-icon"
+                      matTooltip="Set preference for this tag">favorite
+            </mat-icon>
+            <mat-icon *ngIf="getPreference(tag)=='could'" class="yellow-icon"
+                      matTooltip="Set preference for this tag">thumb_up
+            </mat-icon>
+            <mat-icon *ngIf="getPreference(tag)=='not'" class="red-icon"
+                      matTooltip="Set preference for this tag">not_interested
+            </mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" [overlapTrigger]="false">
+          <span (mouseleave)="menuTrigger.closeMenu()">
+            <mat-button-toggle-group matTooltip="Set preference for this tag">
+            <mat-button-toggle (change)="onPreferenceChange(preferenceMust, tag)" value="must"
+                               class="greene-icon">
+              <mat-icon>favorite</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (change)="onPreferenceChange(preferenceCould, tag)" value="could"
+                               class="yellow-icon">
+              <mat-icon>thumb_up</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (change)="onPreferenceChange(preferenceNot, tag)" value="not"
+                               class="red-icon">
+              <mat-icon>not_interested</mat-icon>
+              </mat-button-toggle>
+              </mat-button-toggle-group>
+          </span>
+          </mat-menu>
+        </mat-chip> {{tag.count}}
+      </div>
+    </div>
+  </mat-chip-list>
+
+
 
 
   <h3 class="mat-list-custom">Top 10 words in captions</h3>
 
-  <mat-list-item *ngFor="let item of _captionOccurrence">
+  <mat-list-item *ngFor="let item of captionOccurrence">
     <h5 class="mat-h5" matLine>{{item.caption}} : {{item.occurrence}}</h5>
   </mat-list-item>
 
   <h3 class="mat-list-custom">Score distribution</h3>
-  <p *ngIf="_scores.length>0">0.8 - 1.0: {{_scores[0]}}</p>
-  <p *ngIf="_scores.length>0">0.6 - 0.8: {{_scores[1]}}</p>
-  <p *ngIf="_scores.length>0">0.4 - 0.6: {{_scores[2]}}</p>
-  <p *ngIf="_scores.length>0">under 0.4: {{_scores[3]}}</p>
+  <p *ngIf="scores.length>0">0.8 - 1.0: {{scores[0]}}</p>
+  <p *ngIf="scores.length>0">0.6 - 0.8: {{scores[1]}}</p>
+  <p *ngIf="scores.length>0">0.4 - 0.6: {{scores[2]}}</p>
+  <p *ngIf="scores.length>0">under 0.4: {{scores[3]}}</p>
 
 </mat-list>
 

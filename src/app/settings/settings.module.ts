@@ -11,9 +11,10 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {Ng5SliderModule} from 'ng5-slider';
 import {ContainerPipesModule} from '../shared/pipes/containers/container-pipes.module';
 import { InformationComponent } from './information/information.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, Ng5SliderModule, ContainerPipesModule],
+  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, Ng5SliderModule, ContainerPipesModule, MatButtonToggleModule],
   declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent, InformationComponent],
   exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent]
 })

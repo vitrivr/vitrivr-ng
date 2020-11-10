@@ -7,24 +7,31 @@ import {Caption} from '../../shared/model/misc/caption.model';
   providedIn: 'root'
 })
 export class ResultSetInfoService {
-  one = 'one';
   topTagsArray: Tag[];
-  private messageSource = new BehaviorSubject(this.topTagsArray);
-  currentMessage = this.messageSource.asObservable();
+  private topTagsSource = new BehaviorSubject(this.topTagsArray);
+  currentTopTagsArray = this.topTagsSource.asObservable();
 
   topCaptionsArray: Caption[];
   private captionSource = new BehaviorSubject(this.topCaptionsArray);
   currentCaption = this.captionSource.asObservable();
 
+  newTagForQuery: Tag;
+  private newTagForQuerySource = new BehaviorSubject(this.newTagForQuery);
+  currentNewTagForQuery = this.newTagForQuerySource.asObservable();
+
   constructor() {
   }
 
   changeMessage(message: Tag[]) {
-    this.messageSource.next(message)
+    this.topTagsSource.next(message)
   }
 
   changeCaption(message: Caption[]) {
     this.captionSource.next(message)
+  }
+
+  changeTagForQuery(message: Tag) {
+    this.newTagForQuerySource.next(message);
   }
 
 }

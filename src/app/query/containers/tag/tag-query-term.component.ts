@@ -7,12 +7,8 @@ import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {ResultSetInfoService} from '../../../core/queries/result-set-info.service';
 
-enum Emoji {
-  Must = 'Must',
-  Could = 'Could',
-  Not = 'Not',
-}
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +16,7 @@ enum Emoji {
 
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'qt-tag',
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
@@ -36,12 +33,16 @@ export class TagQueryTermComponent implements OnInit {
   private _tags: Tag[] = [];
   /** Map of tags and their preference*/
   private _preferenceMap: Map<string, string>;
-  preferenceMust = Preference.MUST;
-  preferenceCould = Preference.COULD;
-  preferenceNot = Preference.NOT;
+
+  private preferenceMust = Preference.MUST;
+  private preferenceCould = Preference.COULD;
+  private preferenceNot = Preference.NOT;
+
+  /** Tag that is added to query from top x tags (information on result set) */
+  private _newTagForQuery: Tag;
 
 
-  constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
+  constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar, private _resultSetInfoService: ResultSetInfoService) {
     this._field = new FieldGroup(_tagService);
     this._preferenceMap = new Map<string, string>();
   }
@@ -50,6 +51,12 @@ export class TagQueryTermComponent implements OnInit {
     if (this.tagTerm.data) {
       this._tags = this.tagTerm.tags;
     }
+    this._resultSetInfoService.currentNewTagForQuery.subscribe(message => {
+      console.log('MADE IT TO QUERY TERM COMPONENT!!! ', message);
+      if (message) {
+        this.addTag(message);
+      }
+    });
   }
 
   get tags() {
@@ -94,6 +101,8 @@ export class TagQueryTermComponent implements OnInit {
    * @param {Tag} tag The tag that should be added.
    */
   public addTag(tag: Tag) {
+    console.log('adding to _tags: ', tag);
+
     this._tags.push(tag);
     this.field.formControl.setValue('');
     this.tagTerm.tags = this._tags;
@@ -124,7 +133,7 @@ export class TagQueryTermComponent implements OnInit {
     if (index > -1) {
       this._tags.splice(index, 1);
       // delete tag from _preference map
-      this._preferenceMap.delete(tag.id);
+      this.preferences.delete(tag.id);
     }
     this.tagTerm.tags = this._tags;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
@@ -142,16 +151,13 @@ export class TagQueryTermComponent implements OnInit {
    *  */
   private onPreferenceChange(preference, tag): void {
     tag.preference = preference;
-    // console.log(this.getPreference(tag));
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
     })));
-    // console.log('adding to map: ', preference, tag);
     this.sortTagsByPreference();
   }
 
   private getPreference(tag): string {
-    // console.log('getPreference: ', tag.preference);
     return tag.preference;
   }
 
@@ -165,7 +171,6 @@ export class TagQueryTermComponent implements OnInit {
     const sort = this._tags.sort(function (a, b) {
       return a.preference > b.preference ? 1 : a.preference < b.preference ? -1 : 0
     })
-    // console.log('sorted tags: ', this._tags);
   }
 }
 
