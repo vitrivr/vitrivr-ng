@@ -3,17 +3,17 @@
     "host" : "default"
   },
   "resources": {
-    "host_thumbnails" : "http://10.34.58.146/thumbnails/:o/:s.jpg",
-    "host_objects": "http://10.34.58.146/objects/:n/:S.jpg"
+    "host_thumbnails" : "http://localhost/thumbnails/:o/:s.jpg",
+    "host_objects": "http://localhost/objects/:o.mp4"
   },
   "competition": {
     "teamid": 2,
     "toolid": 1,
-    "endpoint": "http://10.34.58.45:9000",
-    "log": true,
-    "lsc": true,
+    "endpoint": "https://interactivevideoretrieval.com/",
+    "log": false,
+    "lsc": false,
     "vbs": false,
-    "dres": true
+    "dres": false
   },
   "mlt": {
     "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
@@ -39,30 +39,17 @@
       ]
     },
     "boolean": [
-      ["Hour", "RANGE", "features_table_lsc20meta.p_hour", 0, 23],
-      ["Day of Week", "OPTIONS", "features_table_lsc20meta.p_day_of_week", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
-      ["Location Semantic", "DYNAMICOPTIONS", "features_table_lsc20meta.semantic_name", "features_table_lsc20meta", "semantic_name"],
-      ["Year", "DYNAMICOPTIONS", "features_table_lsc20meta.p_year", "features_table_lsc20meta", "p_year"],
-      ["Month", "DYNAMICOPTIONS", "features_table_lsc20meta.p_month", "features_table_lsc20meta","p_month"],
-      ["Activity Type (Transport)", "DYNAMICOPTIONS", "features_table_lsc20meta.activity_type", "features_table_lsc20meta","activity_type"],
-      ["Timezone", "DYNAMICOPTIONS", "features_table_lsc20meta.timezone", "features_table_lsc20meta", "timezone"],
-      ["[Segment Id]", "TEXT", "features_table_lsc20meta.segmentid"],
-      ["(Minute Id)", "TEXT", "features_table_lsc20meta.minute_id"],
-      ["(Elevation)", "NUMERIC", "features_table_lsc20meta.elevation"],
-      ["(Speed)", "NUMERIC", "features_table_lsc20meta.speed"],
-      ["(Heart)", "NUMERIC", "features_table_lsc20meta.heart"],
-      ["(Calories)", "TEXT", "features_table_lsc20meta.calories"]
+      ["Example Freetext", "TEXT", "features_daily.text"],
+      ["Example Dropdown", "OPTIONS", "features.option", "ONE", "TWO", "THREE"],
+      ["Example Range", "RANGE", "features.range", 5, 20],
+      ["Example Dynamic Options", "DYNAMICOPTIONS", "features.option", "features", "option"]
     ],
     "staged": true
   },
   "refinement": {
     "filters": [
-      ["LSCMETA.semantic_name", "CHECKBOX"],
-      ["LSCMETA.timezone", "CHECKBOX"],
-      ["LSCMETA.p_day_of_week", "CHECKBOX"],
-      ["LSCMETA.p_hour", "SLIDER"],
-      ["LSCMETA.p_month", "CHECKBOX"],
-      ["LSCMETA.p_year", "CHECKBOX"]
+      ["dominantcolor.color", "CHECKBOX"],
+      ["technical.duration", "SLIDER"]
     ]
   }
 }
