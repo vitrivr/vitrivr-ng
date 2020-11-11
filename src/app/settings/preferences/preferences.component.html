@@ -38,6 +38,12 @@
     <button (click)="onDownloadResultsLog()" mat-raised-button matTooltip="Download Result Log"><mat-icon>cloud_download</mat-icon></button>
     <button (click)="onClearResultsLog()" color="warn" mat-raised-button matTooltip="Clear Result Log"><mat-icon>delete</mat-icon></button>
   </mat-list-item>
+
+  <h2 mat-subheader>Submission log</h2>
+  <mat-list-item fxLayout="row" fxLayoutAlign="center">
+    <button (click)="onDownloadSubmissionLog()" mat-raised-button matTooltip="Download Submission Log"><mat-icon>cloud_download</mat-icon></button>
+    <button (click)="onClearSubmissionLog()" color="warn" mat-raised-button matTooltip="Clear Submission Log"><mat-icon>delete</mat-icon></button>
+  </mat-list-item>
 </mat-list>
 
 
