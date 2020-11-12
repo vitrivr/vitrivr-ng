@@ -1,3 +1,4 @@
+import { QueryTerm } from 'app/core/openapi/model/queryTerm';
 import {AbstractQueryTerm} from '../abstract-query-term.model';
 import {SemanticCategory} from './semantic-category.model';
 
@@ -7,7 +8,7 @@ export class SemanticQueryTerm extends AbstractQueryTerm {
   private _image: string;
 
   constructor() {
-    super('SEMANTIC', ['semantic']);
+    super(QueryTerm.TypeEnum.SEMANTIC, ['semantic']);
   }
 
   /**
