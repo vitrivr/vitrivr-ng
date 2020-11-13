@@ -15,6 +15,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {EvaluationModule} from './evaluation/evaluation.module';
 import {MaterialModule} from './material.module';
 import {ResultsModule} from './results/results.module';
+import {MatBadgeModule} from '@angular/material/badge';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import {ResultsModule} from './results/results.module';
     ObjectdetailsModule,
     SettingsModule,
     QuerySidebarModule,
+    MatBadgeModule
   ],
   declarations: [AppComponent, PingComponent],
   providers: [],

@@ -18,7 +18,6 @@
   margin: 8px 0 5px;
 }
 
-
 .greene-icon {
   color: limegreen;
 }
@@ -35,3 +34,18 @@
   color: grey;
   transform: scale(0.7);
 }
+
+.mat-badge-content {
+  width: auto;
+  display: grid;
+  min-width: 29px;
+  min-height: 15px;
+  text-align: center;
+  align-items: center;
+  padding: 5px 3px;
+  top: -20px;
+  right: -22px;
+  font-size: 12px;
+}
+
+

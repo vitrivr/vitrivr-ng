@@ -1,18 +1,16 @@
 <h3>Information on result set</h3>
 
 <mat-list dense>
-  <p *ngIf="queryService.results">Number of segments in result
-    set: {{queryService.results.segmentCount}}</p>
+  <h3 class="mat-list-custom" *ngIf="queryService.results">
+    {{queryService.results.segmentCount}} segments in result set</h3>
 
   <h3 class="mat-list-custom">Top 10 related tags</h3>
-<!--  <mat-list-item *ngFor="let item of tagOccurrence ">
-    <h5 class="mat-h5" matLine>{{item.name}} ({{item.id}}) : {{item.count}}</h5>
-  </mat-list-item>-->
-
   <mat-chip-list>
     <div class="container">
       <div *ngFor="let tag of tagOccurrence" class="chip">
-        <mat-chip id="{{tag.id}}">
+
+        <mat-chip id="{{tag.id}}" matBadge="{{tag.count}}" matBadgePosition="after"
+                  matBadgeColor="accent" matBadgeSize="large">
           <p class="tag">{{tag.name}} ({{tag.id}})</p>
           <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
                   (mousedown)="menuTrigger.openMenu()" matTooltip="Add tag to query"
@@ -46,12 +44,10 @@
               </mat-button-toggle-group>
           </span>
           </mat-menu>
-        </mat-chip> {{tag.count}}
+        </mat-chip>
       </div>
     </div>
   </mat-chip-list>
-
-
 
 
   <h3 class="mat-list-custom">Top 10 words in captions</h3>
