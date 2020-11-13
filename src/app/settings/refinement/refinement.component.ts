@@ -50,6 +50,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
 
   private _timer;
 
+  private _idFilterValue: string;
+
   constructor(private _queryService: QueryService,
               private _filterService: FilterService,
               private _eventBusService: EventBusService,
@@ -195,8 +197,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
-  public resetMetadataFilters() {
-    this._filterService.clearMetadata();
+  public resetFilters() {
+    this._filterService.clear()
   }
 
   public mdFilterChecked(category, value): boolean {
@@ -216,6 +218,16 @@ export class RefinementComponent implements OnInit, OnDestroy {
 
   public mdCatOperatorChecked(): boolean {
     return this._filterService._useOrForMetadataCategoriesFilter
+  }
+
+  public get idFilterValue(): string {
+    return this._idFilterValue
+  }
+
+  public set idFilterValue(id: string) {
+    this._idFilterValue = id
+    this._filterService._id = id;
+    this._filterService.update()
   }
 
   public onMdCatOperatorChange(event: MatSlideToggleChange) {

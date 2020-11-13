@@ -40,7 +40,7 @@
   <mat-tab-group>
     <mat-tab label="Segments ({{(mediaobject|async).segments.length}})">
       <div fxLayout="row" fxLayoutGap="5px" fxLayoutWrap="wrap">
-        <div (dragstart)="onSegmentDrag($event, segment)" *ngFor="let segment of ((mediaobject|async).segments | OrderByScorePipe)" class="tile"
+        <div (dragstart)="onSegmentDrag($event, segment)" *ngFor="let segment of ((mediaobject|async).segments | orderBy:orderType)" class="tile"
              draggable="true" fxFlex="200px">
           <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
             <p [style.margin]="'0'">{{segment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>

@@ -7,10 +7,13 @@ import {ContextKey, InteractionEventComponent} from '../shared/model/events/inte
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {from} from 'rxjs';
-import {bufferCount, flatMap, map} from 'rxjs/operators';
+import {bufferCount, map} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
 import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fusion-function.model';
+import {TagQueryTerm} from '../shared/model/queries/tag-query-term.model';
+import {BoolQueryTerm} from '../shared/model/queries/bool-query-term.model';
+import {TextQueryTerm} from '../shared/model/queries/text-query-term.model';
 
 
 @Component({
@@ -55,36 +58,48 @@ export class QuerySidebarComponent implements OnInit {
     }
 
     this._queryService.findSimilar(this.containers);
-    from(this.containers).pipe(
-      flatMap(c => c.stages),
-      flatMap(s => s.terms),
-      map(t => {
-        const context: Map<ContextKey, any> = new Map();
-        context.set('q:categories', t.categories);
-        switch (t.type) {
-          // TODO Why is there no boolean case?
-          case 'IMAGE':
-            return new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context);
-          case 'AUDIO':
-            return new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context);
-          case 'MOTION':
-            return new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context);
-          case 'MODEL3D':
-            return new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context);
-          case 'SEMANTIC':
-            return new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context);
-          case 'TEXT':
-            context.set('q:value', t.data);
-            return new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context);
-          case 'TAG':
-            context.set('q:value', t.data);
-            // console.log(`[Research] context=${JSON.stringify(context)}`);
-            // FIXME Why is the context empty here? should have at least a q:categories and q:value entry
-            return new InteractionEventComponent(InteractionEventType.QUERY_TAG, context);
-        }
-      }),
-      bufferCount(Number.MIN_SAFE_INTEGER)
-    ).subscribe(c => this._eventBus.publish(new InteractionEvent(...c)))
+    const _components: InteractionEventComponent[] = []
+    this.containers.forEach(container => {
+      _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_CONTAINER))
+      container.stages.forEach(s => {
+        _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_STAGE))
+        s.terms.forEach(t => {
+          const context: Map<ContextKey, any> = new Map();
+          context.set('q:categories', t.categories);
+          context.set('q:value', 'null')
+          switch (t.type) {
+            case 'IMAGE':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context));
+              return;
+            case 'AUDIO':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
+              return;
+            case 'MOTION':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context));
+              return;
+            case 'MODEL3D':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
+              return;
+            case 'SEMANTIC':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context));
+              return;
+            case 'TEXT':
+              context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
+              return;
+            case 'BOOLEAN':
+              context.set('q:value', (t as BoolQueryTerm).terms)
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_BOOLEAN, context));
+              return;
+            case 'TAG':
+              context.set('q:value', (t as TagQueryTerm).tags);
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_TAG, context));
+              return;
+          }
+        })
+      })
+    });
+    this._eventBus.publish(new InteractionEvent(..._components))
   }
 
   /**

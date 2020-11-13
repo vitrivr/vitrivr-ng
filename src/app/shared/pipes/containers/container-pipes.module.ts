@@ -8,11 +8,13 @@ import {SetStringSortPipe} from './set-string-sort.pipe';
 import {OrderObjectByBestPathScorePipe} from '../paths/order-object-by-best-path-score.pipe';
 import {FlattenPathsPipe} from '../paths/flatten-paths.pipe';
 import {LimitObjectsPipe} from './limit-objects.pipe';
+import {OrderBySegmentIdPipe} from './order-by-segment-id.pipe';
+import {OrderByPipe} from './order-by.pipe';
 
 @NgModule({
   imports: [],
-  declarations: [OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe],
-  exports: [OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe]
+  declarations: [OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, OrderBySegmentIdPipe, OrderByPipe],
+  exports: [OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, OrderBySegmentIdPipe, OrderByPipe]
 })
 export class ContainerPipesModule {
 }

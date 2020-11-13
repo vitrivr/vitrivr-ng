@@ -6,8 +6,8 @@ import {MediaObject} from '../shared/model/media/media-object.model';
 import {ResolverService} from '../core/basics/resolver.service';
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {Location} from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
 import {MediaObjectDragContainer} from '../shared/model/internal/media-object-drag-container.model';
@@ -20,6 +20,8 @@ import {InteractionEventType} from '../shared/model/events/interaction-event-typ
 import {EventBusService} from '../core/basics/event-bus.service';
 import {MetadataDetailsComponent} from './metadata-details.component';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
+import {ConfigService} from '../core/basics/config.service';
+import {OrderType} from '../shared/pipes/containers/order-by.pipe';
 
 @Component({
   selector: 'objectdetails',
@@ -42,6 +44,10 @@ export class ObjectdetailsComponent {
   /** The observable that provides the MediaObjectMetadata for the active object. */
   private _mediaObjectObservable: Observable<MediaObjectScoreContainer>;
 
+  private _lsc = false;
+
+  orderType : OrderType;
+
   constructor(private _route: ActivatedRoute,
               private _router: Router,
               private _snackBar: MatSnackBar,
@@ -51,7 +57,16 @@ export class ObjectdetailsComponent {
               private _location: Location,
               private _resolver: ResolverService,
               private _dialog: MatDialog,
-              private _historyService: PreviousRouteService) {
+              private _historyService: PreviousRouteService,
+              private _config: ConfigService) {
+    _config.subscribe(config => {
+      this._lsc = config.get<boolean>('competition.lsc');
+      if(this._lsc){
+        this.orderType = OrderType.SEGMENT_ID
+      }else{
+        this.orderType = OrderType.SCORE;
+      }
+    });
 
 
     /** Generate observables required to create the view. */
