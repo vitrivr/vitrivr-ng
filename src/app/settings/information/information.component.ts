@@ -36,6 +36,7 @@ export class InformationComponent implements OnInit {
     this.resultSetInfoService.currentNewTagForQuery.subscribe(message => this.newTagForQuery = message);
     this.resultSetInfoService.currentTopTagsArray.subscribe(message => {
       this.tagOccurrence = message;
+
       /*this.queryService.results.segmentsAsObservable.pipe(
         map(segments => segments.filter(segment => segment.score >= 0.8))
       ).subscribe(scores => {
@@ -43,7 +44,9 @@ export class InformationComponent implements OnInit {
         this._scores[0] = scores.length;
       });*/
     });
-    this.resultSetInfoService.currentCaption.subscribe(message => this.captionOccurrence = message);
+    this.resultSetInfoService.currentCaption.subscribe(message => {
+      this.captionOccurrence = message;
+    });
 
     this.queryService.observable.pipe(
       filter(msg => {
@@ -95,7 +98,6 @@ export class InformationComponent implements OnInit {
 
   onPreferenceChange(preference: Preference, tag: Tag) {
     tag.preference = preference;
-    console.log('want to add to query: ', tag);
     this.resultSetInfoService.changeTagForQuery(tag);
   }
 
@@ -106,5 +108,6 @@ export class InformationComponent implements OnInit {
   ifPreferenceExists(tag: Tag) {
     return tag.preference != null;
   }
+
 
 }

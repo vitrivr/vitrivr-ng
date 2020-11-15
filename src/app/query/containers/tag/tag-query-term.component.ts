@@ -52,7 +52,6 @@ export class TagQueryTermComponent implements OnInit {
       this._tags = this.tagTerm.tags;
     }
     this._resultSetInfoService.currentNewTagForQuery.subscribe(message => {
-      console.log('MADE IT TO QUERY TERM COMPONENT!!! ', message);
       if (message) {
         this.addTag(message);
       }
