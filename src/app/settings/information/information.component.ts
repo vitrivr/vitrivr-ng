@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ResultSetInfoService} from '../../core/queries/result-set-info.service';
 import {Preference, Tag} from '../../shared/model/misc/tag.model';
 import {Caption} from '../../shared/model/misc/caption.model';
@@ -25,6 +25,13 @@ export class InformationComponent implements OnInit {
   private preferenceMust = Preference.MUST;
   private preferenceCould = Preference.COULD;
   private preferenceNot = Preference.NOT;
+
+
+  /** number of related tags to be shown in query refinement tab */
+  @Input() private numberOfRelatedTagsShown: number;
+  /** number of terms used in captions to be shown in query refinement tab */
+  @Input() private numberOfCaptionTermsShown: number;
+
 
   constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService) {
   }
@@ -86,6 +93,8 @@ export class InformationComponent implements OnInit {
       });
     });
 
+    this.numberOfRelatedTagsShown = 10;
+    this.numberOfCaptionTermsShown = 10;
   }
 
   get queryService(): QueryService {
@@ -110,4 +119,7 @@ export class InformationComponent implements OnInit {
   }
 
 
+  changeNumberOfTagsShown() {
+    return this.numberOfRelatedTagsShown;
+  }
 }

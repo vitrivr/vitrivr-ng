@@ -4,10 +4,17 @@
   <h3 class="mat-list-custom" *ngIf="queryService.results">
     <b>{{queryService.results.segmentCount}}</b> segments in result set</h3>
 
-  <h3 class="mat-list-custom" *ngIf="tagOccurrence">Top 10 of <b>{{tagOccurrence.length}}</b> related tags</h3>
+  <mat-form-field appearance="legacy" (submit)="changeNumberOfTagsShown()">
+    <mat-label>Number of related tags to show:</mat-label>
+    <input matInput placeholder="" [(ngModel)]="numberOfRelatedTagsShown">
+  </mat-form-field>
+
+  <h3 class="mat-list-custom" *ngIf="tagOccurrence">Top {{numberOfRelatedTagsShown}} of <b>{{tagOccurrence.length}}</b>
+    related tags</h3>
   <mat-chip-list>
     <div class="container">
-      <div *ngFor="let tag of tagOccurrence| slice:0:10; let ind=index;" class="chip">
+      <div *ngFor="let tag of tagOccurrence| slice:0:changeNumberOfTagsShown(); let ind=index;"
+           class="chip">
         <mat-chip id="{{tag.id}}" matBadge="{{tag.count}}" matBadgePosition="after"
                   matBadgeColor="accent" matBadgeSize="large">
           <p class="tag">{{tag.name}} ({{tag.id}})</p>
@@ -49,12 +56,13 @@
   </mat-chip-list>
 
 
-  <h3 class="mat-list-custom" *ngIf="captionOccurrence" >Top 10 of <b>{{captionOccurrence.length}}</b> words used in captions</h3>
-  <mat-list-item *ngFor="let item of captionOccurrence | slice:0:10; let ind=index;">
+  <h3 class="mat-list-custom" *ngIf="captionOccurrence">Top {{numberOfCaptionTermsShown}} of
+    <b>{{captionOccurrence.length}}</b> words used in captions</h3>
+  <mat-list-item *ngFor="let item of captionOccurrence | slice:0:numberOfCaptionTermsShown; let ind=index;">
     <h5 class="mat-h5" matLine>{{item.caption}} : {{item.occurrence}}</h5>
   </mat-list-item>
 
-  <h3 class="mat-list-custom">Score distribution</h3>
+  <h3 class="mat-list-custom" *ngIf="scores">Score distribution</h3>
   <p *ngIf="scores.length>0">0.8 - 1.0: {{scores[0]}}</p>
   <p *ngIf="scores.length>0">0.6 - 0.8: {{scores[1]}}</p>
   <p *ngIf="scores.length>0">0.4 - 0.6: {{scores[2]}}</p>
