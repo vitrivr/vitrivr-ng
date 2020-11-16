@@ -4,6 +4,7 @@ import {Preference, Tag} from '../../shared/model/misc/tag.model';
 import {Caption} from '../../shared/model/misc/caption.model';
 import {QueryService} from '../../core/queries/query.service';
 import {filter, map} from 'rxjs/operators';
+import * as d3 from 'd3';
 
 
 @Component({
@@ -28,9 +29,9 @@ export class InformationComponent implements OnInit {
 
 
   /** number of related tags to be shown in query refinement tab */
-  @Input() private numberOfRelatedTagsShown: number;
+  @Input() public numberOfRelatedTagsShown: number;
   /** number of terms used in captions to be shown in query refinement tab */
-  @Input() private numberOfCaptionTermsShown: number;
+  @Input() public numberOfCaptionTermsShown: number;
 
 
   constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService) {
@@ -95,6 +96,8 @@ export class InformationComponent implements OnInit {
 
     this.numberOfRelatedTagsShown = 10;
     this.numberOfCaptionTermsShown = 10;
+
+
   }
 
   get queryService(): QueryService {
@@ -122,4 +125,7 @@ export class InformationComponent implements OnInit {
   changeNumberOfTagsShown() {
     return this.numberOfRelatedTagsShown;
   }
+
+
+
 }

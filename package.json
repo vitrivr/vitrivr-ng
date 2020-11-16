@@ -26,7 +26,9 @@
     "@angular/router": "9.1.12",
     "@types/jszip": "^3.4.1",
     "@types/three": "^0.93.31",
+    "@videogular/ngx-videogular": "2.0.0",
     "core-js": "3.6.5",
+    "d3": "^6.2.0",
     "deepmerge": "4.2.2",
     "dexie": "^3.0.1",
     "flatted": "3.0.4",
@@ -44,7 +46,6 @@
     "ts-md5": "^1.2.7",
     "tslib": "1.13.0",
     "typescript": "3.8.3",
-    "@videogular/ngx-videogular": "2.0.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -52,6 +53,7 @@
     "@angular/cli": "9.1.12",
     "@angular/compiler-cli": "9.1.12",
     "@types/core-js": "^0.9.46",
+    "@types/d3": "^6.1.0",
     "codelyzer": "6.0.0",
     "node-sass": "^4.14.1",
     "protractor": "7.0.0",

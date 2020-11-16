@@ -23,6 +23,7 @@ import {PreviousRouteService} from '../core/basics/previous-route.service';
 import {TagsLookupService} from '../core/lookup/tags-lookup.service';
 import {Tag} from '../shared/model/misc/tag.model';
 
+
 @Component({
   selector: 'objectdetails',
   templateUrl: 'objectdetails.component.html',
@@ -191,5 +192,14 @@ export class ObjectdetailsComponent {
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
+  }
+
+  public sortAlphabetically(tagsArray: Tag[]): Tag[] {
+    tagsArray.sort(function (a, b) {
+      const textA = a.name.toLowerCase();
+      const textB = b.name.toLowerCase();
+      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
+    return tagsArray;
   }
 }

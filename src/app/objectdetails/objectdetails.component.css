@@ -37,8 +37,21 @@
   color: white;
 }
 
-.container {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
+.scrollToBottom {
+  min-height: 800px;
 }
+
+.smallerFont{
+  font-size: medium;
+}
+
+
+.odd {
+  background-color: #f2f9ff;
+}
+
+.even {
+  background-color: #eceff3;
+}
+
+

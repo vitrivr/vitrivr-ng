@@ -1,3 +1,6 @@
+
+
+<!--     -->
 <h3>Information on result set</h3>
 
 <mat-list dense>
@@ -9,10 +12,11 @@
     <input matInput placeholder="" [(ngModel)]="numberOfRelatedTagsShown">
   </mat-form-field>
 
-  <h3 class="mat-list-custom" *ngIf="tagOccurrence">Top {{numberOfRelatedTagsShown}} of <b>{{tagOccurrence.length}}</b>
+  <h3 class="mat-list-custom" *ngIf="tagOccurrence">Top {{numberOfRelatedTagsShown}} of
+    <b>{{tagOccurrence.length}}</b>
     related tags</h3>
   <mat-chip-list>
-    <div class="container">
+    <div class="scrollToBottom">
       <div *ngFor="let tag of tagOccurrence| slice:0:changeNumberOfTagsShown(); let ind=index;"
            class="chip">
         <mat-chip id="{{tag.id}}" matBadge="{{tag.count}}" matBadgePosition="after"
@@ -58,7 +62,8 @@
 
   <h3 class="mat-list-custom" *ngIf="captionOccurrence">Top {{numberOfCaptionTermsShown}} of
     <b>{{captionOccurrence.length}}</b> words used in captions</h3>
-  <mat-list-item *ngFor="let item of captionOccurrence | slice:0:numberOfCaptionTermsShown; let ind=index;">
+  <mat-list-item
+      *ngFor="let item of captionOccurrence | slice:0:numberOfCaptionTermsShown; let ind=index;">
     <h5 class="mat-h5" matLine>{{item.caption}} : {{item.occurrence}}</h5>
   </mat-list-item>
 
@@ -69,4 +74,5 @@
   <p *ngIf="scores.length>0">under 0.4: {{scores[3]}}</p>
 
 </mat-list>
+
 
