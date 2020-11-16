@@ -102,19 +102,23 @@
 
   <h4><strong>Features for segment: {{_activeSegmentId}}</strong></h4>
   <mat-tab-group class="scrollToBottom">
+
     <mat-tab label="Tags">
       <h4 mat-line *ngIf="_tagsPerSegment.length>0"><strong>Tags</strong></h4>
-      <div class="smallerFont"
-          *ngFor="let tag of sortAlphabetically(_tagsPerSegment) index as i; odd as isOdd; even as isEven"
-          [class.Odd]="isOdd"
-          [class.even]="isEven">
-        <div>{{tag.name}} ({{tag.id}})</div>
-      </div>
+      <mat-grid-list cols="5" rowHeight="4:1">
+        <mat-grid-tile class="smallerFont"
+                       *ngFor="let tag of sortAlphabetically(_tagsPerSegment)">
+          <div>{{tag.name}}
+          <br>
+          ({{tag.id}})</div>
+        </mat-grid-tile>
+      </mat-grid-list>
     </mat-tab>
 
     <mat-tab *ngIf="_captionsPerSegment.length>0" label="Captions">
       <h4 mat-line><strong>Captions</strong></h4>
-      <div class="smallerFont" *ngFor="let caption of _captionsPerSegment index as i; odd as isOdd; even as isEven"
+      <div class="smallerFont"
+           *ngFor="let caption of _captionsPerSegment index as i; odd as isOdd; even as isEven"
            [class.Odd]="isOdd"
            [class.even]="isEven">
         {{caption}}
@@ -122,7 +126,8 @@
     </mat-tab>
 
     <mat-tab *ngIf="_asrPerSegment.length>0" label="ASR">
-      <div class="smallerFont" *ngFor="let asr of _asrPerSegment index as i; odd as isOdd; even as isEven"
+      <div class="smallerFont"
+           *ngFor="let asr of _asrPerSegment index as i; odd as isOdd; even as isEven"
            [class.Odd]="isOdd"
            [class.even]="isEven">
         {{asr}}
@@ -131,7 +136,8 @@
 
     <mat-tab *ngIf="_ocrPerSegment.length>0" label="OCR">
       <h4 mat-line><strong>OCR</strong></h4>
-      <div class="smallerFont" *ngFor="let ocr of _ocrPerSegment index as i; odd as isOdd; even as isEven"
+      <div class="smallerFont"
+           *ngFor="let ocr of _ocrPerSegment index as i; odd as isOdd; even as isEven"
            [class.Odd]="isOdd"
            [class.even]="isEven">
         {{ocr}}

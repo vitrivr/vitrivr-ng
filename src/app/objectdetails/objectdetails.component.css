@@ -41,10 +41,10 @@
   min-height: 800px;
 }
 
-.smallerFont{
-  font-size: medium;
+.smallerFont {
+  font-size: smaller;
+  text-align: center;
 }
-
 
 .odd {
   background-color: #f2f9ff;
@@ -54,4 +54,7 @@
   background-color: #eceff3;
 }
 
+mat-grid-tile {
+  background: #e0e0e0;
+}
 
