@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {RefinementComponent} from './refinement/refinement.component';
 import {WeightDistributionComponent} from './refinement/weightdistribution.component';
@@ -15,7 +15,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatBadgeModule} from '@angular/material/badge';
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, Ng5SliderModule, ContainerPipesModule, MatButtonToggleModule, MatBadgeModule],
+  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, Ng5SliderModule, ContainerPipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule],
   declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent, InformationComponent],
   exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent]
 })
