@@ -56,19 +56,29 @@
     </div>
   </mat-chip-list>
 
-
-  <h3 class="mat-list-custom" *ngIf="captionOccurrence">Top {{numberOfCaptionTermsShown}} of
-    <b>{{captionOccurrence.length}}</b> words used in captions</h3>
-  <mat-list-item
-      *ngFor="let item of captionOccurrence | slice:0:numberOfCaptionTermsShown; let ind=index;">
-    <h5 class="mat-h5" matLine>{{item.caption}} : {{item.occurrence}}</h5>
-  </mat-list-item>
-
   <div>
-    <div #cloud class="tag-cloud"></div>
-  </div>
-  <!--SLIDER for number of words in tagcloud -->
+    <h3 class="mat-list-custom" *ngIf="captionOccurrence">Top {{numberOfCaptionTermsShown}} of
+      <b>{{captionOccurrence.length}}</b> words used in captions</h3>
 
+    <mat-slide-toggle [formControl]="toogle"
+                      [color]="color"
+                      [checked]="checked">
+      activate list with exact values
+    </mat-slide-toggle>
+
+    <!-- LIST -->
+    <div *ngIf="listTrue == true">
+      <mat-list-item
+          *ngFor="let item of captionOccurrence | slice:0:numberOfCaptionTermsShown; let ind=index;">
+        <h5 class="mat-h5" matLine>{{item.caption}} : {{item.occurrence}}</h5>
+      </mat-list-item>
+    </div>
+
+    <!-- CLOUD -->
+    <div>
+      <div #cloud class="tag-cloud"></div>
+    </div>
+  </div>
 
   <h3 class="mat-list-custom" *ngIf="scores.length>0">Score distribution</h3>
   <p *ngIf="scores.length>0">0.8 - 1.0: {{scores[0]}}</p>

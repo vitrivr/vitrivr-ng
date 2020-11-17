@@ -5,6 +5,8 @@ import {Caption} from '../../shared/model/misc/caption.model';
 import {QueryService} from '../../core/queries/query.service';
 import {filter, map} from 'rxjs/operators';
 import {Options, TagCloud, Word} from 'd3-tagcloud';
+import {ThemePalette} from '@angular/material/core';
+import {FormControl} from '@angular/forms';
 
 
 @Component({
@@ -30,7 +32,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
   private preferenceCould = Preference.COULD;
   private preferenceNot = Preference.NOT;
 
-  tagCloud: TagCloud;
+  public tagCloud: TagCloud;
   @ViewChild('cloud') cloud: ElementRef;
 
   /** number of related tags to be shown in query refinement tab */
@@ -38,6 +40,11 @@ export class InformationComponent implements OnInit, AfterViewInit {
   /** number of terms used in captions to be shown in query refinement tab */
   @Input() public numberOfCaptionTermsShown: number;
 
+  color: ThemePalette = 'accent';
+  checked = false;
+  listTrue: boolean;
+
+  toggle = new FormControl('', []);
 
   constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService) {
   }
@@ -46,6 +53,10 @@ export class InformationComponent implements OnInit, AfterViewInit {
    * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
    */
   public ngOnInit(): void {
+    this.toggle.valueChanges.subscribe(newToggleValue => {
+      this.listTrue = newToggleValue;
+    });
+
     this.resultSetInfoService.currentNewTagForQuery.subscribe(message => this.newTagForQuery = message);
     this.resultSetInfoService.currentTopTagsArray.subscribe(message => {
       this.tagOccurrence = message;
@@ -98,7 +109,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
     });
 
     this.numberOfRelatedTagsShown = 10;
-    this.numberOfCaptionTermsShown = 10;
+    this.numberOfCaptionTermsShown = 25;
 
 
   }
@@ -109,10 +120,6 @@ export class InformationComponent implements OnInit, AfterViewInit {
       orientation: 'single' //  default is 'right angled','single','right angled','multiple'
     };
     this.tagCloud.setOptions(options);
-/*    const wordCloudTags: Word[] = [];
-    for (let i = 0; i < 100; i++) {
-      wordCloudTags.push({value: ~~(Math.random() * 10000) / 100, text: 'Test Word' + i})
-    }*/
   }
 
 
