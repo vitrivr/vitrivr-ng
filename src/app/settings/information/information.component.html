@@ -1,13 +1,10 @@
-
-
-<!--     -->
 <h3>Information on result set</h3>
 
 <mat-list dense>
   <h3 class="mat-list-custom" *ngIf="queryService.results">
     <b>{{queryService.results.segmentCount}}</b> segments in result set</h3>
 
-  <mat-form-field appearance="legacy" (submit)="changeNumberOfTagsShown()">
+  <mat-form-field appearance="legacy" (submit)="changeNumberOfTagsShown()" *ngIf="tagOccurrence">
     <mat-label>Number of related tags to show:</mat-label>
     <input matInput placeholder="" [(ngModel)]="numberOfRelatedTagsShown">
   </mat-form-field>
@@ -67,7 +64,13 @@
     <h5 class="mat-h5" matLine>{{item.caption}} : {{item.occurrence}}</h5>
   </mat-list-item>
 
-  <h3 class="mat-list-custom" *ngIf="scores">Score distribution</h3>
+  <div>
+    <div #cloud class="tag-cloud"></div>
+  </div>
+  <!--SLIDER for number of words in tagcloud -->
+
+
+  <h3 class="mat-list-custom" *ngIf="scores.length>0">Score distribution</h3>
   <p *ngIf="scores.length>0">0.8 - 1.0: {{scores[0]}}</p>
   <p *ngIf="scores.length>0">0.6 - 0.8: {{scores[1]}}</p>
   <p *ngIf="scores.length>0">0.4 - 0.6: {{scores[2]}}</p>

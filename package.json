@@ -29,6 +29,7 @@
     "@videogular/ngx-videogular": "2.0.0",
     "core-js": "3.6.5",
     "d3": "^6.2.0",
+    "d3-tagcloud": "^1.0.1",
     "deepmerge": "4.2.2",
     "dexie": "^3.0.1",
     "flatted": "3.0.4",

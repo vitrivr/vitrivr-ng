@@ -1,10 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {ResultSetInfoService} from '../../core/queries/result-set-info.service';
 import {Preference, Tag} from '../../shared/model/misc/tag.model';
 import {Caption} from '../../shared/model/misc/caption.model';
 import {QueryService} from '../../core/queries/query.service';
 import {filter, map} from 'rxjs/operators';
-import * as d3 from 'd3';
+import {Options, TagCloud, Word} from 'd3-tagcloud';
 
 
 @Component({
@@ -15,11 +15,14 @@ import * as d3 from 'd3';
 /**
  * Component that displays information about the result set
  */
-export class InformationComponent implements OnInit {
+export class InformationComponent implements OnInit, AfterViewInit {
+
+
   /** The current configuration as observable. */
   /** Local reference to the subscription to the QueryService. */
   public tagOccurrence: Tag[];
   public captionOccurrence: Caption[];
+
   public scores: number[] = [];
   public message: string;
   public newTagForQuery: Tag;
@@ -27,6 +30,8 @@ export class InformationComponent implements OnInit {
   private preferenceCould = Preference.COULD;
   private preferenceNot = Preference.NOT;
 
+  tagCloud: TagCloud;
+  @ViewChild('cloud') cloud: ElementRef;
 
   /** number of related tags to be shown in query refinement tab */
   @Input() public numberOfRelatedTagsShown: number;
@@ -44,26 +49,24 @@ export class InformationComponent implements OnInit {
     this.resultSetInfoService.currentNewTagForQuery.subscribe(message => this.newTagForQuery = message);
     this.resultSetInfoService.currentTopTagsArray.subscribe(message => {
       this.tagOccurrence = message;
-
-      /*this.queryService.results.segmentsAsObservable.pipe(
-        map(segments => segments.filter(segment => segment.score >= 0.8))
-      ).subscribe(scores => {
-        console.log('segment.score= ', scores);
-        this._scores[0] = scores.length;
-      });*/
     });
     this.resultSetInfoService.currentCaption.subscribe(message => {
       this.captionOccurrence = message;
+      if (this.tagCloud) {
+        this.tagCloud.setData(this.captionToWord(this.captionOccurrence));
+        console.log(JSON.stringify(this.captionToWord(this.captionOccurrence)));
+        this.tagCloud.resize();
+      }
     });
 
     this.queryService.observable.pipe(
       filter(msg => {
         return ['STARTED'].indexOf(msg) > -1;
       })
-    ).subscribe((msg) => {
-      this.tagOccurrence = []
-      this.captionOccurrence = []
-      this.scores = []
+    ).subscribe(() => {
+      this.tagOccurrence = [];
+      this.captionOccurrence = [];
+      this.scores = [];
     });
 
     this.queryService.observable.pipe(
@@ -71,7 +74,7 @@ export class InformationComponent implements OnInit {
         return ['ENDED'].indexOf(msg) > -1;
 
       })
-    ).subscribe((msg) => {
+    ).subscribe(() => {
       this.queryService.results.segmentsAsObservable.pipe(
         map(segments => segments.filter(segment => segment.score >= 0.8))
       ).subscribe(scores => {
@@ -100,6 +103,19 @@ export class InformationComponent implements OnInit {
 
   }
 
+  ngAfterViewInit() {
+    this.tagCloud = new TagCloud(this.cloud.nativeElement);
+    const options: Options = {
+      orientation: 'single' //  default is 'right angled','single','right angled','multiple'
+    };
+    this.tagCloud.setOptions(options);
+/*    const wordCloudTags: Word[] = [];
+    for (let i = 0; i < 100; i++) {
+      wordCloudTags.push({value: ~~(Math.random() * 10000) / 100, text: 'Test Word' + i})
+    }*/
+  }
+
+
   get queryService(): QueryService {
     return this._queryService;
   }
@@ -108,6 +124,7 @@ export class InformationComponent implements OnInit {
     return this._resultSetInfoService;
   }
 
+  /** called to add a related tag to query */
   onPreferenceChange(preference: Preference, tag: Tag) {
     tag.preference = preference;
     this.resultSetInfoService.changeTagForQuery(tag);
@@ -121,11 +138,22 @@ export class InformationComponent implements OnInit {
     return tag.preference != null;
   }
 
-
   changeNumberOfTagsShown() {
     return this.numberOfRelatedTagsShown;
   }
 
+  captionToWord(captionTerms: Caption[]): Word[] {
+    const words = [] as Array<Word>;
+    for (let i = 0; i < 25; i++) {
+      const word = {} as Word;
+      word.text = captionTerms[i].caption;
+      word.value = captionTerms[i].occurrence;
+      words.push(word);
+    }
+    return words;
+  }
 
 
 }
+
+

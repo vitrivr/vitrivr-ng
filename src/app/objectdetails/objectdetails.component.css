@@ -42,8 +42,12 @@
 }
 
 .smallerFont {
-  font-size: smaller;
+  font-size: small;
   text-align: center;
+}
+
+.normalfont{
+  font-size: medium;
 }
 
 .odd {
