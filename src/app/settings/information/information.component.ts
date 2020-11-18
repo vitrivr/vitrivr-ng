@@ -44,7 +44,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
   checked = false;
   listTrue: boolean;
 
-  toogle = new FormControl('', []);
+  toggle = new FormControl('', []);
 
   constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService) {
   }
@@ -53,8 +53,8 @@ export class InformationComponent implements OnInit, AfterViewInit {
    * Lifecycle Hook (onInit): Subscribes to the QueryService observable.
    */
   public ngOnInit(): void {
-    this.toogle.valueChanges.subscribe(newToogleValue => {
-      this.listTrue = newToogleValue;
+    this.toggle.valueChanges.subscribe(newToggleValue => {
+      this.listTrue = newToggleValue;
     });
 
     this.resultSetInfoService.currentNewTagForQuery.subscribe(message => this.newTagForQuery = message);
