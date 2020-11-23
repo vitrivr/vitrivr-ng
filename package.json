@@ -27,6 +27,7 @@
     "@types/jszip": "^3.4.1",
     "@types/three": "^0.93.31",
     "@videogular/ngx-videogular": "2.0.0",
+    "angular-google-charts": "^1.1.6",
     "core-js": "3.6.5",
     "d3": "^6.2.0",
     "d3-tagcloud": "^1.0.1",
