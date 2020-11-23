@@ -341,11 +341,9 @@ export class QueryService {
         break;
       case 'QR_TOPCAPTIONS':
         const topCaptions = <QueryResultTopCaptions>message;
-        // console.log('topcaptions', topCaptions)
         this.captionsOccurrenceMap = topCaptions.captions;
         const captionOccurrences = new Array<Caption>(Object.keys(this.captionsOccurrenceMap).length);
         Object.keys(this.captionsOccurrenceMap).forEach((value: string, index: number) => {
-            // console.log('value: ', value);
             captionOccurrences[index] = new Caption(value, this.captionsOccurrenceMap[value]);
           }
         );

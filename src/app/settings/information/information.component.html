@@ -80,12 +80,30 @@
     </div>
   </div>
 
+<!--
   <h3 class="mat-list-custom" *ngIf="scores.length>0">Score distribution</h3>
   <p *ngIf="scores.length>0">0.8 - 1.0: {{scores[0]}}</p>
   <p *ngIf="scores.length>0">0.6 - 0.8: {{scores[1]}}</p>
   <p *ngIf="scores.length>0">0.4 - 0.6: {{scores[2]}}</p>
   <p *ngIf="scores.length>0">under 0.4: {{scores[3]}}</p>
+  <p *ngIf="scores.length>0">under 0.4: {{scores[4]}}</p>
+  <p *ngIf="scores.length>0">under 0.4: {{scores[5]}}</p>
+  <p *ngIf="scores.length>0">under 0.4: {{scores[6]}}</p>
+  <p *ngIf="scores.length>0">under 0.4: {{scores[7]}}</p>
+  <p *ngIf="scores.length>0">under 0.4: {{scores[8]}}</p>
+  <p *ngIf="scores.length>0">under 0.4: {{scores[9]}}</p>
+-->
 
+  <!-- HISTOGRAM -->
+  <google-chart #chart *ngIf="dataScores"
+                [title]="title"
+                [type]="type"
+                [data]="dataScores"
+                [columns]="columnNames"
+                [options]="options"
+                [width]="width"
+                [height]="height">
+  </google-chart>
 </mat-list>
 
 

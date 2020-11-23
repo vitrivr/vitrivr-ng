@@ -19,15 +19,33 @@ import {FormControl} from '@angular/forms';
  */
 export class InformationComponent implements OnInit, AfterViewInit {
 
+  /** config for score histogram */
+  public title = 'Score distribution';
+  public type = 'ColumnChart';
+  public columnNames = ['score', 'number of occurrences'];
+  public options = {
+    legend: 'none',
+    vAxis: {title: 'occurences', scaleType: 'log'},
+    hAxis: {title: 'score'},
+  };
+  public width = 295;
+  public height = 200;
+
 
   /** The current configuration as observable. */
   /** Local reference to the subscription to the QueryService. */
   public tagOccurrence: Tag[];
   public captionOccurrence: Caption[];
 
+  /** arrays to store the scores in, used to create the histogram*/
   public scores: number[] = [];
-  public message: string;
+  public dataScores = [];
+  public dataScoresReduced = [];
+
+
+  /** Tag that is chosen to be added to the query*/
   public newTagForQuery: Tag;
+
   private preferenceMust = Preference.MUST;
   private preferenceCould = Preference.COULD;
   private preferenceNot = Preference.NOT;
@@ -65,7 +83,6 @@ export class InformationComponent implements OnInit, AfterViewInit {
       this.captionOccurrence = message;
       if (this.tagCloud) {
         this.tagCloud.setData(this.captionToWord(this.captionOccurrence));
-        console.log(JSON.stringify(this.captionToWord(this.captionOccurrence)));
         this.tagCloud.resize();
       }
     });
@@ -78,6 +95,8 @@ export class InformationComponent implements OnInit, AfterViewInit {
       this.tagOccurrence = [];
       this.captionOccurrence = [];
       this.scores = [];
+      this.dataScores = [];
+      this.dataScoresReduced = [];
     });
 
     this.queryService.observable.pipe(
@@ -87,39 +106,92 @@ export class InformationComponent implements OnInit, AfterViewInit {
       })
     ).subscribe(() => {
       this.queryService.results.segmentsAsObservable.pipe(
-        map(segments => segments.filter(segment => segment.score >= 0.8))
+        map(segments => segments.filter(segment => segment.score >= 0.9))
       ).subscribe(scores => {
-        this.scores[0] = scores.length;
+        this.scores[9] = scores.length;
       });
       this.queryService.results.segmentsAsObservable.pipe(
-        map(segments => segments.filter(segment => segment.score >= 0.6 && segment.score < 0.8))
+        map(segments => segments.filter(segment => segment.score >= 0.8 && segment.score < 0.9))
       ).subscribe(scores => {
-        this.scores[1] = scores.length;
+        this.scores[8] = scores.length;
       });
       this.queryService.results.segmentsAsObservable.pipe(
-        map(segments => segments.filter(segment => segment.score >= 0.4 && segment.score < 0.6))
+        map(segments => segments.filter(segment => segment.score >= 0.7 && segment.score < 0.8))
+      ).subscribe(scores => {
+        this.scores[7] = scores.length;
+      });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.6 && segment.score < 0.7))
+      ).subscribe(scores => {
+        this.scores[6] = scores.length;
+      });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.5 && segment.score < 0.6))
+      ).subscribe(scores => {
+        this.scores[5] = scores.length;
+      });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.4 && segment.score < 0.5))
+      ).subscribe(scores => {
+        this.scores[4] = scores.length;
+      });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.3 && segment.score < 0.4))
+      ).subscribe(scores => {
+        this.scores[3] = scores.length;
+      });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.2 && segment.score < 0.3))
       ).subscribe(scores => {
         this.scores[2] = scores.length;
       });
       this.queryService.results.segmentsAsObservable.pipe(
-        map(segments => segments.filter(segment => segment.score >= 0.0 && segment.score < 0.4))
+        map(segments => segments.filter(segment => segment.score >= 0.1 && segment.score < 0.2))
       ).subscribe(scores => {
-        this.scores[3] = scores.length;
+        this.scores[1] = scores.length;
       });
+      this.queryService.results.segmentsAsObservable.pipe(
+        map(segments => segments.filter(segment => segment.score >= 0.0 && segment.score < 0.1))
+      ).subscribe(scores => {
+        this.scores[0] = scores.length;
+      });
+      for (let i = 0; i < this.scores.length; i++) {
+        const scoreArr = [];
+        const zeroPointOne = +0.1.toPrecision(1);
+        const score = +(i / 10).toPrecision(1);
+        const result = (zeroPointOne + score).toPrecision(1);
+        scoreArr.push((result).toString(), this.scores[i]);
+        this.dataScoresReduced.push(scoreArr);
+      }
+      this.dataScores = Object.assign([], this.dataScoresReduced);
     });
 
+    /** default is 10, can be adjusted in UI */
     this.numberOfRelatedTagsShown = 10;
+    /** default is 25, currently not adjusted in UI because there is no space for more terms */
     this.numberOfCaptionTermsShown = 25;
 
 
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit() { // wordcloud needs to be created here, because it contains data that depends on the result of the query
     this.tagCloud = new TagCloud(this.cloud.nativeElement);
     const options: Options = {
       orientation: 'single' //  default is 'right angled','single','right angled','multiple'
     };
     this.tagCloud.setOptions(options);
+  }
+
+  /** called to transform a Caption object into a Word object, so it can be used in the word cloud */
+  captionToWord(captionTerms: Caption[]): Word[] {
+    const words = [] as Array<Word>;
+    for (let i = 0; i < 25; i++) {
+      const word = {} as Word;
+      word.text = captionTerms[i].caption;
+      word.value = captionTerms[i].occurrence;
+      words.push(word);
+    }
+    return words;
   }
 
 
@@ -147,17 +219,6 @@ export class InformationComponent implements OnInit, AfterViewInit {
 
   changeNumberOfTagsShown() {
     return this.numberOfRelatedTagsShown;
-  }
-
-  captionToWord(captionTerms: Caption[]): Word[] {
-    const words = [] as Array<Word>;
-    for (let i = 0; i < 25; i++) {
-      const word = {} as Word;
-      word.text = captionTerms[i].caption;
-      word.value = captionTerms[i].occurrence;
-      words.push(word);
-    }
-    return words;
   }
 
 

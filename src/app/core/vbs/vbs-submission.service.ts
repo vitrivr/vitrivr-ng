@@ -5,7 +5,7 @@ import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {ConfigService} from '../basics/config.service';
 import {combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
 import {EventBusService} from '../basics/event-bus.service';
 import {VbsInteractionLog} from './vbs-interaction-log.model';
@@ -14,8 +14,8 @@ import {SelectionService} from '../selection/selection.service';
 import {QueryService} from '../queries/query.service';
 import {VbsInteraction} from '../../shared/model/vbs/interfaces/vbs-interaction.model';
 import {VbsResultsLog} from './vbs-results-log.model';
-import {DatabaseService} from "../basics/database.service";
-import Dexie from "dexie";
+import {DatabaseService} from '../basics/database.service';
+import Dexie from 'dexie';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -196,10 +196,10 @@ export class VbsSubmissionService {
       /* Setup results subscription, which is triggered upon change to the result set. */
 
       const results = this._queryService.observable.pipe(
-          filter(f => f === 'ENDED'),
-          flatMap(f => this._queryService.results.segmentsAsObservable),
-          debounceTime(1000)
-        ); /* IMPORTANT: Limits the number of submissions to one per second. */
+        filter(f => f === 'ENDED'),
+        flatMap(f => this._queryService.results.segmentsAsObservable),
+        debounceTime(1000)
+      ); /* IMPORTANT: Limits the number of submissions to one per second. */
 
       this._resultsSubscription = combineLatest(results, this._eventbus.currentView()).pipe(
         map(([context, segments]) => {
@@ -266,8 +266,8 @@ export class VbsSubmissionService {
         }
         if (this._dres && this._sessionId) {
           // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
-          id = segment.objectId.replace('v_', '');
-          //params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
+          // id = segment.objectId.replace('v_', '');
+          // params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
           params = new HttpParams().set('item', String(id)).set('frame', String(frame));
         }
 

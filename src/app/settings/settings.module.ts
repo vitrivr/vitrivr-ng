@@ -13,9 +13,10 @@ import {ContainerPipesModule} from '../shared/pipes/containers/container-pipes.m
 import { InformationComponent } from './information/information.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatBadgeModule} from '@angular/material/badge';
+import {GoogleChartsModule} from 'angular-google-charts';
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, Ng5SliderModule, ContainerPipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule],
+  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, Ng5SliderModule, ContainerPipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule, GoogleChartsModule],
   declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent, InformationComponent],
   exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent]
 })
