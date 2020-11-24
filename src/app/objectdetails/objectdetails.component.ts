@@ -22,7 +22,8 @@ import {MetadataDetailsComponent} from './metadata-details.component';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
 import {TagsLookupService} from '../core/lookup/tags-lookup.service';
 import {Tag} from '../shared/model/misc/tag.model';
-
+import {ConfigService} from '../core/basics/config.service';
+import {OrderType} from '../shared/pipes/containers/order-by.pipe';
 
 @Component({
   selector: 'objectdetails',
@@ -45,6 +46,9 @@ export class ObjectdetailsComponent {
   /** The observable that provides the MediaObjectMetadata for the active object. */
   private _mediaObjectObservable: Observable<MediaObjectScoreContainer>;
 
+  private _lsc = false;
+
+  orderType: OrderType;
   private _tagsPerSegment: Tag[] = [];
   private _captionsPerSegment: string[] = [];
   private _asrPerSegment: string[] = [];
@@ -62,144 +66,222 @@ export class ObjectdetailsComponent {
               private _dialog: MatDialog,
               private _historyService: PreviousRouteService,
               private _tagsLookupService: TagsLookupService) {
+  private
+    _historyService: PreviousRouteService,
+      private
+    _config: ConfigService
+  ) {
+  _config
+.
+
+  subscribe(config
+
+=> {
+  this
+.
+  _lsc = config.get<boolean>('competition.lsc');
+
+  if(this
+
+.
+  _lsc
+) {
+  this
+.
+  orderType = OrderType.SEGMENT_ID
+}
+
+else
+{
+  this.orderType = OrderType.SCORE;
+}
+})
+;
 
 
-    /** Generate observables required to create the view. */
-    const objectIdObservable = _route.params.pipe(
-      map(p => p['objectId']),
-      filter(p => p != null),
-      tap(objectID => {
-        if (!_query.results || !_query.results.hasObject(objectID)) {
-          throw new Error(`The provided objectId ${objectID} does not exist in the results. Returning to gallery...`);
-        }
-      }),
-      catchError((err, obs) => {
-        _snackBar.open(err.message, '', <MatSnackBarConfig>{duration: 2500});
-        this._historyService.goToPrevious();
-        return EMPTY;
-      })
-    );
-    this._mediaObjectObservable = objectIdObservable.pipe(
-      map(objectId => _query.results.getObject(objectId))
-    );
-  }
-
-  /**
-   * Getter for the local _mediaObjectObservable.
-   *
-   * @returns {MediaObject}
-   */
-  get mediaobject(): Observable<MediaObjectScoreContainer> {
-    return this._mediaObjectObservable;
-  }
-
-  /**
-   * Event Handler: Whenever a segment is dragged, that segment is converted to JSON and added to the dataTransfer
-   * object of the drag event.
-   *
-   * @param event Drag event
-   * @param segment SegmentScoreContainer that is being dragged.
-   */
-  public onSegmentDrag(event, segment: SegmentScoreContainer) {
-    event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
-    event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(segment.objectScoreContainer).toJSON());
-  }
-
-  /**
-   * Triggered whenever someone clicks the 'Play' button. Playback starts from the clicked segment.
-   *
-   * @param segment SegmentScoreContainer that is being clicked.
-   */
-  public onPlayClick(segment: SegmentScoreContainer) {
-    if (this.audioplayer !== undefined) {
-      this.audioplayer.nativeElement.currentTime = segment.startabs;
-      this.audioplayer.nativeElement.play();
-    } else if (this.videoplayer !== undefined) {
-      this.videoplayer.nativeElement.currentTime = segment.startabs;
-      this.videoplayer.nativeElement.play();
+/** Generate observables required to create the view. */
+const objectIdObservable = _route.params.pipe(
+  map(p => p['objectId']),
+  filter(p => p != null),
+  tap(objectID => {
+    if (!_query.results || !_query.results.hasObject(objectID)) {
+      throw new Error(`The provided objectId ${objectID} does not exist in the results. Returning to gallery...`);
     }
-  }
-
-  /**
-   * Triggered whenever someone clicks the 'More-Like-This' button. The segment the click belongs to is then used to perform
-   * a More-Like-This query.
-   *
-   * @param segment SegmentScoreContainer that is being clicked.
-   */
-  public onMltClick(segment: SegmentScoreContainer) {
-    this._query.findMoreLikeThis(segment);
-  }
-
-  public onInformationButtonClicked(segment: SegmentScoreContainer) {
-    this._snackBar.openFromComponent(MetadataDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
-
-    /* Emit an EXAMINE event on the bus. */
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
-  }
-
-  public onMetadataButtonClicked(segment: SegmentScoreContainer) {
-    /* Emit an EXAMINE event on the bus. */
-    this._tagsPerSegment = [];
-    this._captionsPerSegment = [];
-    this._asrPerSegment = [];
-    this._ocrPerSegment = [];
-    this._activeSegmentId = segment.segmentId;
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
-    // get the tags associated with a segmentId
-    this._tagsLookupService.getTagsPerSegmentId(segment.segmentId).subscribe(function (tagIds) {
-      this._tagsLookupService.getTagById(tagIds).subscribe(function (tags) { // needed to receive remaining information for a tag object, since cineast only sends its id
-        this._tagsPerSegment = tags;
-      }.bind(this));
-    }.bind(this));
-    // get the captions associated with a segmentId
-    this._metadataLookup.getCaptions(segment.segmentId).subscribe(function (captions) {
-      this._captionsPerSegment = captions.featureValues;
-    }.bind(this));
-    // get the ASR data associated with a segmentId
-    this._metadataLookup.getAsr(segment.segmentId).subscribe(function (asr) {
-      this._asrPerSegment = asr.featureValues;
-    }.bind(this));
-    // get the OCR data associated with a segmentId
-    this._metadataLookup.getOcr(segment.segmentId).subscribe(function (ocr) {
-      this._ocrPerSegment = ocr.featureValues;
-    }.bind(this));
-  }
-
-  /**
-   * Triggered whenever someone clicks the 'Back' button. Returns to the last page,
-   * i.e. usually the gallery.
-   */
-  public onBackClick() {
+  }),
+  catchError((err, obs) => {
+    _snackBar.open(err.message, '', <MatSnackBarConfig>{duration: 2500});
     this._historyService.goToPrevious();
-  }
+    return EMPTY;
+  })
+);
+this._mediaObjectObservable = objectIdObservable.pipe(
+  map(objectId => _query.results.getObject(objectId))
+);
+}
 
-  /**
-   * Replaces all links in the provided text by links.
-   *
-   * @param {string} str String that should be replaced.
-   * @return {string} Modified string.
-   */
-  public textWithLink(str: string): string {
-    return HtmlUtil.replaceUrlByLink(str, '_blank');
-  }
+/**
+ * Getter for the local _mediaObjectObservable.
+ *
+ * @returns {MediaObject}
+ */
+get
+mediaobject()
+:
+Observable < MediaObjectScoreContainer > {
+  return this._mediaObjectObservable;
+}
 
-  public onLoadAllButtonClicked(segment: SegmentScoreContainer) {
-    this._query.lookupNeighboringSegments(segment.segmentId, 1000);
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
-  }
+/**
+ * Event Handler: Whenever a segment is dragged, that segment is converted to JSON and added to the dataTransfer
+ * object of the drag event.
+ *
+ * @param event Drag event
+ * @param segment SegmentScoreContainer that is being dragged.
+ */
+public
+onSegmentDrag(event, segment
+:
+SegmentScoreContainer
+)
+{
+  event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
+  event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(segment.objectScoreContainer).toJSON());
+}
 
-  public sortAlphabetically(tagsArray: Tag[]): Tag[] {
-    tagsArray.sort(function (a, b) {
-      const textA = a.name.toLowerCase();
-      const textB = b.name.toLowerCase();
-      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-    });
-    return tagsArray;
+/**
+ * Triggered whenever someone clicks the 'Play' button. Playback starts from the clicked segment.
+ *
+ * @param segment SegmentScoreContainer that is being clicked.
+ */
+public
+onPlayClick(segment
+:
+SegmentScoreContainer
+)
+{
+  if (this.audioplayer !== undefined) {
+    this.audioplayer.nativeElement.currentTime = segment.startabs;
+    this.audioplayer.nativeElement.play();
+  } else if (this.videoplayer !== undefined) {
+    this.videoplayer.nativeElement.currentTime = segment.startabs;
+    this.videoplayer.nativeElement.play();
   }
+}
+
+/**
+ * Triggered whenever someone clicks the 'More-Like-This' button. The segment the click belongs to is then used to perform
+ * a More-Like-This query.
+ *
+ * @param segment SegmentScoreContainer that is being clicked.
+ */
+public
+onMltClick(segment
+:
+SegmentScoreContainer
+)
+{
+  this._query.findMoreLikeThis(segment);
+}
+
+public
+onInformationButtonClicked(segment
+:
+SegmentScoreContainer
+)
+{
+  this._snackBar.openFromComponent(MetadataDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
+
+  /* Emit an EXAMINE event on the bus. */
+  const context: Map<ContextKey, any> = new Map();
+  context.set('i:mediasegment', segment.segmentId);
+  this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
+}
+
+public
+onMetadataButtonClicked(segment
+:
+SegmentScoreContainer
+)
+{
+  /* Emit an EXAMINE event on the bus. */
+  this._tagsPerSegment = [];
+  this._captionsPerSegment = [];
+  this._asrPerSegment = [];
+  this._ocrPerSegment = [];
+  this._activeSegmentId = segment.segmentId;
+  const context: Map<ContextKey, any> = new Map();
+  context.set('i:mediasegment', segment.segmentId);
+  this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
+  // get the tags associated with a segmentId
+  this._tagsLookupService.getTagsPerSegmentId(segment.segmentId).subscribe(function (tagIds) {
+    this._tagsLookupService.getTagById(tagIds).subscribe(function (tags) { // needed to receive remaining information for a tag object, since cineast only sends its id
+      this._tagsPerSegment = tags;
+    }.bind(this));
+  }.bind(this));
+  // get the captions associated with a segmentId
+  this._metadataLookup.getCaptions(segment.segmentId).subscribe(function (captions) {
+    this._captionsPerSegment = captions.featureValues;
+  }.bind(this));
+  // get the ASR data associated with a segmentId
+  this._metadataLookup.getAsr(segment.segmentId).subscribe(function (asr) {
+    this._asrPerSegment = asr.featureValues;
+  }.bind(this));
+  // get the OCR data associated with a segmentId
+  this._metadataLookup.getOcr(segment.segmentId).subscribe(function (ocr) {
+    this._ocrPerSegment = ocr.featureValues;
+  }.bind(this));
+}
+
+/**
+ * Triggered whenever someone clicks the 'Back' button. Returns to the last page,
+ * i.e. usually the gallery.
+ */
+public
+onBackClick()
+{
+  this._historyService.goToPrevious();
+}
+
+/**
+ * Replaces all links in the provided text by links.
+ *
+ * @param {string} str String that should be replaced.
+ * @return {string} Modified string.
+ */
+public
+textWithLink(str
+:
+string
+):
+string
+{
+  return HtmlUtil.replaceUrlByLink(str, '_blank');
+}
+
+public
+onLoadAllButtonClicked(segment
+:
+SegmentScoreContainer
+)
+{
+  this._query.lookupNeighboringSegments(segment.segmentId, 1000);
+  const context: Map<ContextKey, any> = new Map();
+  context.set('i:mediasegment', segment.segmentId);
+  this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
+}
+
+public
+sortAlphabetically(tagsArray
+:
+Tag[]
+):
+Tag[]
+{
+  tagsArray.sort(function (a, b) {
+    const textA = a.name.toLowerCase();
+    const textB = b.name.toLowerCase();
+    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+  });
+  return tagsArray;
+}
 }

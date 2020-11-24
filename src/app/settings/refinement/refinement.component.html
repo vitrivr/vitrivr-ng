@@ -37,6 +37,13 @@
                           [name]="tag.name">{{tag.name}}</mat-checkbox>
         </section>
     </div>
+    <br/>
+    <div>
+        <h5 class="mat-h5">Display only items with id:</h5>
+        <mat-form-field class="textinput">
+            <input [(ngModel)]="idFilterValue" matInput placeholder="id">
+        </mat-form-field>
+    </div>
 
     <h3 class="mat-h3">Metadata Filter Configuration</h3>
 
@@ -46,7 +53,7 @@
 
     <mat-divider style="margin-top: 5px; margin-bottom: 5px;"></mat-divider>
 
-    <button (click)="resetMetadataFilters()" color="primary" mat-raised-button style="width:100%;">Reset All Filters
+    <button (click)="resetFilters()" color="primary" mat-raised-button style="width:100%;">Reset All Filters
     </button>
 
     <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>

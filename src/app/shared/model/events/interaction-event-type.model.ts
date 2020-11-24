@@ -7,6 +7,7 @@ export enum InteractionEventType {
   QUERY_FULLTEXT,
   QUERY_TAG,
   QUERY_SEMANTIC,
+  QUERY_BOOLEAN,
   MLT,
   CLEAR,
   REFINE,
@@ -17,5 +18,7 @@ export enum InteractionEventType {
   EXPAND,
   EXAMINE,
   PLAY,
-  NAVIGATE
+  NAVIGATE,
+  NEW_QUERY_STAGE,
+  NEW_QUERY_CONTAINER,
 }

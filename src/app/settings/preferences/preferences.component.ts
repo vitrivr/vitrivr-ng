@@ -24,7 +24,10 @@ export class PreferencesComponent {
   private _config: Observable<Config>;
 
   /** Table for persisting result logs. */
-  private _resultsLogTable: Dexie.Table<VbsResultsLog, number>;
+  private _resultsLogTable: Dexie.Table<any, number>;
+
+  /** Table for persisting submission log */
+  private _submissionLogTable: Dexie.Table<any, number>;
 
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
@@ -36,6 +39,7 @@ export class PreferencesComponent {
     this._config = this._configService.asObservable();
     this._resultsLogTable = _db.db.table('log_results');
     this._interactionLogTable = _db.db.table('log_interaction');
+    this._submissionLogTable = _db.db.table('log_submission');
   }
 
   /**
@@ -144,6 +148,58 @@ export class PreferencesComponent {
         }
       )
     });
+    fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
+      data.push(o)
+    }))
+      .pipe(
+        first(),
+        map(() => {
+          const zip = new JSZip();
+          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
+          for (let i = 0; i < data.length; i++) {
+            zip.file(`vitrivrng-results-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
+          }
+          return zip
+        })
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+          (result) => {
+            window.open(window.URL.createObjectURL(result));
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      });
+  }
+
+  public onDownloadSubmissionLog() {
+    const data = [];
+    fromPromise(this._submissionLogTable.orderBy('id').each((o, c) => {
+      data.push(o)
+    }))
+      .pipe(
+        first(),
+        map(() => {
+          const zip = new JSZip();
+          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
+          for (let i = 0; i < data.length; i++) {
+            zip.file(`vitrivrng-submission-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
+          }
+          return zip
+        })
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+          (result) => {
+            window.open(window.URL.createObjectURL(result));
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      });
   }
 
   /**
@@ -151,7 +207,10 @@ export class PreferencesComponent {
    */
   public onClearInteractionLog() {
     this._interactionLogTable.clear().then(() => console.log('Interaction logs cleared.'))
+  }
 
+  public onClearSubmissionLog() {
+    this._submissionLogTable.clear().then(() => console.log('Submission logs cleared.'))
   }
 
   /**

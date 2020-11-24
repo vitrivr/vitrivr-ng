@@ -48,6 +48,9 @@ export class Config {
       /* The tool number within the competition context (each instance should have its own ID). */
       toolid: null,
 
+      /* If DRES is used */
+      dres: false,
+
       /* The sessionId. Each participant has its own sessionId, it is displayed in the user profile of the participant of DRES */
       sessionid: null,
 

@@ -20,3 +20,9 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## Citation
+
+We kindly ask you to refer to the following paper in publications mentioning or employing vitrivr NG:
+
+Ralph Gasser, Luca Rossetto, Heiko Schuldt. _Multimodal multimedia retrieval with Vitrivr_. In Proceedings of the 2019 on International Conference on Multimedia Retrieval, pp. 391-394, Ottawa, Canada, 2019 - Download paper and BibTeX [here](https://dl.acm.org/doi/abs/10.1145/3323873.3326921)
