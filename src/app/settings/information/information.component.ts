@@ -160,7 +160,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
         const zeroPointOne = +0.1.toPrecision(1);
         const score = +(i / 10).toPrecision(1);
         const result = (zeroPointOne + score).toPrecision(1);
-        scoreArr.push(result, this.scores[i]);
+        scoreArr.push(result.toString(), this.scores[i]);
         this.dataScoresReduced.push(scoreArr);
       }
       this.dataScores = Object.assign([], this.dataScoresReduced);
