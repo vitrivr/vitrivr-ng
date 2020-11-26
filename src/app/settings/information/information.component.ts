@@ -183,7 +183,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
   /** called to transform a Caption object into a Word object, so it can be used in the word cloud */
   captionToWord(captionTerms: CaptionWithCount[]): Word[] {
     const words = [] as Array<Word>;
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < Math.min(25, captionTerms.length); i++) {
       const word = {} as Word;
       word.text = captionTerms[i].caption;
       word.value = captionTerms[i].occurrence;
