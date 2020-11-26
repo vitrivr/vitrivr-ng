@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {ResultSetInfoService} from '../../core/queries/result-set-info.service';
 import {Preference, Tag} from '../../shared/model/misc/tag.model';
-import {Caption} from '../../shared/model/misc/caption.model';
+import {CaptionWithCount} from '../../shared/model/misc/caption-with-count.model';
 import {QueryService} from '../../core/queries/query.service';
 import {filter, map} from 'rxjs/operators';
 import {Options, TagCloud, Word} from 'd3-tagcloud';
@@ -35,7 +35,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
   /** The current configuration as observable. */
   /** Local reference to the subscription to the QueryService. */
   public tagOccurrence: Tag[];
-  public captionOccurrence: Caption[];
+  public captionOccurrence: CaptionWithCount[];
 
   /** arrays to store the scores in, used to create the histogram*/
   public scores: number[] = [];
@@ -46,9 +46,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
   /** Tag that is chosen to be added to the query*/
   public newTagForQuery: Tag;
 
-  private preferenceMust = Preference.MUST;
-  private preferenceCould = Preference.COULD;
-  private preferenceNot = Preference.NOT;
+  Preference = Preference;
 
   public tagCloud: TagCloud;
   @ViewChild('cloud') cloud: ElementRef;
@@ -183,7 +181,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
   }
 
   /** called to transform a Caption object into a Word object, so it can be used in the word cloud */
-  captionToWord(captionTerms: Caption[]): Word[] {
+  captionToWord(captionTerms: CaptionWithCount[]): Word[] {
     const words = [] as Array<Word>;
     for (let i = 0; i < 25; i++) {
       const word = {} as Word;

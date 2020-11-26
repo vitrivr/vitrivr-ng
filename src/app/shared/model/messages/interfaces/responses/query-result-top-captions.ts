@@ -1,14 +1,12 @@
 import {QueryResult} from './query-result.interface';
-import {Tag} from '../../../misc/tag.model';
-import {TagOcurrenceModel} from '../../../misc/tagOcurrence.model';
 
 /**
- * QueryTopCaptions message.interface.ts: Defines the general structure of QueryTopCaptions.
+ * Aggregate information about captions occuring in the result elements
  */
 export interface QueryResultTopCaptions extends QueryResult {
+  /** <caption, #occurences>, e.g. <boy riding bike, 10>*/
   captions: Map<string, number>,
   queryId: string;
-
 }
 
 

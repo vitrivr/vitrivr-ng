@@ -1,104 +1,45 @@
 <div [style.padding-left]="'10px'" [style.text-align]="'left'">
-  <mat-form-field class="textinput">
-    <input [formControl]="field.formControl" [matAutocomplete]="auto" aria-label="Enter a tag"
-           matInput
-           placeholder="Enter a tag">
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
-      <mat-option *ngFor="let tag of field.filteredTags | async" [value]="tag">
-        {{tag.name}}
-        <small>({{tag.id}}) {{tag.description}}</small>
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-  <mat-chip-list>
-    <div class="container">
-      <mat-chip class="dropdown" (removed)="removeTag(tag)" *ngFor="let tag of tags"
-                [removable]="true"
-                [selectable]="true"
-                id="{{tag.id}}">
-        {{tag.name}}&nbsp;<small>({{tag.id}})</small>
-        <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
-        <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
-                (mousedown)="menuTrigger.openMenu()">
-          <mat-icon *ngIf="ifPreferenceExists(tag)==false">menu</mat-icon>
-<!--          <span *ngIf="getPreference(tag)=='must'">💚</span>
-          <span *ngIf="getPreference(tag)=='could'">👍</span>
-          <span *ngIf="getPreference(tag)=='not'">⛔</span>-->
-          <mat-icon *ngIf="getPreference(tag)=='must'" class="greene-icon">favorite</mat-icon>
-          <mat-icon *ngIf="getPreference(tag)=='could'" class="yellow-icon">thumb_up</mat-icon>
-          <mat-icon *ngIf="getPreference(tag)=='not'" class="red-icon">not_interested</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu" [overlapTrigger]="false">
+    <mat-form-field class="textinput">
+        <input [formControl]="field.formControl" [matAutocomplete]="auto" aria-label="Enter a tag"
+               matInput
+               placeholder="Enter a tag">
+        <mat-autocomplete [panelWidth]="450" #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
+            <mat-option *ngFor="let tag of field.filteredTags | async" [value]="tag">
+                <small>{{tag.name}}: {{tag.description}}</small>
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+    <mat-chip-list>
+        <div class="container">
+            <mat-chip class="dropdown" (removed)="removeTag(tag)" *ngFor="let tag of tags"
+                      [removable]="true"
+                      [selectable]="true"
+                      id="{{tag.id}}">
+                {{tag.name}}&nbsp;<small>({{tag.id}})</small>
+                <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
+                <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
+                        (mousedown)="menuTrigger.openMenu()">
+                    <mat-icon *ngIf="ifPreferenceExists(tag)==false">menu</mat-icon>
+                    <mat-icon *ngIf="tag.preference == Preference.MUST" class="greene-icon">favorite</mat-icon>
+                    <mat-icon *ngIf="tag.preference == Preference.COULD" class="yellow-icon">thumb_up</mat-icon>
+                    <mat-icon *ngIf="tag.preference == Preference.NOT" class="red-icon">not_interested</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" [overlapTrigger]="false">
           <span (mouseleave)="menuTrigger.closeMenu()">
             <mat-button-toggle-group>
-            <mat-button-toggle (change)="onPreferenceChange(preferenceMust, tag)" value="must" class="greene-icon">
-            <!--<span>💚</span>-->
+            <mat-button-toggle (change)="onPreferenceChange(Preference.MUST, tag)" value="must" class="greene-icon">
               <mat-icon>favorite</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle (change)="onPreferenceChange(preferenceCould, tag)" value="could" class="yellow-icon">
-            <!-- <span>👍</span>-->
+            <mat-button-toggle (change)="onPreferenceChange(Preference.COULD, tag)" value="could" class="yellow-icon">
               <mat-icon>thumb_up</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle (change)="onPreferenceChange(preferenceNot, tag)" value="not" class="red-icon">
-            <!--<span>⛔</span>-->
+            <mat-button-toggle (change)="onPreferenceChange(Preference.NOT, tag)" value="not" class="red-icon">
               <mat-icon>not_interested</mat-icon>
               </mat-button-toggle>
               </mat-button-toggle-group>
           </span>
-        </mat-menu>
-      </mat-chip>
-    </div>
-  </mat-chip-list>
+                </mat-menu>
+            </mat-chip>
+        </div>
+    </mat-chip-list>
 </div>
-
-
-<!--
-
-<div [style.padding-left]="'10px'" [style.text-align]="'left'">
-  <mat-form-field class="textinput">
-    <input [formControl]="field.formControl" [matAutocomplete]="auto" aria-label="Enter a tag"
-           matInput
-           placeholder="Enter a tag">
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
-      <mat-option *ngFor="let tag of field.filteredTags | async" [value]="tag">
-        {{tag.name}}
-        <small>({{tag.id}}) {{tag.description}}</small>
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-  <mat-chip-list>
-    <div class="container">
-      <mat-chip class="dropdown" (removed)="removeTag(tag)" *ngFor="let tag of tags"
-                [removable]="true"
-                [selectable]="true"
-                id="{{tag.id}}">
-        {{tag.name}}&nbsp;<small>({{tag.id}})</small>
-        <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
-        <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
-                (mouseover)="menuTrigger.openMenu()">
-          <mat-icon>menu</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu" [overlapTrigger]="false">
-          <span (mouseleave)="menuTrigger.closeMenu()">
-            <mat-button-toggle-group>
-            <mat-button-toggle (change)="onPreferenceChange($event.value, tag)" value="must">
-              <span>💚</span>
-            </mat-button-toggle>
-            <mat-button-toggle (change)="onPreferenceChange($event.value, tag)" value="could">
-              <span>👍</span>
-            </mat-button-toggle>
-            <mat-button-toggle (change)="onPreferenceChange($event.value, tag)" value="not">
-              <span>⛔</span>
-              </mat-button-toggle>
-              </mat-button-toggle-group>
-          </span>
-        </mat-menu>
-      </mat-chip>
-    </div>
-  </mat-chip-list>
-</div>
--->
-
-
-
-

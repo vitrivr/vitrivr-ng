@@ -5,7 +5,6 @@ import {ConfigService} from '../basics/config.service';
 import {Observable} from 'rxjs';
 import {MetadataQueryResult} from '../../shared/model/messages/interfaces/responses/metadata-query-result.interface';
 import {first} from 'rxjs/operators';
-import {MediaSegmentFeatureQueryResult} from './tags-lookup.service';
 
 /**
  * This service provides access to the Metadata stored and exposed by Cineast through the Cineast RESTful API. Metadata is general,
@@ -33,26 +32,6 @@ export class MetadataLookupService extends CineastRestAPI {
       first()
     );
   }
-
-  public getCaptions(segmentId: string): Observable<MediaSegmentFeatureQueryResult> {
-    return this.get<MediaSegmentFeatureQueryResult>('find/segment/captions/by/id/' + segmentId).pipe(
-      first()
-    );
-  }
-
-  public getAsr(segmentId: string): Observable<MediaSegmentFeatureQueryResult> {
-    return this.get<MediaSegmentFeatureQueryResult>('find/segment/asr/by/id/' + segmentId).pipe(
-      first()
-    );
-  }
-
-  public getOcr(segmentId: string): Observable<MediaSegmentFeatureQueryResult> {
-    return this.get<MediaSegmentFeatureQueryResult>('find/segment/ocr/by/id/' + segmentId).pipe(
-      first()
-    );
-  }
-
-
 }
 
 

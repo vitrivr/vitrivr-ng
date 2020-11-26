@@ -24,6 +24,7 @@ import {TagsLookupService} from '../core/lookup/tags-lookup.service';
 import {Tag} from '../shared/model/misc/tag.model';
 import {OrderType} from '../shared/pipes/containers/order-by.pipe';
 import {ConfigService} from '../core/basics/config.service';
+import {FeatureLookupService} from '../core/lookup/feature-lookup.service';
 
 
 @Component({
@@ -50,11 +51,11 @@ export class ObjectdetailsComponent {
 
   orderType: OrderType;
 
-  private _tagsPerSegment: Tag[] = [];
-  private _captionsPerSegment: string[] = [];
-  private _asrPerSegment: string[] = [];
-  private _ocrPerSegment: string[] = [];
-  private _activeSegmentId: string;
+  _tagsPerSegment: Tag[] = [];
+  _captionsPerSegment: string[] = [];
+  _asrPerSegment: string[] = [];
+  _ocrPerSegment: string[] = [];
+  _activeSegmentId: string;
 
   constructor(private _route: ActivatedRoute,
               private _router: Router,
@@ -63,11 +64,12 @@ export class ObjectdetailsComponent {
               private _query: QueryService,
               private  _eventBusService: EventBusService,
               private _location: Location,
-              private _resolver: ResolverService,
+              public _resolver: ResolverService,
               private _dialog: MatDialog,
               private _historyService: PreviousRouteService,
               private _tagsLookupService: TagsLookupService,
-              private _config: ConfigService) {
+              private _config: ConfigService,
+              private _featureLookupService: FeatureLookupService) {
 
     _config.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
@@ -155,31 +157,33 @@ export class ObjectdetailsComponent {
   }
 
   public onMetadataButtonClicked(segment: SegmentScoreContainer) {
-    /* Emit an EXAMINE event on the bus. */
     this._tagsPerSegment = [];
     this._captionsPerSegment = [];
     this._asrPerSegment = [];
     this._ocrPerSegment = [];
     this._activeSegmentId = segment.segmentId;
+
+    /* Emit an EXAMINE event on the bus. */
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
+
     // get the tags associated with a segmentId
-    this._tagsLookupService.getTagsPerSegmentId(segment.segmentId).subscribe(function (tagIds) {
+    this._tagsLookupService.getTagIDsPerElementId(segment.segmentId).subscribe(function (tagIds) {
       this._tagsLookupService.getTagById(tagIds).subscribe(function (tags) { // needed to receive remaining information for a tag object, since cineast only sends its id
         this._tagsPerSegment = tags;
       }.bind(this));
     }.bind(this));
     // get the captions associated with a segmentId
-    this._metadataLookup.getCaptions(segment.segmentId).subscribe(function (captions) {
+    this._featureLookupService.getCaptions(segment.segmentId).subscribe(function (captions) {
       this._captionsPerSegment = captions.featureValues;
     }.bind(this));
     // get the ASR data associated with a segmentId
-    this._metadataLookup.getAsr(segment.segmentId).subscribe(function (asr) {
+    this._featureLookupService.getAsr(segment.segmentId).subscribe(function (asr) {
       this._asrPerSegment = asr.featureValues;
     }.bind(this));
     // get the OCR data associated with a segmentId
-    this._metadataLookup.getOcr(segment.segmentId).subscribe(function (ocr) {
+    this._featureLookupService.getOcr(segment.segmentId).subscribe(function (ocr) {
       this._ocrPerSegment = ocr.featureValues;
     }.bind(this));
   }

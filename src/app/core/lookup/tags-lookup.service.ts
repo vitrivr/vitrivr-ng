@@ -5,6 +5,8 @@ import {CineastRestAPI} from '../api/cineast-rest-api.service';
 import {ConfigService} from '../basics/config.service';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
+import {TagIDsElementResultInterface} from '../../shared/model/messages/interfaces/responses/tagids-element-result.interface';
+import {TagQueryResult} from '../../shared/model/messages/interfaces/responses/tag-query-result.interface';
 
 /**
  * This service provides access to the Tags stored and exposed by Cineast through the Cineast RESTful API. Tags can be
@@ -12,12 +14,7 @@ import {first} from 'rxjs/operators';
  */
 @Injectable()
 export class TagsLookupService extends CineastRestAPI {
-  /**
-   * Constructor.
-   *
-   * @param {ConfigService} _configService
-   * @param {HttpClient} _httpClient
-   */
+
   constructor(@Inject(ConfigService) _configService: ConfigService, @Inject(HttpClient) _httpClient: HttpClient) {
     super(_configService, _httpClient);
   }
@@ -31,22 +28,17 @@ export class TagsLookupService extends CineastRestAPI {
     return this.get<TagQueryResult>('find/tags/by/matchingname/' + filter).pipe(first()).map(res => res.tags);
   }
 
+  /**
+   * Returns complete tag information for a list of ids
+   */
   public getTagById(ids: string[]): Observable<Tag[]> {
-    // console.log('JSON.stringify(ids):', JSON.stringify(ids));
     return this.post<TagQueryResult>('tags/by/id/', '{"ids":' + JSON.stringify(ids) + '}').pipe(first()).map(res => res.tags);
   }
 
-  public getTagsPerSegmentId(id: string): Observable<string[]> {
-    return this.get<MediaSegmentFeatureQueryResult>('find/segment/tags/by/id/' + id).pipe(first()).map(res => res.featureValues);
+  /**
+   * Returns all stored tag ids for a specific element (object or segment)
+   */
+  public getTagIDsPerElementId(id: string): Observable<string[]> {
+    return this.get<TagIDsElementResultInterface>('find/feature/tags/by/id/' + id).pipe(first()).map(res => res.tagIDs);
   }
-}
-
-class TagQueryResult {
-  public queryId: string;
-  public tags: Tag[];
-}
-
-export class MediaSegmentFeatureQueryResult {
-  public queryId: string;
-  public featureValues: string[];
 }

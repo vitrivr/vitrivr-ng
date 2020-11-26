@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {Tag} from '../../shared/model/misc/tag.model';
-import {Caption} from '../../shared/model/misc/caption.model';
+import {CaptionWithCount} from '../../shared/model/misc/caption-with-count.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class ResultSetInfoService {
   private topTagsSource = new BehaviorSubject(this.topTagsArray);
   currentTopTagsArray = this.topTagsSource.asObservable();
 
-  topCaptionsArray: Caption[];
+  topCaptionsArray: CaptionWithCount[];
   private captionSource = new BehaviorSubject(this.topCaptionsArray);
   currentCaption = this.captionSource.asObservable();
 
@@ -26,7 +26,7 @@ export class ResultSetInfoService {
     this.topTagsSource.next(message)
   }
 
-  changeCaption(message: Caption[]) {
+  changeCaption(message: CaptionWithCount[]) {
     this.captionSource.next(message)
   }
 

@@ -9,11 +9,11 @@
   "competition": {
     "teamid": 2,
     "toolid": 1,
-    "endpoint": "https://interactivevideoretrieval.com/",
+    "endpoint": "10.35.57.178:7060",
     "log": false,
     "lsc": false,
-    "vbs": false,
-    "dres": false
+    "vbs": true,
+    "dres": true
   },
   "mlt": {
     "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
@@ -29,7 +29,7 @@
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": true
+      "boolean": false
     },
     "text": {
       "categories": [

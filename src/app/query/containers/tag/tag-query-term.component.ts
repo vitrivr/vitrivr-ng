@@ -9,14 +9,11 @@ import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ResultSetInfoService} from '../../../core/queries/result-set-info.service';
 
-
 @Injectable({
   providedIn: 'root'
 })
 
-
 @Component({
-  // tslint:disable-next-line:component-selector
   selector: 'qt-tag',
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
@@ -31,20 +28,14 @@ export class TagQueryTermComponent implements OnInit {
   private _field: FieldGroup;
   /** List of tag fields currently displayed. */
   private _tags: Tag[] = [];
-  /** Map of tags and their preference*/
-  private _preferenceMap: Map<string, string>;
 
-  private preferenceMust = Preference.MUST;
-  private preferenceCould = Preference.COULD;
-  private preferenceNot = Preference.NOT;
-
-  /** Tag that is added to query from top x tags (information on result set) */
-  private _newTagForQuery: Tag;
-
+  /**
+   * make enum available in html https://stackoverflow.com/questions/44045311/cannot-approach-typescript-enum-within-html
+   */
+  Preference = Preference;
 
   constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar, private _resultSetInfoService: ResultSetInfoService) {
     this._field = new FieldGroup(_tagService);
-    this._preferenceMap = new Map<string, string>();
   }
 
   ngOnInit(): void {
@@ -66,10 +57,6 @@ export class TagQueryTermComponent implements OnInit {
     return this._field;
   }
 
-  get preferences() {
-    return this._preferenceMap;
-  }
-
   /**
    * Invoked whenever the user selects a Tag from the list.
    *
@@ -83,9 +70,7 @@ export class TagQueryTermComponent implements OnInit {
       }
     }
     if (!tagAlreadyInList) {
-
-      this.addTags(this.getAllTagsWithEqualName(event.option.value));
-
+      this.addTag(event.option.value);
     } else {
       this.field.formControl.setValue('');
       this._matsnackbar.open(`Tag ${event.option.value.name} (${event.option.value.id}) already added`, null, {
@@ -111,7 +96,7 @@ export class TagQueryTermComponent implements OnInit {
 
   /**
    * Adds the specified collection of tags to the list of tags
-   * @param {Tag[]} tags THe tags to be added
+   * @param {Tag[]} tags The tags to be added
    */
   public addTags(tags: Tag[]) {
     tags.forEach(tag => {
@@ -129,8 +114,6 @@ export class TagQueryTermComponent implements OnInit {
     const index = this._tags.indexOf(tag);
     if (index > -1) {
       this._tags.splice(index, 1);
-      // delete tag from _preference map
-      this.preferences.delete(tag.id);
     }
     this.tagTerm.tags = this._tags;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
@@ -138,15 +121,10 @@ export class TagQueryTermComponent implements OnInit {
     })));
   }
 
-  private getAllTagsWithEqualName(tag: Tag): Tag[] {
-    return this._field.currentlyDisplayedTags.filter(t => t.name === tag.name);
-  }
-
   /**
    * Stores values for preference set for a tag in a Map<String, String>
-   * @param {value} of the toggle button: either 'must', 'could' or 'not'
-   *  */
-  private onPreferenceChange(preference, tag): void {
+   */
+  public onPreferenceChange(preference: Preference, tag): void {
     tag.preference = preference;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
@@ -154,12 +132,7 @@ export class TagQueryTermComponent implements OnInit {
     this.sortTagsByPreference();
   }
 
-  private getPreference(tag): string {
-    return tag.preference;
-  }
-
-  private ifPreferenceExists(tag): boolean {
-    // console.log('ifPreferenceExists: ', tag.preference != null);
+  ifPreferenceExists(tag): boolean {
     return tag.preference != null;
   }
 

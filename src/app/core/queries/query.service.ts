@@ -31,7 +31,7 @@ import {QueryResultTopTags} from '../../shared/model/messages/interfaces/respons
 import {ResultSetInfoService} from './result-set-info.service';
 import {TagsLookupService} from '../lookup/tags-lookup.service';
 import {QueryResultTopCaptions} from '../../shared/model/messages/interfaces/responses/query-result-top-captions';
-import {Caption} from '../../shared/model/misc/caption.model';
+import {CaptionWithCount} from '../../shared/model/misc/caption-with-count.model';
 import {Tag} from '../../shared/model/misc/tag.model';
 
 
@@ -342,9 +342,9 @@ export class QueryService {
       case 'QR_TOPCAPTIONS':
         const topCaptions = <QueryResultTopCaptions>message;
         this.captionsOccurrenceMap = topCaptions.captions;
-        const captionOccurrences = new Array<Caption>(Object.keys(this.captionsOccurrenceMap).length);
+        const captionOccurrences = new Array<CaptionWithCount>(Object.keys(this.captionsOccurrenceMap).length);
         Object.keys(this.captionsOccurrenceMap).forEach((value: string, index: number) => {
-            captionOccurrences[index] = new Caption(value, this.captionsOccurrenceMap[value]);
+            captionOccurrences[index] = new CaptionWithCount(value, this.captionsOccurrenceMap[value]);
           }
         );
         this.resultSetInfoService.changeCaption(captionOccurrences);
