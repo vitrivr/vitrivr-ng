@@ -3,11 +3,12 @@ import {MetadataLookupService} from './metadata-lookup.service';
 import {HttpClientModule} from '@angular/common/http';
 import {TagsLookupService} from './tags-lookup.service';
 import {DistinctElementLookupService} from './distinct-element-lookup.service';
+import {FeatureLookupService} from './feature-lookup.service';
 
 @NgModule({
   imports: [HttpClientModule],
   declarations: [],
-  providers: [MetadataLookupService, TagsLookupService, DistinctElementLookupService]
+  providers: [MetadataLookupService, TagsLookupService, DistinctElementLookupService, FeatureLookupService]
 })
 
 export class LookupModule {
