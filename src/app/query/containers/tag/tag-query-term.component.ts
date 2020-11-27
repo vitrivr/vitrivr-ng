@@ -85,6 +85,7 @@ export class TagQueryTermComponent implements OnInit {
    * @param {Tag} tag The tag that should be added.
    */
   public addTag(tag: Tag) {
+    tag.preference = Preference.COULD;
     this._tags.push(tag);
     this.field.formControl.setValue('');
     this.tagTerm.tags = this._tags;
