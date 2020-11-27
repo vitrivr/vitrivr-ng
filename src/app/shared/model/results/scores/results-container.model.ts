@@ -3,8 +3,8 @@ import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {ObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
-import {SegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
+import {MediaObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
+import {MediaSegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FeatureCategories} from '../feature-categories.model';
@@ -166,8 +166,8 @@ export class ResultsContainer {
   // tslint:disable-next-line:member-ordering
   public static deserialize(data: any): ResultsContainer {
     const container = new ResultsContainer(data['queryId']);
-    container.processObjectMessage(<ObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
-    container.processSegmentMessage(<SegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
+    container.processObjectMessage(<MediaObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
+    container.processSegmentMessage(<MediaSegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
     container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
       queryId: container.queryId,
       content: <MediaObjectMetadata[]>data['objectMetadata']
@@ -257,7 +257,7 @@ export class ResultsContainer {
     return this._objectid_to_object_map.has(objectId);
   }
 
-  public getObject(objectId: string) {
+  public getObject(objectId: string): MediaObjectScoreContainer {
     return this._objectid_to_object_map.get(objectId);
   }
 
@@ -331,10 +331,10 @@ export class ResultsContainer {
    * Processes a ObjectQueryResult message. Extracts the MediaObject lines and adds the
    * objects to the list of MediaObjectScoreContainers.
    *
-   * @param {ObjectQueryResult} obj ObjectQueryResult message
+   * @param {MediaObjectQueryResult} obj ObjectQueryResult message
    * @return {boolean} True, if ObjectQueryResult was processed i.e. queryId corresponded with that of the score container.
    */
-  public processObjectMessage(obj: ObjectQueryResult): boolean {
+  public processObjectMessage(obj: MediaObjectQueryResult): boolean {
     if (obj.queryId !== this.queryId) {
       return false;
     }
@@ -364,7 +364,7 @@ export class ResultsContainer {
    * @param seg SegmentQueryResult message
    * @return {boolean} True, if SegmentQueryResult was processed i.e. queryId corresponded with that of the message.
    */
-  public processSegmentMessage(seg: SegmentQueryResult): boolean {
+  public processSegmentMessage(seg: MediaSegmentQueryResult): boolean {
     if (seg.queryId !== this.queryId) {
       console.warn('query result id ' + seg.queryId + ' does not match query id ' + this.queryId);
       return false;

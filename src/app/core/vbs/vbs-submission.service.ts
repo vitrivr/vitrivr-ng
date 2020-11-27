@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import {MetadataLookupService} from '../lookup/metadata-lookup.service';
 import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {ConfigService} from '../basics/config.service';
@@ -66,7 +65,6 @@ export class VbsSubmissionService {
    * @param {EventBusService} _eventbus Reference to the singleton EventBusService instance.
    * @param {QueryService} _queryService Reference to the singleton QueryService instance.
    * @param {SelectionService} _selection Reference to the singleton SelectionService instance.
-   * @param {MetadataLookupService} _metadata
    * @param {HttpClient} _http
    * @param {MatSnackBar} _snackBar
    */
@@ -74,11 +72,10 @@ export class VbsSubmissionService {
               private _eventbus: EventBusService,
               private _queryService: QueryService,
               private _selection: SelectionService,
-              private _metadata: MetadataLookupService,
               private _http: HttpClient,
               private _snackBar: MatSnackBar,
               _db: DatabaseService) {
-
+1
     _config.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
       this._vbs = config.get<boolean>('competition.vbs');

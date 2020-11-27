@@ -4,6 +4,6 @@ import {MediaSegment} from '../../../media/media-segment.model';
 /**
  *
  */
-export interface SegmentQueryResult extends QueryResult {
+export interface MediaSegmentQueryResult extends QueryResult {
   content: MediaSegment[],
 }

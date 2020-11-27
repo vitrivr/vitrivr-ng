@@ -3,9 +3,9 @@ import {Observable, Subject} from 'rxjs';
 
 import {Message} from '../../shared/model/messages/interfaces/message.interface';
 import {QueryStart} from '../../shared/model/messages/interfaces/responses/query-start.interface';
-import {SegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
+import {MediaSegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
 import {SimilarityQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-similarty.interface';
-import {ObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
+import {MediaObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
 import {MoreLikeThisQuery} from '../../shared/model/messages/queries/more-like-this-query.model';
 import {QueryError} from '../../shared/model/messages/interfaces/responses/query-error.interface';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
@@ -29,10 +29,10 @@ import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {QueryResultTopTags} from '../../shared/model/messages/interfaces/responses/query-result-top-tags';
 import {ResultSetInfoService} from './result-set-info.service';
-import {TagsLookupService} from '../lookup/tags-lookup.service';
 import {QueryResultTopCaptions} from '../../shared/model/messages/interfaces/responses/query-result-top-captions';
 import {CaptionWithCount} from '../../shared/model/misc/caption-with-count.model';
 import {Tag} from '../../shared/model/misc/tag.model';
+import {LookupService} from '../lookup/lookup.service';
 
 
 /**
@@ -75,7 +75,7 @@ export class QueryService {
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
               @Inject(ConfigService) private _config: ConfigService,
               @Inject(ResultSetInfoService) private resultSetInfoService,
-              @Inject(TagsLookupService) private tagsLookupService
+              @Inject(LookupService) private _lookupService
   ) {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
@@ -297,13 +297,13 @@ export class QueryService {
         this.startNewQuery(qs.queryId);
         break;
       case 'QR_OBJECT':
-        const obj = <ObjectQueryResult>message;
+        const obj = <MediaObjectQueryResult>message;
         if (this._results && this._results.processObjectMessage(obj)) {
           this._subject.next('UPDATED');
         }
         break;
       case 'QR_SEGMENT':
-        const seg = <SegmentQueryResult>message;
+        const seg = <MediaSegmentQueryResult>message;
         if (this._results && this._results.processSegmentMessage(seg)) {
           this._subject.next('UPDATED');
         }
