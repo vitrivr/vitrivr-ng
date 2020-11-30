@@ -54,15 +54,15 @@ export class LookupService extends CineastRestAPI {
    * Returns all stored tag ids for a specific element (object or segment)
    */
   public getTagIDsPerElementId(id: string): Observable<string[]> {
-    return this.get<TagIDsElementResultInterface>('find/feature/tags/by/id/' + id).pipe(first()).map(res => res.tagIDs);
+    return this.get<TagIDsElementResultInterface>('find/segment/tags/by/id/' + id).pipe(first()).map(res => (res as any).featureValues);
   }
 
   public getCaptions(id: string): Observable<FeaturesTextCategoryCategoryResult> {
-    return this.getText(id, 'scenecaption')
+    return this.getText(id, 'captions')
   }
 
   public getText(id: string, category: string): Observable<FeaturesTextCategoryCategoryResult> {
-    return this.get<FeaturesTextCategoryCategoryResult>('find/feature/text/by/' + id + '/' + category).pipe(
+    return this.get<FeaturesTextCategoryCategoryResult>(`find/segment/${category}/by/id/${id}` ).pipe(
       first()
     );
   }
