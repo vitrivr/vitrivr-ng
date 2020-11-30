@@ -60,8 +60,8 @@ export class VbsResultsLog implements VbsSubmission {
           results.usedTypes.push(type)
         }
       })
-      results.values.push(component.context.get('q:categories'))
-      results.values.push(component.context.get('q:value'))
+      results.values.push(JSON.stringify(component.context.get('q:categories')))
+      results.values.push(JSON.stringify(component.context.get('q:value')))
     })
     results.sortType.push(context);
     list.forEach((segmentScoreContainer, index) => {
