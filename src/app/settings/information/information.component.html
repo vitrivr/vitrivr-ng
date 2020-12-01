@@ -18,7 +18,7 @@
            class="chip">
         <mat-chip id="{{tag.id}}" matBadge="{{tag.count}}" matBadgePosition="after"
                   matBadgeColor="accent" matBadgeSize="large">
-          <p class="tag">{{tag.name}} ({{tag.id}})</p>
+          <p class="tag">{{tag.name}}</p>
           <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
                   (mousedown)="menuTrigger.openMenu()" matTooltip="Add tag to query"
                   class="grey-icon">
