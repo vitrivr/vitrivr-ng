@@ -80,6 +80,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
     this.resultSetInfoService.currentCaption.subscribe(message => {
       this.captionOccurrence = message;
       if (this.tagCloud) {
+        this.tagCloud._emptyDOM();
         this.tagCloud.setData(this.captionToWord(this.captionOccurrence));
         this.tagCloud.resize();
       }
@@ -172,7 +173,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
 
   }
 
-  ngAfterViewInit() { // wordcloud needs to be created here, because it contains data that depends on the result of the query
+  ngAfterViewInit() { // word cloud needs to be created here, because it contains data that depends on the result of the query
     this.tagCloud = new TagCloud(this.cloud.nativeElement);
     const options: Options = {
       orientation: 'single' //  default is 'right angled','single','right angled','multiple'
