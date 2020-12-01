@@ -66,7 +66,7 @@ export class VbsResultsLog implements VbsSubmission {
     results.sortType.push(context);
     list.forEach((segmentScoreContainer, index) => {
       results.results.push(<VbsResult>{
-        video: segmentScoreContainer.objectId.replace('v_', ''),
+        video: segmentScoreContainer.objectId,
         shot: segmentScoreContainer.sequenceNumber,
         score: segmentScoreContainer.score,
         rank: index
