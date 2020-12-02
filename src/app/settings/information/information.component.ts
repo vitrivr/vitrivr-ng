@@ -7,6 +7,10 @@ import {filter, map} from 'rxjs/operators';
 import {Options, TagCloud, Word} from 'd3-tagcloud';
 import {ThemePalette} from '@angular/material/core';
 import {FormControl} from '@angular/forms';
+import {EventBusService} from '../../core/basics/event-bus.service';
+import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
+import {InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
+import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 
 
 @Component({
@@ -62,7 +66,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
 
   toggle = new FormControl('', []);
 
-  constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService) {
+  constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService, private _eventBusService: EventBusService) {
   }
 
   /**
@@ -204,6 +208,10 @@ export class InformationComponent implements OnInit, AfterViewInit {
 
   /** called to add a related tag to query */
   onPreferenceChange(preference: Preference, tag: Tag) {
+    const context = new Map();
+    context.set('i:tag', tag.id)
+    context.set('i:count', tag.count)
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.ADD_TAG_RESULT_INFO, context)))
     tag.preference = preference;
     this.resultSetInfoService.changeTagForQuery(tag);
   }

@@ -239,9 +239,6 @@ export class ObjectdetailsComponent implements OnInit {
 
   public onLoadAllButtonClicked(segment: SegmentScoreContainer) {
     this._query.lookupNeighboringSegments(segment.segmentId, 1000);
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
   }
 
   public sortAlphabetically(tagsArray: Tag[]): Tag[] {

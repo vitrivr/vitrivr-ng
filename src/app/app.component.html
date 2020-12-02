@@ -71,7 +71,7 @@
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 
-  <mat-sidenav #featuressidenav class="right" mode="side" position="end">
-    <settings></settings>
+  <mat-sidenav (openedChange)="settingsComponent.toggled($event)" #featuressidenav class="right" mode="side" position="end">
+    <app-settings #settingsComponent></app-settings>
   </mat-sidenav>
 </mat-sidenav-container>

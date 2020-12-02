@@ -75,7 +75,7 @@ export class VbsSubmissionService {
               private _http: HttpClient,
               private _snackBar: MatSnackBar,
               _db: DatabaseService) {
-1
+
     _config.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
       this._vbs = config.get<boolean>('competition.vbs');

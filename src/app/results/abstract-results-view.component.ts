@@ -159,11 +159,6 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    */
   public onMltButtonClicked(segment: SegmentScoreContainer) {
     this._queryService.findMoreLikeThis(segment);
-
-    /* Emit a MLT event on the bus. */
-    const context: Map<ContextKey, any> = new Map();
-    context.set('q:value', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
   }
 
   /**

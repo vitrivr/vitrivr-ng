@@ -33,6 +33,13 @@ import {QueryResultTopCaptions} from '../../shared/model/messages/interfaces/res
 import {CaptionWithCount} from '../../shared/model/misc/caption-with-count.model';
 import {Tag} from '../../shared/model/misc/tag.model';
 import {LookupService} from '../lookup/lookup.service';
+import {EventBusService} from '../basics/event-bus.service';
+import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
+import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
+import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
+import {TextQueryTerm} from '../../shared/model/queries/text-query-term.model';
+import {BoolQueryTerm} from '../../shared/model/queries/bool-query-term.model';
+import {TagQueryTerm} from '../../shared/model/queries/tag-query-term.model';
 
 
 /**
@@ -75,7 +82,8 @@ export class QueryService {
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
               @Inject(ConfigService) private _config: ConfigService,
               @Inject(ResultSetInfoService) private resultSetInfoService,
-              @Inject(LookupService) private _lookupService
+              @Inject(LookupService) private _lookupService,
+              @Inject(EventBusService) private _eventBusService,
   ) {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
@@ -141,6 +149,50 @@ export class QueryService {
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
       this._socket.next(query)
     });
+
+    /** Log Interaction */
+    const _components: InteractionEventComponent[] = []
+    containers.forEach(container => {
+      _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_CONTAINER))
+      container.stages.forEach(s => {
+        _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_STAGE))
+        s.terms.forEach(t => {
+          const context: Map<ContextKey, any> = new Map();
+          context.set('q:categories', t.categories);
+          context.set('q:value', 'null')
+          switch (t.type) {
+            case 'IMAGE':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context));
+              return;
+            case 'AUDIO':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
+              return;
+            case 'MOTION':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context));
+              return;
+            case 'MODEL3D':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
+              return;
+            case 'SEMANTIC':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context));
+              return;
+            case 'TEXT':
+              context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
+              return;
+            case 'BOOLEAN':
+              context.set('q:value', (t as BoolQueryTerm).terms)
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_BOOLEAN, context));
+              return;
+            case 'TAG':
+              context.set('q:value', (t as TagQueryTerm).tags);
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_TAG, context));
+              return;
+          }
+        })
+      })
+    });
+    this._eventBusService.publish(new InteractionEvent(..._components))
   }
 
   /**
@@ -174,6 +226,12 @@ export class QueryService {
       return false;
     }
 
+
+    /* Emit a MLT event on the bus. */
+    const context: Map<ContextKey, any> = new Map();
+    context.set('q:value', segment.segmentId);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
+
     /* Use categories from last query AND the default categories for MLT. */
     this._config.pipe(first()).subscribe(config => {
       if (!config) {
@@ -188,8 +246,8 @@ export class QueryService {
         return;
       }
       _cat
-      .filter(c => categories.indexOf(c) === -1)
-      .forEach(c => categories.push(c));
+        .filter(c => categories.indexOf(c) === -1)
+        .forEach(c => categories.push(c));
       if (categories.length > 0) {
         this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
       }
@@ -209,6 +267,9 @@ export class QueryService {
    * @returns {boolean} true if query was issued, false otherwise.
    */
   public lookupNeighboringSegments(segmentId: string, count?: number) {
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:mediasegment', segmentId);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
     if (!this._results) {
       console.log('no results, not looking up neighboring segments');
       return false;

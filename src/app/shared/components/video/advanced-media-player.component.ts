@@ -6,6 +6,10 @@ import {VbsSubmissionService} from '../../../core/vbs/vbs-submission.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 import {VgApiService} from '@videogular/ngx-videogular/core';
+import {ContextKey, InteractionEventComponent} from '../../model/events/interaction-event-component.model';
+import {InteractionEvent} from '../../model/events/interaction-event.model';
+import {InteractionEventType} from '../../model/events/interaction-event-type.model';
+import {EventBusService} from '../../../core/basics/event-bus.service';
 
 
 declare var VTTCue;
@@ -36,12 +40,12 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
   /** The internal VgAPI reference used to interact with the media player. */
   private _api: VgApiService;
 
-  constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService, private _cdRef: ChangeDetectorRef) {
+  /** The internal VgAPI reference used to interact with the media player. */
+  private readonly _track: BehaviorSubject<TextTrack>;
+
+  constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService, private _cdRef: ChangeDetectorRef, private _eventBusService: EventBusService) {
     this._track = new BehaviorSubject<TextTrack>(null)
   }
-
-  /** The internal VgAPI reference used to interact with the media player. */
-  private _track: BehaviorSubject<TextTrack>;
 
   /**
    * Getter for the track object.
@@ -110,6 +114,10 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
     if (this.focus) {
       this._api.seekTime(this.focus.startabs);
     }
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:mediasegment', this.focus.segmentId);
+    context.set('i:starttime', this.focus.startabs);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.PLAY, context)))
   }
 
   /**
