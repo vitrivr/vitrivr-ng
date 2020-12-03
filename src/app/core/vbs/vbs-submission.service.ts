@@ -18,6 +18,7 @@ import {DatabaseService} from '../basics/database.service';
 import Dexie from 'dexie';
 import {LscUtil} from '../../shared/model/lsc/lsc.util';
 import {LscSubmission} from '../../shared/model/lsc/interfaces/lsc-submission.model';
+import {UserDetails} from './dres/model/userdetails.model';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -57,6 +58,7 @@ export class VbsSubmissionService {
   private _dres = false;
   private _sessionId = undefined;
   private _lsc = false;
+  private readonly _status: BehaviorSubject<UserDetails> = new BehaviorSubject(undefined)
 
 
   /**
@@ -154,6 +156,8 @@ export class VbsSubmissionService {
   public reset(endpoint: string, team: string, tool: number = 1, log: boolean = false, loginterval: number = 5000) {
     /* Run cleanup. */
     this.cleanup();
+
+    this.checkConnection(endpoint)
 
     /* Setup interaction log subscription, which runs in a regular interval. */
     if (log === true) {
@@ -285,11 +289,12 @@ export class VbsSubmissionService {
         }
         if (this._vbs) {
           id = parseInt(segment.objectId.replace('v_', ''), 10).toString();
+          id = segment.objectId
           params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', id).set('frame', String(frame));
         }
         if (this._dres) {
           // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
-          id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
+          // id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
           // params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
           params = new HttpParams().set('item', String(id)).set('frame', String(frame));
         }
@@ -314,17 +319,19 @@ export class VbsSubmissionService {
               if (msg.indexOf('incorrect') > -1) {
                 return [msg, 'snackbar-error']
               }
-              if (res.status == false) {
+              if (res.status === false) {
                 return [msg, 'snackbar-warning']
               }
-              if (res.status == true) {
+              if (res.status === true) {
                 return [msg, 'snackbar-success']
               }
             } catch (e) {
+              console.error(e)
               /* We have to catch invalid json responses. */
               return [msg, 'snackbar-error'];
             }
           }
+          console.warn(`Careful - you are not using DRES but still submitting results`)
           if (msg.indexOf('Correct') > -1) {
             return [msg, 'snackbar-success'];
           } else if (msg.indexOf('Wrong') > -1) {
@@ -337,6 +344,28 @@ export class VbsSubmissionService {
     ).subscribe(([msg, clazz]) => {
       this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION, panelClass: clazz});
     });
+  }
+
+  public checkConnection(endpoint: string) {
+    this._http.get(String(`${endpoint}/api/user`), {responseType: 'text', withCredentials: this._dres}).pipe(
+      tap(msg => {
+          this._status.next(JSON.parse(msg))
+        }, // noop
+        err => {
+          const msg = `You are not logged in to DRES at ${endpoint}`
+          console.debug(`api/user request to DRES endpoint at ${endpoint} failed, you are not logged in`)
+          this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION * 2, panelClass: 'snackbar-error'});
+          this._status.next(new UserDetails(undefined, undefined, undefined, undefined))
+        }),
+      catchError(err => {
+        console.log(err)
+        return of(undefined)
+      })
+    ).subscribe();
+  }
+
+  public statusObservable(): Observable<UserDetails> {
+    return this._status.asObservable()
   }
 
   /**

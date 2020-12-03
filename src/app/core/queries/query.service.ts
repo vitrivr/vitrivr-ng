@@ -3,9 +3,7 @@ import {Observable, Subject} from 'rxjs';
 
 import {Message} from '../../shared/model/messages/interfaces/message.interface';
 import {QueryStart} from '../../shared/model/messages/interfaces/responses/query-start.interface';
-import {SegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
 import {SimilarityQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-similarty.interface';
-import {ObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
 import {SimilarityQuery} from '../../shared/model/messages/queries/similarity-query.model';
 import {MoreLikeThisQuery} from '../../shared/model/messages/queries/more-like-this-query.model';
 import {QueryError} from '../../shared/model/messages/interfaces/responses/query-error.interface';
@@ -28,6 +26,15 @@ import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-s
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
+import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
+import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
+import {BoolQueryTerm} from '../../shared/model/queries/bool-query-term.model';
+import {TextQueryTerm} from '../../shared/model/queries/text-query-term.model';
+import {TagQueryTerm} from '../../shared/model/queries/tag-query-term.model';
+import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
+import {EventBusService} from '../basics/event-bus.service';
+import {SegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
+import {ObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -61,7 +68,8 @@ export class QueryService {
 
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
-              @Inject(ConfigService) private _config: ConfigService) {
+              @Inject(ConfigService) private _config: ConfigService,
+              private _eventBusService: EventBusService) {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
       this._socket.pipe(
@@ -125,6 +133,50 @@ export class QueryService {
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
       this._socket.next(query)
     });
+
+    /** Log Interaction */
+    const _components: InteractionEventComponent[] = []
+    containers.forEach(container => {
+      _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_CONTAINER))
+      container.stages.forEach(s => {
+        _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_STAGE))
+        s.terms.forEach(t => {
+          const context: Map<ContextKey, any> = new Map();
+          context.set('q:categories', t.categories);
+          context.set('q:value', 'null')
+          switch (t.type) {
+            case 'IMAGE':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context));
+              return;
+            case 'AUDIO':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
+              return;
+            case 'MOTION':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context));
+              return;
+            case 'MODEL3D':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
+              return;
+            case 'SEMANTIC':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context));
+              return;
+            case 'TEXT':
+              context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
+              return;
+            case 'BOOLEAN':
+              context.set('q:value', (t as BoolQueryTerm).terms)
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_BOOLEAN, context));
+              return;
+            case 'TAG':
+              context.set('q:value', (t as TagQueryTerm).tags);
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_TAG, context));
+              return;
+          }
+        })
+      })
+    });
+    this._eventBusService.publish(new InteractionEvent(..._components))
   }
 
   /**
@@ -157,6 +209,12 @@ export class QueryService {
       console.log(`no object mediatype available for segment ${segment.segmentId} undefined, cannot perform mlt`);
       return false;
     }
+
+
+    /* Emit a MLT event on the bus. */
+    const context: Map<ContextKey, any> = new Map();
+    context.set('q:value', segment.segmentId);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
 
     /* Use categories from last query AND the default categories for MLT. */
     this._config.pipe(first()).subscribe(config => {
@@ -193,6 +251,9 @@ export class QueryService {
    * @returns {boolean} true if query was issued, false otherwise.
    */
   public lookupNeighboringSegments(segmentId: string, count?: number) {
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:mediasegment', segmentId);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
     if (!this._results) {
       console.log('no results, not looking up neighboring segments');
       return false;

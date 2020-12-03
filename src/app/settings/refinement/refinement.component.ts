@@ -4,7 +4,7 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatSliderChange} from '@angular/material/slider';
 import {QueryChange, QueryService} from '../../core/queries/query.service';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
-import {EMPTY, Observable} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable} from 'rxjs';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
@@ -56,7 +56,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
               private _filterService: FilterService,
               private _eventBusService: EventBusService,
               private _configService: ConfigService,
-              private _selectionService: SelectionService,
+              public _selectionService: SelectionService,
               private _cdr: ChangeDetectorRef) {
   }
 
@@ -214,6 +214,11 @@ export class RefinementComponent implements OnInit, OnDestroy {
     this._filterService.filterRangeMetadata.delete(category);
     this._filterService.filterMetadata.delete(category);
     this._filterService.update();
+
+    const context: Map<ContextKey, string> = new Map();
+    context.set('f:type', 'filterCategory');
+    context.set('f:value', `${event.checked ? '+' : '-'}${category}`);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
   public mdCatOperatorChecked(): boolean {
@@ -227,7 +232,11 @@ export class RefinementComponent implements OnInit, OnDestroy {
   public set idFilterValue(id: string) {
     this._idFilterValue = id
     this._filterService._id = id;
-    this._filterService.update()
+    this._filterService.update();
+    const context: Map<ContextKey, string> = new Map();
+    context.set('f:type', 'id');
+    context.set('f:value', `${id}`);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
   public onMdCatOperatorChange(event: MatSlideToggleChange) {
@@ -271,6 +280,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
       this._filterService.filterRangeMetadata.set(key, [min, null]);
     }
     this.update();
+    const context: Map<ContextKey, string> = new Map();
+    context.set('f:type', 'metadata:min');
+    context.set('f:value', `${key}'-'}${min}`);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
 
@@ -307,6 +320,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
       this._filterService.filterRangeMetadata.set(key, [null, max]);
     }
     this.update();
+    const context: Map<ContextKey, string> = new Map();
+    context.set('f:type', 'metadata:max');
+    context.set('f:value', `${key}'-'}${max}`);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
   onTagFilterChanged(tag: Tag, $event: MatCheckboxChange) {
@@ -316,6 +333,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
       this._filterService.filterTags.delete(tag)
     }
     this._filterService.update();
+    const context: Map<ContextKey, string> = new Map();
+    context.set('f:type', 'tagfilter');
+    context.set('f:value', `${tag.name}':'}${$event.checked}`);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
 }

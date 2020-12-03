@@ -91,9 +91,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   public onNeighborsButtonClicked() {
     this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupCount'));
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', this.segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
   }
 
   /**
@@ -105,9 +102,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   public onNeighborsButtonRightClicked(event: Event) {
     this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupAllCount'));
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', this.segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
     event.preventDefault();
   }
 

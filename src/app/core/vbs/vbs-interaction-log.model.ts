@@ -36,7 +36,7 @@ export class VbsInteractionLog implements VbsSubmission {
     return stream.pipe(
       flatMap(e => {
         if (e.components.length > 1) {
-          let composit = e.components.map(c => VbsInteractionLog.mapAtomicEvent(c, e.timestamp));
+          const composit = e.components.map(c => VbsInteractionLog.mapAtomicEvent(c, e.timestamp));
           return Observable.from(composit);
         } else {
           return Observable.of(<VbsInteraction>(VbsInteractionLog.mapAtomicEvent(e.components[0], e.timestamp)));
@@ -46,7 +46,7 @@ export class VbsInteractionLog implements VbsSubmission {
         console.log('An error occurred when mapping an event from the event stream to a VbsSubmission: ' + e.message);
         return o;
       }),
-      filter(e => e != null)
+      filter(e => e != null),
     );
   }
 
@@ -58,6 +58,18 @@ export class VbsInteractionLog implements VbsSubmission {
    */
   private static mapAtomicEvent(component: InteractionEventComponent, timestamp: number): VbsInteraction {
     switch (component.type) {
+      case InteractionEventType.QUERY_MODEL3D:
+      case InteractionEventType.QUERY_BOOLEAN:
+      case InteractionEventType.HIGHLIGHT:
+      case InteractionEventType.QUERY_AUDIO:
+        console.warn(`interaction logging for ${component.type} is unsupported`)
+        break;
+      case InteractionEventType.PLAY:
+        return <VbsInteraction>{category: 'Browsing', type: ['videoPlayer'], value: component.context.get('i:mediaobject') + ': ' + component.context.get('i:starttime'), timestamp: timestamp}
+      case InteractionEventType.NEW_QUERY_STAGE:
+      case InteractionEventType.NEW_QUERY_CONTAINER:
+        // only used for result-logging
+        break;
       case InteractionEventType.QUERY_MOTION:
         return <VbsInteraction>{category: 'Sketch', type: ['motion'], timestamp: timestamp};
       case InteractionEventType.QUERY_SEMANTIC:
@@ -110,7 +122,7 @@ export class VbsInteractionLog implements VbsSubmission {
       case InteractionEventType.EXPAND:
         return <VbsInteraction>{category: 'Browsing', type: ['temporalContext'], timestamp: timestamp};
       case InteractionEventType.REFINE:
-        let weights = component.context.get('w:weights').map((v: WeightedFeatureCategory) => v.name + ':' + v.weightPercentage / 100).join(',');
+        const weights = component.context.get('w:weights').map((v: WeightedFeatureCategory) => v.name + ':' + v.weightPercentage / 100).join(',');
         return <VbsInteraction>{category: 'Browsing', type: ['explicitSort'], attributes: 'adjust weights,' + weights, timestamp: timestamp};
       case InteractionEventType.EXAMINE:
         return <VbsInteraction>{category: 'Browsing', type: ['videoPlayer'], value: component.context.get('i:mediasegment'), timestamp: timestamp};

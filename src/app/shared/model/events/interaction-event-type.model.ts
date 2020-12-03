@@ -13,7 +13,6 @@ export enum InteractionEventType {
   REFINE,
   FILTER,
   HIGHLIGHT,
-  BROWSE,
   SCROLL,
   EXPAND,
   EXAMINE,

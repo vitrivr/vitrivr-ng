@@ -26,6 +26,12 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet.  string is containerId*/
   private _cache: Map<string, Array<[WeightedFeatureCategory, Similarity, number]>> = new Map();
 
+  /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
+  private _segments: SegmentScoreContainer[] = [];
+
+  /** Map containing the metadata that belongs to the object. Can be empty! */
+  private _metadata: Map<string, string> = new Map();
+
   /**
    * Default constructor.
    *
@@ -35,9 +41,6 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     super();
   }
 
-  /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
-  private _segments: SegmentScoreContainer[] = [];
-
   /**
    *
    * @return {SegmentScoreContainer[]}
@@ -45,9 +48,6 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   get segments(): SegmentScoreContainer[] {
     return this._segments;
   }
-
-  /** Map containing the metadata that belongs to the object. Can be empty! */
-  private _metadata: Map<string, string> = new Map();
 
   /**
    * Returns the map of metadata.

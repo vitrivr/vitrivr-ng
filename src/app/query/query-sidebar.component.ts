@@ -6,8 +6,6 @@ import {EventBusService} from '../core/basics/event-bus.service';
 import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
-import {from} from 'rxjs';
-import {bufferCount, map} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
 import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fusion-function.model';
@@ -17,7 +15,6 @@ import {TextQueryTerm} from '../shared/model/queries/text-query-term.model';
 
 
 @Component({
-
   selector: 'app-query-sidebar',
   templateUrl: 'query-sidebar.component.html'
 })
@@ -26,7 +23,7 @@ export class QuerySidebarComponent implements OnInit {
   public readonly containers: QueryContainerInterface[] = [];
   @ViewChildren(QueryContainerComponent) queryContainers: QueryList<QueryContainerComponent>;
   /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
-  private _lastEnter: number = 0;
+  private _lastEnter = 0;
 
   constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService) {
   }
@@ -48,6 +45,8 @@ export class QuerySidebarComponent implements OnInit {
   /**
    * Triggers the similarity onSearchClicked by packing all configured QueryContainers into a single
    * SimilarityQuery message, and submitting that message to the QueryService.
+   *
+   * context changes are only part of competition logging and not part of the message sent to cineast
    */
   public onSearchClicked() {
     if (this.queryContainers && this.queryContainers.length >= 2) {
@@ -58,48 +57,6 @@ export class QuerySidebarComponent implements OnInit {
     }
 
     this._queryService.findSimilar(this.containers);
-    const _components: InteractionEventComponent[] = []
-    this.containers.forEach(container => {
-      _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_CONTAINER))
-      container.stages.forEach(s => {
-        _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_STAGE))
-        s.terms.forEach(t => {
-          const context: Map<ContextKey, any> = new Map();
-          context.set('q:categories', t.categories);
-          context.set('q:value', 'null')
-          switch (t.type) {
-            case 'IMAGE':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context));
-              return;
-            case 'AUDIO':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
-              return;
-            case 'MOTION':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context));
-              return;
-            case 'MODEL3D':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
-              return;
-            case 'SEMANTIC':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context));
-              return;
-            case 'TEXT':
-              context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
-              return;
-            case 'BOOLEAN':
-              context.set('q:value', (t as BoolQueryTerm).terms)
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_BOOLEAN, context));
-              return;
-            case 'TAG':
-              context.set('q:value', (t as TagQueryTerm).tags);
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_TAG, context));
-              return;
-          }
-        })
-      })
-    });
-    this._eventBus.publish(new InteractionEvent(..._components))
   }
 
   /**
@@ -122,7 +79,7 @@ export class QuerySidebarComponent implements OnInit {
   public keyEvent(event: KeyboardEvent) {
     /** Detects a double-enter, which will trigger a new search. */
     if (event.keyCode === 13) {
-      let timestamp = Date.now();
+      const timestamp = Date.now();
       if (timestamp - this._lastEnter < 1000) {
         this.onSearchClicked();
         this._lastEnter = 0;
