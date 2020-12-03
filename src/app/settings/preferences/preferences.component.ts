@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ConfigService} from '../../core/basics/config.service';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
@@ -11,14 +11,17 @@ import {VbsResultsLog} from '../../core/vbs/vbs-results-log.model';
 import {VbsInteractionLog} from '../../core/vbs/vbs-interaction-log.model';
 import {fromPromise} from 'rxjs/internal-compatibility';
 import * as JSZip from 'jszip';
+import {UserDetails} from '../../core/vbs/dres/model/userdetails.model';
+import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {NotificationUtil} from '../../shared/util/notification.util';
+import {NotificationService} from '../../core/basics/notification.service';
 
 @Component({
 
   selector: 'preferences',
-  templateUrl: './preferences.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './preferences.component.html'
 })
-export class PreferencesComponent {
+export class PreferencesComponent implements AfterContentInit {
 
   /** The current configuration as observable. */
   private _config: Observable<Config>;
@@ -32,10 +35,18 @@ export class PreferencesComponent {
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
 
+  private _dresStatus: BehaviorSubject<string> = new BehaviorSubject<string>('')
+  _dresStatusBadgeValue: string;
+
   /**
    * Constructor for PreferencesComponent
    */
-  constructor(private _configService: ConfigService, private _db: DatabaseService) {
+  constructor(
+    private _configService: ConfigService,
+    private _db: DatabaseService,
+    private _submissionService: VbsSubmissionService,
+    private _notificationService: NotificationService
+  ) {
     this._config = this._configService.asObservable();
     this._resultsLogTable = _db.db.table('log_results');
     this._interactionLogTable = _db.db.table('log_interaction');
@@ -57,6 +68,10 @@ export class PreferencesComponent {
 
   get dresAddress(): Observable<string> {
     return this._config.pipe(map(c => c._config.competition.endpoint))
+  }
+
+  get dresStatus(): Observable<string> {
+    return this._dresStatus.asObservable()
   }
 
   /**
@@ -244,5 +259,19 @@ export class PreferencesComponent {
       }
       c.set('query.config.hints', hints);
     });
+  }
+
+  ngAfterContentInit(): void {
+    this._submissionService.statusObservable().subscribe(status => {
+      if (status) {
+        if (status.username) {
+          this._dresStatus.next(`${status.username} as ${status.role}: ${status.sessionId}`)
+          return;
+        }
+        this._dresStatus.next('not logged in')
+        return
+      }
+    })
+    this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }

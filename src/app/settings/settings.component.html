@@ -8,7 +8,7 @@
 
   <mat-tab label="Preferences" matTooltip="Preferences refinement">
     <ng-template mat-tab-label>
-      <mat-icon>settings</mat-icon>
+      <mat-icon [matBadge]="_badgeValue">settings</mat-icon>
     </ng-template>
     <preferences></preferences>
   </mat-tab>

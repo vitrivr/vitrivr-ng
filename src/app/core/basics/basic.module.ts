@@ -6,11 +6,12 @@ import {EventBusService} from './event-bus.service';
 import {PingService} from './ping.service';
 import {DatabaseService} from './database.service';
 import {KeyboardService} from './keyboard.service';
+import {NotificationService} from './notification.service';
 
 @NgModule({
   imports: [HttpClientModule],
   declarations: [],
-  providers: [ConfigService, ResolverService, EventBusService, PingService, DatabaseService, KeyboardService]
+  providers: [ConfigService, ResolverService, EventBusService, PingService, DatabaseService, KeyboardService, NotificationService]
 })
 
 export class BasicModule {

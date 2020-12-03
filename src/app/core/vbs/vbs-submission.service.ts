@@ -17,6 +17,7 @@ import {DatabaseService} from '../basics/database.service';
 import Dexie from 'dexie';
 import {LscUtil} from '../../shared/model/lsc/lsc.util';
 import {LscSubmission} from '../../shared/model/lsc/interfaces/lsc-submission.model';
+import {UserDetails} from './dres/model/userdetails.model';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -56,6 +57,7 @@ export class VbsSubmissionService {
   private _dres = false;
   private _sessionId = undefined;
   private _lsc = false;
+  private readonly _status: BehaviorSubject<UserDetails> = new BehaviorSubject(undefined)
 
 
   /**
@@ -151,6 +153,8 @@ export class VbsSubmissionService {
   public reset(endpoint: string, team: string, tool: number = 1, log: boolean = false, loginterval: number = 5000) {
     /* Run cleanup. */
     this.cleanup();
+
+    this.checkConnection(endpoint)
 
     /* Setup interaction log subscription, which runs in a regular interval. */
     if (log === true) {
@@ -334,6 +338,28 @@ export class VbsSubmissionService {
     ).subscribe(([msg, clazz]) => {
       this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION, panelClass: clazz});
     });
+  }
+
+  public checkConnection(endpoint: string) {
+    this._http.get(String(`${endpoint}/api/user`), {responseType: 'text', withCredentials: this._dres}).pipe(
+      tap(msg => {
+          this._status.next(JSON.parse(msg))
+        }, // noop
+        err => {
+          const msg = `You are not logged in to DRES at ${endpoint}`
+          console.debug(`api/user request to DRES endpoint at ${endpoint} failed, you are not logged in`)
+          this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION * 2, panelClass: 'snackbar-error'});
+          this._status.next(new UserDetails(undefined, undefined, undefined, undefined))
+        }),
+      catchError(err => {
+        console.log(err)
+        return of(undefined)
+      })
+    ).subscribe();
+  }
+
+  public statusObservable(): Observable<UserDetails> {
+    return this._status.asObservable()
   }
 
   /**
