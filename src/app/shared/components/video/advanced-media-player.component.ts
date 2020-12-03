@@ -115,7 +115,7 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
       this._api.seekTime(this.focus.startabs);
     }
     const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', this.focus.segmentId);
+    context.set('i:mediaobject', this.focus.objectId);
     context.set('i:starttime', this.focus.startabs);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.PLAY, context)))
   }

@@ -55,7 +55,7 @@ export class ObjectviewerComponent {
     }
 
     const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
+    context.set('i:mediaobject', segment.objectId);
     context.set('i:starttime', segment.startabs);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.PLAY, context)))
   }

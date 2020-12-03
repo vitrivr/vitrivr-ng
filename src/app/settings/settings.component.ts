@@ -35,7 +35,7 @@ export class SettingsComponent implements AfterContentInit {
 
   tabChange($event: MatTabChangeEvent) {
     if ($event.tab === this.informationTab) {
-      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.RESULT_SET_INFORMATION)))
+      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.RESULT_SET_STATISTICS)))
     }
   }
 
@@ -44,7 +44,7 @@ export class SettingsComponent implements AfterContentInit {
    */
   toggled($event: boolean) {
     if (this._selectedIndex === 3 && $event) {
-      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.RESULT_SET_INFORMATION)))
+      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.RESULT_SET_STATISTICS)))
     }
   }
 

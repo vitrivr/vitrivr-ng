@@ -322,10 +322,12 @@ export class VbsSubmissionService {
                 return [msg, 'snackbar-success']
               }
             } catch (e) {
+              console.error(e)
               /* We have to catch invalid json responses. */
               return [msg, 'snackbar-error'];
             }
           }
+          console.warn(`Careful - you are not using DRES but still submitting results`)
           if (msg.indexOf('Correct') > -1) {
             return [msg, 'snackbar-success'];
           } else if (msg.indexOf('Wrong') > -1) {

@@ -204,7 +204,7 @@ export class ObjectdetailsComponent implements OnInit {
     /* Emit an EXAMINE event on the bus. */
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)));
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.LOAD_FEATURES, context)));
 
     // get the tags associated with a segmentId
     this._lookupService.getTagIDsPerElementId(segment.segmentId).subscribe(function (tagIds) {

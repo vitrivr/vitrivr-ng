@@ -9,7 +9,7 @@ import {ThemePalette} from '@angular/material/core';
 import {FormControl} from '@angular/forms';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
-import {InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
+import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 
 
@@ -210,10 +210,10 @@ export class InformationComponent implements OnInit {
 
   /** called to add a related tag to query */
   onPreferenceChange(preference: Preference, tag: Tag) {
-    const context = new Map();
-    context.set('i:tag', tag.id)
-    context.set('i:count', tag.count)
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.ADD_TAG_RESULT_INFO, context)))
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:tagid', tag.id)
+    context.set('i:tagcount', tag.count)
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.ADD_TAG_FROM_RESULT_INFO, context)))
     tag.preference = preference;
     this.resultSetInfoService.changeTagForQuery(tag);
   }
