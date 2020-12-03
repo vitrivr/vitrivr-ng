@@ -21,7 +21,7 @@ import {InteractionEventType} from '../../shared/model/events/interaction-event-
 /**
  * Component that displays information about the result set
  */
-export class InformationComponent implements OnInit, AfterViewInit {
+export class InformationComponent implements OnInit {
 
   /** config for score histogram */
   public title = 'Score distribution';
@@ -82,7 +82,17 @@ export class InformationComponent implements OnInit, AfterViewInit {
       this.tagOccurrence = message;
     });
     this.resultSetInfoService.currentCaption.subscribe(message => {
+      if (!message) {
+        return;
+      }
       this.captionOccurrence = message;
+      if (!this.tagCloud) {
+        this.tagCloud = new TagCloud(this.cloud.nativeElement);
+        const options: Options = {
+          orientation: 'single' //  default is 'right angled','single','right angled','multiple'
+        };
+        this.tagCloud.setOptions(options);
+      }
       if (this.tagCloud) {
         this.tagCloud._emptyDOM();
         this.tagCloud.setData(this.captionToWord(this.captionOccurrence));
@@ -175,14 +185,6 @@ export class InformationComponent implements OnInit, AfterViewInit {
     this.numberOfCaptionTermsShown = 25;
 
 
-  }
-
-  ngAfterViewInit() { // word cloud needs to be created here, because it contains data that depends on the result of the query
-    this.tagCloud = new TagCloud(this.cloud.nativeElement);
-    const options: Options = {
-      orientation: 'single' //  default is 'right angled','single','right angled','multiple'
-    };
-    this.tagCloud.setOptions(options);
   }
 
   /** called to transform a Caption object into a Word object, so it can be used in the word cloud */

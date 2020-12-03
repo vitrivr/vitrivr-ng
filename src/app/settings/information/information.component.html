@@ -1,7 +1,7 @@
 <h3>Information on result set</h3>
 
-<mat-list dense>
-  <h3 class="mat-list-custom" *ngIf="queryService.results">
+<mat-list *ngIf="queryService.results" dense>
+  <h3 class="mat-list-custom" >
     <b>{{queryService.results.segmentCount}}</b> segments in result set</h3>
 
   <mat-form-field appearance="legacy" (submit)="changeNumberOfTagsShown()" *ngIf="tagOccurrence">
@@ -109,3 +109,6 @@
 </mat-list>
 
 
+<div *ngIf="!queryService.results">
+  <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>
+</div>

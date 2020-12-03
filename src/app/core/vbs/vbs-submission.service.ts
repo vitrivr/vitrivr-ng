@@ -282,6 +282,7 @@ export class VbsSubmissionService {
         }
         if (this._vbs) {
           id = parseInt(segment.objectId.replace('v_', ''), 10).toString();
+          id = segment.objectId
           params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', id).set('frame', String(frame));
         }
         if (this._dres) {

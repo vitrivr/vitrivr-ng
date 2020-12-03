@@ -51,6 +51,14 @@ export class PreferencesComponent {
     return this._config.pipe(map(c => c.endpoint_ws));
   }
 
+  get dresEnabled(): Observable<boolean> {
+    return this._config.pipe(map(c => c._config.competition.dres))
+  }
+
+  get dresAddress(): Observable<string> {
+    return this._config.pipe(map(c => c._config.competition.endpoint))
+  }
+
   /**
    * Getter for thumbnail host.
    *
