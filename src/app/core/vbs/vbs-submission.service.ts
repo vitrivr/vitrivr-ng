@@ -302,7 +302,7 @@ export class VbsSubmissionService {
 
         /* Do some logging and catch HTTP errors. */
         return observable.pipe(
-          tap(o => console.log(`Submitting element to server; id: ${id}`), err => console.log(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)),
+          tap(o => console.log(`Submitted element to server; id: ${id} @frame ${frame}`), err => console.log(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)),
           catchError(err => of(err.error))
         );
       }),
