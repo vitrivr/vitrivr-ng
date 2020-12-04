@@ -13,7 +13,6 @@ export enum InteractionEventType {
   REFINE,
   FILTER,
   HIGHLIGHT,
-  BROWSE,
   SCROLL,
   EXPAND,
   EXAMINE,
@@ -21,4 +20,7 @@ export enum InteractionEventType {
   NAVIGATE,
   NEW_QUERY_STAGE,
   NEW_QUERY_CONTAINER,
+  RESULT_SET_STATISTICS,
+  ADD_TAG_FROM_RESULT_INFO,
+  LOAD_FEATURES,
 }

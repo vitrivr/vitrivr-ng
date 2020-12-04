@@ -1,11 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Component, Input, ViewChild} from '@angular/core';
 import {MediaObject} from '../shared/model/media/media-object.model';
 import {ResolverService} from '../core/basics/resolver.service';
 import {EventBusService} from '../core/basics/event-bus.service';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
-import {LookupService} from '../core/lookup/lookup.service';
 import {MediaSegment} from '../shared/model/media/media-segment.model';
+import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
+import {InteractionEvent} from '../shared/model/events/interaction-event.model';
+import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 
 
 @Component({
@@ -24,12 +25,11 @@ export class ObjectviewerComponent {
 
   @Input() mediaobject: MediaObject;
 
-  constructor(private _route: ActivatedRoute,
-              private _router: Router,
+  constructor(
               private  _eventBusService: EventBusService,
               public _resolver: ResolverService,
               private _historyService: PreviousRouteService,
-              private _lookupService: LookupService) {
+              ) {
     console.debug(`initializing objectviewer`)
   }
 
@@ -53,5 +53,10 @@ export class ObjectviewerComponent {
       this.videoplayer.nativeElement.currentTime = segment.startabs;
       this.videoplayer.nativeElement.play();
     }
+
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:mediaobject', segment.objectId);
+    context.set('i:starttime', segment.startabs);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.PLAY, context)))
   }
 }

@@ -47,7 +47,7 @@
     <mat-icon>history</mat-icon>
   </button>
 
-  <button (click)="featuressidenav.toggle()" mat-icon-button matTooltip="Toggle query refinement sidebar">
+  <button (click)="settingssidenav.toggle()" mat-icon-button [matBadge]="settingsbadge" matTooltip="Toggle query refinement sidebar">
     <mat-icon>storage</mat-icon>
   </button>
 
@@ -71,7 +71,7 @@
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 
-  <mat-sidenav #featuressidenav class="right" mode="side" position="end">
-    <settings></settings>
+  <mat-sidenav (openedChange)="settingsComponent.toggled($event)" #settingssidenav class="right" mode="side" position="end">
+    <app-settings #settingsComponent></app-settings>
   </mat-sidenav>
 </mat-sidenav-container>

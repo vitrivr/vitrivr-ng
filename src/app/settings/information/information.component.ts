@@ -7,6 +7,10 @@ import {filter, map} from 'rxjs/operators';
 import {Options, TagCloud, Word} from 'd3-tagcloud';
 import {ThemePalette} from '@angular/material/core';
 import {FormControl} from '@angular/forms';
+import {EventBusService} from '../../core/basics/event-bus.service';
+import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
+import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
+import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 
 
 @Component({
@@ -17,7 +21,7 @@ import {FormControl} from '@angular/forms';
 /**
  * Component that displays information about the result set
  */
-export class InformationComponent implements OnInit, AfterViewInit {
+export class InformationComponent implements OnInit {
 
   /** config for score histogram */
   public title = 'Score distribution';
@@ -62,7 +66,7 @@ export class InformationComponent implements OnInit, AfterViewInit {
 
   toggle = new FormControl('', []);
 
-  constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService) {
+  constructor(private _resultSetInfoService: ResultSetInfoService, private _queryService: QueryService, private _eventBusService: EventBusService) {
   }
 
   /**
@@ -78,7 +82,17 @@ export class InformationComponent implements OnInit, AfterViewInit {
       this.tagOccurrence = message;
     });
     this.resultSetInfoService.currentCaption.subscribe(message => {
+      if (!message) {
+        return;
+      }
       this.captionOccurrence = message;
+      if (!this.tagCloud) {
+        this.tagCloud = new TagCloud(this.cloud.nativeElement);
+        const options: Options = {
+          orientation: 'single' //  default is 'right angled','single','right angled','multiple'
+        };
+        this.tagCloud.setOptions(options);
+      }
       if (this.tagCloud) {
         this.tagCloud._emptyDOM();
         this.tagCloud.setData(this.captionToWord(this.captionOccurrence));
@@ -173,14 +187,6 @@ export class InformationComponent implements OnInit, AfterViewInit {
 
   }
 
-  ngAfterViewInit() { // word cloud needs to be created here, because it contains data that depends on the result of the query
-    this.tagCloud = new TagCloud(this.cloud.nativeElement);
-    const options: Options = {
-      orientation: 'single' //  default is 'right angled','single','right angled','multiple'
-    };
-    this.tagCloud.setOptions(options);
-  }
-
   /** called to transform a Caption object into a Word object, so it can be used in the word cloud */
   captionToWord(captionTerms: CaptionWithCount[]): Word[] {
     const words = [] as Array<Word>;
@@ -204,6 +210,10 @@ export class InformationComponent implements OnInit, AfterViewInit {
 
   /** called to add a related tag to query */
   onPreferenceChange(preference: Preference, tag: Tag) {
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:tagid', tag.id)
+    context.set('i:tagcount', tag.count)
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.ADD_TAG_FROM_RESULT_INFO, context)))
     tag.preference = preference;
     this.resultSetInfoService.changeTagForQuery(tag);
   }

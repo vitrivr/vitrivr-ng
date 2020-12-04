@@ -2,7 +2,7 @@ import {Observable} from 'rxjs';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
-import {catchError, filter} from 'rxjs/operators';
+import {catchError, filter, tap} from 'rxjs/operators';
 import {SubmissionType, VbsSubmission} from '../../shared/model/vbs/interfaces/vbs-submission.model';
 import {InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {VbsInteraction} from '../../shared/model/vbs/interfaces/vbs-interaction.model';
@@ -46,7 +46,7 @@ export class VbsInteractionLog implements VbsSubmission {
         console.log('An error occurred when mapping an event from the event stream to a VbsSubmission: ' + e.message);
         return o;
       }),
-      filter(e => e != null)
+      filter(e => e != null),
     );
   }
 
@@ -58,6 +58,24 @@ export class VbsInteractionLog implements VbsSubmission {
    */
   private static mapAtomicEvent(component: InteractionEventComponent, timestamp: number): VbsInteraction {
     switch (component.type) {
+      case InteractionEventType.QUERY_MODEL3D:
+      case InteractionEventType.QUERY_BOOLEAN:
+      case InteractionEventType.HIGHLIGHT:
+      case InteractionEventType.QUERY_AUDIO:
+        console.warn(`interaction logging for ${component.type} is unsupported`)
+        break;
+      case InteractionEventType.PLAY:
+        return <VbsInteraction>{category: 'Browsing', type: ['videoPlayer'], value: component.context.get('i:mediaobject') + ': ' + component.context.get('i:starttime'), timestamp: timestamp}
+      case InteractionEventType.NEW_QUERY_STAGE:
+      case InteractionEventType.NEW_QUERY_CONTAINER:
+        // only used for result-logging
+        break;
+      case InteractionEventType.RESULT_SET_STATISTICS:
+        return <VbsInteraction>{category: 'Custom', type: ['ResultSetStatistics'], timestamp: timestamp}
+      case InteractionEventType.ADD_TAG_FROM_RESULT_INFO:
+        return <VbsInteraction>{category: 'Custom', type: ['AddTagFromResultInfo'], value: component.context.get('i:tagid') + ': ' + component.context.get('i:tagcount'), timestamp: timestamp}
+      case InteractionEventType.LOAD_FEATURES:
+        return <VbsInteraction>{category: 'Custom', type: ['LoadFeatures'], value: component.context.get('i:mediasegment'), timestamp: timestamp}
       case InteractionEventType.QUERY_MOTION:
         return <VbsInteraction>{category: 'Sketch', type: ['motion'], timestamp: timestamp};
       case InteractionEventType.QUERY_SEMANTIC:

@@ -1,4 +1,4 @@
-<mat-tab-group>
+<mat-tab-group (selectedTabChange)="tabChange($event)" [(selectedIndex)]="_selectedIndex">
   <mat-tab label="Refinement" matTooltip="Query refinement">
     <ng-template mat-tab-label>
       <mat-icon>storage</mat-icon>
@@ -8,7 +8,7 @@
 
   <mat-tab label="Preferences" matTooltip="Preferences refinement">
     <ng-template mat-tab-label>
-      <mat-icon>settings</mat-icon>
+      <mat-icon [matBadge]="_badgeValue">settings</mat-icon>
     </ng-template>
     <preferences></preferences>
   </mat-tab>
@@ -20,10 +20,13 @@
     <selection-management></selection-management>
   </mat-tab>
 
-  <mat-tab label="Information" matTooltip="Information about result set">
+  <!-- Careful: This should either stay at index 3 or you should change the interaction logging in the corresponding component.
+  As of Angular 9, a mat-tab has no way of accessing its own index so we have to hardcode this in the settings.component.ts
+  -->
+  <mat-tab #informationTab label="Information" matTooltip="Information about result set">
     <ng-template mat-tab-label>
       <mat-icon>info</mat-icon>
     </ng-template>
-    <app-information></app-information>
+    <app-information #informationComponent></app-information>
   </mat-tab>
 </mat-tab-group>
