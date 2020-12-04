@@ -36,7 +36,7 @@ export class VbsInteractionLog implements VbsSubmission {
     return stream.pipe(
       flatMap(e => {
         if (e.components.length > 1) {
-          let composit = e.components.map(c => VbsInteractionLog.mapAtomicEvent(c, e.timestamp));
+          const composit = e.components.map(c => VbsInteractionLog.mapAtomicEvent(c, e.timestamp));
           return Observable.from(composit);
         } else {
           return Observable.of(<VbsInteraction>(VbsInteractionLog.mapAtomicEvent(e.components[0], e.timestamp)));
@@ -128,7 +128,7 @@ export class VbsInteractionLog implements VbsSubmission {
       case InteractionEventType.EXPAND:
         return <VbsInteraction>{category: 'Browsing', type: ['temporalContext'], timestamp: timestamp};
       case InteractionEventType.REFINE:
-        let weights = component.context.get('w:weights').map((v: WeightedFeatureCategory) => v.name + ':' + v.weightPercentage / 100).join(',');
+        const weights = component.context.get('w:weights').map((v: WeightedFeatureCategory) => v.name + ':' + v.weightPercentage / 100).join(',');
         return <VbsInteraction>{category: 'Browsing', type: ['explicitSort'], attributes: 'adjust weights,' + weights, timestamp: timestamp};
       case InteractionEventType.EXAMINE:
         return <VbsInteraction>{category: 'Browsing', type: ['videoPlayer'], value: component.context.get('i:mediasegment'), timestamp: timestamp};

@@ -59,17 +59,6 @@ export class VbsSubmissionService {
   private _lsc = false;
   private readonly _status: BehaviorSubject<UserDetails> = new BehaviorSubject(undefined)
 
-
-  /**
-   * Constructor for VbsSubmissionService.
-   *
-   * @param {ConfigService} _config
-   * @param {EventBusService} _eventbus Reference to the singleton EventBusService instance.
-   * @param {QueryService} _queryService Reference to the singleton QueryService instance.
-   * @param {SelectionService} _selection Reference to the singleton SelectionService instance.
-   * @param {HttpClient} _http
-   * @param {MatSnackBar} _snackBar
-   */
   constructor(_config: ConfigService,
               private _eventbus: EventBusService,
               private _queryService: QueryService,
@@ -291,6 +280,7 @@ export class VbsSubmissionService {
         }
         if (this._dres) {
           // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
+          // id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
           // params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
           params = new HttpParams().set('item', String(id)).set('frame', String(frame));
         }
