@@ -6,6 +6,7 @@ import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {Similarity} from '../../media/similarity.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaType} from '../../media/media-type.model';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 /**
  * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects.
@@ -29,24 +30,31 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
   private _segments: SegmentScoreContainer[] = [];
 
+  private _segmentsObservable: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._segments)
+
   /** Map containing the metadata that belongs to the object. Can be empty! */
   private _metadata: Map<string, string> = new Map();
 
-  /**
-   * Default constructor.
-   *
-   * @param objectId
-   */
-  public constructor(public readonly objectId: string) {
+  public constructor(public objectId: string) {
     super();
   }
 
-  /**
-   *
-   * @return {SegmentScoreContainer[]}
-   */
   get segments(): SegmentScoreContainer[] {
     return this._segments;
+  }
+
+  set segments(segments: SegmentScoreContainer[]) {
+    this._segments = segments;
+    this.updateSegmentsObservable()
+  }
+
+  get segmentsObservable(): Observable<SegmentScoreContainer[]> {
+    return this._segmentsObservable.asObservable();
+  }
+
+
+  public updateSegmentsObservable() {
+    this._segmentsObservable.next(this._segments)
   }
 
   /**
@@ -168,6 +176,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
       const ssc = new SegmentScoreContainer(segment, this);
       this._segmentScores.set(segment.segmentId, ssc);
       this._segments.push(ssc);
+      this.updateSegmentsObservable()
     }
     return this._segmentScores.get(segment.segmentId);
   }

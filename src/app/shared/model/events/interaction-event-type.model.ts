@@ -20,4 +20,5 @@ export enum InteractionEventType {
   NAVIGATE,
   NEW_QUERY_STAGE,
   NEW_QUERY_CONTAINER,
+  LOAD_FEATURES
 }

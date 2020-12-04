@@ -3,8 +3,6 @@ import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {ObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
-import {SegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FeatureCategories} from '../feature-categories.model';
@@ -30,6 +28,8 @@ import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
+import {MediaObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
+import {MediaSegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -49,9 +49,24 @@ export class ResultsContainer {
   private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
 
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
-  private _rerank: number = 0;
+  private _rerank = 0;
   /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
-  private _next: number = 0;
+  private _next = 0;
+
+  /** List of all the results that were returned and hence are known to the results container. */
+  private _features: WeightedFeatureCategory[] = [];
+
+  /** A subject that can be used to publish changes to the results. */
+  private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
+
+  /**
+   * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
+   * results have been returned yet OR that no query is running.
+   *
+   * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
+   * be filtered).
+   */
+  private _mediatypes: Map<MediaType, boolean> = new Map();
 
   /**
    * Constructor for ResultsContainer.
@@ -89,12 +104,6 @@ export class ResultsContainer {
     }
   }
 
-  /** List of all the results that were returned and hence are known to the results container. */
-  private _features: WeightedFeatureCategory[] = [];
-
-  /** A subject that can be used to publish changes to the results. */
-  private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
-
   /**
    * Getter for the list of results.
    *
@@ -103,15 +112,6 @@ export class ResultsContainer {
   get features(): WeightedFeatureCategory[] {
     return this._features;
   }
-
-  /**
-   * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
-   * results have been returned yet OR that no query is running.
-   *
-   * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
-   * be filtered).
-   */
-  private _mediatypes: Map<MediaType, boolean> = new Map();
 
   /**
    * Getter for the list of mediatypes.
@@ -155,8 +155,8 @@ export class ResultsContainer {
   // tslint:disable-next-line:member-ordering
   public static deserialize(data: any): ResultsContainer {
     const container = new ResultsContainer(data['queryId']);
-    container.processObjectMessage(<ObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
-    container.processSegmentMessage(<SegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
+    container.processObjectMessage(<MediaObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
+    container.processSegmentMessage(<MediaSegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
     container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
       queryId: container.queryId,
       content: <MediaObjectMetadata[]>data['objectMetadata']
@@ -245,7 +245,7 @@ export class ResultsContainer {
     return this._objectid_to_object_map.has(objectId);
   }
 
-  public getObject(objectId: string) {
+  public getObject(objectId: string): MediaObjectScoreContainer {
     return this._objectid_to_object_map.get(objectId);
   }
 
@@ -319,10 +319,10 @@ export class ResultsContainer {
    * Processes a ObjectQueryResult message. Extracts the MediaObject lines and adds the
    * objects to the list of MediaObjectScoreContainers.
    *
-   * @param {ObjectQueryResult} obj ObjectQueryResult message
+   * @param {MediaObjectQueryResult} obj ObjectQueryResult message
    * @return {boolean} True, if ObjectQueryResult was processed i.e. queryId corresponded with that of the score container.
    */
-  public processObjectMessage(obj: ObjectQueryResult): boolean {
+  public processObjectMessage(obj: MediaObjectQueryResult): boolean {
     if (obj.queryId !== this.queryId) {
       return false;
     }
@@ -352,7 +352,7 @@ export class ResultsContainer {
    * @param seg SegmentQueryResult message
    * @return {boolean} True, if SegmentQueryResult was processed i.e. queryId corresponded with that of the message.
    */
-  public processSegmentMessage(seg: SegmentQueryResult): boolean {
+  public processSegmentMessage(seg: MediaSegmentQueryResult): boolean {
     if (seg.queryId !== this.queryId) {
       console.warn('query result id ' + seg.queryId + ' does not match query id ' + this.queryId);
       return false;
@@ -560,9 +560,9 @@ export class ResultsContainer {
    * @return {WeightedFeatureCategory}
    */
   private uniqueFeature(category: FeatureCategories): WeightedFeatureCategory {
-    for (const feature of this._features) {
-      if (feature.name === category) {
-        return feature;
+    for (const _feature of this._features) {
+      if (_feature.name === category) {
+        return _feature;
       }
     }
     const feature = new WeightedFeatureCategory(category, category, 100);

@@ -1,0 +1,42 @@
+<div [style.display]="'inline-flex'">
+    <button (click)="onBackClick()" mat-icon-button matTooltip="Go back...">
+        <mat-icon>keyboard_backspace</mat-icon>
+    </button>
+    <h2 [style.margin-top]="'5px'">&nbsp;Media object: {{mediaobject.objectId}}</h2>
+</div>
+
+<div [style.display]="'flex'" [style.justify-content]="'flex-start'">
+    <div>
+        <div [style.max-height]="'400px'">
+            <video #videoplayer *ngIf="mediaobject.mediatype == 'VIDEO'"
+                   [style.width]="'400px'" controls
+                   src="{{_resolver.pathToObject(mediaobject)}}"></video>
+            <audio #audioplayer *ngIf="mediaobject.mediatype == 'AUDIO'"
+                   [style.width]="'400px'" controls
+                   src="{{_resolver.pathToObject(mediaobject)}}"
+                   width="400"></audio>
+            <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'"
+                 src="{{_resolver.pathToObject(mediaobject)}}"
+                 style="max-height: 400px"/>
+            <m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'"
+                        [height]="200" [interaction]="true" [width]="200"
+                        src="{{_resolver.pathToObject(mediaobject)}}"></m3d-loader>
+        </div>
+
+    </div>
+
+    <div *ngIf="mediaobject.name">
+        <dl>
+            <dt>ID</dt>
+            <dd>{{mediaobject.objectId}}</dd>
+            <dt>Filename</dt>
+            <dd>{{mediaobject.name}}</dd>
+            <dt>Path</dt>
+            <dd><a download
+                   href="{{_resolver.pathToObject(mediaobject)}}">{{(mediaobject).path}}</a>
+            </dd>
+            <dt>Mediatype</dt>
+            <dd>{{mediaobject.mediatype}}</dd>
+        </dl>
+    </div>
+</div>

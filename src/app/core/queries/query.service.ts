@@ -33,8 +33,8 @@ import {TextQueryTerm} from '../../shared/model/queries/text-query-term.model';
 import {TagQueryTerm} from '../../shared/model/queries/tag-query-term.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {EventBusService} from '../basics/event-bus.service';
-import {SegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
-import {ObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
+import {MediaSegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
+import {MediaObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -342,13 +342,13 @@ export class QueryService {
         this.startNewQuery(qs.queryId);
         break;
       case 'QR_OBJECT':
-        const obj = <ObjectQueryResult>message;
+        const obj = <MediaObjectQueryResult>message;
         if (this._results && this._results.processObjectMessage(obj)) {
           this._subject.next('UPDATED');
         }
         break;
       case 'QR_SEGMENT':
-        const seg = <SegmentQueryResult>message;
+        const seg = <MediaSegmentQueryResult>message;
         if (this._results && this._results.processSegmentMessage(seg)) {
           this._subject.next('UPDATED');
         }
