@@ -1,12 +1,12 @@
 import {Inject, Injectable} from '@angular/core';
 import {BehaviorSubject, timer} from 'rxjs';
 import {WebSocketFactoryService} from '../api/web-socket-factory.service';
-import {ConfigService} from './config.service';
 import {filter, flatMap} from 'rxjs/operators';
 import {Message} from '../../shared/model/messages/interfaces/message.interface';
 import {ApiStatus} from '../../shared/model/internal/api-status.model';
 import {Ping} from '../../shared/model/messages/interfaces/responses/ping.interface';
 import {WebSocketSubject} from 'rxjs/webSocket';
+import {AppConfig} from '../../app.config';
 
 @Injectable()
 export class PingService extends BehaviorSubject<ApiStatus> {
@@ -25,7 +25,7 @@ export class PingService extends BehaviorSubject<ApiStatus> {
    * @param _factory Reference to the WebSocketFactoryService. Gets injected by DI.
    * @param _config
    */
-  constructor(@Inject(WebSocketFactoryService) _factory: WebSocketFactoryService, @Inject(ConfigService) _config: ConfigService) {
+  constructor(@Inject(WebSocketFactoryService) _factory: WebSocketFactoryService, @Inject(AppConfig) _config: AppConfig) {
     super(new ApiStatus(Date.now(), 'DISCONNECTED', Number.MAX_VALUE));
     _factory.asObservable()
       .pipe(filter(ws => ws != null))
@@ -37,7 +37,7 @@ export class PingService extends BehaviorSubject<ApiStatus> {
       });
 
     /* Subscribes to changes in the configuration file and dispatches the ping timer. */
-    _config.asObservable().pipe(flatMap(c => timer(0, c.get<number>('api.ping_interval')))).subscribe(() => this.onTimer())
+    _config.configAsObservable.pipe(flatMap(c => timer(0, c.get<number>('api.ping_interval')))).subscribe(() => this.onTimer())
   }
 
   /**

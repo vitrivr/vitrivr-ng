@@ -1,6 +1,6 @@
-import { QueryTerm } from 'app/core/openapi/model/queryTerm';
 import {AbstractQueryTerm} from '../abstract-query-term.model';
 import {SemanticCategory} from './semantic-category.model';
+import {QueryTerm} from '../../../../../../openapi/cineast/model/queryTerm';
 
 export class SemanticQueryTerm extends AbstractQueryTerm {
 

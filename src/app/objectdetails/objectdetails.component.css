@@ -36,3 +36,29 @@
   opacity: 0.65;
   color: white;
 }
+
+.scrollToBottom {
+  min-height: 800px;
+}
+
+.smallerFont {
+  font-size: small;
+  text-align: center;
+}
+
+.normalfont{
+  font-size: medium;
+}
+
+.odd {
+  background-color: #f2f9ff;
+}
+
+.even {
+  background-color: #eceff3;
+}
+
+mat-grid-tile {
+  background: #e0e0e0;
+}
+

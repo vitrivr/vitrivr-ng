@@ -1,11 +1,13 @@
 import {Inject} from '@angular/core';
-import {ConfigService} from '../basics/config.service';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
+import {AppConfig} from '../../app.config';
 
 /**
  * Class that can be extended or used by services that provide access to some kind of RESTful endpoint exposed by Cineast.
+ *
+ * @deprecated Use openapi generated instead
  */
 export class CineastRestAPI {
   /** URL to the RESTful endpoint. */
@@ -14,11 +16,11 @@ export class CineastRestAPI {
   /**
    * Constructor for CineastRestAPI.
    *
-   * @param {ConfigService} _configService
+   * @param {AppConfig} _configService
    * @param {HttpClient} _httpClient
    */
-  constructor(@Inject(ConfigService) _configService: ConfigService, @Inject(HttpClient) protected _httpClient: HttpClient) {
-    _configService.asObservable().pipe(
+  constructor(@Inject(AppConfig) _configService: AppConfig, @Inject(HttpClient) protected _httpClient: HttpClient) {
+    _configService.configAsObservable.pipe(
       filter(c => c.endpoint_http != null)
     ).subscribe((config) => {
       this._endpoint = config.endpoint_http;

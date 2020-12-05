@@ -9,7 +9,7 @@ import {TextQueryTerm} from './text-query-term.model';
 import {TagQueryTerm} from './tag-query-term.model';
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
 import {QueryStage} from './query-stage.model';
-import {QueryTerm} from 'app/core/openapi';
+import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
 
 export class StagedQueryContainer implements QueryContainerInterface {
 

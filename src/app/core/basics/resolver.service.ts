@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {ConfigService} from './config.service';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import { MediaObjectDescriptor, MediaSegmentDescriptor } from '../openapi';
+import {MediaObjectDescriptor} from '../../../../openapi/cineast/model/mediaObjectDescriptor';
+import {MediaSegmentDescriptor} from '../../../../openapi/cineast';
+import {AppConfig} from '../../app.config';
 
 /**
  * Definition of the possible tokens that can be used to build the URL.
@@ -50,21 +51,38 @@ export class ResolverService {
    *
    * @param _configService ConfigService reference; injected.
    */
-  constructor(_configService: ConfigService) {
-    _configService.asObservable().subscribe((config) => {
+  constructor(_configService: AppConfig) {
+    _configService.configAsObservable.subscribe((config) => {
       this.host_thumbnails = config.get('resources.host_thumbnails');
       this.host_objects = config.get('resources.host_objects');
-      let default_suffix: string = config.get('resources.suffix_default');
-      let suffices = config.get('resources.suffix');
-      for (let type of Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key])) {
-        let suffix: string = suffices[type];
-        if (typeof suffix == 'string') {
-          this.suffices.set(type, (suffix.charAt(0) == '.' ? '' : '.') + suffix);
+      const default_suffix: string = config.get('resources.suffix_default');
+      const suffices = config.get('resources.suffix');
+      for (const type of Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key])) {
+        const suffix: string = suffices[type];
+        if (typeof suffix === 'string') {
+          this.suffices.set(type, (suffix.charAt(0) === '.' ? '' : '.') + suffix);
         } else {
-          this.suffices.set(type, (default_suffix.charAt(0) == '.' ? '' : '.') + default_suffix);
+          this.suffices.set(type, (default_suffix.charAt(0) === '.' ? '' : '.') + default_suffix);
         }
       }
     });
+  }
+
+  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
+    switch (mediatype) {
+      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
+        return 'a_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
+        return 'i_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
+        return 'is_';
+      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
+        return 'm_';
+      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
+        return 'v_';
+      default:
+        return '';
+    }
   }
 
   /**
@@ -73,7 +91,7 @@ export class ResolverService {
    * @param object The MediaObject for which to return the path.
    */
   public pathToObject(object: MediaObjectDescriptor) {
-    let rep = {};
+    const rep = {};
     rep[Token.OBJECT_ID] = object.objectId;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
@@ -91,7 +109,7 @@ export class ResolverService {
    * @return {string}
    */
   public pathToThumbnail(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor) {
-    let rep = {};
+    const rep = {};
     rep[Token.OBJECT_ID] = object.objectId;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
@@ -103,7 +121,7 @@ export class ResolverService {
   }
 
   public pathToSegment(segment: SegmentScoreContainer) {
-    let rep = {};
+    const rep = {};
     rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
     rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;
     rep[Token.OBJECT_PATH] = segment.objectScoreContainer.path;
@@ -113,23 +131,5 @@ export class ResolverService {
     rep[Token.SEGMENT_ID] = segment.segmentId;
     rep[Token.SEGMENT_ID_NO_PREFIX] = segment.segmentId.replace(ResolverService.prefixForMediatype(segment.objectScoreContainer.mediatype), '');
     return this.host_objects.replace(this._regex, (match) => rep[match] || match);
-  }
-
-
-  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
-    switch (mediatype) {
-      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
-        return 'a_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
-        return 'i_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
-        return 'is_';
-      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
-        return 'm_';
-      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
-        return 'v_';
-      default:
-        return '';
-    }
   }
 }

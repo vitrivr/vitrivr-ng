@@ -10,9 +10,14 @@ For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/
 
 ## OpenAPI
 
-This project requires openapi services to allow communication with Cineast. Make sure the API docs have been exported from Cineast beforehand (with `./gradlew generateOpenApiSpecs`) and that the path to Cineast is adjusted in the following command to match your local directory structure. Then, please start the generator from your root Vitrivr NG folder.
+### Cineast API
 
-`npx @openapitools/openapi-generator-cli generate -i ../cineast/docs/openapi.json -g typescript-angular -o src/app/core/openapi`
+In order to update / generate the OpenApi stubs and data model, run the following command while [Cineast](https://github.com/vitrivr/cineast) is running and 
+having the OpenApi serving enabled (config option `"enableLiveDoc": "true"` )
+
+`openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=9.1.12`
+
+The assumption for this snippet is, that the Cineast is running on localhost using port 4567. Adjust according to your needs.
 
 
 ## Development server

@@ -1,10 +1,10 @@
 import {Component, Input, QueryList, ViewChildren} from '@angular/core';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
-import {ConfigService} from '../../core/basics/config.service';
 import {Config} from '../../shared/model/config/config.model';
 import {Observable} from 'rxjs';
 import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.component';
-import {QueryTerm} from 'app/core/openapi';
+import {AppConfig} from '../../app.config';
+import {QueryTerm} from '../../../../openapi/cineast';
 
 @Component({
   selector: 'query-container',
@@ -21,17 +21,17 @@ export class QueryContainerComponent {
 
   @ViewChildren(TemporalDistanceComponent) temporalDistances: QueryList<TemporalDistanceComponent>;
 
+  /** A reference to the observable Config exposed by ConfigService. */
+  private readonly _config: Observable<Config>;
+
   /**
    * Constructor; injects ConfigService
    *
-   * @param {ConfigService} _configService
+   * @param {AppConfig} _configService
    */
-  constructor(_configService: ConfigService) {
-    this._config = _configService.asObservable();
+  constructor(_configService: AppConfig) {
+    this._config = _configService.configAsObservable;
   }
-
-  /** A reference to the observable Config exposed by ConfigService. */
-  private _config: Observable<Config>;
 
   /**
    * Getter for config.

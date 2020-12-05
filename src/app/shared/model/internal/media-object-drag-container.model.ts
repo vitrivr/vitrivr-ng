@@ -1,5 +1,5 @@
-import { MediaObjectDescriptor } from 'app/core/openapi';
 import {MediaObjectScoreContainer} from '../results/scores/media-object-score-container.model';
+import {MediaObjectDescriptor} from '../../../../../openapi/cineast';
 
 /**
  * This is an internal helper class used for Drag & Drop operatoin. It contains information on a dragged MediaObject.
@@ -7,6 +7,28 @@ import {MediaObjectScoreContainer} from '../results/scores/media-object-score-co
 export class MediaObjectDragContainer {
   /** Format string used to identify drag objects. */
   public static FORMAT = 'application/vitrivr-mediaobject';
+
+  /**
+   * Creates a new MediaObjectDragContainer from a provided JSON string. The JSON must contain they
+   * keys 'mediatype' and 'object'.
+   *
+   * @param {string} json JSON string that should be parsed.
+   * @return {MediaObjectDragContainer} Resulting MediaObjectDragContainer.
+   */
+  public static fromJSON(json: string): MediaObjectDragContainer {
+    const object = JSON.parse(json);
+    return new MediaObjectDragContainer(object['mediatype'], object['object']);
+  }
+
+  /**
+   * Creates a new MediaObjectDragContainer from a provided MediaObjectScoreContainer.
+   *
+   * @param {string} container MediaObjectScoreContainer from which to derive a MediaObjectDragContainer
+   * @return {MediaObjectDragContainer} Resulting MediaObjectDragContainer.
+   */
+  public static fromScoreContainer(container: MediaObjectScoreContainer): MediaObjectDragContainer {
+    return new MediaObjectDragContainer(container.mediatype, container);
+  }
 
   /**
    *
@@ -32,28 +54,6 @@ export class MediaObjectDragContainer {
    */
   get object(): MediaObjectDescriptor {
     return this._object;
-  }
-
-  /**
-   * Creates a new MediaObjectDragContainer from a provided JSON string. The JSON must contain they
-   * keys 'mediatype' and 'object'.
-   *
-   * @param {string} json JSON string that should be parsed.
-   * @return {MediaObjectDragContainer} Resulting MediaObjectDragContainer.
-   */
-  public static fromJSON(json: string): MediaObjectDragContainer {
-    let object = JSON.parse(json);
-    return new MediaObjectDragContainer(object['mediatype'], object['object']);
-  }
-
-  /**
-   * Creates a new MediaObjectDragContainer from a provided MediaObjectScoreContainer.
-   *
-   * @param {string} container MediaObjectScoreContainer from which to derive a MediaObjectDragContainer
-   * @return {MediaObjectDragContainer} Resulting MediaObjectDragContainer.
-   */
-  public static fromScoreContainer(container: MediaObjectScoreContainer): MediaObjectDragContainer {
-    return new MediaObjectDragContainer(container.mediatype, container);
   }
 
   /**

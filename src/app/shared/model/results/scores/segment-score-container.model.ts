@@ -2,7 +2,7 @@ import {ScoreContainer} from './compound-score-container.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model'
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
-import {MediaSegmentDescriptor, StringDoublePair} from 'app/core/openapi';
+import {MediaSegmentDescriptor, StringDoublePair} from '../../../../../../openapi/cineast';
 
 /**
  * The SegmentScoreContainer is a ScoreContainer for MediaSegments. It is associated with
@@ -24,6 +24,12 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
   public readonly startabs: number;
   /** Absolute end time of the MediaSegment in seconds. */
   public readonly endabs: number;
+
+  /** List of scores. Maps per containerId the category and similarity score. */
+  private _scores: Map<number, Map<WeightedFeatureCategory, number>> = new Map();
+
+  /** Map containing the metadata that belongs to the segment. Can be empty! */
+  private _metadata: Map<string, string> = new Map();
 
   /**
    * Default constructor.
@@ -49,9 +55,6 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
     this.endabs = _mediaSegment.endabs;
   }
 
-  /** List of scores. Maps per containerId the category and similarity score. */
-  private _scores: Map<number, Map<WeightedFeatureCategory, number>> = new Map();
-
   /**
    * Returns the map of scores
    *
@@ -59,9 +62,6 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
   get scores(): Map<number, Map<WeightedFeatureCategory, number>> {
     return this._scores;
   }
-
-  /** Map containing the metadata that belongs to the segment. Can be empty! */
-  private _metadata: Map<string, string> = new Map();
 
   /**
    * Returns the map of metadata.

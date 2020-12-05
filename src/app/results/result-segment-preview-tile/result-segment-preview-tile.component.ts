@@ -7,7 +7,6 @@ import {QueryService} from '../../core/queries/query.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {ResolverService} from '../../core/basics/resolver.service';
-import {ConfigService} from '../../core/basics/config.service';
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
@@ -15,6 +14,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
 import {Observable} from 'rxjs';
 import {VgApiService} from '@videogular/ngx-videogular/core';
+import {AppConfig} from '../../app.config';
 
 /**
  * Dedicated component for the preview of a segment.
@@ -54,7 +54,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
               private _vbs: VbsSubmissionService,
               private _dialog: MatDialog,
               private _resolver: ResolverService,
-              private _configService: ConfigService) {
+              private _configService: AppConfig) {
   }
 
   /**
@@ -90,10 +90,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    * @param {SegmentScoreContainer} segment
    */
   public onNeighborsButtonClicked() {
-    this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupCount'));
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', this.segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
+    this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.config.get<number>('query.config.neighboringSegmentLookupCount'));
   }
 
   /**
@@ -104,10 +101,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    * @param {SegmentScoreContainer} segment
    */
   public onNeighborsButtonRightClicked(event: Event) {
-    this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupAllCount'));
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', this.segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXPAND, context)));
+    this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.config.get<number>('query.config.neighboringSegmentLookupAllCount'));
     event.preventDefault();
   }
 

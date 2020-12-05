@@ -2,11 +2,10 @@ import {Component, Input, OnInit} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
-import {Tag} from '../../../core/openapi/model/tag';
-import {TagService} from '../../../core/openapi/api/tag.service';
 import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {Tag, TagService} from '../../../../../openapi/cineast';
 
 @Component({
   selector: 'qt-tag',
@@ -82,7 +81,7 @@ export class TagQueryTermComponent implements OnInit {
 
   /**
    * Adds the specified collection of tags to the list of tags
-   * @param {Tag[]} tags THe tags to be added
+   * @param {Tag[]} tags The tags to be added
    */
   public addTags(tags: Tag[]) {
     tags.forEach(tag => {

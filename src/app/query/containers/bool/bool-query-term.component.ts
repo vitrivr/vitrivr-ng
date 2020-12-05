@@ -2,10 +2,10 @@ import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@a
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, ValueType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs/Rx';
-import {ConfigService} from '../../../core/basics/config.service';
 import {BoolTerm} from './individual/bool-term';
 import {DistinctElementLookupService} from '../../../core/lookup/distinct-element-lookup.service';
 import {first, map} from 'rxjs/operators';
+import {AppConfig} from '../../../app.config';
 
 @Component({
   selector: 'app-qt-bool',
@@ -34,8 +34,8 @@ export class BoolQueryTermComponent implements OnInit {
     this.addBoolTermComponent();
   }
 
-  constructor(_configService: ConfigService, private _resolver: ComponentFactoryResolver, _distinctLookupService: DistinctElementLookupService) {
-    _configService.subscribe(c => {
+  constructor(_configService: AppConfig, private _resolver: ComponentFactoryResolver, _distinctLookupService: DistinctElementLookupService) {
+    _configService.configAsObservable.subscribe(c => {
       const next = [];
       c._config.query.boolean.forEach(v => {
         const type = <number><unknown>ValueType[v[1]];

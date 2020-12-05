@@ -8,12 +8,12 @@ import {EventBusService} from '../../core/basics/event-bus.service';
 import {SelectionService} from '../../core/selection/selection.service';
 import {FilterService} from '../../core/queries/filter.service';
 import {QueryService} from '../../core/queries/query.service';
-import {ConfigService} from '../../core/basics/config.service';
 import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {AppConfig} from '../../app.config';
 
 @Component({
   selector: 'app-list',
@@ -28,7 +28,7 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
               _filterService: FilterService,
               _selectionService: SelectionService,
               _eventBusService: EventBusService,
-              _configService: ConfigService,
+              _configService: AppConfig,
               _router: Router,
               _snackBar: MatSnackBar,
               _resolver: ResolverService,

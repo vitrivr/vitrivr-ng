@@ -9,6 +9,13 @@
   <mat-list-item>{{(hostObjects|async)}}</mat-list-item>
   <mat-list-item>{{(hostThumbnails|async)}}</mat-list-item>
 
+  <div *ngIf="(dresEnabled | async)">
+  <h2 mat-subheader>DRES</h2>
+    <mat-list-item>Endpoint: {{(dresAddress|async)}}</mat-list-item>
+    <mat-list-item><span [matBadge]="_dresStatusBadgeValue" matBadgeOverlap="false">Status: {{dresStatus|async}}</span></mat-list-item>
+  </div>
+
+
   <h2 mat-subheader>Query</h2>
   <mat-list-item>
     <mat-slide-toggle (change)="onUseInexactIndexChanged($event)" [checked]="(useInexactIndex|async)">Use inexact

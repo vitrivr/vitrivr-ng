@@ -6,19 +6,16 @@ import {EventBusService} from '../core/basics/event-bus.service';
 import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
-import {from} from 'rxjs';
-import {bufferCount, map} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
 import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fusion-function.model';
 import {TagQueryTerm} from '../shared/model/queries/tag-query-term.model';
 import {BoolQueryTerm} from '../shared/model/queries/bool-query-term.model';
 import {TextQueryTerm} from '../shared/model/queries/text-query-term.model';
-import { QueryTerm } from 'app/core/openapi';
+import {QueryTerm} from '../../../openapi/cineast/model/queryTerm';
 
 
 @Component({
-
   selector: 'app-query-sidebar',
   templateUrl: 'query-sidebar.component.html'
 })
@@ -27,7 +24,7 @@ export class QuerySidebarComponent implements OnInit {
   public readonly containers: QueryContainerInterface[] = [];
   @ViewChildren(QueryContainerComponent) queryContainers: QueryList<QueryContainerComponent>;
   /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
-  private _lastEnter: number = 0;
+  private _lastEnter = 0;
 
   constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService) {
   }
@@ -49,6 +46,8 @@ export class QuerySidebarComponent implements OnInit {
   /**
    * Triggers the similarity onSearchClicked by packing all configured QueryContainers into a single
    * SimilarityQuery message, and submitting that message to the QueryService.
+   *
+   * context changes are only part of competition logging and not part of the message sent to cineast
    */
   public onSearchClicked() {
     if (this.queryContainers && this.queryContainers.length >= 2) {
@@ -123,7 +122,7 @@ export class QuerySidebarComponent implements OnInit {
   public keyEvent(event: KeyboardEvent) {
     /** Detects a double-enter, which will trigger a new search. */
     if (event.keyCode === 13) {
-      let timestamp = Date.now();
+      const timestamp = Date.now();
       if (timestamp - this._lastEnter < 1000) {
         this.onSearchClicked();
         this._lastEnter = 0;

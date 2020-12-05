@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {ConfigService} from '../basics/config.service';
 import {Tag} from './tag.model';
 import {BehaviorSubject} from 'rxjs';
 import {CollabordinatorService} from '../vbs/collabordinator.service';
 import {CollabordinatorMessage} from '../../shared/model/messages/collaboration/collabordinator-message.model';
+import {AppConfig} from '../../app.config';
 
 /**
  * This service orchestrates similarity requests using the Cineast API (WebSocket). The service is responsible for
@@ -20,12 +20,12 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
   /**
    * Constructor; injects the ConfigService.
    *
-   * @param {ConfigService} _config
+   * @param {AppConfig} _config
    * @param {CollabordinatorService} _collabordinator
    */
-  constructor(_config: ConfigService, private _collabordinator: CollabordinatorService) {
+  constructor(_config: AppConfig, private _collabordinator: CollabordinatorService) {
     super(new Map());
-    _config.subscribe(c => {
+    _config.configAsObservable.subscribe(c => {
       this._available.length = 0;
       c.get<Tag[]>('tags').forEach(t => this._available.push(new Tag(t.name, t.hue)));
     });

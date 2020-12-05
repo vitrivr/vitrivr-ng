@@ -1,8 +1,8 @@
-import {QueryTerm} from "app/core/openapi";
-
 /**
  * General interface of a QueryTerm (e.g. text, tag, sketch)
  */
+import {QueryTerm} from '../../../../../../openapi/cineast/model/queryTerm';
+
 export interface QueryTermInterface {
   /**
    * List of retrieval categories that should be used as part of this findSimilar.

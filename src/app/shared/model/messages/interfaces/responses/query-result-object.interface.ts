@@ -1,5 +1,5 @@
-import { MediaObjectDescriptor } from 'app/core/openapi';
 import {QueryResult} from './query-result.interface';
+import {MediaObjectDescriptor} from '../../../../../../../openapi/cineast';
 
 /**
  *

@@ -11,12 +11,12 @@ import {ResultsContainer} from '../../shared/model/results/scores/results-contai
 import {SelectionService} from '../../core/selection/selection.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {FilterService} from '../../core/queries/filter.service';
-import {ConfigService} from '../../core/basics/config.service';
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {ScoredPath} from './scored-path.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
+import {AppConfig} from '../../app.config';
 
 @Component({
 
@@ -34,7 +34,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
               _filterService: FilterService,
               _selectionService: SelectionService,
               _eventBusService: EventBusService,
-              _configService: ConfigService,
+              _configService: AppConfig,
               _router: Router,
               _snackBar: MatSnackBar,
               _resolver: ResolverService,

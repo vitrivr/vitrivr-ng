@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
 import {Router} from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {ConfigService} from '../core/basics/config.service';
 import {UUIDGenerator} from '../shared/util/uuid-generator.util';
 import {first} from 'rxjs/operators';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
+import {AppConfig} from '../app.config';
 
 @Component({
 
@@ -28,10 +28,10 @@ export class EvaluationSelectionComponent {
   /** Evaluation ID generated when loading this component. This ID will be used to identify a participant. */
   public readonly randomId;
 
-  constructor(private _configService: ConfigService, private _router: Router, private snackBar: MatSnackBar, private _historyService: PreviousRouteService) {
+  constructor(private _configService: AppConfig, private _router: Router, private snackBar: MatSnackBar, private _historyService: PreviousRouteService) {
     this.randomId = UUIDGenerator.suid();
-    this._configService.pipe(first()).subscribe((config) => {
-      if (config.get<boolean>('evaluation.active') == true) {
+    this._configService.configAsObservable.pipe(first()).subscribe((config) => {
+      if (config.get<boolean>('evaluation.active') === true) {
         this.templates = config.get<string[]>('evaluation.templates');
       }
     });

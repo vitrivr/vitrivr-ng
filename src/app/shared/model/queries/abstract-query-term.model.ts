@@ -1,5 +1,5 @@
-import {QueryTerm} from 'app/core/openapi';
 import {QueryTermInterface} from './interfaces/query-term.interface';
+import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
 
 export abstract class AbstractQueryTerm implements QueryTermInterface {
   /**

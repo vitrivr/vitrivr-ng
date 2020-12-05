@@ -10,10 +10,10 @@ import {FilterService} from '../../core/queries/filter.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ConfigService} from '../../core/basics/config.service';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {AppConfig} from '../../app.config';
 
 @Component({
 
@@ -31,7 +31,7 @@ export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<Se
               _eventBusService: EventBusService,
               _router: Router,
               _snackBar: MatSnackBar,
-              _configService: ConfigService,
+              _configService: AppConfig,
               _resolver: ResolverService,
               _dialog: MatDialog,
               _vbs: VbsSubmissionService) {

@@ -1,7 +1,7 @@
 import {AbstractQueryTerm} from './abstract-query-term.model';
 import {BoolTerm} from '../../../query/containers/bool/individual/bool-term';
 import {Base64Util} from '../../util/base64.util';
-import { QueryTerm } from 'app/core/openapi/model/queryTerm';
+import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
 
 /**
  * A boolean query is compromised of multiple elements, which are concatenated with an OR

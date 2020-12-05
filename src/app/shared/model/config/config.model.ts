@@ -189,6 +189,20 @@ export class Config {
   }
 
   /**
+   * Based on the config, this returns the REST API endpoint.
+   * Fully qualified with the schema (if secured, this is HTTPS, otherwise HTTP)
+   * the host and the port.
+   */
+  get endpointRest(): string {
+    const scheme = this._config.api.http_secure ? 'https://' : 'http://';
+    if (this._config.api.host && this._config.api.port) {
+      return scheme + this._config.api.host + ':' + this._config.api.port;
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * Deserializes a Config object from a given JavaScript object or string.
    *
    * @param {{} | string} object The object that should be parsed.

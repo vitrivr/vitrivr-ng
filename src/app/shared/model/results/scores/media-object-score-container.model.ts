@@ -2,7 +2,8 @@ import {ScoreContainer} from './compound-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
-import { MediaObjectDescriptor, MediaSegmentDescriptor, StringDoublePair } from 'app/core/openapi';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {MediaObjectDescriptor, MediaSegmentDescriptor, StringDoublePair} from '../../../../../../openapi/cineast';
 
 /**
  * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects.
@@ -23,28 +24,30 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet.  string is containerId*/
   private _cache: Map<string, Array<[WeightedFeatureCategory, StringDoublePair, number]>> = new Map();
 
-  /**
-   * Default constructor.
-   *
-   * @param objectId
-   */
-  public constructor(public readonly objectId: string) {
-    super();
-  }
-
   /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
   private _segments: SegmentScoreContainer[] = [];
 
-  /**
-   *
-   * @return {SegmentScoreContainer[]}
-   */
+  private _segmentsObservable: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._segments)
+
+  /** Map containing the metadata that belongs to the object. Can be empty! */
+  private _metadata: Map<string, string> = new Map();
+
+  public constructor(public objectId: string) {
+    super();
+  }
+
   get segments(): SegmentScoreContainer[] {
     return this._segments;
   }
 
-  /** Map containing the metadata that belongs to the object. Can be empty! */
-  private _metadata: Map<string, string> = new Map();
+  set segments(segments: SegmentScoreContainer[]) {
+    this._segments = segments;
+    this.updateSegmentsObservable()
+  }
+
+  get segmentsObservable(): Observable<SegmentScoreContainer[]> {
+    return this._segmentsObservable.asObservable();
+  }
 
   /**
    * Returns the map of metadata.
@@ -83,6 +86,10 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     return this.segments.reduce((a, b) => {
       return a.score > b.score ? a : b
     });
+  }
+
+  public updateSegmentsObservable() {
+    this._segmentsObservable.next(this._segments)
   }
 
   /**
@@ -165,6 +172,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
       const ssc = new SegmentScoreContainer(segment, this);
       this._segmentScores.set(segment.segmentId, ssc);
       this._segments.push(ssc);
+      this.updateSegmentsObservable()
     }
     return this._segmentScores.get(segment.segmentId);
   }

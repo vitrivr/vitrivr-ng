@@ -1,24 +1,24 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ConfigService} from '../../core/basics/config.service';
-import {Observable} from 'rxjs';
+import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
 import Dexie from 'dexie';
-import {VbsResultsLog} from '../../core/vbs/vbs-results-log.model';
 import {VbsInteractionLog} from '../../core/vbs/vbs-interaction-log.model';
 import {fromPromise} from 'rxjs/internal-compatibility';
 import * as JSZip from 'jszip';
+import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {NotificationService} from '../../core/basics/notification.service';
+import {AppConfig} from '../../app.config';
 
 @Component({
 
   selector: 'preferences',
-  templateUrl: './preferences.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './preferences.component.html'
 })
-export class PreferencesComponent {
+export class PreferencesComponent implements AfterContentInit {
 
   /** The current configuration as observable. */
   private _config: Observable<Config>;
@@ -32,11 +32,19 @@ export class PreferencesComponent {
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
 
+  private _dresStatus: BehaviorSubject<string> = new BehaviorSubject<string>('')
+  _dresStatusBadgeValue: string;
+
   /**
    * Constructor for PreferencesComponent
    */
-  constructor(private _configService: ConfigService, private _db: DatabaseService) {
-    this._config = this._configService.asObservable();
+  constructor(
+    private _configService: AppConfig,
+    private _db: DatabaseService,
+    private _submissionService: VbsSubmissionService,
+    private _notificationService: NotificationService
+  ) {
+    this._config = this._configService.configAsObservable;
     this._resultsLogTable = _db.db.table('log_results');
     this._interactionLogTable = _db.db.table('log_interaction');
     this._submissionLogTable = _db.db.table('log_submission');
@@ -49,6 +57,18 @@ export class PreferencesComponent {
    */
   get cineastEndpoint(): Observable<string> {
     return this._config.pipe(map(c => c.endpoint_ws));
+  }
+
+  get dresEnabled(): Observable<boolean> {
+    return this._config.pipe(map(c => c._config.competition.dres))
+  }
+
+  get dresAddress(): Observable<string> {
+    return this._config.pipe(map(c => c._config.competition.endpoint))
+  }
+
+  get dresStatus(): Observable<string> {
+    return this._dresStatus.asObservable()
   }
 
   /**
@@ -77,7 +97,7 @@ export class PreferencesComponent {
   get useInexactIndex(): Observable<boolean> {
     return this._config.pipe(
       map(c => c.get<Hint[]>('query.config.hints')),
-      map(h => h.indexOf('inexact') > -1 && h.indexOf('exact') == -1)
+      map(h => h.indexOf('inexact') > -1 && h.indexOf('exact') === -1)
     );
   }
 
@@ -85,7 +105,7 @@ export class PreferencesComponent {
    * Resets the config and reloads it.
    */
   public onResetButtonClicked() {
-    this._configService.reset();
+    this._configService.load();
   }
 
   /**
@@ -124,6 +144,30 @@ export class PreferencesComponent {
    */
   public onDownloadResultsLog() {
     const data = [];
+    fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
+      data.push(o)
+    }))
+      .pipe(
+        first(),
+        map(() => {
+          const zip = new JSZip();
+          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
+          for (let i = 0; i < data.length; i++) {
+            zip.file(`vitrivrng-results-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
+          }
+          return zip
+        })
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+          (result) => {
+            window.open(window.URL.createObjectURL(result));
+          },
+          (error) => {
+            console.log(error);
+          }
+        )
+      });
     fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
@@ -204,13 +248,27 @@ export class PreferencesComponent {
    */
   public onUseInexactIndexChanged(e: MatSlideToggleChange) {
     this._config.pipe(first()).subscribe(c => {
-      let hints = c.get<Hint[]>('query.config.hints').filter(h => ['inexact', 'exact'].indexOf(h) == -1);
-      if (e.checked == true) {
+      const hints = c.get<Hint[]>('query.config.hints').filter(h => ['inexact', 'exact'].indexOf(h) == -1);
+      if (e.checked === true) {
         hints.push('inexact');
       } else {
         hints.push('exact');
       }
       c.set('query.config.hints', hints);
     });
+  }
+
+  ngAfterContentInit(): void {
+    this._submissionService.statusObservable().subscribe(status => {
+      if (status) {
+        if (status.username) {
+          this._dresStatus.next(`${status.username} as ${status.role}: ${status.sessionId}`)
+          return;
+        }
+        this._dresStatus.next('not logged in')
+        return
+      }
+    })
+    this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }

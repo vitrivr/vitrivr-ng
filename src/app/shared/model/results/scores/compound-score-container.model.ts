@@ -1,6 +1,6 @@
-import {StringDoublePair} from 'app/core/openapi';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
+import {StringDoublePair} from '../../../../../../openapi/cineast';
 
 /**
  * This class defines an abstract container for compound scores, i.e. scores that are obtained as a result of multiple
