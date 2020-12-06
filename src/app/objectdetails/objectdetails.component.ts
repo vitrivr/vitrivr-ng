@@ -20,7 +20,7 @@ import {OrderType} from '../shared/pipes/containers/order-by.pipe';
 import {LookupService} from '../core/lookup/lookup.service';
 import {ObjectviewerComponent} from './objectviewer.component';
 import {AppConfig} from '../app.config';
-import {MediaSegmentDescriptor, MetadataService, Tag} from '../../../openapi/cineast';
+import {MediaSegmentDescriptor, MetadataService, ObjectService, SegmentService, Tag, TagService} from '../../../openapi/cineast';
 
 
 @Component({
@@ -53,7 +53,10 @@ export class ObjectdetailsComponent implements OnInit {
               private  _eventBusService: EventBusService,
               public _resolver: ResolverService,
               private _historyService: PreviousRouteService,
-              private _lookupService: LookupService,
+              private _tagService: TagService,
+              private _metaService: MetadataService,
+              private _objectService: ObjectService,
+              private _segmentService: SegmentService,
               private _config: AppConfig) {
 
     _config.configAsObservable.subscribe(config => {
@@ -106,7 +109,7 @@ export class ObjectdetailsComponent implements OnInit {
           return
         }
         /** If there are no results available, we need to load more detail information */
-        this._lookupService.getMultimediaObject(objectId).subscribe(result => {
+        this._objectService.findObjectsByAttribute('id', objectId).subscribe(result => {
           let message: string = null;
           if (result.content.length === 0) {
             message = `Cineast returned no results for object ${objectId} . Returning to gallery...`;
@@ -126,7 +129,7 @@ export class ObjectdetailsComponent implements OnInit {
           this._container.contentURL = object.contentURL;
           this.updateContainer()
         })
-        this._lookupService.getMultimediaSegmentsByObjectId(objectId).subscribe(result => {
+        this._segmentService.findSegmentByObjectId(objectId).subscribe(result => {
           if (!this._container.objectId) {
             this._container.objectId = result.content[0].objectId
           }
@@ -194,22 +197,23 @@ export class ObjectdetailsComponent implements OnInit {
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.LOAD_FEATURES, context)));
 
-    // get the tags associated with a segmentId
-    this._lookupService.getTagIDsPerElementId(segment.segmentId).subscribe(function (tagIds) {
-      this._lookupService.getTagById(tagIds).subscribe(function (tags) { // needed to receive remaining information for a tag object, since cineast only sends its id
-        this._tagsPerSegment = tags;
-      }.bind(this));
+    // get the tags associated with a
+    this._metaService.findTagsById(segment.segmentId).subscribe(function (tagIds) {
+      // needed to receive remaining information for a tag object, since cineast only sends its id
+      this._tagService.findTagsById(tagIds).subscribe(res => {
+        this._tagsPerSegment = res.tags;
+      });
     }.bind(this));
     // get the captions associated with a segmentId
-    this._lookupService.getCaptions(segment.segmentId).subscribe(function (captions) {
+    this._metaService.findTextByIDAndCat(segment.segmentId, 'scenecaption').subscribe(function (captions) {
       this._captionsPerSegment = captions.featureValues;
     }.bind(this));
     // get the ASR data associated with a segmentId
-    this._lookupService.getAsr(segment.segmentId).subscribe(function (asr) {
+    this._metaService.findTextByIDAndCat(segment.segmentId, 'asr').subscribe(function (asr) {
       this._asrPerSegment = asr.featureValues;
     }.bind(this));
     // get the OCR data associated with a segmentId
-    this._lookupService.getOcr(segment.segmentId).subscribe(function (ocr) {
+    this._metaService.findTextByIDAndCat(segment.segmentId, 'ocr').subscribe(function (ocr) {
       this._ocrPerSegment = ocr.featureValues;
     }.bind(this));
   }
