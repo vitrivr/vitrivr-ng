@@ -6,6 +6,7 @@ import {BoolTerm} from './individual/bool-term';
 import {DistinctElementLookupService} from '../../../core/lookup/distinct-element-lookup.service';
 import {first, map} from 'rxjs/operators';
 import {AppConfig} from '../../../app.config';
+import {MiscService} from '../../../../../openapi/cineast';
 
 @Component({
   selector: 'app-qt-bool',
@@ -28,13 +29,17 @@ export class BoolQueryTermComponent implements OnInit {
 
   public ngOnInit() {
     /* only add an empty term if there are none currently present*/
-    if (this.boolTerm.terms.length != 0) {
+    if (this.boolTerm.terms.length !== 0) {
       return;
     }
     this.addBoolTermComponent();
   }
 
-  constructor(_configService: AppConfig, private _resolver: ComponentFactoryResolver, _distinctLookupService: DistinctElementLookupService) {
+  constructor(
+    _configService: AppConfig,
+    private _resolver: ComponentFactoryResolver,
+    _booleanService: MiscService,
+    _distinctLookupService: DistinctElementLookupService) {
     _configService.configAsObservable.subscribe(c => {
       const next = [];
       c._config.query.boolean.forEach(v => {
@@ -56,6 +61,7 @@ export class BoolQueryTermComponent implements OnInit {
           case ValueType.DYNAMICOPTIONS.valueOf():
             const table: string = v[3];
             const column: string = v[4];
+            _booleanService.findDistinctElementsByColumn()
             _distinctLookupService.getDistinct(table, column).pipe(first(), map(list => list.sort())).forEach(el => {
               next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, el, null));
               this.possibleAttributes.next(next);
