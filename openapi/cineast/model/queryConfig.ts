@@ -9,8 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Set } from './set';
 
-export interface QueryConfig {
+
+export interface QueryConfig { 
     queryId?: string;
     hints?: Set<QueryConfig.HintsEnum>;
     distance?: QueryConfig.DistanceEnum;
@@ -19,10 +21,10 @@ export interface QueryConfig {
     resultsPerModule?: number;
     maxResults?: number;
     relevantSegmentIds?: Set<string>;
-    distanceIfEmpty?: QueryConfig;
-    correspondenceFunction?: object;
-    normIfEmpty?: QueryConfig;
     correspondenceFunctionIfEmpty?: QueryConfig;
+    distanceIfEmpty?: QueryConfig;
+    normIfEmpty?: QueryConfig;
+    correspondenceFunction?: object;
     distanceWeightsIfEmpty?: QueryConfig;
     rawResultsPerModule?: number;
 }

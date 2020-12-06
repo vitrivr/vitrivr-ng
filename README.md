@@ -15,6 +15,10 @@ For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/
 In order to update / generate the OpenApi stubs and data model, run the following command while [Cineast](https://github.com/vitrivr/cineast) is running and 
 having the OpenApi serving enabled (config option `"enableLiveDoc": "true"` )
 
+`npm run gen-api`
+
+This is an alias for the full-fledged command:
+
 `openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=9.1.12`
 
 The assumption for this snippet is, that the Cineast is running on localhost using port 4567. Adjust according to your needs.
