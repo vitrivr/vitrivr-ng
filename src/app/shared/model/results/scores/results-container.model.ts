@@ -3,8 +3,6 @@ import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {MediaObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
-import {MediaSegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FeatureCategories} from '../feature-categories.model';
@@ -30,6 +28,8 @@ import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
+import {MediaObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
+import {MediaSegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
 import {QueryResultTopTags} from '../../messages/interfaces/responses/query-result-top-tags';
 
 export class ResultsContainer {
@@ -50,9 +50,25 @@ export class ResultsContainer {
   private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
 
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
-  private _rerank: number = 0;
+  private _rerank = 0;
   /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
-  private _next: number = 0;
+  private _next = 0;
+
+  /** List of all the results that were returned and hence are known to the results container. */
+  private _features: WeightedFeatureCategory[] = [];
+
+  /** A subject that can be used to publish changes to the results. */
+  private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
+
+  /**
+   * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
+   * results have been returned yet OR that no query is running.
+   *
+   * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
+   * be filtered).
+   */
+  private _mediatypes: Map<MediaType, boolean> = new Map();
+
   /** An array that will contain the top 10 related tags to a result set **/
   public topTagsArray: any[];
   /** A subject that can be used to publish changes to the results. */
@@ -95,12 +111,6 @@ export class ResultsContainer {
     }
   }
 
-  /** List of all the results that were returned and hence are known to the results container. */
-  private _features: WeightedFeatureCategory[] = [];
-
-  /** A subject that can be used to publish changes to the results. */
-  private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
-
   /**
    * Getter for the list of results.
    *
@@ -109,15 +119,6 @@ export class ResultsContainer {
   get features(): WeightedFeatureCategory[] {
     return this._features;
   }
-
-  /**
-   * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
-   * results have been returned yet OR that no query is running.
-   *
-   * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
-   * be filtered).
-   */
-  private _mediatypes: Map<MediaType, boolean> = new Map();
 
   /**
    * Getter for the list of mediatypes.
@@ -589,9 +590,9 @@ export class ResultsContainer {
    * @return {WeightedFeatureCategory}
    */
   private uniqueFeature(category: FeatureCategories): WeightedFeatureCategory {
-    for (const feature of this._features) {
-      if (feature.name === category) {
-        return feature;
+    for (const _feature of this._features) {
+      if (_feature.name === category) {
+        return _feature;
       }
     }
     const feature = new WeightedFeatureCategory(category, category, 100);

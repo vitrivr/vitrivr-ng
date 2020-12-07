@@ -6,8 +6,10 @@ import {Preference, Tag} from '../../../shared/model/misc/tag.model';
 import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ResultSetInfoService} from '../../../core/queries/result-set-info.service';
 import {LookupService} from '../../../core/lookup/lookup.service';
+
+import {ResultSetInfoService} from '../../../core/queries/result-set-info.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +36,7 @@ export class TagQueryTermComponent implements OnInit {
    */
   Preference = Preference;
 
-  constructor(_lookupService: LookupService, private _matsnackbar: MatSnackBar, private _resultSetInfoService: ResultSetInfoService) {
+  constructor(private _lookupService: LookupService, private _matsnackbar: MatSnackBar, private _resultSetInfoService: ResultSetInfoService) {
     this._field = new FieldGroup(_lookupService);
   }
 

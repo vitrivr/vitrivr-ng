@@ -25,9 +25,8 @@ import {MediaSegment} from '../shared/model/media/media-segment.model';
 
 
 @Component({
-  selector: 'objectdetails',
+  selector: 'app-object-details',
   templateUrl: 'objectdetails.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['objectdetails.component.css']
 })
 export class ObjectdetailsComponent implements OnInit {
@@ -194,7 +193,7 @@ export class ObjectdetailsComponent implements OnInit {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
   }
 
-  public onMetadataButtonClicked(segment: SegmentScoreContainer) {
+  public onLoadFeaturesButtonClicked(segment: SegmentScoreContainer) {
     this._tagsPerSegment = [];
     this._captionsPerSegment = [];
     this._asrPerSegment = [];
@@ -224,7 +223,6 @@ export class ObjectdetailsComponent implements OnInit {
     this._lookupService.getOcr(segment.segmentId).subscribe(function (ocr) {
       this._ocrPerSegment = ocr.featureValues;
     }.bind(this));
-    // TODO Actually retrieve metadata?
   }
 
   /**

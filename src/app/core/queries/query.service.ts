@@ -41,6 +41,10 @@ import {TextQueryTerm} from '../../shared/model/queries/text-query-term.model';
 import {BoolQueryTerm} from '../../shared/model/queries/bool-query-term.model';
 import {TagQueryTerm} from '../../shared/model/queries/tag-query-term.model';
 
+import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
+import {EventBusService} from '../basics/event-bus.service';
+import {MediaSegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
+import {MediaObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -440,6 +444,8 @@ export class QueryService {
    */
   private finalizeQuery(queryId: string) {
     // be sure that updates are checked one last time
+    window.clearInterval(this._interval_map.get(queryId))
+    this._interval_map.delete(queryId)
     this._results.doUpdate();
     this._running -= 1;
     this._subject.next('ENDED' as QueryChange);
