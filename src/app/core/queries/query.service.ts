@@ -407,6 +407,8 @@ export class QueryService {
    */
   private finalizeQuery(queryId: string) {
     // be sure that updates are checked one last time
+    window.clearInterval(this._interval_map.get(queryId))
+    this._interval_map.delete(queryId)
     this._results.doUpdate();
     this._running -= 1;
     this._subject.next('ENDED' as QueryChange);
