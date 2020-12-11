@@ -17,7 +17,6 @@ import {EventBusService} from '../core/basics/event-bus.service';
 import {MetadataDetailsComponent} from './metadata-details.component';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
 import {OrderType} from '../shared/pipes/containers/order-by.pipe';
-import {LookupService} from '../core/lookup/lookup.service';
 import {ObjectviewerComponent} from './objectviewer.component';
 import {AppConfig} from '../app.config';
 import {MediaSegmentDescriptor, MetadataService, ObjectService, SegmentService, Tag, TagService} from '../../../openapi/cineast';

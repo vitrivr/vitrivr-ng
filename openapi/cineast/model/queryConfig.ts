@@ -9,8 +9,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Set } from './set';
-
 
 export interface QueryConfig { 
     queryId?: string;
