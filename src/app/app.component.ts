@@ -12,17 +12,21 @@ import {NotificationService} from './core/basics/notification.service';
 import {AppConfig} from './app.config';
 
 @Component({
-
-  selector: 'vitrivr',
+  selector: 'app-vitrivr',
   templateUrl: 'app.component.html',
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
-  // settingsbadge: string = NotificationUtil.getNotificationSymbol();
   settingsbadge = '';
   @ViewChild('settingsComponent')
   private settingsComponent: SettingsComponent
+
+  /** Observable that returns the most recent application configuration. */
+  private _config: Observable<Config>;
+
+  /** Observable that return the loading state of the QueryService. */
+  private _loading: Observable<boolean>;
 
   /**
    * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
@@ -42,9 +46,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     this._config = _configService.configAsObservable;
   }
 
-  /** Observable that returns the most recent application configuration. */
-  private _config: Observable<Config>;
-
   /**
    * Getter for the observable config attribute.
    *
@@ -53,9 +54,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   get config(): Observable<Config> {
     return this._config;
   }
-
-  /** Observable that return the loading state of the QueryService. */
-  private _loading: Observable<boolean>;
 
   /**
    * Getter for the observable loading attribute.
