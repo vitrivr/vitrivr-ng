@@ -10,10 +10,10 @@
     "teamid": 9,
     "toolid": 1,
     "endpoint": "https://dmi-dres.dmi.unibas.ch:8443/",
-    "log": true,
+    "log": false,
     "lsc": false,
-    "vbs": true,
-    "dres": true
+    "vbs": false,
+    "dres": false
   },
   "mlt": {
     "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],

@@ -346,21 +346,25 @@ export class VbsSubmissionService {
   }
 
   public checkConnection(endpoint: string) {
-    this._http.get(String(`${endpoint}/api/user`), {responseType: 'text', withCredentials: this._dres}).pipe(
-      tap(msg => {
-          this._status.next(JSON.parse(msg))
-        }, // noop
-        err => {
-          const msg = `You are not logged in to DRES at ${endpoint}`
-          console.debug(`api/user request to DRES endpoint at ${endpoint} failed, you are not logged in`)
-          this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION * 2, panelClass: 'snackbar-error'});
-          this._status.next(new UserDetails(undefined, undefined, undefined, undefined))
-        }),
-      catchError(err => {
-        console.log(err)
-        return of(undefined)
-      })
-    ).subscribe();
+    if (this._dres) {
+      this._http.get(String(`${endpoint}/api/user`), {responseType: 'text', withCredentials: this._dres}).pipe(
+        tap(msg => {
+            this._status.next(JSON.parse(msg))
+          }, // noop
+          err => {
+            const msg = `You are not logged in to DRES at ${endpoint}`
+            console.debug(`api/user request to DRES endpoint at ${endpoint} failed, you are not logged in`)
+            this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION * 2, panelClass: 'snackbar-error'});
+            this._status.next(new UserDetails(undefined, undefined, undefined, undefined))
+          }),
+        catchError(err => {
+          console.log(err)
+          return of(undefined)
+        })
+      ).subscribe();
+    }else{
+      console.debug(`dres flag not set in config, not checking connection to competition server`)
+    }
   }
 
   public statusObservable(): Observable<UserDetails> {

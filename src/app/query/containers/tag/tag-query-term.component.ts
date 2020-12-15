@@ -54,9 +54,7 @@ export class TagQueryTermComponent implements OnInit {
       }
     }
     if (!tagAlreadyInList) {
-
-      this.addTags(this.getAllTagsWithEqualName(event.option.value));
-
+      this.addTag(event.option.value);
     } else {
       this.field.formControl.setValue('');
       this._matsnackbar.open(`Tag ${event.option.value.name} (${event.option.value.id}) already added`, null, {
