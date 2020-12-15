@@ -8,6 +8,9 @@ import {Ping} from '../../shared/model/messages/interfaces/responses/ping.interf
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {AppConfig} from '../../app.config';
 
+/**
+ * This is one of the only classes which does not fully use the openapi-services. This is due to the fact that it exposes / measures different things than the status endpoint in cineast
+ */
 @Injectable()
 export class PingService extends BehaviorSubject<ApiStatus> {
   /** Timestamp of the last PING packet. */
