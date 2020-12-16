@@ -60,18 +60,6 @@ export class VbsSubmissionService {
   private _lsc = false;
   private readonly _status: BehaviorSubject<UserDetails> = new BehaviorSubject(undefined)
 
-
-  /**
-   * Constructor for VbsSubmissionService.
-   *
-   * @param {AppConfig} _config
-   * @param {EventBusService} _eventbus Reference to the singleton EventBusService instance.
-   * @param {QueryService} _queryService Reference to the singleton QueryService instance.
-   * @param {SelectionService} _selection Reference to the singleton SelectionService instance.
-   * @param {MetadataService} _metadata
-   * @param {HttpClient} _http
-   * @param {MatSnackBar} _snackBar
-   */
   constructor(_config: AppConfig,
               private _eventbus: EventBusService,
               private _queryService: QueryService,
@@ -362,7 +350,7 @@ export class VbsSubmissionService {
           return of(undefined)
         })
       ).subscribe();
-    }else{
+    } else {
       console.debug(`dres flag not set in config, not checking connection to competition server`)
     }
   }

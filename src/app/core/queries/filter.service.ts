@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {ColorLabel, ColorLabels} from '../../shared/model/misc/colorlabel.model';
 import {SelectionService} from '../selection/selection.service';
 import {Tag} from '../selection/tag.model';
-import {MediaObjectDescriptor} from '../../../../openapi/cineast/model/mediaObjectDescriptor';
+import {MediaObjectDescriptor} from '../../../../openapi/cineast';
 
 
 /**

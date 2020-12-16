@@ -15,7 +15,7 @@
         <qt-m3d *ngIf="queryTerm.type==='MODEL3D'" [m3dTerm]="queryTerm"></qt-m3d>
         <qt-motion *ngIf="queryTerm.type==='MOTION'" [motionTerm]="queryTerm"></qt-motion>
         <qt-text *ngIf="queryTerm.type==='TEXT'" [textTerm]="queryTerm"></qt-text>
-        <qt-tag *ngIf="queryTerm.type==='TAG'" [tagTerm]="queryTerm"></qt-tag>
+        <app-qt-tag *ngIf="queryTerm.type==='TAG'" [tagTerm]="queryTerm"></app-qt-tag>
         <qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></qt-semantic>
         <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
     </div>

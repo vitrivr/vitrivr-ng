@@ -8,7 +8,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {Tag, TagService} from '../../../../../openapi/cineast';
 
 @Component({
-  selector: 'qt-tag',
+  selector: 'app-qt-tag',
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
 })
@@ -123,11 +123,6 @@ export class FieldGroup {
   /** The currently selected tag. */
   private _selection: Tag;
 
-  /**
-   * Constructor for FieldGroup
-   *
-   * @param {TagsLookupService} _tags
-   */
   constructor(private _tags: TagService) {
     this.filteredTags = this.formControl.valueChanges.pipe(
       debounceTime(250),

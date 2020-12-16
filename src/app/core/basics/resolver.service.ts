@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import {MediaObjectDescriptor} from '../../../../openapi/cineast/model/mediaObjectDescriptor';
+import {MediaObjectDescriptor} from '../../../../openapi/cineast';
 import {MediaSegmentDescriptor} from '../../../../openapi/cineast';
 import {AppConfig} from '../../app.config';
 
@@ -45,6 +45,23 @@ export class ResolverService {
     Token.SUFFIX
   ].join('|') + ')', 'g');
 
+  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
+    switch (mediatype) {
+      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
+        return 'a_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
+        return 'i_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
+        return 'is_';
+      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
+        return 'm_';
+      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
+        return 'v_';
+      default:
+        return '';
+    }
+  }
+
   /**
    * Default constructor; Initializes the map of suffixes per media-type based on
    * the configuration.
@@ -68,23 +85,6 @@ export class ResolverService {
     });
   }
 
-  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
-    switch (mediatype) {
-      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
-        return 'a_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
-        return 'i_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
-        return 'is_';
-      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
-        return 'm_';
-      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
-        return 'v_';
-      default:
-        return '';
-    }
-  }
-
   /**
    * Resolves and returns the absolute path / URL to a MediaObject.
    *
@@ -104,8 +104,8 @@ export class ResolverService {
   /**
    * Resolves and returns the absolute path / URL to the thumbnail of a given combination of MediaSegment and MediaObject.
    *
-   * @param {MediaObject} object The MediaObject for which to return the path / URL
-   * @param {MediaSegment} segment The MediaSegment for which to return the path / URL
+   * @param {object} object The MediaObject for which to return the path / URL
+   * @param {segment} segment The MediaSegment for which to return the path / URL
    * @return {string}
    */
   public pathToThumbnail(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor) {
