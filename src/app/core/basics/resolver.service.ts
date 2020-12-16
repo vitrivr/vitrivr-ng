@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import {MediaObjectDescriptor} from '../../../../openapi/cineast';
-import {MediaSegmentDescriptor} from '../../../../openapi/cineast';
+import {MediaObjectDescriptor, MediaSegmentDescriptor} from '../../../../openapi/cineast';
 import {AppConfig} from '../../app.config';
 
 /**

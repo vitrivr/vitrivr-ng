@@ -55,11 +55,11 @@ export class QueryService {
   /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
   private _socket: WebSocketSubject<Message>;
   private _scoreFunction: string;
+  /** Rerank handler of the ResultsContainer. */
+  private _interval_map: Map<string, number> = new Map();
 
   /** Results of a query. May be empty. */
   private _results: ResultsContainer;
-  /** Rerank handler of the ResultsContainer. */
-  private _interval_map: Map<string, number> = new Map();
 
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
@@ -83,21 +83,21 @@ export class QueryService {
   }
 
   /**
-   * Getter for running.
-   *
-   * @return {boolean}
-   */
-  get running(): boolean {
-    return this._running > 0;
-  }
-
-  /**
    * Getter for results.
    *
    * @return {ResultsContainer}
    */
   get results(): ResultsContainer {
     return this._results;
+  }
+
+  /**
+   * Getter for running.
+   *
+   * @return {boolean}
+   */
+  get running(): boolean {
+    return this._running > 0;
   }
 
   /**

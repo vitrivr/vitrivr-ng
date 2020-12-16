@@ -19,6 +19,9 @@ export class HistoryService {
   /** The table used to store Vitrivr NG configuration.*/
   private _historyTable: Dexie.Table<HistoryContainer, number>;
 
+  /** Number if result sets to keep in the history at max. Values between 1 and 10 are reasonable. */
+  private _keep = -1;
+
   /**
    * Constructor
    *
@@ -31,9 +34,6 @@ export class HistoryService {
       this.keep = c.get('query.history');
     });
   }
-
-  /** Number if result sets to keep in the history at max. Values between 1 and 10 are reasonable. */
-  private _keep = -1;
 
   /**
    * Returns the number of items to keep in history.

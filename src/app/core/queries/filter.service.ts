@@ -19,10 +19,9 @@ export class FilterService {
    * When set to true, objects who have metadata matching for any of the categories are displayed.
    */
   public _useOrForMetadataCategoriesFilter = false;
+  _id: string;
   /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
   private _segmentFilters: BehaviorSubject<((v: SegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
-
-  _id: string;
 
   /**
    * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects

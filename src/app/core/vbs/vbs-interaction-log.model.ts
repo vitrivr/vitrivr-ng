@@ -20,14 +20,6 @@ export class VbsInteractionLog implements VbsSubmission {
   public readonly events: VbsInteraction[] = [];
 
   /**
-   *
-   * @param teamId
-   * @param memberId
-   */
-  constructor(public readonly teamId: string, public readonly memberId: number) {
-  }
-
-  /**
    * This method maps the events emitted on the Vitrivr NG EventBusService to VbsActions.
    *
    * @param {Observable<Interaction>} stream The observable of the InteractionEvents as exposed by the EventBusService
@@ -135,5 +127,13 @@ export class VbsInteractionLog implements VbsSubmission {
       default:
         break;
     }
+  }
+
+  /**
+   *
+   * @param teamId
+   * @param memberId
+   */
+  constructor(public readonly teamId: string, public readonly memberId: number) {
   }
 }
