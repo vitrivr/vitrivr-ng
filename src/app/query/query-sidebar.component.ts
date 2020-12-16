@@ -12,7 +12,7 @@ import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fu
 import {TagQueryTerm} from '../shared/model/queries/tag-query-term.model';
 import {BoolQueryTerm} from '../shared/model/queries/bool-query-term.model';
 import {TextQueryTerm} from '../shared/model/queries/text-query-term.model';
-import {QueryTerm} from '../../../openapi/cineast/model/queryTerm';
+import {QueryTerm} from '../../../openapi/cineast';
 
 
 @Component({
@@ -58,48 +58,6 @@ export class QuerySidebarComponent implements OnInit {
     }
 
     this._queryService.findSimilar(this.containers);
-    const _components: InteractionEventComponent[] = []
-    this.containers.forEach(container => {
-      _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_CONTAINER))
-      container.stages.forEach(s => {
-        _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_STAGE))
-        s.terms.forEach(t => {
-          const context: Map<ContextKey, any> = new Map();
-          context.set('q:categories', t.categories);
-          context.set('q:value', 'null')
-          switch (t.type) {
-            case QueryTerm.TypeEnum.IMAGE:
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context));
-              return;
-            case QueryTerm.TypeEnum.AUDIO:
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
-              return;
-            case QueryTerm.TypeEnum.MOTION:
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context));
-              return;
-            case QueryTerm.TypeEnum.MODEL3D:
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
-              return;
-            case QueryTerm.TypeEnum.SEMANTIC:
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context));
-              return;
-            case QueryTerm.TypeEnum.TEXT:
-              context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
-              return;
-            case QueryTerm.TypeEnum.BOOLEAN:
-              context.set('q:value', (t as BoolQueryTerm).terms)
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_BOOLEAN, context));
-              return;
-            case QueryTerm.TypeEnum.TAG:
-              context.set('q:value', (t as TagQueryTerm).tags);
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_TAG, context));
-              return;
-          }
-        })
-      })
-    });
-    this._eventBus.publish(new InteractionEvent(..._components))
   }
 
   /**
