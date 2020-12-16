@@ -199,7 +199,7 @@ export class ObjectdetailsComponent implements OnInit {
     // get the tags associated with a
     this._metaService.findTagsById(segment.segmentId).subscribe(function (tagIds) {
       // needed to receive remaining information for a tag object, since cineast only sends its id
-      this._tagService.findTagsById(tagIds).subscribe(res => {
+      this._tagService.findTagsById({ids: tagIds.tagIDs}).subscribe(res => {
         this._tagsPerSegment = res.tags;
       });
     }.bind(this));
