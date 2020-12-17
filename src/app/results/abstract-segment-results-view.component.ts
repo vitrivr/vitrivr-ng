@@ -28,8 +28,7 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
                         _snackBar: MatSnackBar,
                         protected _configService: AppConfig,
                         public _resolver: ResolverService,
-                        protected _dialog: MatDialog,
-                        protected _vbs: VbsSubmissionService) {
+                        protected _dialog: MatDialog) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
   }
 

@@ -51,7 +51,7 @@ export class QueryStageComponent {
     this.queryStage.terms.splice(this.queryStage.terms.indexOf(qt), 1);
   }
 
-  private isLastStage() {
+  public isLastStage() {
     return this.qsList.indexOf(this.queryStage) === this.qsList.length - 1;
   }
 

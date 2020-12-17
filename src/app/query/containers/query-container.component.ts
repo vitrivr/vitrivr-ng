@@ -7,7 +7,7 @@ import {AppConfig} from '../../app.config';
 import {QueryTerm} from '../../../../openapi/cineast';
 
 @Component({
-  selector: 'query-container',
+  selector: 'app-query-container',
   templateUrl: 'query-container.component.html',
   styleUrls: ['./query-container.component.css']
 })

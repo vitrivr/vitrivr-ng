@@ -1,4 +1,14 @@
 export class EvaluationMaterial {
+
+  /** Name of the evaluation scenario. */
+  private readonly _name: string;
+
+  /** Description of the evaluation scenario. Can be HTML! */
+  private readonly _description: string;
+
+  /** URL to material */
+  private readonly _url: string;
+
   /**
    *
    * @param name
@@ -11,9 +21,6 @@ export class EvaluationMaterial {
     this._url = url;
   }
 
-  /** Name of the evaluation scenario. */
-  private _name: string;
-
   /**
    * Getter for name.
    *
@@ -23,9 +30,6 @@ export class EvaluationMaterial {
     return this._name;
   }
 
-  /** Description of the evaluation scenario. Can be HTML! */
-  private _description: string;
-
   /**
    * Getter for description.
    *
@@ -34,9 +38,6 @@ export class EvaluationMaterial {
   get description(): string {
     return this._description;
   }
-
-  /** URL to material */
-  private _url: string;
 
   /**
    * Getter for URL.

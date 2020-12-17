@@ -17,7 +17,6 @@ export class HtmlUtil {
    *
    * @param {string} str String that should be replaced.
    * @param {target} str The target for the href (e.g. _blank).
-   * @return {boolean}
    */
   static replaceUrlByLink(str: string, target: string = null): string {
     if (target) {

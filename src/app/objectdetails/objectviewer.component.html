@@ -18,9 +18,9 @@
             <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'"
                  src="{{_resolver.pathToObject(mediaobject)}}"
                  style="max-height: 400px"/>
-            <m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'"
-                        [height]="200" [interaction]="true" [width]="200"
-                        src="{{_resolver.pathToObject(mediaobject)}}"></m3d-loader>
+            <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'"
+                            [height]="200" [interaction]="true" [width]="200"
+                            src="{{_resolver.pathToObject(mediaobject)}}"></app-m3d-loader>
         </div>
 
     </div>

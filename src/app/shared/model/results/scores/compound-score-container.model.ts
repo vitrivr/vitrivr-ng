@@ -14,22 +14,9 @@ import {StringDoublePair} from '../../../../../../openapi/cineast';
  * to rank the research-results in the UI.
  */
 export abstract class ScoreContainer {
+;
   /** Score value. How it is obtained is up to the implementing class. */
   protected _score = 0;
-
-  /**
-   * Getter for the container's score.
-   */
-  get score(): number {
-    return this._score;
-  };
-
-  /**
-   * Getter for the container's score as percent value.
-   */
-  get scorePercentage(): number {
-    return Math.round(this._score * 1000) / 10
-  }
 
   /**
    * Static comparator method. Compares two ScoreContainers so that they
@@ -49,6 +36,20 @@ export abstract class ScoreContainer {
    */
   public static compareAsc(a: ScoreContainer, b: ScoreContainer) {
     return a._score - b._score;
+  }
+
+  /**
+   * Getter for the container's score.
+   */
+  get score(): number {
+    return this._score;
+  }
+
+  /**
+   * Getter for the container's score as percent value.
+   */
+  get scorePercentage(): number {
+    return Math.round(this._score * 1000) / 10
   }
 
   /**

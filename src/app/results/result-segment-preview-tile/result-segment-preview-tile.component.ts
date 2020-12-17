@@ -48,6 +48,11 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   @Input() score: number;
 
+  /**
+   * A flag whether this preview is in focus or not.
+   */
+  private _focus = false;
+
   constructor(readonly _keyboardService: KeyboardService,
               private _queryService: QueryService,
               private _eventBusService: EventBusService,
@@ -56,11 +61,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
               private _resolver: ResolverService,
               private _configService: AppConfig) {
   }
-
-  /**
-   * A flag whether this preview is in focus or not.
-   */
-  private _focus = false;
 
   /**
    * Sets the flag, that this preview is in focus
@@ -86,8 +86,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
 
   /**
    * Invokes when a user clicks the 'Find neighbouring segments' button.
-   *
-   * @param {SegmentScoreContainer} segment
    */
   public onNeighborsButtonClicked() {
     this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.config.get<number>('query.config.neighboringSegmentLookupCount'));
@@ -96,9 +94,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   /**
    * Invokes when a user right clicks the 'Find neighbouring segments' button. Loads neighbouring segments with
    * a count of 500.
-   *
-   * @param {Event} event
-   * @param {SegmentScoreContainer} segment
    */
   public onNeighborsButtonRightClicked(event: Event) {
     this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.config.get<number>('query.config.neighboringSegmentLookupAllCount'));
@@ -125,9 +120,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
 
   /**
    * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
-   *
-   * @param {MouseEvent} event
-   * @param {SegmentScoreContainer} segment
    */
   public onTileClicked(event: MouseEvent) {
     if (event.shiftKey) {

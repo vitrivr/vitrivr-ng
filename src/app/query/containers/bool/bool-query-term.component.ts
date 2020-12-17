@@ -23,7 +23,7 @@ export class BoolQueryTermComponent implements OnInit {
   @Input()
   boolTerm: BoolQueryTerm;
 
-  protected possibleAttributes: BehaviorSubject<BoolAttribute[]> = new BehaviorSubject(
+  possibleAttributes: BehaviorSubject<BoolAttribute[]> = new BehaviorSubject(
     [new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT)]
   );
 

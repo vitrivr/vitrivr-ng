@@ -10,7 +10,7 @@ import WebGLRenderer = THREE.WebGLRenderer;
 import PerspectiveCamera = THREE.PerspectiveCamera;
 
 @Component({
-  selector: 'm3d-loader',
+  selector: 'app-m3d-loader',
   template: `
     <div #visualize></div>`
 })
@@ -25,13 +25,13 @@ import PerspectiveCamera = THREE.PerspectiveCamera;
  */
 export class M3DLoaderComponent implements OnInit, OnDestroy {
   /** Width of the rendering context. */
-  @Input() width: number = 400;
+  @Input() width = 400;
 
   /** Height of the rendering context. */
-  @Input() height: number = 400;
+  @Input() height = 400;
 
   /** Indicates whether the loader should allow user interaction through controls. */
-  @Input() interaction: boolean = false;
+  @Input() interaction = false;
 
   /** Indicates whether the loader should allow user interaction through controls. */
   @Input() src: string = null;
@@ -46,7 +46,7 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
   /** Currently active Mesh that's being displayed by the M3DRendererService. */
   protected mesh: Mesh;
   /** Boolean indicating whether current model should auto-rotate. */
-  private rotate: boolean = false;
+  private rotate = false;
   /** HTML element in which the rendering-context will be placed. */
   @ViewChild('visualize')
   private container: any;
@@ -204,13 +204,13 @@ export class M3DLoaderComponent implements OnInit, OnDestroy {
     if (this.mesh) {
       /* Compute bounding-sphere and its radius. */
       this.mesh.geometry.computeBoundingSphere();
-      let radius = this.mesh.geometry.boundingSphere.radius;
+      const radius = this.mesh.geometry.boundingSphere.radius;
 
       /* Set scale of object. */
       this.mesh.scale.set(1 / radius, 1 / radius, 1 / radius);
 
       /* Set camera-position. */
-      let sqrt2 = Math.sqrt(2.0);
+      const sqrt2 = Math.sqrt(2.0);
       this.camera.position.set(sqrt2, sqrt2, sqrt2);
       this.camera.lookAt(this.mesh.position);
     }

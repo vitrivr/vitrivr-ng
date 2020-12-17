@@ -1,10 +1,10 @@
 import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {SketchCanvas} from '../../../shared/components/sketch/sketch-canvas.component';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {SketchCanvasComponent} from '../../../shared/components/sketch/sketch-canvas.component';
 
 @Component({
 
-  selector: 'sketchpad',
+  selector: 'app-sketchpad',
   templateUrl: 'sketch-dialog.component.html',
   styleUrls: ['sketch-dialog.component.css']
 })
@@ -13,7 +13,7 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
   /** Default linesize when opening the dialog. */
   public static readonly DEFAULT_LINESIZE = 10.0;
   /** Current color (default: black). */
-  public color: string = '#000000';
+  public color = '#000000';
   /** Current linesize (default: DEFAULT_LINESIZE). */
   public linesize: number = SketchDialogComponent.DEFAULT_LINESIZE;
   /** List of preset colors. */
@@ -32,7 +32,7 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
   private imageloader: any;
   /** Sketch-canvas component. */
   @ViewChild('sketch')
-  private _sketchpad: SketchCanvas;
+  private _sketchpad: SketchCanvasComponent;
 
   /**
    * Constructor for SketchDialogComponent.

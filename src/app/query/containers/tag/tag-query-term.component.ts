@@ -3,7 +3,7 @@ import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
 import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Tag, TagService} from '../../../../../openapi/cineast';
 
@@ -19,7 +19,7 @@ export class TagQueryTermComponent implements OnInit {
   private tagTerm: TagQueryTerm;
 
   /** List of tag fields currently displayed. */
-  private _field: FieldGroup;
+  private readonly _field: FieldGroup;
   /** List of tag fields currently displayed. */
   private _tags: Tag[] = [];
 

@@ -44,15 +44,6 @@ export class Arrow extends Line {
   }
 
   /**
-   * Setter for endArrowhead.
-   *
-   * @param value
-   */
-  set endArrowhead(value: boolean) {
-    this._endArrowhead = value;
-  }
-
-  /**
    * Draws the arrow object.
    *
    * @param ctx Context used to draw the arrow object.
@@ -86,10 +77,10 @@ export class Arrow extends Line {
    * @param p1 The first point used to determine the arrowhead's direction.
    * @param p2 The second point used to determine the arrowhead's direction.
    */
-  public drawArrowhead(ctx: CanvasRenderingContext2D, p1: Point, p2: Point,) {
-    let h = 12;
-    let sa = Math.sin(Math.PI / 8);
-    let ca = Math.cos(Math.PI / 8);
+  public drawArrowhead(ctx: CanvasRenderingContext2D, p1: Point, p2: Point, ) {
+    const h = 12;
+    const sa = Math.sin(Math.PI / 8);
+    const ca = Math.cos(Math.PI / 8);
     ctx.save();
     ctx.strokeStyle = this.color;
     ctx.fillStyle = this.color;

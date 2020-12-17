@@ -46,8 +46,6 @@ export class PingService extends BehaviorSubject<ApiStatus> {
   /**
    * Processes a Timer event; sens a new PING messages and logs the time. If the number of PING messages in transit
    * exceeds 1 then the ApiStatus is changed to DISCONNECTED.
-   *
-   * @param msg The Ping message received.
    */
   private onTimer() {
     if (this._socket) {

@@ -123,8 +123,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * @param func The fusion function that should be used to calculate the score.
    */
   public update(features: WeightedFeatureCategory[], func: FusionFunction) {
-    const score = func.scoreForSegment(features, this);
-    this._score = score;
+    this._score = func.scoreForSegment(features, this);
   }
 
   /**

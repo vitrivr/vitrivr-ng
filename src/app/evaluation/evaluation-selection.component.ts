@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {Router} from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {UUIDGenerator} from '../shared/util/uuid-generator.util';
 import {first} from 'rxjs/operators';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
@@ -8,7 +8,7 @@ import {AppConfig} from '../app.config';
 
 @Component({
 
-  selector: 'evaluation-selection',
+  selector: 'app-evaluation-selection',
   templateUrl: 'evaluation-selection.component.html'
 })
 export class EvaluationSelectionComponent {

@@ -23,6 +23,9 @@ import {AppConfig} from '../../app.config';
 })
 export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObjectScoreContainer[]> {
 
+  /** Name of this ListComponent. */
+  protected name = 'segment_list';
+
   constructor(_cdr: ChangeDetectorRef,
               _queryService: QueryService,
               _filterService: FilterService,
@@ -32,15 +35,11 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
               _router: Router,
               _snackBar: MatSnackBar,
               _resolver: ResolverService,
-              _dialog: MatDialog,
-              _vbs: VbsSubmissionService
+              _dialog: MatDialog
   ) {
-    super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog, _vbs);
+    super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog);
     this._count = this.scrollIncrement() * 5;
   }
-
-  /** Name of this ListComponent. */
-  protected name = 'segment_list';
 
   /**
    * Getter for the filters that should be applied to SegmentScoreContainer.

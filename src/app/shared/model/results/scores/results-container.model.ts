@@ -48,29 +48,11 @@ export class ResultsContainer {
   /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
   private _next = 0;
 
-  /**
-   * Constructor for ResultsContainer.
-   *
-   * @param {string} queryId Unique ID of the query. Used to filter messages!
-   * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
-   */
-  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
-  }
-
   /** List of all the results that were returned and hence are known to the results container. */
   private _features: WeightedFeatureCategory[] = [];
 
   /** A subject that can be used to publish changes to the results. */
   private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
-
-  /**
-   * Getter for the list of results.
-   *
-   * @returns {WeightedFeatureCategory[]}
-   */
-  get features(): WeightedFeatureCategory[] {
-    return this._features;
-  }
 
   /**
    * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
@@ -80,6 +62,24 @@ export class ResultsContainer {
    * be filtered).
    */
   private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
+
+  /**
+   * Constructor for ResultsContainer.
+   *
+   * @param {string} queryId Unique ID of the query. Used to filter messages!
+   * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
+   */
+  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
+  }
+
+  /**
+   * Getter for the list of results.
+   *
+   * @returns {WeightedFeatureCategory[]}
+   */
+  get features(): WeightedFeatureCategory[] {
+    return this._features;
+  }
 
   /**
    * Getter for the list of mediatypes.

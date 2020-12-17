@@ -25,10 +25,10 @@ export class ObjectviewerComponent {
   @Input() mediaobject: MediaObjectDescriptor;
 
   constructor(
-              private  _eventBusService: EventBusService,
-              public _resolver: ResolverService,
-              private _historyService: PreviousRouteService,
-              ) {
+    private  _eventBusService: EventBusService,
+    public _resolver: ResolverService,
+    private _historyService: PreviousRouteService,
+  ) {
     console.debug(`initializing objectviewer`)
   }
 

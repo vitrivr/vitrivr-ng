@@ -34,11 +34,11 @@ export class TemporalFusionFunction implements FusionFunction {
   /** The temporal distance in secods **/
   private _temporalDistance = TemporalFusionFunction.DEFAULT_TEMPORAL_DISTANCE;
 
-  private constructor() {
-  }
-
   public static instance(): TemporalFusionFunction {
     return TemporalFusionFunction._instance;
+  }
+
+  private constructor() {
   }
 
   /**

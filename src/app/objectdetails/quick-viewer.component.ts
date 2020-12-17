@@ -1,5 +1,5 @@
 import {Component, Inject, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {ResolverService} from '../core/basics/resolver.service';
@@ -7,7 +7,7 @@ import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
 
 @Component({
 
-  selector: 'quick-viewer',
+  selector: 'app-quick-viewer',
   templateUrl: 'quick-viewer.component.html',
   styleUrls: ['quick-viewer.component.css']
 })

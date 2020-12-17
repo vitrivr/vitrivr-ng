@@ -74,16 +74,16 @@
                     <p class="text-muted">No Tags available for chosen element</p>
                 </div>
                 <div *ngIf="_tagsPerSegment">
-                <h4 mat-line *ngIf="_tagsPerSegment.length>0"><strong>Tags</strong></h4>
-                <mat-grid-list cols="5" rowHeight="3:1">
-                    <mat-grid-tile class="smallerFont"
-                                   *ngFor="let tag of sortAlphabetically(_tagsPerSegment)">
-                        <div>{{tag.name}}
-                            <br>
-                            ({{tag.id}})
-                        </div>
-                    </mat-grid-tile>
-                </mat-grid-list>
+                    <h4 mat-line *ngIf="_tagsPerSegment.length>0"><strong>Tags</strong></h4>
+                    <mat-grid-list cols="5" rowHeight="3:1">
+                        <mat-grid-tile class="smallerFont"
+                                       *ngFor="let tag of sortAlphabetically(_tagsPerSegment)">
+                            <div>{{tag.name}}
+                                <br>
+                                ({{tag.id}})
+                            </div>
+                        </mat-grid-tile>
+                    </mat-grid-list>
 
                 </div>
             </mat-tab>

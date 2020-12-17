@@ -23,10 +23,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   private settingsComponent: SettingsComponent
 
   /** Observable that returns the most recent application configuration. */
-  private _config: Observable<Config>;
+  private readonly _config: Observable<Config>;
 
   /** Observable that return the loading state of the QueryService. */
-  private _loading: Observable<boolean>;
+  private readonly _loading: Observable<boolean>;
 
   /**
    * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.

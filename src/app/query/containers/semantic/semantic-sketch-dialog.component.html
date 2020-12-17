@@ -1,56 +1,56 @@
 <mat-dialog-content>
-  <mat-toolbar color="primary">
-    <mat-icon matTooltip="Pencil size">border_color</mat-icon>
-    <span class="spacer-tiny"></span>
-    <mat-slider (change)="onLineSizeChange()" [(ngModel)]="linesize" [style.min-width]="'100px'" max="100" min="1"
-                step="1" tickInterval="auto"></mat-slider>
+    <mat-toolbar color="primary">
+        <mat-icon matTooltip="Pencil size">border_color</mat-icon>
+        <span class="spacer-tiny"></span>
+        <mat-slider (change)="onLineSizeChange()" [(ngModel)]="linesize" [style.min-width]="'100px'" max="100" min="1"
+                    step="1" tickInterval="auto"></mat-slider>
 
-    <span class="spacer-flex"></span>
+        <span class="spacer-flex"></span>
 
-    <button (click)="onFillCanvasClicked()" mat-icon-button matTooltip="Fill canvas with concept.">
-      <mat-icon>format_color_fill</mat-icon>
-    </button>
+        <button (click)="onFillCanvasClicked()" mat-icon-button matTooltip="Fill canvas with concept.">
+            <mat-icon>format_color_fill</mat-icon>
+        </button>
 
-    <button (click)="onClearCanvasClicked()" mat-icon-button matTooltip="Clear canvas.">
-      <mat-icon>delete</mat-icon>
-    </button>
-
-
-    <span class="spacer-flex"></span>
-
-    <span class="spacer-flex"></span>
-
-    <button (click)="close()" mat-icon-button matTooltip="Close window and save.">
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-toolbar>
+        <button (click)="onClearCanvasClicked()" mat-icon-button matTooltip="Clear canvas.">
+            <mat-icon>delete</mat-icon>
+        </button>
 
 
-  <div style="display: flex; margin-top: 5px;">
-    <sketch-canvas #sketch [height]="300" [width]="300"></sketch-canvas>
+        <span class="spacer-flex"></span>
 
-    <div [style.margin-left]="'10px'" [style.width]="'300px'">
-      <mat-form-field>
-        <input [formControl]="formCtrl" [matAutocomplete]="auto" aria-label="Select a concept" matInput
-               placeholder="Select a concept">
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
-          <mat-option *ngFor="let category of (categories | async)" [value]="category.name">
-            <span [style.color]="category.color"><strong>{{category.name}}</strong></span>
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-      <ul class="picker">
-        <li (click)="onItemSelected(category)"
-            *ngFor="let category of (categories | async)"
-            [class.item]="true"
-            [class.selected]="category==selected"
-            [style.background-color]="(inUse(category) | async) ? category.color : '#000000'"
-            [style.color]="(inUse(category) | async) ? '#000000' : '#FFFFFF'" matTooltip="{{category.name}}">
-          {{category.name}}
-        </li>
-      </ul>
+        <span class="spacer-flex"></span>
+
+        <button (click)="close()" mat-icon-button matTooltip="Close window and save.">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-toolbar>
+
+
+    <div style="display: flex; margin-top: 5px;">
+        <app-sketch-canvas #sketch [height]="300" [width]="300"></app-sketch-canvas>
+
+        <div [style.margin-left]="'10px'" [style.width]="'300px'">
+            <mat-form-field>
+                <input [formControl]="formCtrl" [matAutocomplete]="auto" aria-label="Select a concept" matInput
+                       placeholder="Select a concept">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
+                    <mat-option *ngFor="let category of (categories | async)" [value]="category.name">
+                        <span [style.color]="category.color"><strong>{{category.name}}</strong></span>
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <ul class="picker">
+                <li (click)="onItemSelected(category)"
+                    *ngFor="let category of (categories | async)"
+                    [class.item]="true"
+                    [class.selected]="category==selected"
+                    [style.background-color]="(inUse(category) | async) ? category.color : '#000000'"
+                    [style.color]="(inUse(category) | async) ? '#000000' : '#FFFFFF'" matTooltip="{{category.name}}">
+                    {{category.name}}
+                </li>
+            </ul>
+        </div>
+
+
     </div>
-
-
-  </div>
 </mat-dialog-content>

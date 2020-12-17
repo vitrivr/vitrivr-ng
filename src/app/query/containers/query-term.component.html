@@ -2,7 +2,8 @@
 <div>
     <!-- div for the up / down buttons -->
     <div *ngIf="!firstStage && stagedQEnabled()">
-        <button style="width:48px;" (click)="onPushUpClicked()" mat-icon-button color="primary" matTooltip="Use as an earlier filter">
+        <button style="width:48px;" (click)="onPushUpClicked()" mat-icon-button color="primary"
+                matTooltip="Use as an earlier filter">
             <mat-icon>search</mat-icon>
             <mat-icon>keyboard_arrow_up</mat-icon>
         </button>
@@ -10,13 +11,13 @@
 
     <!-- div for the actual query term to formulate the query -->
     <div>
-        <qt-image *ngIf="queryTerm.type==='IMAGE'" [imageTerm]="queryTerm"></qt-image>
-        <qt-audio *ngIf="queryTerm.type==='AUDIO'" [audioTerm]="queryTerm"></qt-audio>
-        <qt-m3d *ngIf="queryTerm.type==='MODEL3D'" [m3dTerm]="queryTerm"></qt-m3d>
-        <qt-motion *ngIf="queryTerm.type==='MOTION'" [motionTerm]="queryTerm"></qt-motion>
-        <qt-text *ngIf="queryTerm.type==='TEXT'" [textTerm]="queryTerm"></qt-text>
+        <app-qt-image *ngIf="queryTerm.type==='IMAGE'" [imageTerm]="queryTerm"></app-qt-image>
+        <app-qt-audio *ngIf="queryTerm.type==='AUDIO'" [audioTerm]="queryTerm"></app-qt-audio>
+        <app-qt-m3d *ngIf="queryTerm.type==='MODEL3D'" [m3dTerm]="queryTerm"></app-qt-m3d>
+        <app-qt-motion *ngIf="queryTerm.type==='MOTION'" [motionTerm]="queryTerm"></app-qt-motion>
+        <app-qt-text *ngIf="queryTerm.type==='TEXT'" [textTerm]="queryTerm"></app-qt-text>
         <app-qt-tag *ngIf="queryTerm.type==='TAG'" [tagTerm]="queryTerm"></app-qt-tag>
-        <qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></qt-semantic>
+        <app-qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></app-qt-semantic>
         <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
     </div>
 

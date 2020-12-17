@@ -1,4 +1,4 @@
-import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {AfterContentInit, Component} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
@@ -15,7 +15,7 @@ import {AppConfig} from '../../app.config';
 
 @Component({
 
-  selector: 'preferences',
+  selector: 'app-preferences',
   templateUrl: './preferences.component.html'
 })
 export class PreferencesComponent implements AfterContentInit {

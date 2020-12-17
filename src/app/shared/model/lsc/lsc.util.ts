@@ -1,4 +1,3 @@
-import {VbsResult} from '../vbs/interfaces/vbs-result.model';
 import {LscResult} from './interfaces/lsc-result.model';
 import {VbsResultsLog} from '../../../core/vbs/vbs-results-log.model';
 import {LscSubmission} from './interfaces/lsc-submission.model';

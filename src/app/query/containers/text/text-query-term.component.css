@@ -1,13 +1,13 @@
 .options {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .options mat-checkbox {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .textinput {
-  width: 90%;
+    width: 90%;
 }

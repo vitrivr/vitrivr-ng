@@ -53,9 +53,6 @@ export class EvaluationService extends Dexie {
 
   /**
    * Prepares and returns a Blob with all the evaluation data.
-   *
-   * @param participant
-   * @return {any}
    */
   public evaluationData(): Observable<JSZip> {
     return fromPromise(this.evaluations.toArray()).pipe(

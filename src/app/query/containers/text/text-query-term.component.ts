@@ -1,10 +1,10 @@
 import {Component, Input} from '@angular/core';
 import {TextQueryTerm} from '../../../shared/model/queries/text-query-term.model';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import {MatCheckboxChange} from '@angular/material/checkbox';
 import {AppConfig} from '../../../app.config';
 
 @Component({
-  selector: 'qt-text',
+  selector: 'app-qt-text',
   templateUrl: 'text-query-term.component.html',
   styleUrls: ['text-query-term.component.css']
 })
