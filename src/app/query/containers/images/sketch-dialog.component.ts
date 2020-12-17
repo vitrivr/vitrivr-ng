@@ -9,7 +9,7 @@ import {SketchCanvasComponent} from '../../../shared/components/sketch/sketch-ca
   styleUrls: ['sketch-dialog.component.css']
 })
 
-export class SketchDialogComponent implements OnInit, AfterViewInit {
+export class SketchDialogComponent implements AfterViewInit {
   /** Default linesize when opening the dialog. */
   public static readonly DEFAULT_LINESIZE = 10.0;
   /** Current color (default: black). */
@@ -36,28 +36,18 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
 
   /**
    * Constructor for SketchDialogComponent.
-   *
-   * @param _dialogRef
-   * @param _data
    */
   constructor(private _dialogRef: MatDialogRef<SketchDialogComponent>, @Inject(MAT_DIALOG_DATA) private _data: any) {
     _dialogRef.disableClose = true;
   }
 
   /**
-   * Lifecycle Hook (onInit): Loads the injected image data (if specified).
-   */
-  public ngOnInit(): void {
-    if (this._data && typeof this._data === 'string') {
-      this._sketchpad.setImageBase64(<string>this._data);
-      this._data = null;
-    }
-  }
-
-  /**
    * Lifecycle Hook (afterViewIniti): Sets the default linesize and colour.
    */
   public ngAfterViewInit(): void {
+    if (this._data && typeof this._data === 'string') {
+      this._sketchpad.setImageBase64(<string>this._data);
+    }
     this._sketchpad.setLineSize(this.linesize);
     this._sketchpad.setActiveColor(this.color);
   }
