@@ -1,21 +1,18 @@
 import {ScoreContainer} from './compound-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
-import {MediaObject} from '../../media/media-object.model';
-import {MediaSegment} from '../../media/media-segment.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {Similarity} from '../../media/similarity.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
-import {MediaType} from '../../media/media-type.model';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {MediaObjectDescriptor, MediaSegmentDescriptor, StringDoublePair} from '../../../../../../openapi/cineast';
 
 /**
  * The MediaObjectScoreContainer is a ScoreContainer for MediaObjects.
  * It corresponds to a single MediaObject (e.g. a video, audio or 3d-model file) and holds the score for that object.
  * That score is determined by the scores of the SegmentScoreContainers hosted by a concrete instance of this class.
  */
-export class MediaObjectScoreContainer extends ScoreContainer implements MediaObject {
+export class MediaObjectScoreContainer extends ScoreContainer implements MediaObjectDescriptor {
   /** Type of the MediaObject. */
-  public mediatype: MediaType;
+  public mediatype: MediaObjectDescriptor.MediatypeEnum;
   /** Name of the MediaObject. */
   public name: string;
   /** Path of the MediaObject. */
@@ -25,7 +22,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
   private _segmentScores: Map<string, SegmentScoreContainer> = new Map();
   /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet.  string is containerId*/
-  private _cache: Map<string, Array<[WeightedFeatureCategory, Similarity, number]>> = new Map();
+  private _cache: Map<string, Array<[WeightedFeatureCategory, StringDoublePair, number]>> = new Map();
 
   /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
   private _segments: SegmentScoreContainer[] = [];
@@ -50,11 +47,6 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
 
   get segmentsObservable(): Observable<SegmentScoreContainer[]> {
     return this._segmentsObservable.asObservable();
-  }
-
-
-  public updateSegmentsObservable() {
-    this._segmentsObservable.next(this._segments)
   }
 
   /**
@@ -96,13 +88,17 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     });
   }
 
+  public updateSegmentsObservable() {
+    this._segmentsObservable.next(this._segments)
+  }
+
   /**
    * Adds a MediaSegment to the MediaObjectContainer. That Segment is actually not added to the container itself but
    * to the respective SegmentScoreContainer (contained in {segmentScores})
    *
    * @param segment MediaSegment to add.
    */
-  public addMediaSegment(segment: MediaSegment): SegmentScoreContainer {
+  public addMediaSegment(segment: MediaSegmentDescriptor): SegmentScoreContainer {
     const ssc = this.uniqueSegmentScoreContainer(segment);
     if (this._cache.has(ssc.segmentId)) {
       this._cache.get(ssc.segmentId).forEach(v => {
@@ -120,7 +116,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    * @param similarity The actual similarity entry.
    * @param containerId The query container id this similarity corresponds to
    */
-  public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number) {
+  public addSimilarity(category: WeightedFeatureCategory, similarity: StringDoublePair, containerId: number) {
     if (this._segmentScores.has(similarity.key)) {
       this._segmentScores.get(similarity.key).addSimilarity(category, similarity, containerId);
     } else if (this._cache.has(similarity.key)) {
@@ -153,8 +149,8 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /**
    * Serializes this MediaObjectScoreContainer into a plan JavaScript object.
    */
-  public serialize(): MediaObject {
-    return <MediaObject>{
+  public serialize(): MediaObjectDescriptor {
+    return <MediaObjectDescriptor>{
       objectId: this.objectId,
       mediatype: this.mediatype,
       name: this.name,
@@ -171,7 +167,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    * @param {string} segment MediaSegment for which to create a SegmentScoreContainer.
    * @return {SegmentScoreContainer}
    */
-  private uniqueSegmentScoreContainer(segment: MediaSegment): SegmentScoreContainer {
+  private uniqueSegmentScoreContainer(segment: MediaSegmentDescriptor): SegmentScoreContainer {
     if (!this._segmentScores.has(segment.segmentId)) {
       const ssc = new SegmentScoreContainer(segment, this);
       this._segmentScores.set(segment.segmentId, ssc);

@@ -2,14 +2,13 @@ import {Component, Input, OnInit} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
-import {Tag} from '../../../shared/model/misc/tag.model';
-import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
+import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {LookupService} from '../../../core/lookup/lookup.service';
+import {Tag, TagService} from '../../../../../openapi/cineast';
 
 @Component({
-  selector: 'qt-tag',
+  selector: 'app-qt-tag',
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
 })
@@ -20,12 +19,12 @@ export class TagQueryTermComponent implements OnInit {
   private tagTerm: TagQueryTerm;
 
   /** List of tag fields currently displayed. */
-  private _field: FieldGroup;
+  private readonly _field: FieldGroup;
   /** List of tag fields currently displayed. */
   private _tags: Tag[] = [];
 
-  constructor(private _lookupService: LookupService, private _matsnackbar: MatSnackBar) {
-    this._field = new FieldGroup(_lookupService);
+  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar) {
+    this._field = new FieldGroup(_tagService);
   }
 
   ngOnInit(): void {
@@ -124,13 +123,13 @@ export class FieldGroup {
   /** The currently selected tag. */
   private _selection: Tag;
 
-  constructor(private _lookupService: LookupService) {
+  constructor(private _tags: TagService) {
     this.filteredTags = this.formControl.valueChanges.pipe(
       debounceTime(250),
       startWith(''),
       map((tag: string) => {
         if (tag.length >= 3) {
-          return this._lookupService.matching(tag)
+          return this._tags.findTagsBy('matchingname', tag).pipe(first()).map(res => res.tags);
         } else {
           return EMPTY;
         }

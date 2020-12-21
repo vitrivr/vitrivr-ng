@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {M3DLoaderDialogComponent} from './m3d-loader-dialog.component';
 import {M3DLoaderComponent} from '../../../shared/components/m3d/m3d-loader.component';
 import {BinarySketchDialogComponent} from './binary-sketch-dialog.component';
@@ -11,7 +11,7 @@ import {M3DQueryTerm} from '../../../shared/model/queries/m3d-query-term.model';
 import Mesh = THREE.Mesh;
 
 @Component({
-  selector: 'qt-m3d',
+  selector: 'app-qt-m3d',
   templateUrl: 'm3d-query-term.component.html',
   styleUrls: ['m3d-query-term.component.css']
 })

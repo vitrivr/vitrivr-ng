@@ -1,9 +1,9 @@
 {
   "api": {
-    "host" : "default"
+    "host": "default"
   },
   "resources": {
-    "host_thumbnails" : "http://10.34.58.178/V3C1/V3C1jpg/:o/:s.jpg",
+    "host_thumbnails": "http://10.34.58.178/V3C1/V3C1jpg/:o/:s.jpg",
     "host_objects": "http://10.34.58.178/V3C1/video/:o.mp4"
   },
   "competition": {
@@ -16,8 +16,16 @@
     "dres": false
   },
   "mlt": {
-    "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
-    "IMAGE": ["scenecaption", "localfeatures", "objectInstances"]
+    "VIDEO": [
+      "scenecaption",
+      "localfeatures",
+      "objectInstances"
+    ],
+    "IMAGE": [
+      "scenecaption",
+      "localfeatures",
+      "objectInstances"
+    ]
   },
   "query": {
     "history": 0,
@@ -33,23 +41,61 @@
     },
     "text": {
       "categories": [
-        ["ocr", "Text on Screen"],
-        ["asr", "Audio"],
-        ["scenecaption", "Description"]
+        [
+          "ocr",
+          "Text on Screen"
+        ],
+        [
+          "asr",
+          "Audio"
+        ],
+        [
+          "scenecaption",
+          "Description"
+        ]
       ]
     },
     "boolean": [
-      ["Example Freetext", "TEXT", "features_daily.text"],
-      ["Example Dropdown", "OPTIONS", "features.option", "ONE", "TWO", "THREE"],
-      ["Example Range", "RANGE", "features.range", 5, 20],
-      ["Example Dynamic Options", "DYNAMICOPTIONS", "features.option", "features", "option"]
+      [
+        "Example Freetext",
+        "TEXT",
+        "features_daily.text"
+      ],
+      [
+        "Example Dropdown",
+        "OPTIONS",
+        "features.option",
+        "ONE",
+        "TWO",
+        "THREE"
+      ],
+      [
+        "Example Range",
+        "RANGE",
+        "features.range",
+        5,
+        20
+      ],
+      [
+        "Example Dynamic Options",
+        "DYNAMICOPTIONS",
+        "features.option",
+        "features",
+        "option"
+      ]
     ],
     "staged": true
   },
   "refinement": {
     "filters": [
-      ["dominantcolor.color", "CHECKBOX"],
-      ["technical.duration", "SLIDER"]
+      [
+        "dominantcolor.color",
+        "CHECKBOX"
+      ],
+      [
+        "technical.duration",
+        "SLIDER"
+      ]
     ]
   }
 }

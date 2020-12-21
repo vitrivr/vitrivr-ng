@@ -1,4 +1,3 @@
-import {MediaType} from '../../media/media-type.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
 import {SegmentScoreContainer} from './segment-score-container.model';
@@ -6,12 +5,8 @@ import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FeatureCategories} from '../feature-categories.model';
-import {MediaObject} from '../../media/media-object.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
-import {MediaSegment} from '../../media/media-segment.model';
-import {Similarity} from '../../media/similarity.model';
-import {MediaObjectMetadata} from '../../media/media-object-metadata.model';
 import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
 import 'rxjs-compat/add/operator/map';
 import 'rxjs-compat/add/operator/merge';
@@ -20,7 +15,6 @@ import 'rxjs-compat/add/operator/zip';
 import 'rxjs-compat/add/operator/filter';
 import 'rxjs-compat/add/operator/combineLatest';
 import {AbstractRefinementOption} from '../../../../settings/refinement/refinementoption.model';
-import {ConfigService} from '../../../../core/basics/config.service';
 import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxrefinement.model';
 import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
 import {Config} from '../../config/config.model';
@@ -28,8 +22,9 @@ import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
-import {MediaObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
-import {MediaSegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
+import {MediaObjectMetadataDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../../../openapi/cineast';
+import {AppConfig} from '../../../../app.config';
+import {MediaObjectDescriptor} from '../../../../../../openapi/cineast/model/mediaObjectDescriptor';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -66,7 +61,7 @@ export class ResultsContainer {
    * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
    * be filtered).
    */
-  private _mediatypes: Map<MediaType, boolean> = new Map();
+  private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
   /**
    * Constructor for ResultsContainer.
@@ -75,33 +70,6 @@ export class ResultsContainer {
    * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
    */
   constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
-  }
-
-  public checkUpdate() {
-    if (this._rerank > 0) {
-      // check upper limit to avoid call in avalanche of responses
-      if (this._rerank < 100) {
-        this.rerank();
-      } else { // mark unranked changes for next round
-        this._rerank = 1;
-      }
-    } else if (this._next > 0) { // else if as rerank already calls next
-      // check upper limit to avoid call in avalanche of responses
-      if (this._next < 100) {
-        this.next();
-      } else { // mark unpublished changes for next round
-        this._next = 1;
-      }
-    }
-  }
-
-  // force update if there are changes, e.g. on query end
-  public doUpdate() {
-    if (this._rerank > 0) {
-      this.rerank();
-    } else if (this._next > 0) { // else if as rerank already calls next
-      this.next();
-    }
   }
 
   /**
@@ -118,7 +86,7 @@ export class ResultsContainer {
    *
    * @return {Map<MediaType, boolean>}
    */
-  get mediatypes(): Map<MediaType, boolean> {
+  get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
     return this._mediatypes;
   }
 
@@ -155,11 +123,11 @@ export class ResultsContainer {
   // tslint:disable-next-line:member-ordering
   public static deserialize(data: any): ResultsContainer {
     const container = new ResultsContainer(data['queryId']);
-    container.processObjectMessage(<MediaObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
-    container.processSegmentMessage(<MediaSegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
+    container.processObjectMessage(<MediaObjectQueryResult>{queryId: container.queryId, content: <MediaObjectDescriptor[]>data['objects']});
+    container.processSegmentMessage(<MediaSegmentQueryResult>{queryId: container.queryId, content: <MediaSegmentDescriptor[]>data['segments']});
     container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
       queryId: container.queryId,
-      content: <MediaObjectMetadata[]>data['objectMetadata']
+      content: <MediaObjectMetadataDescriptor[]>data['objectMetadata']
     });
     container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{
       queryId: container.queryId,
@@ -226,6 +194,33 @@ export class ResultsContainer {
     return map;
   }
 
+  public checkUpdate() {
+    if (this._rerank > 0) {
+      // check upper limit to avoid call in avalanche of responses
+      if (this._rerank < 100) {
+        this.rerank();
+      } else { // mark unranked changes for next round
+        this._rerank = 1;
+      }
+    } else if (this._next > 0) { // else if as rerank already calls next
+      // check upper limit to avoid call in avalanche of responses
+      if (this._next < 100) {
+        this.next();
+      } else { // mark unpublished changes for next round
+        this._next = 1;
+      }
+    }
+  }
+
+  // force update if there are changes, e.g. on query end
+  public doUpdate() {
+    if (this._rerank > 0) {
+      this.rerank();
+    } else if (this._next > 0) { // else if as rerank already calls next
+      this.next();
+    }
+  }
+
   public setScoreFunction(scoreFunction: string) {
     switch (scoreFunction.toUpperCase()) {
       case 'TEMPORAL':
@@ -253,9 +248,9 @@ export class ResultsContainer {
    * @param _configService used to determine filter type for metadata
    * @return a map of all metadata keys with all possible values
    */
-  public metadataAsObservable(_configService: ConfigService): Observable<Map<string, AbstractRefinementOption>> {
+  public metadataAsObservable(_configService: AppConfig): Observable<Map<string, AbstractRefinementOption>> {
 
-    return this.segmentsAsObservable.combineLatest(_configService, function (resultList, config) {
+    return this.segmentsAsObservable.combineLatest(_configService.configAsObservable, function (resultList, config) {
       const map: Map<string, AbstractRefinementOption> = new Map();
       return ResultsContainer.fillMap(map, resultList, config)
     }).combineLatest(this._results_objects_subject, function (map, objects) {
@@ -273,7 +268,7 @@ export class ResultsContainer {
    * @param type MediaType that should be changed.
    * @param active New filter status. True = is visible, false = will be filtered
    */
-  public toggleMediatype(type: MediaType, active: boolean) {
+  public toggleMediatype(type: MediaObjectDescriptor.MediatypeEnum, active: boolean) {
     if (this._mediatypes.has(type)) {
       this._mediatypes.set(type, active);
     }
@@ -486,7 +481,7 @@ export class ResultsContainer {
     this._results_segments.forEach(seg => {
       seg.scores.forEach((categoryMap, containerId) => {
         categoryMap.forEach((score, category) => {
-          similarityList.push(<Similarity>{category: category.name, key: seg.segmentId, value: score, containerId: containerId})
+          similarityList.push(<StringDoublePair>{category: category.name, key: seg.segmentId, value: score, containerId: containerId})
         })
       });
     });
@@ -495,7 +490,7 @@ export class ResultsContainer {
       objects: this._results_objects.map(obj => obj.serialize()),
       segments: this._results_segments.map(seg => seg.serialize()),
       objectMetadata: this.flatten(this._results_objects.map(obj => {
-        const metadata: MediaObjectMetadata[] = [];
+        const metadata: MediaObjectMetadataDescriptor[] = [];
         obj.metadata.forEach((v, k) => {
           metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
@@ -531,7 +526,7 @@ export class ResultsContainer {
    * @param {MediaObject} object The optional MediaObject. If set, the properties of the unique MediaObjectScoreContainer are updated.
    * @return {MediaObjectScoreContainer}
    */
-  private uniqueMediaObjectScoreContainer(objectId: string, object?: MediaObject): MediaObjectScoreContainer {
+  private uniqueMediaObjectScoreContainer(objectId: string, object?: MediaObjectDescriptor): MediaObjectScoreContainer {
     let mosc;
     if (this._objectid_to_object_map.has(objectId)) {
       mosc = this._objectid_to_object_map.get(objectId);

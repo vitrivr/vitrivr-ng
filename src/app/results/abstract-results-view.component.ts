@@ -29,6 +29,18 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   /** Name of this AbstractResultsViewComponent. */
   protected abstract name;
 
+  /** Indicator whether the progress bar should be visible. */
+  private _loading = false;
+
+  /** Indicator whether or not we should scroll*/
+  private _updateScroll = false;
+
+  /** Local reference to the data source holding the query results.*/
+  protected _dataSource: Observable<T> = EMPTY;
+
+  /** The number of items that should be displayed. */
+  protected _count: number = undefined;
+
   /**
    * Default constructor.
    *
@@ -40,7 +52,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * @param _router The Router used for navigation
    * @param _snackBar The MatSnackBar component used to display the SnackBar.
    */
-  constructor(protected _cdr: ChangeDetectorRef,
+  protected constructor(protected _cdr: ChangeDetectorRef,
               protected _queryService: QueryService,
               protected _filterService: FilterService,
               protected _selectionService: SelectionService,
@@ -50,25 +62,13 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     this._count = this.scrollIncrement();
   }
 
-  /** Indicator whether the progress bar should be visible. */
-  private _loading = false;
-
-  /** Indicator whether or not we should scroll*/
-  private _updateScroll = false;
-
   get loading(): boolean {
     return this._loading;
   }
 
-  /** Local reference to the data source holding the query results.*/
-  protected _dataSource: Observable<T> = EMPTY;
-
   get dataSource(): Observable<T> {
     return this._dataSource;
   }
-
-  /** The number of items that should be displayed. */
-  protected _count: number = undefined;
 
   /**
    * Getter for count property (for limiting the result set)

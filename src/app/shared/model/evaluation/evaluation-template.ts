@@ -6,80 +6,37 @@ export class EvaluationTemplate {
   /** Description of the evaluation template. */
   private _description: string;
 
-  /**
-   * Default constructor.
-   *
-   * @param uri
-   * @param name
-   * @param description
-   */
-  constructor(uri: string, name: string, description: string) {
-    this._uri = uri;
-    this._name = name;
-    this._description = description;
-  }
-
   /** URI of the evaluation template. */
-  private _uri: string;
-
-  /**
-   * Getter for uri.
-   *
-   * @return {string}
-   */
-  get uri(): string {
-    return this._uri;
-  }
+  private readonly _uri: string;
 
   /** Name of the evaluation template. */
-  private _name: string;
-
-  /**
-   * Getter for name.
-   *
-   * @return {string}
-   */
-  get name(): string {
-    return this._name;
-  }
+  private readonly _name: string;
 
   /** List of scenarios in the evaluation template. */
   private _scenarios: EvaluationScenario[] = [];
 
   /**
-   * Getter for scenarios.
-   *
-   * @return {EvaluationScenario[]}
-   */
-  get scenarios(): EvaluationScenario[] {
-    return this._scenarios;
-  }
-
-  /**
    * Tries to convert a JSON object into an EvaluationTemplate and returns a new instance
    * of such a template. If an error occurs during the conversion process, this method
    * returns null.
-   *
-   * @param object The
-   * @return {EvaluationTemplate|null}
    */
   public static fromJson(object: any, url: string): EvaluationTemplate {
     try {
       if (typeof object == 'string') {
         object = JSON.parse(object);
       }
-      let template = new EvaluationTemplate(url, object['_name'], object['_description']);
-      let baseURL = url.substr(0, url.lastIndexOf('/')) + '/';
-      for (let scenario of object['_scenarios']) {
-        let materials: EvaluationMaterial[] = [];
-        let illustrations: EvaluationMaterial[] = [];
+      const template = new EvaluationTemplate(url, object['_name'], object['_description']);
+      const baseURL = url.substr(0, url.lastIndexOf('/')) + '/';
+      for (const scenario of object['_scenarios']) {
+        const materials: EvaluationMaterial[] = [];
+        const illustrations: EvaluationMaterial[] = [];
         if (scenario['_material']) {
-          for (let material of scenario['_material']) {
+          for (const material of scenario['_material']) {
             materials.push(new EvaluationMaterial(material['_name'], material['_description'], baseURL + material['_url']));
           }
         }
         if (scenario['_illustrations']) {
-          for (let illustration of scenario['_illustrations']) {
+          for (const illustration of scenario['_illustrations']) {
             illustrations.push(new EvaluationMaterial(illustration['_name'], illustration['_description'], baseURL + illustration['_url']));
           }
         }
@@ -90,6 +47,24 @@ export class EvaluationTemplate {
       console.log('Could not parse provided object as evaluation template.');
       return null;
     }
+  }
+
+  constructor(uri: string, name: string, description: string) {
+    this._uri = uri;
+    this._name = name;
+    this._description = description;
+  }
+
+  get uri(): string {
+    return this._uri;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
+  get scenarios(): EvaluationScenario[] {
+    return this._scenarios;
   }
 
   /**
@@ -107,7 +82,7 @@ export class EvaluationTemplate {
    * @param scenario EvalationScenario to remove.
    */
   public removeScenario(scenario: EvaluationScenario) {
-    let index = this._scenarios.indexOf(scenario);
+    const index = this._scenarios.indexOf(scenario);
     this.removeScenarioAtIndex(index);
   }
 

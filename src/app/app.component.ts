@@ -1,6 +1,5 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {QueryService} from './core/queries/query.service';
-import {ConfigService} from './core/basics/config.service';
 import {Config} from './shared/model/config/config.model';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
@@ -10,39 +9,30 @@ import {DistinctElementLookupService} from './core/lookup/distinct-element-looku
 import {ValueType} from './query/containers/bool/bool-attribute';
 import {SettingsComponent} from './settings/settings.component';
 import {NotificationService} from './core/basics/notification.service';
+import {AppConfig} from './app.config';
 
 @Component({
-
-  selector: 'vitrivr',
+  selector: 'app-vitrivr',
   templateUrl: 'app.component.html',
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
-  /** Observable that returns the most recent application configuration. */
-  private _config: Observable<Config>;
-
-  /** Observable that return the loading state of the QueryService. */
-  private _loading: Observable<boolean>;
-
+  settingsbadge = '';
   @ViewChild('settingsComponent')
   private settingsComponent: SettingsComponent
 
-  // settingsbadge: string = NotificationUtil.getNotificationSymbol();
-  settingsbadge = '';
+  /** Observable that returns the most recent application configuration. */
+  private readonly _config: Observable<Config>;
 
-  ngOnInit(): void {
-    const config = this._configService.getValue();
-    /* Initialize stuff which might take 1s+ on the Cineast-Side*/
-    this.initLookup(config, this._distinctLookupService);
-    this._configService.subscribe(_config => this.initLookup(_config, this._distinctLookupService));
-  }
+  /** Observable that return the loading state of the QueryService. */
+  private readonly _loading: Observable<boolean>;
 
   /**
    * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
    */
   constructor(_queryService: QueryService,
-              private _configService: ConfigService,
+              private _configService: AppConfig,
               private _bottomSheet: MatBottomSheet,
               private _distinctLookupService: DistinctElementLookupService,
               private _notificationService: NotificationService
@@ -53,20 +43,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         return _queryService.running;
       })
     );
-    this._config = _configService.asObservable();
-  }
-
-  public initLookup(config: Config, distinctLookupService: DistinctElementLookupService) {
-    if (config._config.query.options.boolean) {
-      config._config.query.boolean.forEach(v => {
-        const type = <number><unknown>ValueType[v[1]];
-        if (type == ValueType.DYNAMICOPTIONS.valueOf()) {
-          const table: string = v[3];
-          const column: string = v[4];
-          distinctLookupService.getDistinct(table, column).subscribe()
-        }
-      });
-    }
+    this._config = _configService.configAsObservable;
   }
 
   /**
@@ -85,6 +62,26 @@ export class AppComponent implements OnInit, AfterViewInit {
    */
   get loading(): Observable<boolean> {
     return this._loading;
+  }
+
+  ngOnInit(): void {
+    const config = this._configService.config;
+    /* Initialize stuff which might take 1s+ on the Cineast-Side*/
+    this.initLookup(config, this._distinctLookupService);
+    this._configService.configAsObservable.subscribe(_config => this.initLookup(_config, this._distinctLookupService));
+  }
+
+  public initLookup(config: Config, distinctLookupService: DistinctElementLookupService) {
+    if (config._config.query.options.boolean) {
+      config._config.query.boolean.forEach(v => {
+        const type = <number><unknown>ValueType[v[1]];
+        if (type === ValueType.DYNAMICOPTIONS.valueOf()) {
+          const table: string = v[3];
+          const column: string = v[4];
+          distinctLookupService.getDistinct(table, column).subscribe()
+        }
+      });
+    }
   }
 
   /**

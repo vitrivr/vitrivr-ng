@@ -1,64 +1,64 @@
 .tile {
-  width: 200px;
-  height: 200px;
-  margin-bottom: 25px;
-  box-shadow: 0.15em 0.15em 0.05em 0 rgba(0, 0, 0, 0.4); /* The top layer shadow */
-  position: relative;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 25px;
+    box-shadow: 0.15em 0.15em 0.05em 0 rgba(0, 0, 0, 0.4); /* The top layer shadow */
+    position: relative;
 }
 
 .tile .tile-header {
-  top: 0;
-  left: 0;
-  right: 0;
-  min-height: 30px;
-  padding: 10px;
-  position: absolute;
-  z-index: 100;
-  background-color: black;
-  opacity: 0.65;
-  color: white;
+    top: 0;
+    left: 0;
+    right: 0;
+    min-height: 30px;
+    padding: 10px;
+    position: absolute;
+    z-index: 100;
+    background-color: black;
+    opacity: 0.65;
+    color: white;
 }
 
 .tile .tile-body {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .tile .tile-footer {
-  top: 150px;
-  left: 0;
-  right: 0;
-  height: 50px;
-  padding: 5px;
-  position: absolute;
-  z-index: 100;
-  background-color: black;
-  opacity: 0.65;
-  color: white;
+    top: 150px;
+    left: 0;
+    right: 0;
+    height: 50px;
+    padding: 5px;
+    position: absolute;
+    z-index: 100;
+    background-color: black;
+    opacity: 0.65;
+    color: white;
 }
 
 .scrollToBottom {
-  min-height: 800px;
+    min-height: 800px;
 }
 
 .smallerFont {
-  font-size: small;
-  text-align: center;
+    font-size: small;
+    text-align: center;
 }
 
-.normalfont{
-  font-size: medium;
+.normalfont {
+    font-size: medium;
 }
 
 .odd {
-  background-color: #f2f9ff;
+    background-color: #f2f9ff;
 }
 
 .even {
-  background-color: #eceff3;
+    background-color: #eceff3;
 }
 
 mat-grid-tile {
-  background: #e0e0e0;
+    background: #e0e0e0;
 }
 

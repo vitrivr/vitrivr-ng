@@ -6,14 +6,14 @@ import {QueryService} from '../../core/queries/query.service';
 
 @Component({
 
-  selector: 'selection-management',
+  selector: 'app-selection-management',
   templateUrl: './selection-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectionManagementComponent {
 
   /** */
-  private _observable: Observable<Map<string, Set<Tag>>>;
+  private readonly _observable: Observable<Map<string, Set<Tag>>>;
 
   /**
    * Constructor for SelectionManagementComponent

@@ -3,15 +3,12 @@ import {QueryService} from '../core/queries/query.service';
 import {QueryContainerInterface} from '../shared/model/queries/interfaces/query-container.interface';
 import {StagedQueryContainer} from '../shared/model/queries/staged-query-container.model';
 import {EventBusService} from '../core/basics/event-bus.service';
-import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
+import {InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
 import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fusion-function.model';
-import {TagQueryTerm} from '../shared/model/queries/tag-query-term.model';
-import {BoolQueryTerm} from '../shared/model/queries/bool-query-term.model';
-import {TextQueryTerm} from '../shared/model/queries/text-query-term.model';
 
 
 @Component({

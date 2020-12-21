@@ -1,5 +1,5 @@
-import {AfterContentInit, Component, ViewChild} from '@angular/core';
-import {MatTab, MatTabChangeEvent} from '@angular/material/tabs';
+import {AfterContentInit, Component} from '@angular/core';
+import {MatTabChangeEvent} from '@angular/material/tabs';
 import {EventBusService} from '../core/basics/event-bus.service';
 import {NotificationUtil} from '../shared/util/notification.util';
 import {NotificationService} from '../core/basics/notification.service';

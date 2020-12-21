@@ -1,4 +1,4 @@
-export type EventCategory = 'Text' | 'Image' | 'Sketch' | 'Filter' | 'Browsing' | 'Cooperation' |'Custom';
+export type EventCategory = 'Text' | 'Image' | 'Sketch' | 'Filter' | 'Browsing' | 'Cooperation' | 'Custom';
 export const EventCategories: EventCategory[] = ['Text', 'Image', 'Sketch', 'Filter', 'Browsing', 'Cooperation', 'Custom'];
 
 /* */

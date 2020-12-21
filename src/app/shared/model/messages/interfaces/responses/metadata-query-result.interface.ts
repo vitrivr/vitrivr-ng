@@ -1,5 +1,5 @@
 import {QueryResult} from './query-result.interface';
-import {MediaObjectMetadata} from '../../../media/media-object-metadata.model';
+import {MediaObjectMetadataDescriptor} from '../../../../../../../openapi/cineast';
 
 /**
  * Defines the general structure of a MetadataQueryResult.
@@ -7,7 +7,7 @@ import {MediaObjectMetadata} from '../../../media/media-object-metadata.model';
 export interface MetadataQueryResult extends QueryResult {
 
   /* List of MediaObjectMetadata entries (may be empty). */
-  content: MediaObjectMetadata[],
+  content: MediaObjectMetadataDescriptor[],
 
   /* Number of entries in the result. */
   count: number

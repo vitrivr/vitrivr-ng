@@ -3,7 +3,7 @@ import {Evaluation} from '../shared/model/evaluation/evaluation';
 
 @Component({
 
-  selector: 'evaluation-history',
+  selector: 'app-evaluation-history',
   template: `
         <div>
             <dl>
@@ -15,14 +15,14 @@ import {Evaluation} from '../shared/model/evaluation/evaluation';
         </div>
         <div>
             <table>
-                <thead> 
+                <thead>
                     <th>#</th>
                     <th>Object ID</th>
                     <th>Segment ID</th>
                     <th>Score (Vitrivr)</th>
                     <th>Rating</th>
                 </thead>
-                
+
                 <tbody>
                     <tr *ngFor="let rating of evaluation.ratings">
                         <td>{{rating.rank + 1}}</td>

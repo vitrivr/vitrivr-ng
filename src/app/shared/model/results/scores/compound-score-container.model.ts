@@ -1,6 +1,6 @@
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {Similarity} from '../../media/similarity.model';
+import {StringDoublePair} from '../../../../../../openapi/cineast';
 
 /**
  * This class defines an abstract container for compound scores, i.e. scores that are obtained as a result of multiple
@@ -14,22 +14,9 @@ import {Similarity} from '../../media/similarity.model';
  * to rank the research-results in the UI.
  */
 export abstract class ScoreContainer {
+;
   /** Score value. How it is obtained is up to the implementing class. */
   protected _score = 0;
-
-  /**
-   * Getter for the container's score.
-   */
-  get score(): number {
-    return this._score;
-  };
-
-  /**
-   * Getter for the container's score as percent value.
-   */
-  get scorePercentage(): number {
-    return Math.round(this._score * 1000) / 10
-  }
 
   /**
    * Static comparator method. Compares two ScoreContainers so that they
@@ -52,6 +39,20 @@ export abstract class ScoreContainer {
   }
 
   /**
+   * Getter for the container's score.
+   */
+  get score(): number {
+    return this._score;
+  }
+
+  /**
+   * Getter for the container's score as percent value.
+   */
+  get scorePercentage(): number {
+    return Math.round(this._score * 1000) / 10
+  }
+
+  /**
    * Adds a Similarity object to the ScoreContainer. Usually, that object is somehow used to influence,
    * change the score of the Container.
    *
@@ -59,7 +60,7 @@ export abstract class ScoreContainer {
    * @param similarity Similarity value
    * @param containerId The containerId this similarity corresponds to
    */
-  public abstract addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number): void;
+  public abstract addSimilarity(category: WeightedFeatureCategory, similarity: StringDoublePair, containerId: number): void;
 
   /**
    * Method can be used to update the score of a ScoreContainer given a list of

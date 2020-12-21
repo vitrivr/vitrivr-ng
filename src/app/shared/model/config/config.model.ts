@@ -119,6 +119,23 @@ export class Config {
   };
 
   /**
+   * Deserializes a Config object from a given JavaScript object or string.
+   *
+   * @param {{} | string} object The object that should be parsed.
+   * @return {Config} The resulting config object.
+   */
+  public static deserialize(object: {} | string): Config {
+    if (typeof object === 'string') {
+      object = JSON.parse(object);
+    }
+    if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
+      return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * Default constructor for configuration object. The different configuration type can be passed to this constructor and the will be merged with
    * the default configuration.
    *
@@ -189,17 +206,14 @@ export class Config {
   }
 
   /**
-   * Deserializes a Config object from a given JavaScript object or string.
-   *
-   * @param {{} | string} object The object that should be parsed.
-   * @return {Config} The resulting config object.
+   * Based on the config, this returns the REST API endpoint.
+   * Fully qualified with the schema (if secured, this is HTTPS, otherwise HTTP)
+   * the host and the port.
    */
-  public static deserialize(object: {} | string): Config {
-    if (typeof object === 'string') {
-      object = JSON.parse(object);
-    }
-    if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
-      return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
+  get endpointRest(): string {
+    const scheme = this._config.api.http_secure ? 'https://' : 'http://';
+    if (this._config.api.host && this._config.api.port) {
+      return scheme + this._config.api.host + ':' + this._config.api.port;
     } else {
       return null;
     }
@@ -234,11 +248,11 @@ export class Config {
       const separator = '.';
       const components = path.replace('[', separator).replace(']', '').split(separator);
       const last = components[components.length - 1];
-      const obj = components.reduce((obj, property) => {
+      const obj = components.reduce((_obj, property) => {
         if (property === last) {
-          return obj
+          return _obj
         } else {
-          return obj[property]
+          return _obj[property]
         }
       }, this._config);
 

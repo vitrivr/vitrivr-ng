@@ -18,11 +18,11 @@ export class ColorUtil {
       throw new Error('Value must be between 0 and 1.');
     }
 
-    let C = v * s;
-    let X = C * (1 - Math.abs((h / 60) % 2 - 1));
-    let m = v - C;
+    const C = v * s;
+    const X = C * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = v - C;
 
-    let rgbp: [number, number, number] = [0, 0, 0];
+    const rgbp: [number, number, number] = [0, 0, 0];
     if (h < 60) {
       rgbp[0] = C;
       rgbp[1] = X;
@@ -65,7 +65,7 @@ export class ColorUtil {
    * @returns {string} Colour string.
    */
   public static randomColorHex(): string {
-    let letters = '0123456789ABCDEF';
+    const letters = '0123456789ABCDEF';
     let color = '#';
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
@@ -81,9 +81,9 @@ export class ColorUtil {
   public static jet(v: number): string {
     // return clamp(vec3(1.5) - abs(4.0 * vec3(v) + vec3(-3, -2, -1)), vec3(0), vec3(1));
     return ColorUtil.rgbToHex(
-        255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 3))),
-        255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 2))),
-        255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 1)))
+      255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 3))),
+      255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 2))),
+      255 * Math.min(1.0, Math.max(0.0, 1.5 - Math.abs(4.0 * v - 1)))
     );
   }
 

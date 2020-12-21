@@ -1,10 +1,11 @@
 import {AbstractQueryTerm} from './abstract-query-term.model';
-import {Tag} from '../misc/tag.model';
+import {Tag} from '../../../../../openapi/cineast';
+import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
 
 export class TagQueryTerm extends AbstractQueryTerm {
   tags: Tag[];
 
   constructor() {
-    super('TAG', ['tags']);
+    super(QueryTerm.TypeEnum.TAG, ['tags']);
   }
 }

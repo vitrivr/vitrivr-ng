@@ -21,7 +21,8 @@
 
     <!-- all available query modes -->
     <div>
-        <div fxLayout="row inline" fxLayoutGap="15px" fxLayoutAlign="space-around center" style="width:100%;padding-right:20px">
+        <div fxLayout="row inline" fxLayoutGap="15px" fxLayoutAlign="space-around center"
+             style="width:100%;padding-right:20px">
             <button (click)="onToggleButtonClicked('IMAGE')" *ngIf="(config|async).get('query.options.image')"
                     class="icon-button" matTooltip="Toggle image query term">
                 <mat-icon

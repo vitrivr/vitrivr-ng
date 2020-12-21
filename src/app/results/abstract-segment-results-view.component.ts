@@ -9,10 +9,10 @@ import {SelectionService} from '../core/selection/selection.service';
 import {EventBusService} from '../core/basics/event-bus.service';
 import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ConfigService} from '../core/basics/config.service';
 import {ResolverService} from '../core/basics/resolver.service';
 import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
+import {AppConfig} from '../app.config';
 
 /**
  * More specialized AbstractResultsView, tailored for views which display segments
@@ -26,10 +26,9 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
                         _eventBusService: EventBusService,
                         _router: Router,
                         _snackBar: MatSnackBar,
-                        protected _configService: ConfigService,
+                        protected _configService: AppConfig,
                         public _resolver: ResolverService,
-                        protected _dialog: MatDialog,
-                        protected _vbs: VbsSubmissionService) {
+                        protected _dialog: MatDialog) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
   }
 

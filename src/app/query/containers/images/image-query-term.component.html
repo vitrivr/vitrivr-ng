@@ -1,13 +1,14 @@
-<img #previewimg (click)="onViewerClicked()" (dragenter)="onViewerDragEnter($event)" (dragleave)="onViewerDragExit($event)"
+<img #previewimg (click)="onViewerClicked()" (dragenter)="onViewerDragEnter($event)"
+     (dragleave)="onViewerDragExit($event)"
      (dragover)="onViewerDragOver($event)" (drop)="onViewerDropped($event)" class="previewimg"
      matTooltip="Click to change image..." style="background-image: url('assets/images/transparent.png')"
      width="150"/>
 
 <div style="display:flex; align-items: center; justify-content: center;">
-  <mat-icon class="muted" matTooltip="Rough sketch">brush</mat-icon>
-  <div class="toolbar-spacer-small"></div>
-  <mat-slider (change)="onSettingsChanged($event)" [(ngModel)]="sliderSetting" max="4" min="0" step="1"
-              value="2"></mat-slider>
-  <div class="toolbar-spacer-small"></div>
-  <mat-icon class="muted" matTooltip="Example image">insert_photo</mat-icon>
+    <mat-icon class="muted" matTooltip="Rough sketch">brush</mat-icon>
+    <div class="toolbar-spacer-small"></div>
+    <mat-slider (change)="onSettingsChanged($event)" [(ngModel)]="sliderSetting" max="4" min="0" step="1"
+                value="2"></mat-slider>
+    <div class="toolbar-spacer-small"></div>
+    <mat-icon class="muted" matTooltip="Example image">insert_photo</mat-icon>
 </div>

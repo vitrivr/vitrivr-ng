@@ -8,6 +8,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
+    "gen-api": "openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=9.1.12",
     "e2e": "ng e2e",
     "postinstall": "ngcc"
   },
@@ -45,7 +46,8 @@
     "tslib": "1.13.0",
     "typescript": "3.8.3",
     "@videogular/ngx-videogular": "2.0.0",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.10.2",
+    "@openapitools/openapi-generator-cli": "^1.0.15-4.3.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.901.12",

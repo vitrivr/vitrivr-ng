@@ -26,9 +26,6 @@ export class VbsResultsLog implements VbsSubmission {
   /** Constant, since vitrivr NG always returns the top K results. */
   public readonly resultSetAvailability: string = 'top';
 
-  constructor(public readonly teamId: string, public readonly memberId: number) {
-  }
-
   /**
    * Maps a list of {SegmentScoreContainer}s to a {VbsResultsLog}.
    *
@@ -152,5 +149,8 @@ export class VbsResultsLog implements VbsSubmission {
       default:
         return null;
     }
+  }
+
+  constructor(public readonly teamId: string, public readonly memberId: number) {
   }
 }

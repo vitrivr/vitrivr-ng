@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {ConfigService} from '../basics/config.service';
 import {BehaviorSubject, combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
@@ -18,6 +17,8 @@ import Dexie from 'dexie';
 import {LscUtil} from '../../shared/model/lsc/lsc.util';
 import {LscSubmission} from '../../shared/model/lsc/interfaces/lsc-submission.model';
 import {UserDetails} from './dres/model/userdetails.model';
+import {AppConfig} from '../../app.config';
+import {MetadataService} from '../../../../openapi/cineast';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -59,15 +60,16 @@ export class VbsSubmissionService {
   private _lsc = false;
   private readonly _status: BehaviorSubject<UserDetails> = new BehaviorSubject(undefined)
 
-  constructor(_config: ConfigService,
+  constructor(_config: AppConfig,
               private _eventbus: EventBusService,
               private _queryService: QueryService,
               private _selection: SelectionService,
+              private _metadata: MetadataService,
               private _http: HttpClient,
               private _snackBar: MatSnackBar,
               _db: DatabaseService) {
 
-    _config.subscribe(config => {
+    _config.configAsObservable.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
       this._vbs = config.get<boolean>('competition.vbs');
       this._dres = config.get<boolean>('competition.dres');
@@ -75,7 +77,7 @@ export class VbsSubmissionService {
     });
 
     /* Configuration */
-    this._config = _config.asObservable().pipe(
+    this._config = _config.configAsObservable.pipe(
       filter(c => c.get<string>('competition.endpoint') != null),
       map(c => <[string, string, number, boolean, number]>[c.get<string>('competition.endpoint').endsWith('/') ? c.get<string>('competition.endpoint').slice(0, -1) : c.get<string>('competition.endpoint'), c.get<string>('competition.teamid'), c.get<number>('competition.toolid'), c.get<boolean>('competition.log'), c.get<number>('competition.loginterval')])
     );
@@ -275,7 +277,6 @@ export class VbsSubmissionService {
         }
         if (this._vbs) {
           id = parseInt(segment.objectId.replace('v_', ''), 10).toString();
-          id = segment.objectId
           params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', id).set('frame', String(frame));
         }
         if (this._dres) {
@@ -349,7 +350,7 @@ export class VbsSubmissionService {
           return of(undefined)
         })
       ).subscribe();
-    }else{
+    } else {
       console.debug(`dres flag not set in config, not checking connection to competition server`)
     }
   }

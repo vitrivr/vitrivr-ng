@@ -3,20 +3,20 @@ import {QueryService} from '../../core/queries/query.service';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {Router} from '@angular/router';
 import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {Observable} from 'rxjs';
 import {VbsSubmissionService} from 'app/core/vbs/vbs-submission.service';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {SelectionService} from '../../core/selection/selection.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {FilterService} from '../../core/queries/filter.service';
-import {ConfigService} from '../../core/basics/config.service';
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {ScoredPath} from './scored-path.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
+import {AppConfig} from '../../app.config';
 
 @Component({
 
@@ -29,22 +29,21 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
   /** Reference to the temporal fusion function */
   private _fusion = TemporalFusionFunction.instance();
 
+  /** Name of this TemporalListComponent. */
+  protected name = 'temporal_list';
+
   constructor(_cdr: ChangeDetectorRef,
               _queryService: QueryService,
               _filterService: FilterService,
               _selectionService: SelectionService,
               _eventBusService: EventBusService,
-              _configService: ConfigService,
+              _configService: AppConfig,
               _router: Router,
               _snackBar: MatSnackBar,
               _resolver: ResolverService,
-              _dialog: MatDialog,
-              _vbs: VbsSubmissionService) {
-    super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog, _vbs);
+              _dialog: MatDialog) {
+    super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog);
   }
-
-  /** Name of this TemporalListComponent. */
-  protected name = 'temporal_list';
 
   /**
    * Getter for the filters that should be applied to SegmentScoreContainer.

@@ -1,11 +1,11 @@
 import {Component, Inject} from '@angular/core';
-import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
+import {MAT_SNACK_BAR_DATA} from '@angular/material/snack-bar';
 import {WeightedFeatureCategory} from '../shared/model/results/weighted-feature-category.model';
 import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 
 @Component({
 
-  selector: 'feature-details',
+  selector: 'app-feature-details',
   template: `
     <h3>{{title}}</h3>
     <div class="snackbar-feature" *ngFor="let line of lines">{{line}}</div>
@@ -13,6 +13,12 @@ import {SegmentScoreContainer} from '../shared/model/results/scores/segment-scor
   styles: ['.snackbar-feature { color: white; opacity: 0.65; font-size: 1.5em; padding: 5px; }']
 })
 export class FeatureDetailsComponent {
+
+  /** The title string displayed by the FeatureDetailsComponent. */
+  private readonly _title: string;
+
+  /** The individual lines displayed by the FeatureDetailsComponent (one line per feature). */
+  private _lines: string[] = [];
 
   /**
    * Default constructor; populates the array of texts.
@@ -29,9 +35,6 @@ export class FeatureDetailsComponent {
     })
   }
 
-  /** The title string displayed by the FeatureDetailsComponent. */
-  private _title: string;
-
   /**
    * Getter for title.
    *
@@ -40,9 +43,6 @@ export class FeatureDetailsComponent {
   get title(): string {
     return this._title;
   }
-
-  /** The individual lines displayed by the FeatureDetailsComponent (one line per feature). */
-  private _lines: string[] = [];
 
   /**
    * Getter for lines array.

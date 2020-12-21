@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {QueryService} from '../core/queries/query.service';
 import {ResolverService} from '../core/basics/resolver.service';
@@ -16,12 +16,10 @@ import {InteractionEventType} from '../shared/model/events/interaction-event-typ
 import {EventBusService} from '../core/basics/event-bus.service';
 import {MetadataDetailsComponent} from './metadata-details.component';
 import {PreviousRouteService} from '../core/basics/previous-route.service';
-import {Tag} from '../shared/model/misc/tag.model';
 import {OrderType} from '../shared/pipes/containers/order-by.pipe';
-import {ConfigService} from '../core/basics/config.service';
-import {LookupService} from '../core/lookup/lookup.service';
 import {ObjectviewerComponent} from './objectviewer.component';
-import {MediaSegment} from '../shared/model/media/media-segment.model';
+import {AppConfig} from '../app.config';
+import {MediaSegmentDescriptor, MetadataService, ObjectService, SegmentService, Tag, TagService} from '../../../openapi/cineast';
 
 
 @Component({
@@ -30,37 +28,37 @@ import {MediaSegment} from '../shared/model/media/media-segment.model';
   styleUrls: ['objectdetails.component.css']
 })
 export class ObjectdetailsComponent implements OnInit {
-  /** */
-  @ViewChild('objectviewerComponent')
-  private objectviewer: ObjectviewerComponent;
-
-  /* Container */
-  private _container: MediaObjectScoreContainer;
-  /** The observable that provides the MediaObjectMetadata for the active object. */
-  private _mediaObjectObservable: BehaviorSubject<MediaObjectScoreContainer> = new BehaviorSubject(undefined);
-
-  private _lsc = false;
-
   orderType: OrderType;
   _tagsPerSegment: Tag[] = [];
   _captionsPerSegment: string[] = [];
   _asrPerSegment: string[] = [];
   _ocrPerSegment: string[] = [];
   _activeSegmentId: string;
-
+  /** */
+  @ViewChild('objectviewerComponent')
+  private objectviewer: ObjectviewerComponent;
+  /* Container */
+  private _container: MediaObjectScoreContainer;
+  /** The observable that provides the MediaObjectMetadata for the active object. */
+  private _mediaObjectObservable: BehaviorSubject<MediaObjectScoreContainer> = new BehaviorSubject(undefined);
+  private _lsc = false;
   /** Currently selected objectID */
   private objectIdObservable: Observable<string>;
 
   constructor(private _route: ActivatedRoute,
               private _snackBar: MatSnackBar,
+              private _metadataLookup: MetadataService,
               private _query: QueryService,
               private  _eventBusService: EventBusService,
               public _resolver: ResolverService,
               private _historyService: PreviousRouteService,
-              private _lookupService: LookupService,
-              private _config: ConfigService) {
+              private _tagService: TagService,
+              private _metaService: MetadataService,
+              private _objectService: ObjectService,
+              private _segmentService: SegmentService,
+              private _config: AppConfig) {
 
-    _config.subscribe(config => {
+    _config.configAsObservable.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
       if (this._lsc) {
         this.orderType = OrderType.SEGMENT_ID
@@ -74,6 +72,17 @@ export class ObjectdetailsComponent implements OnInit {
       map(p => p['objectId']),
       filter(p => p != null),
     );
+  }
+
+  get mediaobject(): Observable<MediaObjectScoreContainer> {
+    return this._mediaObjectObservable.pipe(filter(el => el !== undefined));
+  }
+
+  /**
+   * Whether we are currently loading information about segments / the object
+   */
+  get loading(): Observable<boolean> {
+    return this.mediaobject.map(obj => !obj.name || obj.segments.length === 0)
   }
 
   ngOnInit() {
@@ -99,7 +108,7 @@ export class ObjectdetailsComponent implements OnInit {
           return
         }
         /** If there are no results available, we need to load more detail information */
-        this._lookupService.getMultimediaObject(objectId).subscribe(result => {
+        this._objectService.findObjectsByAttribute('id', objectId).subscribe(result => {
           let message: string = null;
           if (result.content.length === 0) {
             message = `Cineast returned no results for object ${objectId} . Returning to gallery...`;
@@ -119,7 +128,7 @@ export class ObjectdetailsComponent implements OnInit {
           this._container.contentURL = object.contentURL;
           this.updateContainer()
         })
-        this._lookupService.getMultimediaSegmentsByObjectId(objectId).subscribe(result => {
+        this._segmentService.findSegmentByObjectId(objectId).subscribe(result => {
           if (!this._container.objectId) {
             this._container.objectId = result.content[0].objectId
           }
@@ -129,24 +138,6 @@ export class ObjectdetailsComponent implements OnInit {
         return this._container;
       })
     ).subscribe()
-  }
-
-  /**
-   * Trigger an update for the media object observable. Should be called after changes.
-   */
-  private updateContainer() {
-    this._mediaObjectObservable.next(this._container)
-  }
-
-  get mediaobject(): Observable<MediaObjectScoreContainer> {
-    return this._mediaObjectObservable.pipe(filter(el => el !== undefined));
-  }
-
-  /**
-   * Whether we are currently loading information about segments / the object
-   */
-  get loading(): Observable<boolean> {
-    return this.mediaobject.map(obj => !obj.name || obj.segments.length === 0)
   }
 
   /**
@@ -166,7 +157,7 @@ export class ObjectdetailsComponent implements OnInit {
    *
    * @param segment SegmentScoreContainer that is being clicked.
    */
-  public onPlayClick(segment: MediaSegment) {
+  public onPlayClick(segment: MediaSegmentDescriptor) {
     if (!this.objectviewer) {
       console.log(`objectviewer not loaded yet, cannot play from segment`)
       return
@@ -205,22 +196,23 @@ export class ObjectdetailsComponent implements OnInit {
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.LOAD_FEATURES, context)));
 
-    // get the tags associated with a segmentId
-    this._lookupService.getTagIDsPerElementId(segment.segmentId).subscribe(function (tagIds) {
-      this._lookupService.getTagById(tagIds).subscribe(function (tags) { // needed to receive remaining information for a tag object, since cineast only sends its id
-        this._tagsPerSegment = tags;
-      }.bind(this));
+    // get the tags associated with a
+    this._metaService.findTagsById(segment.segmentId).subscribe(function (tagIds) {
+      // needed to receive remaining information for a tag object, since cineast only sends its id
+      this._tagService.findTagsById({ids: tagIds.tagIDs}).subscribe(res => {
+        this._tagsPerSegment = res.tags;
+      });
     }.bind(this));
     // get the captions associated with a segmentId
-    this._lookupService.getCaptions(segment.segmentId).subscribe(function (captions) {
+    this._metaService.findTextByIDAndCat(segment.segmentId, 'scenecaption').subscribe(function (captions) {
       this._captionsPerSegment = captions.featureValues;
     }.bind(this));
     // get the ASR data associated with a segmentId
-    this._lookupService.getAsr(segment.segmentId).subscribe(function (asr) {
+    this._metaService.findTextByIDAndCat(segment.segmentId, 'asr').subscribe(function (asr) {
       this._asrPerSegment = asr.featureValues;
     }.bind(this));
     // get the OCR data associated with a segmentId
-    this._lookupService.getOcr(segment.segmentId).subscribe(function (ocr) {
+    this._metaService.findTextByIDAndCat(segment.segmentId, 'ocr').subscribe(function (ocr) {
       this._ocrPerSegment = ocr.featureValues;
     }.bind(this));
   }
@@ -246,5 +238,12 @@ export class ObjectdetailsComponent implements OnInit {
       return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
     });
     return tagsArray;
+  }
+
+  /**
+   * Trigger an update for the media object observable. Should be called after changes.
+   */
+  private updateContainer() {
+    this._mediaObjectObservable.next(this._container)
   }
 }

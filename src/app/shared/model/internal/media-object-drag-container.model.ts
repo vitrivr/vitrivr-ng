@@ -1,6 +1,5 @@
-import {MediaType} from '../media/media-type.model';
-import {MediaObject} from '../media/media-object.model';
 import {MediaObjectScoreContainer} from '../results/scores/media-object-score-container.model';
+import {MediaObjectDescriptor} from '../../../../../openapi/cineast';
 
 /**
  * This is an internal helper class used for Drag & Drop operatoin. It contains information on a dragged MediaObject.
@@ -10,32 +9,6 @@ export class MediaObjectDragContainer {
   public static FORMAT = 'application/vitrivr-mediaobject';
 
   /**
-   *
-   * @param {MediaType} _mediatype The type of the MediaObject the provided segment belongs to.
-   * @param {MediaSegment} _object The MediaObject packaged in this MediaObjectDragContainer
-   */
-  private constructor(private _mediatype: MediaType, private _object: MediaObject) {
-  }
-
-  /**
-   * Getter for mediatype
-   *
-   * @return {MediaType}
-   */
-  get mediatype(): MediaType {
-    return this._mediatype;
-  }
-
-  /**
-   * Getter for object.
-   *
-   * @return {MediaObject}
-   */
-  get object(): MediaObject {
-    return this._object;
-  }
-
-  /**
    * Creates a new MediaObjectDragContainer from a provided JSON string. The JSON must contain they
    * keys 'mediatype' and 'object'.
    *
@@ -43,7 +16,7 @@ export class MediaObjectDragContainer {
    * @return {MediaObjectDragContainer} Resulting MediaObjectDragContainer.
    */
   public static fromJSON(json: string): MediaObjectDragContainer {
-    let object = JSON.parse(json);
+    const object = JSON.parse(json);
     return new MediaObjectDragContainer(object['mediatype'], object['object']);
   }
 
@@ -55,6 +28,32 @@ export class MediaObjectDragContainer {
    */
   public static fromScoreContainer(container: MediaObjectScoreContainer): MediaObjectDragContainer {
     return new MediaObjectDragContainer(container.mediatype, container);
+  }
+
+  /**
+   *
+   * @param {MediaType} _mediatype The type of the MediaObject the provided segment belongs to.
+   * @param {MediaSegment} _object The MediaObject packaged in this MediaObjectDragContainer
+   */
+  private constructor(private _mediatype: MediaObjectDescriptor.MediatypeEnum, private _object: MediaObjectDescriptor) {
+  }
+
+  /**
+   * Getter for mediatype
+   *
+   * @return {MediaType}
+   */
+  get mediatype(): MediaObjectDescriptor.MediatypeEnum {
+    return this._mediatype;
+  }
+
+  /**
+   * Getter for object.
+   *
+   * @return {MediaObject}
+   */
+  get object(): MediaObjectDescriptor {
+    return this._object;
   }
 
   /**
