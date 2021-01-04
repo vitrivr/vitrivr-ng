@@ -168,30 +168,6 @@ export class PreferencesComponent implements AfterContentInit {
           }
         )
       });
-    fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
-      data.push(o)
-    }))
-      .pipe(
-        first(),
-        map(() => {
-          const zip = new JSZip();
-          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
-          for (let i = 0; i < data.length; i++) {
-            zip.file(`vitrivrng-results-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
-          }
-          return zip
-        })
-      )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
-          (result) => {
-            window.open(window.URL.createObjectURL(result));
-          },
-          (error) => {
-            console.log(error);
-          }
-        )
-      });
   }
 
   public onDownloadSubmissionLog() {
