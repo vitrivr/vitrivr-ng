@@ -21,6 +21,7 @@ import {ObjectviewerComponent} from './objectviewer.component';
 import {AppConfig} from '../app.config';
 import {MediaSegmentDescriptor, MetadataService, ObjectService, SegmentService, TagService} from '../../../openapi/cineast';
 import {SegmentFeaturesComponent} from '../segmentdetails/segment-features.component';
+import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
 
 
 @Component({
@@ -57,7 +58,8 @@ export class ObjectdetailsComponent implements OnInit {
               private _metaService: MetadataService,
               private _objectService: ObjectService,
               private _segmentService: SegmentService,
-              private _config: AppConfig) {
+              private _config: AppConfig,
+              private readonly _vbs: VbsSubmissionService) {
 
     _config.configAsObservable.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
@@ -203,5 +205,21 @@ export class ObjectdetailsComponent implements OnInit {
    */
   private updateContainer() {
     this._mediaObjectObservable.next(this._container)
+  }
+
+
+  /**
+   * Returns true, if the submit (to VBS) button should be displayed and false otherwise. This depends on the configuration and
+   * the media type of the object.
+   *
+   * @return {Observable<boolean>}
+   */
+  get showVbsSubmitButton(): Observable<boolean> {
+    return this._vbs.isOn;
+  }
+
+  public onSubmitPressed(segment: MediaSegmentScoreContainer) {
+    console.debug(`submitting for segment ${segment.segmentId}`);
+    this._vbs.submitSegment(segment)
   }
 }

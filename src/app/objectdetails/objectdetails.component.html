@@ -24,6 +24,10 @@
                              width="200px">
 
                         <div class="tile-footer" fxLayout="row-reverse">
+                            <button (click)="onSubmitPressed(segment)" *ngIf="(showVbsSubmitButton|async)"
+                                    mat-icon-button matTooltip="Submit segment to VBS API.">
+                                <mat-icon>send</mat-icon>
+                            </button>
                             <button (click)="onPlayClick(segment)"
                                     *ngIf="(mediaobject|async).mediatype == 'VIDEO' || (mediaobject|async).mediatype == 'AUDIO'"
                                     mat-icon-button matTooltip="Start playback">
