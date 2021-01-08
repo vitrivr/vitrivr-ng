@@ -55,7 +55,6 @@
     "@angular/compiler-cli": "11.0.7",
     "@types/core-js": "^0.9.46",
     "codelyzer": "^6.0.0",
-    "node-sass": "^4.14.1",
     "protractor": "~7.0.0",
     "ts-node": "8.10.2",
     "tslint": "^6.1.3"
