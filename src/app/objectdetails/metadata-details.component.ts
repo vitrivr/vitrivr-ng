@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_SNACK_BAR_DATA} from '@angular/material/snack-bar';
-import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 
 /**
  * Popup for metadata details associated to segment
@@ -24,7 +24,7 @@ export class MetadataDetailsComponent {
   /**
    * Default constructor; populates the array of texts.
    */
-  constructor(@Inject(MAT_SNACK_BAR_DATA) data: SegmentScoreContainer) {
+  constructor(@Inject(MAT_SNACK_BAR_DATA) data: MediaSegmentScoreContainer) {
     this._title = 'Metadata for ' + data.segmentId;
     data.metadata.forEach((value, key) => {
       this._lines.push(key + ': ' + value)

@@ -1,6 +1,6 @@
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
-import {SegmentScoreContainer} from './segment-score-container.model';
+import {MediaSegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -31,17 +31,17 @@ export class ResultsContainer {
   private _objectid_to_object_map: Map<string, MediaObjectScoreContainer> = new Map();
 
   /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
-  private _segmentid_to_segment_map: Map<string, SegmentScoreContainer> = new Map();
+  private _segmentid_to_segment_map: Map<string, MediaSegmentScoreContainer> = new Map();
 
   /** Internal data structure that contains all MediaObjectScoreContainers. */
   private _results_objects: MediaObjectScoreContainer[] = [];
 
   /** Internal data structure that contains all SegmentScoreContainers. */
-  private _results_segments: SegmentScoreContainer[] = [];
+  private _results_segments: MediaSegmentScoreContainer[] = [];
   /** A subject that can be used to publish changes to the results. */
   private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
   /** A subject that can be used to publish changes to the results. */
-  private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
+  private _results_segments_subject: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
 
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
   private _rerank = 0;
@@ -108,7 +108,7 @@ export class ResultsContainer {
     return this._results_objects_subject.asObservable()
   }
 
-  get segmentsAsObservable(): Observable<SegmentScoreContainer[]> {
+  get segmentsAsObservable(): Observable<MediaSegmentScoreContainer[]> {
     return this._results_segments_subject.asObservable();
   }
 

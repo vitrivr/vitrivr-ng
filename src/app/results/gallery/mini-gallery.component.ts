@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {Observable} from 'rxjs';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
@@ -22,7 +22,7 @@ import {AppConfig} from '../../app.config';
   styleUrls: ['mini-gallery.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<SegmentScoreContainer[]> {
+export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<MediaSegmentScoreContainer[]> {
 
   /** Name of this MiniGalleryComponent. */
   protected name = 'segment_gallery';
@@ -40,7 +40,7 @@ export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<Se
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog);
   }
 
-  public segmentTracking(index, item: SegmentScoreContainer) {
+  public segmentTracking(index, item: MediaSegmentScoreContainer) {
     return item.segmentId
   }
 

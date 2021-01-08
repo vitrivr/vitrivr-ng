@@ -1,6 +1,6 @@
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 import {ScoredPath} from './scored-path.model';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 
 /**
  * A container of ScoredPath elements which belong to the same object.
@@ -33,7 +33,7 @@ export class ScoredPathObjectContainer {
   /**
    * Returns all segments of this object, ordered by their path score in descending order.
    */
-  get segmentsInPathOrderedDesc(): SegmentScoreContainer[] {
+  get segmentsInPathOrderedDesc(): MediaSegmentScoreContainer[] {
     const segments = [];
     this.scoredPaths.sort((a, b) => b.score - a.score).forEach(scoredPath => {
       scoredPath.segments.forEach(segment => segments.push(segment));

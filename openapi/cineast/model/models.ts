@@ -12,6 +12,8 @@ export * from './mediaObjectMetadataDescriptor';
 export * from './mediaObjectMetadataQueryResult';
 export * from './mediaObjectQueryResult';
 export * from './mediaSegmentDescriptor';
+export * from './mediaSegmentMetadataDescriptor';
+export * from './mediaSegmentMetadataQueryResult';
 export * from './mediaSegmentQueryResult';
 export * from './metadataDomainFilter';
 export * from './metadataKeyFilter';

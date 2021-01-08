@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {ColorLabel, ColorLabels} from '../../shared/model/misc/colorlabel.model';
 import {SelectionService} from '../selection/selection.service';
@@ -21,7 +21,7 @@ export class FilterService {
   public _useOrForMetadataCategoriesFilter = false;
   _id: string;
   /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
-  private _segmentFilters: BehaviorSubject<((v: SegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
+  private _segmentFilters: BehaviorSubject<((v: MediaSegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
   /**
    * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects
@@ -134,7 +134,7 @@ export class FilterService {
   /**
    * Getter for BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainer.
    */
-  get segmentFilter(): Observable<((v: SegmentScoreContainer) => boolean)[]> {
+  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
     return this._segmentFilters.asObservable();
   }
 
@@ -168,7 +168,7 @@ export class FilterService {
   public update() {
     /* Prepares the media object and media segment filters. */
     const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[] = [];
-    const segmentFilters: ((v: SegmentScoreContainer) => boolean)[] = [];
+    const segmentFilters: ((v: MediaSegmentScoreContainer) => boolean)[] = [];
 
     if (this._id) {
       objectFilters.push((o) => o.objectId === this._id)

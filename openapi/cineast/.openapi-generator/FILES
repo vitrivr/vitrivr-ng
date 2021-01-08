@@ -2,7 +2,6 @@
 README.md
 api.module.ts
 api\api.ts
-api\default.service.ts
 api\metadata.service.ts
 api\misc.service.ts
 api\object.service.ts
@@ -29,6 +28,8 @@ model\mediaObjectMetadataDescriptor.ts
 model\mediaObjectMetadataQueryResult.ts
 model\mediaObjectQueryResult.ts
 model\mediaSegmentDescriptor.ts
+model\mediaSegmentMetadataDescriptor.ts
+model\mediaSegmentMetadataQueryResult.ts
 model\mediaSegmentQueryResult.ts
 model\metadataDomainFilter.ts
 model\metadataKeyFilter.ts

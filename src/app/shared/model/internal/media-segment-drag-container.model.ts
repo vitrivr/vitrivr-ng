@@ -1,4 +1,4 @@
-import {SegmentScoreContainer} from '../results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../results/scores/segment-score-container.model';
 import {MediaObjectDescriptor, MediaSegmentDescriptor} from '../../../../../openapi/cineast';
 
 /**
@@ -23,25 +23,18 @@ export class MediaSegmentDragContainer {
   /**
    * Creates a new MediaSegmentDragContainer from a provided SegmentScoreContainer.
    *
-   * @param {SegmentScoreContainer} container The SegmentScoreContainer that should be transformed.
+   * @param {MediaSegmentScoreContainer} container The SegmentScoreContainer that should be transformed.
    * @return {MediaSegmentDragContainer} Resulting MediaSegmentDragContainer.
    */
-  public static fromScoreContainer(container: SegmentScoreContainer): MediaSegmentDragContainer {
+  public static fromScoreContainer(container: MediaSegmentScoreContainer): MediaSegmentDragContainer {
     return new MediaSegmentDragContainer(container.objectScoreContainer, container);
   }
 
-  /**
-   *
-   * @param {MediaType} _object The MediaObject packaged in this MediaSegmentDragContainer
-   * @param {MediaSegment} _segment The MediaSegment packaged in this MediaSegmentDragContainer
-   */
-  private constructor(private _object: MediaObjectDescriptor, private _segment: MediaSegmentDescriptor) {
+  public constructor(private _object: MediaObjectDescriptor, private _segment: MediaSegmentDescriptor) {
   }
 
   /**
    * Getter for mediatype
-   *
-   * @return {MediaType}
    */
   get object(): MediaObjectDescriptor {
     return this._object;
@@ -49,8 +42,6 @@ export class MediaSegmentDragContainer {
 
   /**
    * Getter for segment.
-   *
-   * @return {MediaSegment}
    */
   get segment(): MediaSegmentDescriptor {
     return this._segment;

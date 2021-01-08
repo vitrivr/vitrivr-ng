@@ -1,7 +1,7 @@
 import {FusionFunction} from './weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {MediaObjectScoreContainer} from '../scores/media-object-score-container.model';
-import {SegmentScoreContainer} from '../scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../scores/segment-score-container.model';
 import {MaxpoolFusionFunction} from './maxpool-fusion-function.model';
 import {ScoredPath} from '../../../../results/temporal/scored-path.model';
 import {Path} from '../../../../results/temporal/path.model';
@@ -106,7 +106,7 @@ export class TemporalFusionFunction implements FusionFunction {
     return paths;
   }
 
-  scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): Score {
+  scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: MediaSegmentScoreContainer): Score {
     let max = -1;
     segmentScoreContainer.scores.forEach((value, containerId) => {
       const identifier = new SegmentContainerIdentifier(segmentScoreContainer.segmentId, containerId);
@@ -117,7 +117,7 @@ export class TemporalFusionFunction implements FusionFunction {
     return max;
   }
 
-  public individualScoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): Score {
+  public individualScoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: MediaSegmentScoreContainer): Score {
     let score = this._segmentFusionFunction.scoreForSegment(features, segmentScoreContainer);
     if (segmentScoreContainer.scores.size === 0) {
       this.verbose(`[TemporalFusion.individualScoreForSegment] Segment ${segmentScoreContainer.segmentId} has no score elements yet, initializing to -1`);
@@ -155,11 +155,11 @@ export class TemporalFusionFunction implements FusionFunction {
    * Check whether a segment is a logical successor to another (e.g. temporally close and increasing container ids)
    */
   // tslint:disable-next-line:member-ordering
-  private isLogicalSuccessor(predecessor: SegmentScoreContainer, predecessorContainerId: ContainerId, successor: SegmentScoreContainer, containerId: ContainerId): boolean {
+  private isLogicalSuccessor(predecessor: MediaSegmentScoreContainer, predecessorContainerId: ContainerId, successor: MediaSegmentScoreContainer, containerId: ContainerId): boolean {
     return this._temporalDistance.matchesTemporally(successor.startabs - predecessor.endabs) && predecessorContainerId < containerId;
   }
 
-  private updateCache(segment: SegmentScoreContainer, containerId: ContainerId, path: Path, score: Score) {
+  private updateCache(segment: MediaSegmentScoreContainer, containerId: ContainerId, path: Path, score: Score) {
     const identifier = new SegmentContainerIdentifier(segment.segmentId, containerId);
     const start: SegmentContainerIdentifier = this.start(path);
     /* First, update the best path per container / segment combo cache */
@@ -224,8 +224,8 @@ export class TemporalFusionFunction implements FusionFunction {
    *
    * @return the best path continuing from this seeker segment. If there is no better path, just returns the path to the seeker segment
    */
-  private temporalPath(seeker: SegmentScoreContainer,
-                       segments: SegmentScoreContainer[],
+  private temporalPath(seeker: MediaSegmentScoreContainer,
+                       segments: MediaSegmentScoreContainer[],
                        seekerContainerId: number,
                        pathToAndWithSeeker: Path,
                        features: WeightedFeatureCategory[]): Path {

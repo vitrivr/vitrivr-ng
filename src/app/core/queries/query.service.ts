@@ -20,7 +20,7 @@ import {HistoryService} from './history.service';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
@@ -32,7 +32,8 @@ import {TagQueryTerm} from '../../shared/model/queries/tag-query-term.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {EventBusService} from '../basics/event-bus.service';
 import {AppConfig} from '../../app.config';
-import {MediaObjectQueryResult, MediaSegmentQueryResult} from '../../../../openapi/cineast';
+import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult} from '../../../../openapi/cineast';
+import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -183,10 +184,11 @@ export class QueryService {
    * Note: More-Like-This queries can only be started if no query is currently running.
    *
    * @param segment The {SegmentScoreContainer} that should serve as example.
+   * @param mediaType mediatype based upon which mlt categories will be fetched from config
    * @param categories Optional list of category names that should be used for More-Like-This.
    * @returns {boolean} true if query was issued, false otherwise.
    */
-  public findMoreLikeThis(segment: SegmentScoreContainer, categories: string[] = []): boolean {
+  public findMoreLikeThis(segment: MediaSegmentDescriptor, mediaType: MediatypeEnum, categories: string[] = []): boolean {
     if (this._running > 0) {
       console.log('an mlt query is already running, cannot perform mlt');
       return false;
@@ -199,12 +201,8 @@ export class QueryService {
       console.log('segment undefined, cannot perform mlt');
       return false;
     }
-    if (!segment.objectScoreContainer) {
-      console.log(`object score container for segment ${segment.segmentId} undefined, cannot perform mlt`);
-      return false;
-    }
-    if (!segment.objectScoreContainer.mediatype) {
-      console.log(`no object mediatype available for segment ${segment.segmentId} undefined, cannot perform mlt`);
+    if (!mediaType) {
+      console.log(`no mediatype specified for segment ${segment.segmentId}, cannot perform mlt`);
       return false;
     }
 
@@ -220,7 +218,7 @@ export class QueryService {
         console.log('config undefined, cannot perform mlt');
         return;
       }
-      const _cat = config.get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`);
+      const _cat = config.get<FeatureCategories[]>(`mlt.${mediaType}`);
       if (!_cat) {
         console.log('no mlt categories available. printing first config, then segment');
         console.log(config);

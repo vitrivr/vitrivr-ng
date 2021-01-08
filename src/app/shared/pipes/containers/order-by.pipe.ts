@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {SegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
 import {OrderByScorePipe} from './order-by-score.pipe';
 import {OrderBySegmentPipe} from './order-by-segment.pipe';
 import {OrderBySegmentIdPipe} from './order-by-segment-id.pipe';
@@ -30,7 +30,7 @@ export class OrderByPipe implements PipeTransform {
    * @param array The array to order
    * @param type The type. Defaults to score pipe
    */
-  transform(array: Array<SegmentScoreContainer>, type: OrderType = OrderType.SCORE): Array<SegmentScoreContainer> {
+  transform(array: Array<MediaSegmentScoreContainer>, type: OrderType = OrderType.SCORE): Array<MediaSegmentScoreContainer> {
     let pipe;
     switch (type) {
       case OrderType.SCORE:

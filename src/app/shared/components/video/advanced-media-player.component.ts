@@ -1,6 +1,6 @@
 import {AfterViewChecked, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {MediaObjectScoreContainer} from '../../model/results/scores/media-object-score-container.model';
-import {SegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
 import {ResolverService} from '../../../core/basics/resolver.service';
 import {VbsSubmissionService} from '../../../core/vbs/vbs-submission.service';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -27,7 +27,7 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
 
   /** The SegmentScoreContainer that is currently in focus. Can be null! */
   @Input()
-  public focus: SegmentScoreContainer;
+  public focus: MediaSegmentScoreContainer;
 
   /** Flag indicating whether the media component should auto play. */
   @Input()

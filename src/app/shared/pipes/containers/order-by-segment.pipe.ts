@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {SegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
 
 @Pipe({
   name: 'OrderBySegmentPipe'
@@ -9,15 +9,15 @@ export class OrderBySegmentPipe implements PipeTransform {
   /**
    * Returns the provided array of SegmentScoreContainers sorted by temporal sequence of the segments.
    *
-   * @param {Array<SegmentScoreContainer>} array
+   * @param {Array<MediaSegmentScoreContainer>} array
    * @param {boolean} desc
-   * @return {Array<SegmentScoreContainer>}
+   * @return {Array<MediaSegmentScoreContainer>}
    */
-  public transform(array: Array<SegmentScoreContainer>, desc: boolean = true): Array<SegmentScoreContainer> {
+  public transform(array: Array<MediaSegmentScoreContainer>, desc: boolean = true): Array<MediaSegmentScoreContainer> {
     if (!array || array.length === 0) {
       return [];
     }
-    const results = array.sort((a: SegmentScoreContainer, b: SegmentScoreContainer) => {
+    const results = array.sort((a: MediaSegmentScoreContainer, b: MediaSegmentScoreContainer) => {
       /**
        * This logic is ok even if a.startabs or b.startabs is 0. This is because sorting by sequence number still work.
        */

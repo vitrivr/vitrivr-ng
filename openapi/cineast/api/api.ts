@@ -1,5 +1,3 @@
-export * from './default.service';
-import { DefaultService } from './default.service';
 export * from './metadata.service';
 import { MetadataService } from './metadata.service';
 export * from './misc.service';
@@ -16,4 +14,4 @@ export * from './status.service';
 import { StatusService } from './status.service';
 export * from './tag.service';
 import { TagService } from './tag.service';
-export const APIS = [DefaultService, MetadataService, MiscService, ObjectService, SegmentService, SegmentsService, SessionService, StatusService, TagService];
+export const APIS = [MetadataService, MiscService, ObjectService, SegmentService, SegmentsService, SessionService, StatusService, TagService];

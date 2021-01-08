@@ -3,7 +3,7 @@ import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media
 import {Observable} from 'rxjs';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {SelectionService} from '../../core/selection/selection.service';
 import {FilterService} from '../../core/queries/filter.service';
@@ -51,7 +51,7 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
   /**
    * Getter for the filters that should be applied to SegmentScoreContainer.
    */
-  get segmentFilter(): Observable<((v: SegmentScoreContainer) => boolean)[]> {
+  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
     return this._filterService.segmentFilter;
   }
 
@@ -69,7 +69,7 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
     return item.objectId + '_' + item.numberOfSegments;
   }
 
-  public segmentTracking(index, item: SegmentScoreContainer) {
+  public segmentTracking(index, item: MediaSegmentScoreContainer) {
     return item.segmentId
   }
 

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {first} from 'rxjs/operators';
 import {KeyboardService} from '../../core/basics/keyboard.service';
@@ -34,12 +34,12 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   /**
    * The segment this preview is for
    */
-  @Input() segment: SegmentScoreContainer;
+  @Input() segment: MediaSegmentScoreContainer;
 
   /**
    * The container this segment preview is in
    */
-  @Input() container: AbstractSegmentResultsViewComponent<SegmentScoreContainer[]>;
+  @Input() container: AbstractSegmentResultsViewComponent<MediaSegmentScoreContainer[]>;
 
   /**
    * The score of the segment. Will be used for the coloring of the background.
@@ -142,7 +142,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    * This **has** to be a lambda, as otherwise the scope would not be retained
    * @param segment
    */
-  playVideo = (segment: SegmentScoreContainer) => {
+  playVideo = (segment: MediaSegmentScoreContainer) => {
     return this._keyboardService.ctrlPressed.map(el => el && segment.objectScoreContainer.mediatype === 'VIDEO' && this.inFocus);
   };
 
@@ -151,14 +151,14 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    * @param api
    * @param segment
    */
-  public onPlayerReady(api: VgApiService, segment: SegmentScoreContainer) {
+  public onPlayerReady(api: VgApiService, segment: MediaSegmentScoreContainer) {
     api.getDefaultMedia().subscriptions.loadedData.pipe(first()).subscribe(() => this.seekToFocusPosition(api, segment));
   }
 
   /**
    * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
    */
-  public seekToFocusPosition(api: VgApiService, segment: SegmentScoreContainer) {
+  public seekToFocusPosition(api: VgApiService, segment: MediaSegmentScoreContainer) {
     if (segment) {
       api.seekTime(segment.startabs);
     }

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/co
 import {QueryService} from '../../core/queries/query.service';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {Router} from '@angular/router';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Observable} from 'rxjs';
@@ -79,7 +79,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
   /**
    * Getter for the filters that should be applied to SegmentScoreContainer.
    */
-  get segmentFilter(): Observable<((v: SegmentScoreContainer) => boolean)[]> {
+  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
     return this._filterService.segmentFilter;
   }
 

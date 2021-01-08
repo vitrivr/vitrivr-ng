@@ -2,7 +2,6 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
-import { DefaultService } from './api/default.service';
 import { MetadataService } from './api/metadata.service';
 import { MiscService } from './api/misc.service';
 import { ObjectService } from './api/object.service';

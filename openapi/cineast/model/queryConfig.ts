@@ -19,11 +19,11 @@ export interface QueryConfig {
     resultsPerModule?: number;
     maxResults?: number;
     relevantSegmentIds?: Set<string>;
-    correspondenceFunctionIfEmpty?: QueryConfig;
     distanceIfEmpty?: QueryConfig;
-    normIfEmpty?: QueryConfig;
-    correspondenceFunction?: object;
+    correspondenceFunctionIfEmpty?: QueryConfig;
     distanceWeightsIfEmpty?: QueryConfig;
+    correspondenceFunction?: object;
+    normIfEmpty?: QueryConfig;
     rawResultsPerModule?: number;
 }
 export namespace QueryConfig {

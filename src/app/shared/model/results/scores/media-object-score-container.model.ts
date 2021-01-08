@@ -1,5 +1,5 @@
 import {ScoreContainer} from './compound-score-container.model';
-import {SegmentScoreContainer} from './segment-score-container.model';
+import {MediaSegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -20,14 +20,14 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /** Content URL pointing to the media file. */
   public contentURL: string;
   /** Map of SegmentScoreContainer for all the SegmentObject's that belong to this MediaObject. */
-  private _segmentScores: Map<string, SegmentScoreContainer> = new Map();
+  private _segmentScores: Map<string, MediaSegmentScoreContainer> = new Map();
   /** A internal caching structures for Feature <-> Similarity paris that do not have a SegmentScoreContainer yet.  string is containerId*/
   private _cache: Map<string, Array<[WeightedFeatureCategory, StringDoublePair, number]>> = new Map();
 
   /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
-  private _segments: SegmentScoreContainer[] = [];
+  private _segments: MediaSegmentScoreContainer[] = [];
 
-  private _segmentsObservable: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._segments)
+  private _segmentsObservable: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._segments)
 
   /** Map containing the metadata that belongs to the object. Can be empty! */
   private _metadata: Map<string, string> = new Map();
@@ -36,16 +36,16 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     super();
   }
 
-  get segments(): SegmentScoreContainer[] {
+  get segments(): MediaSegmentScoreContainer[] {
     return this._segments;
   }
 
-  set segments(segments: SegmentScoreContainer[]) {
+  set segments(segments: MediaSegmentScoreContainer[]) {
     this._segments = segments;
     this.updateSegmentsObservable()
   }
 
-  get segmentsObservable(): Observable<SegmentScoreContainer[]> {
+  get segmentsObservable(): Observable<MediaSegmentScoreContainer[]> {
     return this._segmentsObservable.asObservable();
   }
 
@@ -80,9 +80,9 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /**
    * Getter for the most representative segment.
    *
-   * @returns {SegmentScoreContainer}
+   * @returns {MediaSegmentScoreContainer}
    */
-  get representativeSegment(): SegmentScoreContainer {
+  get representativeSegment(): MediaSegmentScoreContainer {
     return this.segments.reduce((a, b) => {
       return a.score > b.score ? a : b
     });
@@ -98,7 +98,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    *
    * @param segment MediaSegment to add.
    */
-  public addMediaSegment(segment: MediaSegmentDescriptor): SegmentScoreContainer {
+  public addMediaSegment(segment: MediaSegmentDescriptor): MediaSegmentScoreContainer {
     const ssc = this.uniqueSegmentScoreContainer(segment);
     if (this._cache.has(ssc.segmentId)) {
       this._cache.get(ssc.segmentId).forEach(v => {
@@ -165,11 +165,11 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    * Otherwise, a new instance is created and registered.
    *
    * @param {string} segment MediaSegment for which to create a SegmentScoreContainer.
-   * @return {SegmentScoreContainer}
+   * @return {MediaSegmentScoreContainer}
    */
-  private uniqueSegmentScoreContainer(segment: MediaSegmentDescriptor): SegmentScoreContainer {
+  private uniqueSegmentScoreContainer(segment: MediaSegmentDescriptor): MediaSegmentScoreContainer {
     if (!this._segmentScores.has(segment.segmentId)) {
-      const ssc = new SegmentScoreContainer(segment, this);
+      const ssc = new MediaSegmentScoreContainer(segment, this);
       this._segmentScores.set(segment.segmentId, ssc);
       this._segments.push(ssc);
       this.updateSegmentsObservable()

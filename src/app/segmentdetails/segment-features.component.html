@@ -1,0 +1,53 @@
+<div *ngIf="segmentId">
+    <h4><strong>Features for segment: {{segmentId}}</strong></h4>
+    <mat-tab-group class="scrollToBottom">
+
+        <mat-tab label="Tags">
+            <div *ngIf="!_tags">
+                <p class="text-muted">No Tags available for chosen element</p>
+            </div>
+            <div *ngIf="_tags">
+                <h4 mat-line *ngIf="_tags.length>0"><strong>Tags</strong></h4>
+                <mat-grid-list cols="5" rowHeight="3:1">
+                    <mat-grid-tile class="smallerFont" *ngFor="let tag of sortAlphabetically(_tags)">
+                        <div>
+                            {{tag.name}}
+                            <br>
+                            ({{tag.id}})
+                        </div>
+                    </mat-grid-tile>
+                </mat-grid-list>
+            </div>
+        </mat-tab>
+
+        <mat-tab *ngIf="_captions.length>0" label="Captions">
+            <h4 mat-line><strong>Captions</strong></h4>
+            <div class="normalfont"
+                 *ngFor="let caption of _captions index as i; odd as isOdd; even as isEven"
+                 [class.Odd]="isOdd"
+                 [class.even]="isEven">
+                {{caption}}
+            </div>
+        </mat-tab>
+
+        <mat-tab *ngIf="_asr.length>0" label="ASR">
+            <h4 mat-line><strong>ASR</strong></h4>
+            <div class="normalfont"
+                 *ngFor="let asr of _asr index as i; odd as isOdd; even as isEven"
+                 [class.Odd]="isOdd"
+                 [class.even]="isEven">
+                {{asr}}
+            </div>
+        </mat-tab>
+
+        <mat-tab *ngIf="_ocr.length>0" label="OCR">
+            <h4 mat-line><strong>OCR</strong></h4>
+            <div class="normalfont"
+                 *ngFor="let ocr of _ocr index as i; odd as isOdd; even as isEven"
+                 [class.Odd]="isOdd"
+                 [class.even]="isEven">
+                {{ocr}}
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>

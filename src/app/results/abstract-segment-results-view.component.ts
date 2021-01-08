@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
 import {AbstractResultsViewComponent} from './abstract-results-view.component';
 import {ChangeDetectorRef} from '@angular/core';
@@ -36,7 +36,7 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
   /**
    * Getter for the filters that should be applied to SegmentScoreContainer.
    */
-  get filters(): Observable<((v: SegmentScoreContainer) => boolean)[]> {
+  get filters(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
     return this._filterService.segmentFilter;
   }
 

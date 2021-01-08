@@ -30,6 +30,10 @@ export class MediaObjectDragContainer {
     return new MediaObjectDragContainer(container.mediatype, container);
   }
 
+  public static fromDescriptor(descriptor: MediaObjectDescriptor): MediaObjectDragContainer {
+    return new MediaObjectDragContainer(descriptor.mediatype, descriptor)
+  }
+
   /**
    *
    * @param {MediaType} _mediatype The type of the MediaObject the provided segment belongs to.

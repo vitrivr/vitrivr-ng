@@ -9,7 +9,7 @@ import {MediaSegmentDescriptor, StringDoublePair} from '../../../../../../openap
  * a single segment (e.g. a shot of a video) and holds the score for that segment. That
  * score is determined by the actual scores of the segment (per category).
  */
-export class SegmentScoreContainer extends ScoreContainer implements MediaSegmentDescriptor {
+export class MediaSegmentScoreContainer extends ScoreContainer implements MediaSegmentDescriptor {
   /** ID of the object this SegmentScoreContainer belongsTo. */
   public readonly objectId: string;
   /** ID of the segment this SegmentScoreContainer belongsTo (objectId + segmentId = unique). */

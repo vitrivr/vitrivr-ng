@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {MediaObjectDescriptor, MediaSegmentDescriptor} from '../../../../openapi/cineast';
 import {AppConfig} from '../../app.config';
 
@@ -119,7 +119,7 @@ export class ResolverService {
     return this.host_thumbnails.replace(this._regex, (match) => rep[match] || match);
   }
 
-  public pathToSegment(segment: SegmentScoreContainer) {
+  public pathToSegment(segment: MediaSegmentScoreContainer) {
     const rep = {};
     rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
     rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;

@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {QueryService} from '../core/queries/query.service';
 import {ResolverService} from '../core/basics/resolver.service';
-import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
@@ -19,7 +19,8 @@ import {PreviousRouteService} from '../core/basics/previous-route.service';
 import {OrderType} from '../shared/pipes/containers/order-by.pipe';
 import {ObjectviewerComponent} from './objectviewer.component';
 import {AppConfig} from '../app.config';
-import {MediaSegmentDescriptor, MetadataService, ObjectService, SegmentService, Tag, TagService} from '../../../openapi/cineast';
+import {MediaSegmentDescriptor, MetadataService, ObjectService, SegmentService, TagService} from '../../../openapi/cineast';
+import {SegmentFeaturesComponent} from '../segmentdetails/segment-features.component';
 
 
 @Component({
@@ -29,15 +30,15 @@ import {MediaSegmentDescriptor, MetadataService, ObjectService, SegmentService, 
 })
 export class ObjectdetailsComponent implements OnInit {
   orderType: OrderType;
-  _tagsPerSegment: Tag[] = [];
-  _captionsPerSegment: string[] = [];
-  _asrPerSegment: string[] = [];
-  _ocrPerSegment: string[] = [];
-  _activeSegmentId: string;
-  /** */
+
   @ViewChild('objectviewerComponent')
   private objectviewer: ObjectviewerComponent;
-  /* Container */
+
+  @ViewChild('segmentFeaturesComponent')
+  segmentFeatures: SegmentFeaturesComponent;
+
+
+  /** Container */
   private _container: MediaObjectScoreContainer;
   /** The observable that provides the MediaObjectMetadata for the active object. */
   private _mediaObjectObservable: BehaviorSubject<MediaObjectScoreContainer> = new BehaviorSubject(undefined);
@@ -112,8 +113,7 @@ export class ObjectdetailsComponent implements OnInit {
           let message: string = null;
           if (result.content.length === 0) {
             message = `Cineast returned no results for object ${objectId} . Returning to gallery...`;
-          }
-          if (result.content[0].objectId === '') {
+          } else if (result.content[0].objectId === '') {
             message = `Cineast returned no object descriptor for object ${objectId} . Returning to gallery...`;
           }
           if (message) {
@@ -132,7 +132,7 @@ export class ObjectdetailsComponent implements OnInit {
           if (!this._container.objectId) {
             this._container.objectId = result.content[0].objectId
           }
-          this._container.segments = result.content.map(seg => new SegmentScoreContainer(seg, this._container))
+          this._container.segments = result.content.map(seg => new MediaSegmentScoreContainer(seg, this._container))
           this.updateContainer()
         })
         return this._container;
@@ -147,7 +147,7 @@ export class ObjectdetailsComponent implements OnInit {
    * @param event Drag event
    * @param segment SegmentScoreContainer that is being dragged.
    */
-  public onSegmentDrag(event, segment: SegmentScoreContainer) {
+  public onSegmentDrag(event, segment: MediaSegmentScoreContainer) {
     event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
     event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromScoreContainer(segment.objectScoreContainer).toJSON());
   }
@@ -171,50 +171,17 @@ export class ObjectdetailsComponent implements OnInit {
    *
    * @param segment SegmentScoreContainer that is being clicked.
    */
-  public onMltClick(segment: SegmentScoreContainer) {
-    this._query.findMoreLikeThis(segment);
+  public onMltClick(segment: MediaSegmentScoreContainer) {
+    this._query.findMoreLikeThis(segment, segment.objectScoreContainer.mediatype);
   }
 
-  public onInformationButtonClicked(segment: SegmentScoreContainer) {
+  public onInformationButtonClicked(segment: MediaSegmentScoreContainer) {
     this._snackBar.openFromComponent(MetadataDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
 
     /* Emit an EXAMINE event on the bus. */
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
-  }
-
-  public onLoadFeaturesButtonClicked(segment: SegmentScoreContainer) {
-    this._tagsPerSegment = [];
-    this._captionsPerSegment = [];
-    this._asrPerSegment = [];
-    this._ocrPerSegment = [];
-    this._activeSegmentId = segment.segmentId;
-
-    /* Emit an EXAMINE event on the bus. */
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.LOAD_FEATURES, context)));
-
-    // get the tags associated with a
-    this._metaService.findTagsById(segment.segmentId).subscribe(function (tagIds) {
-      // needed to receive remaining information for a tag object, since cineast only sends its id
-      this._tagService.findTagsById({ids: tagIds.tagIDs}).subscribe(res => {
-        this._tagsPerSegment = res.tags;
-      });
-    }.bind(this));
-    // get the captions associated with a segmentId
-    this._metaService.findTextByIDAndCat(segment.segmentId, 'scenecaption').subscribe(function (captions) {
-      this._captionsPerSegment = captions.featureValues;
-    }.bind(this));
-    // get the ASR data associated with a segmentId
-    this._metaService.findTextByIDAndCat(segment.segmentId, 'asr').subscribe(function (asr) {
-      this._asrPerSegment = asr.featureValues;
-    }.bind(this));
-    // get the OCR data associated with a segmentId
-    this._metaService.findTextByIDAndCat(segment.segmentId, 'ocr').subscribe(function (ocr) {
-      this._ocrPerSegment = ocr.featureValues;
-    }.bind(this));
   }
 
   /**
@@ -227,17 +194,8 @@ export class ObjectdetailsComponent implements OnInit {
     return HtmlUtil.replaceUrlByLink(str, '_blank');
   }
 
-  public onLoadAllButtonClicked(segment: SegmentScoreContainer) {
+  public onLoadAllButtonClicked(segment: MediaSegmentScoreContainer) {
     this._query.lookupNeighboringSegments(segment.segmentId, 1000);
-  }
-
-  public sortAlphabetically(tagsArray: Tag[]): Tag[] {
-    tagsArray.sort(function (a, b) {
-      const textA = a.name.toLowerCase();
-      const textB = b.name.toLowerCase();
-      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-    });
-    return tagsArray;
   }
 
   /**

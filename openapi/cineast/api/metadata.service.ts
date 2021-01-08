@@ -21,6 +21,7 @@ import { FeaturesAllCategoriesQueryResult } from '../model/models';
 import { FeaturesTextCategoryQueryResult } from '../model/models';
 import { IdList } from '../model/models';
 import { MediaObjectMetadataQueryResult } from '../model/models';
+import { MediaSegmentMetadataQueryResult } from '../model/models';
 import { OptionallyFilteredIdList } from '../model/models';
 import { TagIDsForElementQueryResult } from '../model/models';
 
@@ -492,6 +493,52 @@ export class MetadataService {
         }
 
         return this.httpClient.get<FeaturesAllCategoriesQueryResult>(`${this.configuration.basePath}/api/v1/find/feature/all/by/id/${encodeURIComponent(String(id))}`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Find metadata for the given segment id
+     * Find metadata by the given segment id
+     * @param id The segment id to find metadata of
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public findSegMetaById(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<MediaSegmentMetadataQueryResult>;
+    public findSegMetaById(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<MediaSegmentMetadataQueryResult>>;
+    public findSegMetaById(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<MediaSegmentMetadataQueryResult>>;
+    public findSegMetaById(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling findSegMetaById.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<MediaSegmentMetadataQueryResult>(`${this.configuration.basePath}/api/v1/find/metadata/by/segmentid/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
