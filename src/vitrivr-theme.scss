@@ -289,17 +289,3 @@ hr.fade {
 .scrubBar {
   position: static !important;
 }
-
-/** Fix slider size */
-.ng5-slider-pointer {
-  width: 20px !important;
-  height: 20px !important;
-  top: -10px !important;
-  border-radius: 10px !important;
-}
-
-/** Fix white dot in the middle of the slider. Yes, this took silvan approximately one hour. */
-.ng5-slider-pointer:after {
-  top: 6px !important;
-  left: 6px !important;
-}

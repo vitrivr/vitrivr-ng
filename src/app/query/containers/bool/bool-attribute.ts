@@ -1,4 +1,4 @@
-import {Options} from 'ng5-slider';
+import {Options} from '@angular-slider/ngx-slider';
 
 export enum BoolOperator {
   EQ = '=',

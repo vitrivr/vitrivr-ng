@@ -1,6 +1,6 @@
 import {AbstractRefinementOption} from './refinementoption.model';
 import {FilterType} from './filtertype.model';
-import {Options} from 'ng5-slider';
+import {Options} from '@angular-slider/ngx-slider';
 
 export class SliderRefinementModel extends AbstractRefinementOption {
 

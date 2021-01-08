@@ -3,10 +3,10 @@ import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {MaterialModule} from '../../../../material.module';
 import {BoolTermComponent} from './bool-term.component';
-import {Ng5SliderModule} from 'ng5-slider';
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, Ng5SliderModule],
+  imports: [MaterialModule, BrowserModule, FormsModule, NgxSliderModule],
   declarations: [BoolTermComponent],
   exports: [BoolTermComponent],
 })
