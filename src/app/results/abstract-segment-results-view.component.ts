@@ -2,7 +2,7 @@ import {Observable} from 'rxjs';
 import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
 import {AbstractResultsViewComponent} from './abstract-results-view.component';
-import {ChangeDetectorRef} from '@angular/core';
+import { ChangeDetectorRef, Directive } from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {FilterService} from '../core/queries/filter.service';
 import {SelectionService} from '../core/selection/selection.service';
@@ -17,6 +17,7 @@ import {AppConfig} from '../app.config';
 /**
  * More specialized AbstractResultsView, tailored for views which display segments
  */
+@Directive()
 export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractResultsViewComponent<T> {
 
   protected constructor(_cdr: ChangeDetectorRef,

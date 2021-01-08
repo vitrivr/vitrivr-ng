@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, OnDestroy, OnInit} from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, OnInit, Directive } from '@angular/core';
 import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
 import {QueryChange, QueryService} from '../core/queries/query.service';
 import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
@@ -19,6 +19,7 @@ import {Router} from '@angular/router';
 import {filter} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
 
+@Directive()
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
   /** Local reference to the subscription to the QueryService. */
   protected _queryServiceSubscription;
