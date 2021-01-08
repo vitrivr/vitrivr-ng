@@ -45,7 +45,7 @@
     "ts-md5": "^1.2.7",
     "tslib": "1.13.0",
     "typescript": "3.8.3",
-    "@videogular/ngx-videogular": "2.0.0",
+    "@videogular/ngx-videogular": "2.1.0",
     "zone.js": "~0.10.2",
     "@openapitools/openapi-generator-cli": "^1.0.15-4.3.1"
   },
