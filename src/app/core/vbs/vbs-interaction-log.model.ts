@@ -85,7 +85,7 @@ export class VbsInteractionLog implements VbsSubmission {
         if (c.indexOf('tagsft') > -1) {
           event.type.push('concept');
         }
-        if (c.indexOf('captioning') > -1) {
+        if (c.indexOf('scenecaption') > -1) {
           event.type.push('caption');
         }
         if (c.indexOf('audio') > -1) {
