@@ -3,6 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {Config} from './shared/model/config/config.model';
 import {HttpClient} from '@angular/common/http';
 import {UUIDGenerator} from './shared/util/uuid-generator.util';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 /**
  * A service providing the application's configuration and means to (re) load it.
@@ -22,7 +23,7 @@ export class AppConfig {
     }
   } as ProxyHandler<Config>;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, protected _snackBar: MatSnackBar) {
   }
 
   /**
@@ -52,6 +53,10 @@ export class AppConfig {
         AppConfig.settingsSubject.next(AppConfig.settings);
         resolve();
       }).catch((response: any) => {
+        this._snackBar.open('Could not parse config.json. Using default config, your UI may not work', 'Dismiss', {
+          duration: 1_000_000,
+          verticalPosition: 'top'
+        })
         AppConfig.settings = new Proxy<Config>(new Config(), this.handler);
         AppConfig.settingsSubject.next(AppConfig.settings);
         console.log(`Could not load config file '${jsonFile}'. Fallback to default.`);
