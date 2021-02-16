@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {QueryTermInterface} from '../../shared/model/queries/interfaces/query-term.interface';
-import {ConfigService} from '../../core/basics/config.service';
 import {StageChangeEvent} from './stage-change-event.model';
+import {AppConfig} from '../../app.config';
 
 @Component({
   selector: 'app-query-component',
@@ -24,7 +24,7 @@ export class QueryTermComponent {
    */
   @Output() stageChange = new EventEmitter<StageChangeEvent>();
 
-  constructor(private readonly _config: ConfigService) {
+  constructor(private readonly _config: AppConfig) {
   }
 
   onPushUpClicked() {
@@ -36,6 +36,6 @@ export class QueryTermComponent {
   }
 
   stagedQEnabled() {
-    return this._config.getValue().get<Boolean>('query.staged');
+    return this._config.config.get<Boolean>('query.staged');
   }
 }

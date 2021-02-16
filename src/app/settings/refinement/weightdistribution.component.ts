@@ -3,7 +3,7 @@ import {WeightedFeatureCategory} from '../../shared/model/results/weighted-featu
 
 @Component({
 
-  selector: 'weight-distribution',
+  selector: 'app-weight-distribution',
   template: `
     <div class="weight-distribution">
       <div *ngFor="let feature of features" [style.width]="getWidth(feature)" [style.height]="'10px'"

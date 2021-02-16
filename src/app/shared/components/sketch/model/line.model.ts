@@ -2,6 +2,10 @@ import {Point} from './point.model';
 import {Drawable} from './drawable.interface';
 
 export class Line implements Drawable {
+
+  /** List of points that make up this line. */
+  private _points: Point[] = [];
+
   /**
    * Constructor for a line object.
    *
@@ -13,9 +17,6 @@ export class Line implements Drawable {
   constructor(p: Point, private _color: string = '#000000', private _linesize: number = 5, private _threshold: number = 5) {
     this.append(p);
   }
-
-  /** List of points that make up this line. */
-  private _points: Point[] = [];
 
   /**
    * Getter for the list of points in the line.
@@ -53,7 +54,7 @@ export class Line implements Drawable {
    */
   public append(p: Point): boolean {
     if (this.points.length > 0) {
-      let last = this._points[this._points.length - 1];
+      const last = this._points[this._points.length - 1];
       if (this._threshold > 0 && last.distance(p) < this._threshold) {
         return false;
       }
@@ -69,12 +70,6 @@ export class Line implements Drawable {
     this._points = [];
   }
 
-  /**
-   * Draws a line object.
-   *
-   * @param ctx Context used to draw the line.
-   * @param line The Line object that should be drawn.
-   */
   public draw(ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = this.color;
     ctx.lineWidth = this._linesize;

@@ -13,9 +13,9 @@ export class WaveAudioUtil {
     /* Check if AudioDate needs re-sampling. */
     return WaveAudioUtil.resample(audio, channels, sampleRate).then((resampled: AudioBuffer) => {
       /* Allocate buffer and DataView for output. */
-      let audioLength = (resampled.length * resampled.numberOfChannels * 2);
-      let buffer = new ArrayBuffer(44 + audioLength);
-      let view = new DataView(buffer);
+      const audioLength = (resampled.length * resampled.numberOfChannels * 2);
+      const buffer = new ArrayBuffer(44 + audioLength);
+      const view = new DataView(buffer);
 
       /* Writes the RIFF WAVE header. */
       this.writeWavHeader(view, audioLength, resampled.sampleRate, 1);
@@ -44,9 +44,9 @@ export class WaveAudioUtil {
     }
 
     /* Otherwise resample audio. */
-    let ratio = sampleRate / audio.sampleRate;
-    let ctx = new OfflineAudioContext(channels, Math.ceil(audio.length * ratio), sampleRate);
-    let src = ctx.createBufferSource();
+    const ratio = sampleRate / audio.sampleRate;
+    const ctx = new OfflineAudioContext(channels, Math.ceil(audio.length * ratio), sampleRate);
+    const src = ctx.createBufferSource();
     src.buffer = audio;
     src.connect(ctx.destination);
     src.start();
@@ -115,7 +115,7 @@ export class WaveAudioUtil {
   private static floatToShortPCM(output: DataView, input: AudioBuffer, offset: number) {
     for (let i = 0; i < input.length; i += 1, offset += 2) {
       for (let c = 0; c < input.numberOfChannels; c++) {
-        let sample = (Math.max(-1, Math.min(1, input.getChannelData(c)[i])));
+        const sample = (Math.max(-1, Math.min(1, input.getChannelData(c)[i])));
         output.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
       }
     }

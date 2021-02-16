@@ -1,11 +1,11 @@
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 
 /**
  * This is a tuple of <SegmentScoreContainer,score (of path)>, this is used for rendering
  */
 export class ScoredPathSegment {
   constructor(
-    public readonly segment: SegmentScoreContainer,
+    public readonly segment: MediaSegmentScoreContainer,
     public readonly score: number,
     public readonly mark: boolean) {
   }

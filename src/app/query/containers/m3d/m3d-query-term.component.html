@@ -1,9 +1,9 @@
 <!-- If sketch-mode is inactive: Display 3D model preview. -->
-<m3d-loader #previewmodel (click)="onModelViewerClicked()" (dragenter)="onModelViewerDragEnter($event)"
-            (dragleave)="onModelViewerDragExit($event)" (dragover)="onModelViewerDragOver($event)"
-            (drop)="onModelViewerDropped()" *ngIf="!sketch"
-            [height]="150" [interaction]="false"
-            [width]="150" matTooltip="Click to change 3D model..."></m3d-loader>
+<app-m3d-loader #previewmodel (click)="onModelViewerClicked()" (dragenter)="onModelViewerDragEnter($event)"
+                (dragleave)="onModelViewerDragExit($event)" (dragover)="onModelViewerDragOver($event)"
+                (drop)="onModelViewerDropped()" *ngIf="!sketch"
+                [height]="150" [interaction]="false"
+                [width]="150" matTooltip="Click to change 3D model..."></app-m3d-loader>
 
 <!-- If sketch-mode is active: Display preview-image. -->
 <img #previewimg (click)="onImageViewerClicked()" *ngIf="sketch" class="previewimg"
@@ -11,13 +11,14 @@
      width="150"/>
 
 <div style="display:flex; align-items: center; justify-content: center;">
-  <mat-slide-toggle (change)="onModeToggled($event)">2D Sketch</mat-slide-toggle>
+    <mat-slide-toggle (change)="onModeToggled($event)">2D Sketch</mat-slide-toggle>
 </div>
 
 <div *ngIf="!sketch" style="display:flex; align-items: center; justify-content: center;">
-  <mat-icon class="muted" matTooltip="Low resolution">looks_1</mat-icon>
-  <div class="toolbar-spacer-small"></div>
-  <mat-slider (change)="onSliderChanged()" [(ngModel)]="sliderSetting" max="2" min="0" step="1" value="1"></mat-slider>
-  <div class="toolbar-spacer-small"></div>
-  <mat-icon class="muted" matTooltip="High resolution">looks_3</mat-icon>
+    <mat-icon class="muted" matTooltip="Low resolution">looks_1</mat-icon>
+    <div class="toolbar-spacer-small"></div>
+    <mat-slider (change)="onSliderChanged()" [(ngModel)]="sliderSetting" max="2" min="0" step="1"
+                value="1"></mat-slider>
+    <div class="toolbar-spacer-small"></div>
+    <mat-icon class="muted" matTooltip="High resolution">looks_3</mat-icon>
 </div>

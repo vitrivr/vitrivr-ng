@@ -1,6 +1,6 @@
+import {HttpClientModule} from '@angular/common/http';
 
-
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -15,10 +15,21 @@ import {AppRoutingModule} from './app-routing.module';
 import {EvaluationModule} from './evaluation/evaluation.module';
 import {MaterialModule} from './material.module';
 import {ResultsModule} from './results/results.module';
+import {MatBadgeModule} from '@angular/material/badge';
+import {AppConfig} from './app.config';
+import {SegmentdetailsModule} from './segmentdetails/segmentdetails.module';
 
+/**
+ * Method used to laod the application config
+ * @param appConfig The AppConfig service
+ */
+export function initializeConfig(appConfig: AppConfig) {
+  return () => appConfig.load();
+}
 
 @NgModule({
   imports: [
+    HttpClientModule,
     CoreModule,
     BrowserModule,
     MaterialModule,
@@ -28,11 +39,13 @@ import {ResultsModule} from './results/results.module';
     ResultsModule,
     EvaluationModule,
     ObjectdetailsModule,
+    SegmentdetailsModule,
     SettingsModule,
     QuerySidebarModule,
+    MatBadgeModule
   ],
   declarations: [AppComponent, PingComponent],
-  providers: [],
+  providers: [AppConfig, {provide: APP_INITIALIZER, useFactory: initializeConfig, deps: [AppConfig], multi: true}],
   bootstrap: [AppComponent]
 })
 

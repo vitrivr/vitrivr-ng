@@ -1,5 +1,4 @@
 import {Inject, Injectable} from '@angular/core';
-import {ConfigService} from '../basics/config.service';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import Dexie from 'dexie';
@@ -8,6 +7,7 @@ import {first, flatMap, map} from 'rxjs/operators';
 import {EMPTY, Observable} from 'rxjs';
 import {DatabaseService} from '../basics/database.service';
 import * as JSZip from 'jszip';
+import {AppConfig} from '../../app.config';
 
 /**
  * This service keeps a history of query results and persists them event across session. It allows the user to
@@ -19,21 +19,21 @@ export class HistoryService {
   /** The table used to store Vitrivr NG configuration.*/
   private _historyTable: Dexie.Table<HistoryContainer, number>;
 
+  /** Number if result sets to keep in the history at max. Values between 1 and 10 are reasonable. */
+  private _keep = -1;
+
   /**
    * Constructor
    *
    * @param _db
    * @param _config
    */
-  constructor(@Inject(ConfigService) _config: ConfigService, _db: DatabaseService) {
+  constructor(@Inject(AppConfig) _config: AppConfig, _db: DatabaseService) {
     this._historyTable = _db.db.table('history');
-    _config.subscribe(c => {
+    _config.configAsObservable.subscribe(c => {
       this.keep = c.get('query.history');
     });
   }
-
-  /** Number if result sets to keep in the history at max. Values between 1 and 10 are reasonable. */
-  private _keep: number = -1;
 
   /**
    * Returns the number of items to keep in history.
@@ -103,8 +103,8 @@ export class HistoryService {
       .pipe(
         first(),
         map(h => {
-          let zip = new JSZip();
-          let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
+          const zip = new JSZip();
+          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
           zip.file('vitrivrng-history.json', JSON.stringify(h, null, 2), options);
           return zip
         })

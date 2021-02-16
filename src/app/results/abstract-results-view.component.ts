@@ -1,7 +1,7 @@
-import {ChangeDetectorRef, OnDestroy, OnInit} from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, OnInit, Directive } from '@angular/core';
 import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
 import {QueryChange, QueryService} from '../core/queries/query.service';
-import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {EMPTY, Observable} from 'rxjs';
 import {SelectionService} from '../core/selection/selection.service';
 import {Tag} from '../core/selection/tag.model';
@@ -19,6 +19,7 @@ import {Router} from '@angular/router';
 import {filter} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
 
+@Directive()
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
   /** Local reference to the subscription to the QueryService. */
   protected _queryServiceSubscription;
@@ -28,6 +29,18 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   protected _selectionServiceSubscription;
   /** Name of this AbstractResultsViewComponent. */
   protected abstract name;
+
+  /** Indicator whether the progress bar should be visible. */
+  private _loading = false;
+
+  /** Indicator whether or not we should scroll*/
+  private _updateScroll = false;
+
+  /** Local reference to the data source holding the query results.*/
+  protected _dataSource: Observable<T> = EMPTY;
+
+  /** The number of items that should be displayed. */
+  protected _count: number = undefined;
 
   /**
    * Default constructor.
@@ -40,7 +53,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * @param _router The Router used for navigation
    * @param _snackBar The MatSnackBar component used to display the SnackBar.
    */
-  constructor(protected _cdr: ChangeDetectorRef,
+  protected constructor(protected _cdr: ChangeDetectorRef,
               protected _queryService: QueryService,
               protected _filterService: FilterService,
               protected _selectionService: SelectionService,
@@ -50,25 +63,13 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     this._count = this.scrollIncrement();
   }
 
-  /** Indicator whether the progress bar should be visible. */
-  private _loading = false;
-
-  /** Indicator whether or not we should scroll*/
-  private _updateScroll = false;
-
   get loading(): boolean {
     return this._loading;
   }
 
-  /** Local reference to the data source holding the query results.*/
-  protected _dataSource: Observable<T> = EMPTY;
-
   get dataSource(): Observable<T> {
     return this._dataSource;
   }
-
-  /** The number of items that should be displayed. */
-  protected _count: number = undefined;
 
   /**
    * Getter for count property (for limiting the result set)
@@ -87,12 +88,12 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * @param {number} segment The segment for which the background should be evaluated.
    * @return String that encodes the RGB value.
    */
-  public backgroundForSegment(segment: SegmentScoreContainer): string {
+  public backgroundForSegment(segment: MediaSegmentScoreContainer): string {
     const score = segment.score;
     return this.backgroundForScore(score, segment);
   }
 
-  public backgroundForScore(score: number, segment: SegmentScoreContainer): string {
+  public backgroundForScore(score: number, segment: MediaSegmentScoreContainer): string {
     const tags: Tag[] = this._selectionService.getTags(segment.segmentId);
     if (tags.length === 0) {
       const v = Math.round(255.0 - (score * 255.0));
@@ -143,7 +144,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    *
    * @param segment SegmentScoreContainer for which details should be displayed.
    */
-  public onDetailsButtonClicked(segment: SegmentScoreContainer) {
+  public onDetailsButtonClicked(segment: MediaSegmentScoreContainer) {
     this._router.navigate(['/mediaobject/' + segment.objectId], {skipLocationChange: true});
 
     /* Emit an EXAMINE event on the bus. */
@@ -157,21 +158,16 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    *
    * @param segment SegmentScoreContainer which should be used for MLT.
    */
-  public onMltButtonClicked(segment: SegmentScoreContainer) {
-    this._queryService.findMoreLikeThis(segment);
-
-    /* Emit a MLT event on the bus. */
-    const context: Map<ContextKey, any> = new Map();
-    context.set('q:value', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
+  public onMltButtonClicked(segment: MediaSegmentScoreContainer) {
+    this._queryService.findMoreLikeThis(segment, segment.objectScoreContainer.mediatype);
   }
 
   /**
    * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
    *
-   * @param {SegmentScoreContainer} segment SegmentScoreContainer for which to display information.
+   * @param {MediaSegmentScoreContainer} segment SegmentScoreContainer for which to display information.
    */
-  public onInformationButtonClicked(segment: SegmentScoreContainer) {
+  public onInformationButtonClicked(segment: MediaSegmentScoreContainer) {
     this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
 
     /* Emit an EXAMINE event on the bus. */
@@ -183,10 +179,10 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   /**
    * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
    *
-   * @param {SegmentScoreContainer} segment The segment that was tagged.
+   * @param {MediaSegmentScoreContainer} segment The segment that was tagged.
    * @param {Tag} tag The tag that should be toggled.
    */
-  public onHighlightButtonClicked(segment: SegmentScoreContainer, tag: Tag) {
+  public onHighlightButtonClicked(segment: MediaSegmentScoreContainer, tag: Tag) {
     this._selectionService.toggle(tag, segment.segmentId);
 
     /* Emit a HIGHLIGHT event on the bus. */
@@ -199,10 +195,10 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * Invoked when a user right clicks one of the 'Tag' buttons. Toggles all tags for the selected objects.
    *
    * @param {Event} event
-   * @param {SegmentScoreContainer} segment The object that was tagged.
+   * @param {MediaSegmentScoreContainer} segment The object that was tagged.
    * @param {Tag} tag The tag that should be toggled.
    */
-  public onHighlightButtonRightClicked(event: Event, segment: SegmentScoreContainer, tag: Tag) {
+  public onHighlightButtonRightClicked(event: Event, segment: MediaSegmentScoreContainer, tag: Tag) {
     const segments = segment.objectScoreContainer.segments.map(v => v.segmentId);
     if (segments.length > 0) {
       console.warn(`the following line of code will toggle multiple segments but the usage of an identifier is unclear.`);
@@ -224,7 +220,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * @param segment SegmentScoreContainer that is being dragged.
    * @param object MediaObjectScoreContainer that is being dragged.
    */
-  public onTileDrag(event, segment?: SegmentScoreContainer, object?: MediaObjectScoreContainer) {
+  public onTileDrag(event, segment?: MediaSegmentScoreContainer, object?: MediaObjectScoreContainer) {
     if (segment) {
       event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, MediaSegmentDragContainer.fromScoreContainer(segment).toJSON());
     }

@@ -53,16 +53,13 @@ export class EvaluationService extends Dexie {
 
   /**
    * Prepares and returns a Blob with all the evaluation data.
-   *
-   * @param participant
-   * @return {any}
    */
   public evaluationData(): Observable<JSZip> {
     return fromPromise(this.evaluations.toArray()).pipe(
       map((results: any[]) => {
-        let zip = new JSZip();
-        let options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false,};
-        for (let result of results) {
+        const zip = new JSZip();
+        const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false, };
+        for (const result of results) {
           zip.file(result['id'] + '.json', JSON.stringify(result, null, 2), options)
         }
         return zip

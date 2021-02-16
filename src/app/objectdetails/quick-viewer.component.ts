@@ -1,13 +1,13 @@
 import {Component, Inject, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
-import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {ResolverService} from '../core/basics/resolver.service';
 import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
 
 @Component({
 
-  selector: 'quick-viewer',
+  selector: 'app-quick-viewer',
   templateUrl: 'quick-viewer.component.html',
   styleUrls: ['quick-viewer.component.css']
 })
@@ -26,7 +26,7 @@ export class QuickViewerComponent {
   private imageviewer: any;
 
   /** SegmentScoreContainer that is currently in focus. */
-  public _segment: SegmentScoreContainer;
+  public _segment: MediaSegmentScoreContainer;
 
   /**
    *
@@ -37,7 +37,7 @@ export class QuickViewerComponent {
   public constructor(@Inject(MAT_DIALOG_DATA) data: any, readonly _resolver: ResolverService, readonly _vbs: VbsSubmissionService) {
     if (data instanceof MediaObjectScoreContainer) {
       this._segment = data.representativeSegment;
-    } else if (data instanceof SegmentScoreContainer) {
+    } else if (data instanceof MediaSegmentScoreContainer) {
       this._segment = data;
     } else {
       throw new Error('You must either provide a MediaObjectScoreContainer or a SegmentScoreContainer to an instance von QuickViewerComponent!');
@@ -47,16 +47,16 @@ export class QuickViewerComponent {
   /**
    * Getter for SegmentScoreContainer.
    *
-   * @return {SegmentScoreContainer}
+   * @return {MediaSegmentScoreContainer}
    */
-  get segment(): SegmentScoreContainer {
+  get segment(): MediaSegmentScoreContainer {
     return this._segment;
   }
 
   /**
    * Getter for SegmentScoreContainer.
    *
-   * @return {SegmentScoreContainer}
+   * @return {MediaSegmentScoreContainer}
    */
   get mediaobject(): MediaObjectScoreContainer {
     return this._segment.objectScoreContainer;

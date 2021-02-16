@@ -2,23 +2,23 @@
 the .mat-card-header-text is automatically added and I don't know how to prevent this.
  */
 :host ::ng-deep .mat-card-header-text {
-  margin: 0!important;
-  width:100%!important;
+    margin: 0 !important;
+    width: 100% !important;
 }
 
 .temporal-modifiers {
-  max-width: 100%;
+    max-width: 100%;
 }
 
 .right-corner {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  float:right;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    float: right;
 }
 
-.temporal-arrow {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
+.temporal-arrow  {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }

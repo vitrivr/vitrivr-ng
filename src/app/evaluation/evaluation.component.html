@@ -1,147 +1,155 @@
 <div>
-  <div class="bar">
-    <div class="spacer-small"></div>
+    <div class="bar">
+        <div class="spacer-small"></div>
 
-    <div>
-      <mat-chip-list>
-        <mat-chip (click)="onScenarioClick()" matTooltip="Click to bring up description...">
-          <strong>Scenario:</strong> {{scenarioDescriptor()}}</mat-chip>
-        <mat-chip [attr.color]="stateColor()"><strong>Status:</strong> {{stateDescriptor()}}</mat-chip>
-      </mat-chip-list>
-    </div>
-
-    <div class="spacer-flex"></div>
-
-    <div>
-      <button (click)="evaluationset.previous()" mat-icon-button matTooltip="Previous scenario">
-        <mat-icon>keyboard_arrow_left</mat-icon>
-      </button>
-      <button (click)="evaluationset.next()" mat-icon-button matTooltip="Next Scenario">
-        <mat-icon>keyboard_arrow_right</mat-icon>
-      </button>
-    </div>
-
-    <div class="spacer-small"></div>
-
-    <div>
-      <button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()" mat-icon-button
-              matTooltip="Start scenario">
-        <mat-icon>flag</mat-icon>
-      </button>
-      <button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()" mat-icon-button
-              matTooltip="Accept result set">
-        <mat-icon>thumb_up</mat-icon>
-      </button>
-      <button (click)="onEvaluationCompleteButtonClick()" [disabled]="!canBeCompleted()" mat-icon-button
-              matTooltip="Complete scenario">
-        <mat-icon>done</mat-icon>
-      </button>
-      <button (click)="onEvaluationAbortButtonClick()" [disabled]="!canBeAborted()" mat-icon-button
-              matTooltip="Abort/Restart scenario">
-        <mat-icon>cancel</mat-icon>
-      </button>
-    </div>
-
-    <div class="spacer-small"></div>
-
-    <div>
-      <button (click)="onDownloadButtonClick()" mat-icon-button matTooltip="Download all results">
-        <mat-icon>cloud_download</mat-icon>
-      </button>
-    </div>
-
-    <div class="spacer-small"></div>
-  </div>
-
-
-  <!-- Before an evaluation was started, display the scenario description. -->
-  <div *ngIf="display() == 'SCENARIO'">
-    <mat-card class="evaluation-card">
-      <mat-card-header>
-        <mat-card-title>Scenario: {{currentScenario.name}} (ID: {{currentScenario.id}})</mat-card-title>
-        <mat-card-subtitle>Please read the instructions carefully and start the scenario.</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content [style.margin-bottom]="'20px;'" [style.margin-top]="'20px;'">
-        <scenario-details [scenario]="currentScenario"></scenario-details>
-      </mat-card-content>
-      <mat-card-actions>
-        <button (click)="onEvaluationStartButtonClick()" mat-button>START SCENARIO</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-
-  <!-- For ongoing evaluations, display the default gallery. -->
-  <div *ngIf="display() == 'GALLERY'" style="padding:10px;">
-
-    <p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
-      search...</p>
-
-    <p *ngIf="!(dataSource | async) && loading" class="background-prompt">
-      <mat-spinner></mat-spinner>
-    </p>
-
-    <div (scrolled)="incrementCount()" (scrolledUp)="decrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
-         [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="gallery"
-         infiniteScroll>
-      <div
-          (dragstart)="onTileDrag($event, mediaobject)"
-          (mouseenter)="focus = mediaobject" (mouseleave)="focus = null" *ngFor="let mediaobject of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count" class="tile"
-          draggable="true">
-        <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
-          <div [attr.class]="objectCanBeRated(mediaobject) ? 'filename-rateable' : 'filename'"
-               class="filename">{{mediaobject.name}}</div>
-          <div class="score">
-            <p>{{mediaobject.scorePercentage}}&#37;</p>
-            <p>
-              <mat-icon *ngIf="objectHasBeenRated(mediaobject)">check_circle</mat-icon>
-              <mat-icon>filter_none</mat-icon>&nbsp;{{mediaobject.numberOfSegments}}
-            </p>
-          </div>
+        <div>
+            <mat-chip-list>
+                <mat-chip (click)="onScenarioClick()" matTooltip="Click to bring up description...">
+                    <strong>Scenario:</strong> {{scenarioDescriptor()}}</mat-chip>
+                <mat-chip [attr.color]="stateColor()"><strong>Status:</strong> {{stateDescriptor()}}</mat-chip>
+            </mat-chip-list>
         </div>
 
-        <img (click)="onDetailsButtonClicked(mediaobject)" [style.height]="'100%'"
-             [style.width]="'100%'" src="{{_resolver.pathToThumbnail(mediaobject, mediaobject.representativeSegment)}}"/>
+        <div class="spacer-flex"></div>
 
-        <div *ngIf="inFocus(mediaobject)" class="tile-footer" fxLayout fxLayoutAlign="space-between start">
-          <div *ngIf="objectCanBeRated(mediaobject)" fxLayout fxLayoutAlign="start start">
-            <div>
-              <button (click)="onRateButtonClick(mediaobject, 0)" mat-icon-button matTooltip="Not relevant">
-                <mat-icon [style.color]="colorForButton(mediaobject, 0) | async">star_rate</mat-icon>
-              </button>
-            </div>
-            <div>
-              <button (click)="onRateButtonClick(mediaobject, 1)" mat-icon-button matTooltip="Slightly relevant">
-                <mat-icon [style.color]="colorForButton(mediaobject, 1) | async">star_rate</mat-icon>
-              </button>
-            </div>
-            <div>
-              <button (click)="onRateButtonClick(mediaobject, 2)" mat-icon-button matTooltip="Very relevant">
-                <mat-icon [style.color]="colorForButton(mediaobject, 2) | async">star_rate</mat-icon>
-              </button>
-            </div>
-            <div>
-              <button (click)="onRateButtonClick(mediaobject, 3)" mat-icon-button matTooltip="Highly relevant">
-                <mat-icon [style.color]="colorForButton(mediaobject, 3) | async">star_rate</mat-icon>
-              </button>
-            </div>
-          </div>
-
-          <div *ngIf="!canBeRated()">
-            <button (click)="onMltButtonClicked(mediaobject.representativeSegment)" mat-icon-button
-                    matTooltip="More-like-this">
-              <mat-icon>youtube_searched_for</mat-icon>
+        <div>
+            <button (click)="evaluationset.previous()" mat-icon-button matTooltip="Previous scenario">
+                <mat-icon>keyboard_arrow_left</mat-icon>
             </button>
-          </div>
-          <div>
-            <button (click)="onDetailsButtonClicked(mediaobject)" mat-icon-button matTooltip="Show details">
-              <mat-icon>remove_red_eye</mat-icon>
+            <button (click)="evaluationset.next()" mat-icon-button matTooltip="Next Scenario">
+                <mat-icon>keyboard_arrow_right</mat-icon>
             </button>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- For complete/finished evaluations, display the EvaluationCompleteComponent. -->
-  <evaluation-history *ngIf="display() == 'HISTORY'" [evaluation]="evaluationset.current"></evaluation-history>
+        <div class="spacer-small"></div>
+
+        <div>
+            <button (click)="onEvaluationStartButtonClick()" [disabled]="!canBeStarted()" mat-icon-button
+                    matTooltip="Start scenario">
+                <mat-icon>flag</mat-icon>
+            </button>
+            <button (click)="onResultsAcceptButtonClick()" [disabled]="!canBeAccepted()" mat-icon-button
+                    matTooltip="Accept result set">
+                <mat-icon>thumb_up</mat-icon>
+            </button>
+            <button (click)="onEvaluationCompleteButtonClick()" [disabled]="!canBeCompleted()" mat-icon-button
+                    matTooltip="Complete scenario">
+                <mat-icon>done</mat-icon>
+            </button>
+            <button (click)="onEvaluationAbortButtonClick()" [disabled]="!canBeAborted()" mat-icon-button
+                    matTooltip="Abort/Restart scenario">
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </div>
+
+        <div class="spacer-small"></div>
+
+        <div>
+            <button (click)="onDownloadButtonClick()" mat-icon-button matTooltip="Download all results">
+                <mat-icon>cloud_download</mat-icon>
+            </button>
+        </div>
+
+        <div class="spacer-small"></div>
+    </div>
+
+
+    <!-- Before an evaluation was started, display the scenario description. -->
+    <div *ngIf="display() == 'SCENARIO'">
+        <mat-card class="evaluation-card">
+            <mat-card-header>
+                <mat-card-title>Scenario: {{currentScenario.name}} (ID: {{currentScenario.id}})</mat-card-title>
+                <mat-card-subtitle>Please read the instructions carefully and start the scenario.</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content [style.margin-bottom]="'20px;'" [style.margin-top]="'20px;'">
+                <app-scenario-details [scenario]="currentScenario"></app-scenario-details>
+            </mat-card-content>
+            <mat-card-actions>
+                <button (click)="onEvaluationStartButtonClick()" mat-button>START SCENARIO</button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+
+    <!-- For ongoing evaluations, display the default gallery. -->
+    <div *ngIf="display() == 'GALLERY'" style="padding:10px;">
+
+        <p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
+            search...</p>
+
+        <p *ngIf="!(dataSource | async) && loading" class="background-prompt">
+            <mat-spinner></mat-spinner>
+        </p>
+
+        <div (scrolled)="incrementCount()" (scrolledUp)="decrementCount()" [fromRoot]="true"
+             [infiniteScrollContainer]="'#scrollable'"
+             [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="gallery"
+             infiniteScroll>
+            <div
+                    (dragstart)="onTileDrag($event, mediaobject)"
+                    (mouseenter)="focus = mediaobject" (mouseleave)="focus = null"
+                    *ngFor="let mediaobject of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count"
+                    class="tile"
+                    draggable="true">
+                <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
+                    <div [attr.class]="objectCanBeRated(mediaobject) ? 'filename-rateable' : 'filename'"
+                         class="filename">{{mediaobject.name}}</div>
+                    <div class="score">
+                        <p>{{mediaobject.scorePercentage}}&#37;</p>
+                        <p>
+                            <mat-icon *ngIf="objectHasBeenRated(mediaobject)">check_circle</mat-icon>
+                            <mat-icon>filter_none</mat-icon>&nbsp;{{mediaobject.numberOfSegments}}
+                        </p>
+                    </div>
+                </div>
+
+                <img (click)="onDetailsButtonClicked(mediaobject)" [style.height]="'100%'"
+                     [style.width]="'100%'"
+                     src="{{_resolver.pathToThumbnail(mediaobject, mediaobject.representativeSegment)}}"/>
+
+                <div *ngIf="inFocus(mediaobject)" class="tile-footer" fxLayout fxLayoutAlign="space-between start">
+                    <div *ngIf="objectCanBeRated(mediaobject)" fxLayout fxLayoutAlign="start start">
+                        <div>
+                            <button (click)="onRateButtonClick(mediaobject, 0)" mat-icon-button
+                                    matTooltip="Not relevant">
+                                <mat-icon [style.color]="colorForButton(mediaobject, 0) | async">star_rate</mat-icon>
+                            </button>
+                        </div>
+                        <div>
+                            <button (click)="onRateButtonClick(mediaobject, 1)" mat-icon-button
+                                    matTooltip="Slightly relevant">
+                                <mat-icon [style.color]="colorForButton(mediaobject, 1) | async">star_rate</mat-icon>
+                            </button>
+                        </div>
+                        <div>
+                            <button (click)="onRateButtonClick(mediaobject, 2)" mat-icon-button
+                                    matTooltip="Very relevant">
+                                <mat-icon [style.color]="colorForButton(mediaobject, 2) | async">star_rate</mat-icon>
+                            </button>
+                        </div>
+                        <div>
+                            <button (click)="onRateButtonClick(mediaobject, 3)" mat-icon-button
+                                    matTooltip="Highly relevant">
+                                <mat-icon [style.color]="colorForButton(mediaobject, 3) | async">star_rate</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!canBeRated()">
+                        <button (click)="onMltButtonClicked(mediaobject.representativeSegment)" mat-icon-button
+                                matTooltip="More-like-this">
+                            <mat-icon>youtube_searched_for</mat-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <button (click)="onDetailsButtonClicked(mediaobject)" mat-icon-button matTooltip="Show details">
+                            <mat-icon>remove_red_eye</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- For complete/finished evaluations, display the EvaluationCompleteComponent. -->
+    <app-evaluation-history *ngIf="display() == 'HISTORY'" [evaluation]="evaluationset.current"></app-evaluation-history>
 </div>

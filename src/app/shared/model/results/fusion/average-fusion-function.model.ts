@@ -1,7 +1,7 @@
 import {FusionFunction} from './weight-function.interface';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {MediaObjectScoreContainer} from '../scores/media-object-score-container.model';
-import {SegmentScoreContainer} from '../scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../scores/segment-score-container.model';
 import {MaxpoolFusionFunction} from './maxpool-fusion-function.model';
 
 /**
@@ -23,7 +23,7 @@ export class AverageFusionFunction implements FusionFunction {
   /**
    * Calculates the best score per category and then normalizes by all weighted features
    */
-  scoreForSegment(categories: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number {
+  scoreForSegment(categories: WeightedFeatureCategory[], segmentScoreContainer: MediaSegmentScoreContainer): number {
     let score = 0;
     let total = 0;
     categories.forEach((weightedFeatureCategory: WeightedFeatureCategory) => {

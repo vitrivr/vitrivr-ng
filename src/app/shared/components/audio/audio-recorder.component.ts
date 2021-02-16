@@ -1,11 +1,11 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 @Component({
-  selector: 'record-audio',
+  selector: 'app-record-audio',
   template: `
-    <div>
-        <canvas #visualize width='{{width}}' height='{{height}}' (drop)="onRecorderDropped($event)" (dragover)="onRecorderDragOver($event)"></canvas>
-    </div>`
+      <div>
+          <canvas width='{{width}}' height='{{height}}' (drop)="onRecorderDropped($event)" (dragover)="onRecorderDragOver($event)"></canvas>
+      </div>`
 })
 
 /**
@@ -18,8 +18,8 @@ import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
  */
 export class AudioRecorderComponent implements OnInit, OnDestroy {
   /** Width and height of the visualization canvas. */
-  @Input() width: number = 400;
-  @Input() height: number = 150;
+  @Input() width = 400;
+  @Input() height = 150;
   /** Canvas used for visualization. */
   @ViewChild('visualize') private canvas: any;
   /** AudioContext used for audio signal processing. */
@@ -55,10 +55,10 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
   private recordingBuffer: AudioBuffer;
 
   /** Flag indicating whether any recording is currently taking place. */
-  private recording: boolean = false;
+  private recording = false;
 
   /** Flag indicating whether any playback is currently taking place. */
-  private playing: boolean = false;
+  private playing = false;
 
   /**
    * Requests access to the user's microphone. If this succeeds, a MediaStream object is passed
@@ -280,7 +280,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
     if (this.isPlaying() || this.isRecording()) {
       this.stop();
     }
-    let reader = new FileReader();
+    const reader = new FileReader();
     reader.addEventListener('load', () => {
       this.loadAudioFromBuffer(<ArrayBuffer>reader.result);
     });
@@ -456,12 +456,12 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * by evaluating the frequency-data in the AnalyzerNode and drawing it onto the canvas.
    */
   private visualize() {
-    let rafID = window.requestAnimationFrame(() => this.visualize());
-    let context = this.canvas.nativeElement.getContext('2d');
-    let barWidth = (context.canvas.width / this.frequencyBinCount) * 2.5;
+    const rafID = window.requestAnimationFrame(() => this.visualize());
+    const context = this.canvas.nativeElement.getContext('2d');
+    const barWidth = (context.canvas.width / this.frequencyBinCount) * 2.5;
     let barHeight: number;
     let x = 0;
-    let color = '';
+    const color = '';
     if (this.playing) {
 
     }

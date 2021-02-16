@@ -1,10 +1,10 @@
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 
 export class Path {
   /**
    * @param pathMap Map <containerID, segment>
    */
-  constructor(public readonly pathMap: Map<number, SegmentScoreContainer>) {
+  constructor(public readonly pathMap: Map<number, MediaSegmentScoreContainer>) {
   }
 
   public key(): string {

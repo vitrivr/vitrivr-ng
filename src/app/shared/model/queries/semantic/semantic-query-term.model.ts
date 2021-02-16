@@ -1,13 +1,17 @@
 import {AbstractQueryTerm} from '../abstract-query-term.model';
 import {SemanticCategory} from './semantic-category.model';
+import {QueryTerm} from '../../../../../../openapi/cineast/model/queryTerm';
 
 export class SemanticQueryTerm extends AbstractQueryTerm {
 
   /** The image data associated with this SemanticQueryTerm. */
   private _image: string;
 
+  /** The category to color map. */
+  private _map: SemanticCategory[] = [];
+
   constructor() {
-    super('SEMANTIC', ['semantic']);
+    super(QueryTerm.TypeEnum.SEMANTIC, ['semantic']);
   }
 
   /**
@@ -24,9 +28,6 @@ export class SemanticQueryTerm extends AbstractQueryTerm {
     this._image = value;
     this.refresh();
   }
-
-  /** The category to color map. */
-  private _map: SemanticCategory[] = [];
 
   /**
    * Getter for map.
@@ -51,7 +52,7 @@ export class SemanticQueryTerm extends AbstractQueryTerm {
       this.data = 'data:application/json;base64,' + btoa(JSON.stringify({
         image: this.image,
         map: this.map.map(v => {
-          let obj = {};
+          const obj = {};
           obj[v.name] = v.color;
           return obj;
         })

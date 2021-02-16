@@ -2,14 +2,13 @@ import {Component, Input, OnInit} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
-import {Tag} from '../../../shared/model/misc/tag.model';
-import {TagsLookupService} from '../../../core/lookup/tags-lookup.service';
-import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {Tag, TagService} from '../../../../../openapi/cineast';
 
 @Component({
-  selector: 'qt-tag',
+  selector: 'app-qt-tag',
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
 })
@@ -20,11 +19,11 @@ export class TagQueryTermComponent implements OnInit {
   private tagTerm: TagQueryTerm;
 
   /** List of tag fields currently displayed. */
-  private _field: FieldGroup;
+  private readonly _field: FieldGroup;
   /** List of tag fields currently displayed. */
   private _tags: Tag[] = [];
 
-  constructor(_tagService: TagsLookupService, private _matsnackbar: MatSnackBar) {
+  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar) {
     this._field = new FieldGroup(_tagService);
   }
 
@@ -55,9 +54,7 @@ export class TagQueryTermComponent implements OnInit {
       }
     }
     if (!tagAlreadyInList) {
-
-      this.addTags(this.getAllTagsWithEqualName(event.option.value));
-
+      this.addTag(event.option.value);
     } else {
       this.field.formControl.setValue('');
       this._matsnackbar.open(`Tag ${event.option.value.name} (${event.option.value.id}) already added`, null, {
@@ -82,7 +79,7 @@ export class TagQueryTermComponent implements OnInit {
 
   /**
    * Adds the specified collection of tags to the list of tags
-   * @param {Tag[]} tags THe tags to be added
+   * @param {Tag[]} tags The tags to be added
    */
   public addTags(tags: Tag[]) {
     tags.forEach(tag => {
@@ -126,18 +123,13 @@ export class FieldGroup {
   /** The currently selected tag. */
   private _selection: Tag;
 
-  /**
-   * Constructor for FieldGroup
-   *
-   * @param {TagsLookupService} _tags
-   */
-  constructor(private _tags: TagsLookupService) {
+  constructor(private _tags: TagService) {
     this.filteredTags = this.formControl.valueChanges.pipe(
       debounceTime(250),
       startWith(''),
       map((tag: string) => {
         if (tag.length >= 3) {
-          return this._tags.matching(tag)
+          return this._tags.findTagsBy('matchingname', tag).pipe(first()).map(res => res.tags);
         } else {
           return EMPTY;
         }

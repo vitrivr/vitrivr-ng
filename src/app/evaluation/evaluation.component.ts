@@ -4,8 +4,8 @@ import {EvaluationEvent} from '../shared/model/evaluation/evaluation-event';
 import {EvaluationState} from '../shared/model/evaluation/evaluation-state';
 import {ResolverService} from '../core/basics/resolver.service';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {EvaluationTemplate} from '../shared/model/evaluation/evaluation-template';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {EvaluationSet} from '../shared/model/evaluation/evaluation-set';
@@ -26,13 +26,16 @@ type DisplayType = 'NONE' | 'SCENARIO' | 'GALLERY' | 'HISTORY';
 
 @Component({
 
-  selector: 'evaluation',
+  selector: 'app-evaluation',
   templateUrl: 'evaluation.component.html',
   styleUrls: ['evaluation.component.css']
 })
 export class EvaluationComponent extends GalleryComponent implements OnInit, OnDestroy {
   /** Reference to the current evaluation object. */
   private _template: EvaluationTemplate;
+
+  /** Reference to the current evaluation object. */
+  private _evaluationset: EvaluationSet;
 
   constructor(
     _cdr: ChangeDetectorRef,
@@ -49,9 +52,6 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     private _dialog: MatDialog) {
     super(_cdr, _queryService, _filterService, _selectionService, _evemtBusService, _router, _snackBar, _resolver);
   }
-
-  /** Reference to the current evaluation object. */
-  private _evaluationset: EvaluationSet;
 
   /**
    * Getter for evaluation set.
@@ -179,7 +179,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     if (!this._evaluationset) {
       return;
     }
-    let config = new MatDialogConfig();
+    const config = new MatDialogConfig();
     config.width = '500px';
     config.data = this.currentScenario;
     this._dialog.open(ScenarioDetailsDialogComponent, config);
@@ -196,8 +196,8 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
   public colorForButton(object: MediaObjectScoreContainer, rank: number): Observable<string> {
     return this._dataSource.pipe(
       map(m => {
-        let i = m.indexOf(object);
-        let objectrank = this._evaluationset.current.getRating(i);
+        const i = m.indexOf(object);
+        const objectrank = this._evaluationset.current.getRating(i);
         if (objectrank >= rank) {
           return '#FFD700';
         } else {
@@ -442,9 +442,9 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * to load the specified evaluation template.
    */
   private onParamsAvailable(params: Params) {
-    let participant = params['participant'];
-    let template = params['template'] ? atob(params['template']) : null;
-    let name = params['name'] ? atob(params['name']) : null;
+    const participant = params['participant'];
+    const template = params['template'] ? atob(params['template']) : null;
+    const name = params['name'] ? atob(params['name']) : null;
     if (template && participant) {
       this.loadRunningEvaluation(participant).pipe(
         catchError((error, caught: Observable<void>) => {

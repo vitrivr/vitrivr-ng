@@ -124,7 +124,7 @@ export class BoolTermComponent implements OnInit {
   }
 
 
-  private attributeIsText(attr: BoolAttribute) {
+  attributeIsText(attr: BoolAttribute) {
     return attr.valueType.valueOf() == 2 || attr.valueType.valueOf() == 3;
   }
 

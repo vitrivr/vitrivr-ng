@@ -8,7 +8,7 @@ import {SemanticQueryTerm} from '../../../shared/model/queries/semantic/semantic
 import {SemanticMap} from '../../../shared/model/queries/semantic/semantic-map.model';
 
 @Component({
-  selector: 'qt-semantic',
+  selector: 'app-qt-semantic',
   templateUrl: 'semantic-query-term.component.html',
   styleUrls: ['semantic-query-term.component.css']
 })

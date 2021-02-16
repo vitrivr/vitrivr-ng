@@ -1,8 +1,6 @@
 import {Drawable} from './drawable.interface';
 
 export class Point implements Drawable {
-  constructor(readonly x: number, readonly  y: number) {
-  }
 
   /**
    *
@@ -30,6 +28,9 @@ export class Point implements Drawable {
     ctx.lineJoin = 'round';
     ctx.closePath();
     ctx.stroke();
+  }
+
+  constructor(readonly x: number, readonly  y: number) {
   }
 
   /**

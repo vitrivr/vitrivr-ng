@@ -3,7 +3,7 @@ import {EvaluationScenario} from '../shared/model/evaluation/evaluation-scenario
 
 @Component({
 
-  selector: 'scenario-details',
+  selector: 'app-scenario-details',
   template: `
     <div>
       <h5>Task description</h5>

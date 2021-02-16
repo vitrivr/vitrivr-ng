@@ -1,12 +1,12 @@
 import {Component, Inject} from '@angular/core';
-import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
-import {SegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
+import {MAT_SNACK_BAR_DATA} from '@angular/material/snack-bar';
+import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 
 /**
  * Popup for metadata details associated to segment
  */
 @Component({
-  selector: 'metadata-details',
+  selector: 'app-metadata-details',
   template: `
         <h3>{{title}}</h3>
         <div class="snackbar-feature" *ngFor="let line of lines">{{line}}</div>
@@ -15,10 +15,16 @@ import {SegmentScoreContainer} from '../shared/model/results/scores/segment-scor
 })
 export class MetadataDetailsComponent {
 
+  /** The title string displayed. */
+  private readonly _title: string;
+
+  /** The individual lines displayed (one line per metadata value). */
+  private _lines: string[] = [];
+
   /**
    * Default constructor; populates the array of texts.
    */
-  constructor(@Inject(MAT_SNACK_BAR_DATA) data: SegmentScoreContainer) {
+  constructor(@Inject(MAT_SNACK_BAR_DATA) data: MediaSegmentScoreContainer) {
     this._title = 'Metadata for ' + data.segmentId;
     data.metadata.forEach((value, key) => {
       this._lines.push(key + ': ' + value)
@@ -28,9 +34,6 @@ export class MetadataDetailsComponent {
     }
   }
 
-  /** The title string displayed. */
-  private _title: string;
-
   /**
    * Getter for title.
    *
@@ -39,9 +42,6 @@ export class MetadataDetailsComponent {
   get title(): string {
     return this._title;
   }
-
-  /** The individual lines displayed (one line per metadata value). */
-  private _lines: string[] = [];
 
   /**
    * Getter for lines array.

@@ -5,8 +5,8 @@
     "baseUrl": "",
     "types": [],
     "paths": {
-      "jszip" : [
-         "../node_modules/jszip/dist/jszip.min.js"
+      "jszip": [
+        "../node_modules/jszip/dist/jszip.min.js"
       ]
     }
   },

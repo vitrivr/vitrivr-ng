@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {MediaType, MediaTypes} from '../../shared/model/media/media-type.model';
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {ColorLabel, ColorLabels} from '../../shared/model/misc/colorlabel.model';
 import {SelectionService} from '../selection/selection.service';
 import {Tag} from '../selection/tag.model';
+import {MediaObjectDescriptor} from '../../../../openapi/cineast';
 
 
 /**
@@ -19,41 +19,21 @@ export class FilterService {
    * When set to true, objects who have metadata matching for any of the categories are displayed.
    */
   public _useOrForMetadataCategoriesFilter = false;
-  /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
-  private _segmentFilters: BehaviorSubject<((v: SegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
-
   _id: string;
-
-  constructor(private _selectionService: SelectionService) {
-    MediaTypes.forEach(v => this._mediatypes.set(v, false));
-    ColorLabels.forEach(v => this._dominant.set(v, false));
-  }
+  /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
+  private _segmentFilters: BehaviorSubject<((v: MediaSegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
   /**
    * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects
    * that match one of the MediaTypes contained in this array will pass the filter.
    */
-  private _mediatypes: Map<MediaType, boolean> = new Map();
-
-  /**
-   * Returns an editable map of the mediatypes that should be used for filtering
-   */
-  get mediatypes(): Map<MediaType, boolean> {
-    return this._mediatypes;
-  }
+  private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
   /**
    * A filter by dominant color. Affects only MediaSegmentScoreContainers. If non-empty, only segments
    * that match at least one of the dominant colors contained in this array will pass the filter.
    */
   private _dominant: Map<ColorLabel, boolean> = new Map();
-
-  /**
-   * Returns an editable map of the colorlabels that should be used for filtering
-   */
-  get dominant(): Map<ColorLabel, boolean> {
-    return this._dominant;
-  }
 
   /**
    * A filter by metadata. For each metadata category (e.g. day), a list of allowed values is kept.
@@ -64,16 +44,47 @@ export class FilterService {
   private _filterMetadata: Map<string, Set<string>> = new Map();
 
   /**
+   * A filter for tags. This is the list of allowed tag names. If the set is empty, no filter is applied.
+   */
+  private _filterTags: Set<Tag> = new Set();
+
+  /**
+   * A filter by metadata for numeric values.
+   * For each category, a min and max number is kept (or null)
+   */
+  private _filterRangeMetadata: Map<string, [number | null, number | null]> = new Map();
+
+  /** Threshold for score filtering. */
+  private _threshold = 0.0;
+
+  /** An internal BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
+  private _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
+
+  constructor(private _selectionService: SelectionService) {
+    Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._mediatypes.set(v, false));
+    ColorLabels.forEach(v => this._dominant.set(v, false));
+  }
+
+  /**
+   * Returns an editable map of the mediatypes that should be used for filtering
+   */
+  get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
+    return this._mediatypes;
+  }
+
+  /**
+   * Returns an editable map of the colorlabels that should be used for filtering
+   */
+  get dominant(): Map<ColorLabel, boolean> {
+    return this._dominant;
+  }
+
+  /**
    * Returns an editable map of the metadata that should be used for filtering
    */
   get filterMetadata(): Map<string, Set<string>> {
     return this._filterMetadata
   }
-
-  /**
-   * A filter for tags. This is the list of allowed tag names. If the set is empty, no filter is applied.
-   */
-  private _filterTags: Set<Tag> = new Set();
 
   /**
    * Returns the editable set of tags used for filtering
@@ -83,20 +94,11 @@ export class FilterService {
   }
 
   /**
-   * A filter by metadata for numeric values.
-   * For each category, a min and max number is kept (or null)
-   */
-  private _filterRangeMetadata: Map<string, [number | null, number | null]> = new Map();
-
-  /**
    * Returns an editable map of the metadata that should be used for filtering with ranges
    */
   get filterRangeMetadata(): Map<string, [number | null, number | null]> {
     return this._filterRangeMetadata
   }
-
-  /** Threshold for score filtering. */
-  private _threshold = 0.0;
 
   get threshold(): number {
     return this._threshold;
@@ -108,9 +110,6 @@ export class FilterService {
     }
   }
 
-  /** An internal BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
-  private _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
-
   /**
    * Getter for BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers.
    */
@@ -121,7 +120,7 @@ export class FilterService {
   /**
    * Returns a copy of the list of MediaTypes that should be used for filtering.
    */
-  get mediatypeKeys(): MediaType[] {
+  get mediatypeKeys(): MediaObjectDescriptor.MediatypeEnum[] {
     return Array.from(this._mediatypes.keys());
   }
 
@@ -135,7 +134,7 @@ export class FilterService {
   /**
    * Getter for BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainer.
    */
-  get segmentFilter(): Observable<((v: SegmentScoreContainer) => boolean)[]> {
+  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
     return this._segmentFilters.asObservable();
   }
 
@@ -169,7 +168,7 @@ export class FilterService {
   public update() {
     /* Prepares the media object and media segment filters. */
     const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[] = [];
-    const segmentFilters: ((v: SegmentScoreContainer) => boolean)[] = [];
+    const segmentFilters: ((v: MediaSegmentScoreContainer) => boolean)[] = [];
 
     if (this._id) {
       objectFilters.push((o) => o.objectId === this._id)

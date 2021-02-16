@@ -3,10 +3,10 @@ import {NextObserver} from 'rxjs/src/Observer';
 import {BehaviorSubject} from 'rxjs';
 import {Message} from '../../shared/model/messages/interfaces/message.interface';
 import {Inject, Injectable} from '@angular/core';
-import {ConfigService} from '../basics/config.service';
 import {filter} from 'rxjs/operators';
 import {Config} from '../../shared/model/config/config.model';
 import {webSocket} from 'rxjs/webSocket';
+import {AppConfig} from '../../app.config';
 
 /**
  * This class exposes an observable that generates WebSocketWrapper classes whenever the connection configuration changes. Since only one WebSocketWrapper can be active
@@ -19,9 +19,9 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
   private _config: Config;
 
   /** Default constructor. */
-  constructor(@Inject(ConfigService) private _configService: ConfigService) {
+  constructor(@Inject(AppConfig) private _configService: AppConfig) {
     super(null);
-    this._configService.pipe(
+    this._configService.configAsObservable.pipe(
       filter(c => c.endpoint_ws != null),
     ).subscribe(c => this.connect(c))
   }
