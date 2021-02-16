@@ -23,7 +23,7 @@ export class Config {
       port: 4567, /* Port for the API. */
       http_secure: false, /* Whether or not TLS should be used for HTTP connection. */
       ws_secure: false, /* Whether or not TLS should be used for WebSocket connection. */
-      ping_interval: 10000 /* Default ping interval in milliseconds. */
+      ping_interval: 5000 /* Default ping interval in milliseconds. */
     },
     resources: {
       host_thumbnails: window.location.protocol + '//' + window.location.hostname + '/vitrivr/thumbnails',

@@ -7,6 +7,7 @@ import {filter} from 'rxjs/operators';
 import {Config} from '../../shared/model/config/config.model';
 import {webSocket} from 'rxjs/webSocket';
 import {AppConfig} from '../../app.config';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 /**
  * This class exposes an observable that generates WebSocketWrapper classes whenever the connection configuration changes. Since only one WebSocketWrapper can be active
@@ -19,7 +20,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
   private _config: Config;
 
   /** Default constructor. */
-  constructor(@Inject(AppConfig) private _configService: AppConfig) {
+  constructor(@Inject(AppConfig) private _configService: AppConfig, private _snackbar: MatSnackBar) {
     super(null);
     this._configService.configAsObservable.pipe(
       filter(c => c.endpoint_ws != null),
@@ -28,8 +29,12 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
 
   /**
    * Reconnects the WebSocket using the current settings. If the active WebSocket instance is connected, that connection is dropped.
+   * @param snackbar if the reconnect snackbar shall be shown
    */
-  public reconnect() {
+  public reconnect(snackbar = true) {
+    if (snackbar) {
+      this._snackbar.open('Reconnecting to Cineast', 'Dismiss', {duration: 2000})
+    }
     /* If there is an active WebSocketSubject then disconnect it. */
     if (this.getValue() != null) {
       console.log('disconnecting to reconnect');
@@ -81,6 +86,6 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
     this._config = c;
 
     /* Reconnect. */
-    this.reconnect()
+    this.reconnect(false)
   }
 }
