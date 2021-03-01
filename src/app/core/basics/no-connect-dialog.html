@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Could not connect to Cineast</h2>
+
+<mat-dialog-content class="mat-typography">
+    <p>Could not connect to Cineast. Please check the URL in your config and the status of your Cineast instance.</p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Ignore</button>
+    <button mat-button [mat-dialog-close]="true">Reconnect</button>
+</mat-dialog-actions>

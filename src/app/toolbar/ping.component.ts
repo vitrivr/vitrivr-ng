@@ -74,7 +74,7 @@ export class PingComponent {
    * Tries to re-connect to the Cineast service.
    */
   public reconnectCineast() {
-    this._factory.reconnect();
+    this._factory.reconnect(true);
   }
 
   /**
