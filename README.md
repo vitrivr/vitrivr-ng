@@ -8,11 +8,22 @@ Vitrivr NG is a web-based user interface developed to be used with the latest ve
 
 For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/wiki)
 
+## Development server
+
+From the project folder, run `ng serve` to start a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+If you wish to prevent automatic reloading, run `ng serve --live-reload=false`
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+
 ## OpenAPI
 
 ### Cineast API
 
-In order to update / generate the OpenApi stubs and data model, run the following command while [Cineast](https://github.com/vitrivr/cineast) is running and 
+Note: this section is only relevant if you've made changes to the Cineast API and need to udpate the OpenAPI bindings. 
+
+In order to update / generate the OpenApi stubs and data model, run the following command while [Cineast](https://github.com/vitrivr/cineast) is running and
 having the OpenApi serving enabled (config option `"enableLiveDoc": "true"` )
 
 `npm run gen-api`
@@ -23,15 +34,7 @@ This is an alias for the full-fledged command:
 
 The assumption for this snippet is, that the Cineast is running on localhost using port 4567. Adjust according to your needs.
 
-
-## Development server
-
-From the project folder, run `ng serve` to start a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-If you wish to prevent automatic reloading, run `ng serve --live-reload=false`
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+This will break `ng serve` as it will generate imports for a `Set` class which does not exist. Simply remove all such imports which cause errors, the code will work fine.
 
 ## Further help
 
