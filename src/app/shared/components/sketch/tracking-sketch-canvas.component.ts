@@ -74,7 +74,7 @@ export class TrackingSketchCanvasComponent implements OnInit {
    * point is appended to the current line.
    */
   public onMousemove(event: MouseEvent) {
-    if (this.drawing && event.target == this.canvas.nativeElement && this._drawables.length > 0) {
+    if (this.drawing && event.target === this.canvas.nativeElement && this._drawables.length > 0) {
       const current: Drawable = this._drawables[this._drawables.length - 1];
       if (current.append(new Point(event.offsetX, event.offsetY))) {
         this.redraw();
@@ -98,6 +98,7 @@ export class TrackingSketchCanvasComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   public onResize(event: any) {
+    // tslint:disable-next-line:no-unused-expression
     event.target.innerWidth;
   }
 

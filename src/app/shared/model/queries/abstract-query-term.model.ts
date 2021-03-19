@@ -25,7 +25,7 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
    */
   public pushCategory(category: string) {
     const index: number = this.categories.indexOf(category);
-    if (index == -1) {
+    if (index === -1) {
       this.categories.push(category);
     }
   }

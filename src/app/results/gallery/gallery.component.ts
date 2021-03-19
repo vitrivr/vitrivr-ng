@@ -43,7 +43,9 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
    * @param _snackBar The MatSnackBar component used to display the SnackBar.
    * @param _resolver
    */
-  constructor(_cdr: ChangeDetectorRef, _queryService: QueryService, _filterService: FilterService, _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router, _snackBar: MatSnackBar, public _resolver: ResolverService) {
+  constructor(_cdr: ChangeDetectorRef, _queryService: QueryService, _filterService: FilterService,
+              _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router,
+              _snackBar: MatSnackBar, public _resolver: ResolverService) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
   }
 
@@ -113,7 +115,7 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
    * @return {boolean}
    */
   public inFocus(mediaobject: MediaObjectScoreContainer) {
-    return this._focus == mediaobject;
+    return this._focus === mediaobject;
   }
 
   scrollIncrement(): number {

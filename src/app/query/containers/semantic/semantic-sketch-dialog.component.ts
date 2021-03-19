@@ -62,9 +62,9 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
         return array[0].sort((a, b) => {
           const ia = array[1].indexOf(a);
           const ib = array[1].indexOf(b);
-          if (ia == -1 && ib != -1) {
+          if (ia === -1 && ib !== -1) {
             return 1;
-          } else if (ia != -1 && ib == -1) {
+          } else if (ia !== -1 && ib === -1) {
             return -1;
           } else if (a.name < b.name) {
             return -1
@@ -131,7 +131,7 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
     this._selected = selection;
     this._sketchpad.setActiveColor(selection.color);
     const arr = this._used.getValue().concat().slice();
-    if (arr.indexOf(selection) == -1) {
+    if (arr.indexOf(selection) === -1) {
       arr.push(selection);
       this._used.next(arr);
     }
@@ -169,7 +169,7 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
    */
   public onOptionSelected(selected: string) {
     for (const category of this._categories) {
-      if (category.name == selected) {
+      if (category.name === selected) {
         this.onItemSelected(category);
         break;
       }

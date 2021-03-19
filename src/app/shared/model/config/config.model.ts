@@ -256,7 +256,7 @@ export class Config {
         }
       }, this._config);
 
-      if (obj[last] && typeof value == typeof obj[last]) {
+      if (obj[last] && typeof value === typeof obj[last]) {
         obj[last] = value;
         return true;
       } else {

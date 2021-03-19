@@ -110,7 +110,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * Invoked whenever the 'Complete Scenario' button is clicked.
    */
   public onEvaluationCompleteButtonClick() {
-    if (this.canBeCompleted() && this._evaluationset.current.state == EvaluationState.RankingResults) {
+    if (this.canBeCompleted() && this._evaluationset.current.state === EvaluationState.RankingResults) {
       this._evaluationset.current.complete();
       if (!this._evaluationset.next()) {
         this._snackBar.open('Evaluation completed. Thank you for participating!', null, {duration: Config.SNACKBAR_DURATION});
@@ -128,7 +128,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
   public onResultsAcceptButtonClick() {
     if (this.canBeAccepted()) {
       this._dataSource.pipe(first()).subscribe(m => {
-        if (this._evaluationset.current.accept(this._queryService.results.features, m) == EvaluationState.RankingResults) {
+        if (this._evaluationset.current.accept(this._queryService.results.features, m) === EvaluationState.RankingResults) {
           this.saveEvaluation();
           this._snackBar.open('Results accepted. Now please rate the relevance of the top ' + this._evaluationset.current.k + ' results.', null, {duration: Config.SNACKBAR_DURATION});
         }
@@ -277,10 +277,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * Used to make UI related decisions.
    */
   public canBeStarted(): boolean {
-    if (this._evaluationset == null) {
+    if (this._evaluationset === null) {
       return false;
     }
-    return this._evaluationset.current.state == EvaluationState.NotStarted || this._evaluationset.current.state == EvaluationState.Aborted
+    return this._evaluationset.current.state === EvaluationState.NotStarted || this._evaluationset.current.state === EvaluationState.Aborted
   }
 
   /**
@@ -290,10 +290,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * Used to make UI related decisions.
    */
   public canBeAborted(): boolean {
-    if (this._evaluationset == null) {
+    if (this._evaluationset === null) {
       return false;
     }
-    return this._evaluationset.current.state != EvaluationState.NotStarted && this._evaluationset.current.state != EvaluationState.Aborted;
+    return this._evaluationset.current.state !== EvaluationState.NotStarted && this._evaluationset.current.state !== EvaluationState.Aborted;
   }
 
   /**
@@ -301,10 +301,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * @return {boolean}
    */
   public canBeCompleted(): boolean {
-    if (this._evaluationset == null) {
+    if (this._evaluationset === null) {
       return false;
     }
-    return this._evaluationset.current.state == EvaluationState.RankingResults
+    return this._evaluationset.current.state === EvaluationState.RankingResults
 
   }
 
@@ -315,10 +315,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * Used to make UI related decisions.
    */
   public canBeAccepted(): boolean {
-    if (this._evaluationset == null) {
+    if (this._evaluationset === null) {
       return false;
     }
-    return this._evaluationset.current.state == EvaluationState.RunningQueries;
+    return this._evaluationset.current.state === EvaluationState.RunningQueries;
   }
 
   /**
@@ -327,10 +327,10 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * Used to make UI related decisions.
    */
   public canBeRated(): boolean {
-    if (this._evaluationset == null) {
+    if (this._evaluationset === null) {
       return false;
     }
-    return this._evaluationset.current.state == EvaluationState.RankingResults;
+    return this._evaluationset.current.state === EvaluationState.RankingResults;
   }
 
   /**
@@ -362,7 +362,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * @param mediaobject MediaObject that should be checked.
    */
   public objectCanBeRated(mediaobject: MediaObjectScoreContainer): Observable<boolean> {
-    if (this.canBeRated() == false) {
+    if (this.canBeRated() === false) {
       of(false);
     }
     return this.dataSource.pipe(
@@ -378,7 +378,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
    * @param mediaobject MediaObject that should be checked.
    */
   public objectHasBeenRated(mediaobject: MediaObjectScoreContainer): Observable<boolean> {
-    if (this.canBeRated() == false) {
+    if (this.canBeRated() === false) {
       of(false);
     }
     return this.dataSource.pipe(
@@ -414,7 +414,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     }
 
     /* Add evaluation event. */
-    if (event && this._evaluationset && this._evaluationset.current.state == EvaluationState.RunningQueries) {
+    if (event && this._evaluationset && this._evaluationset.current.state === EvaluationState.RunningQueries) {
       this._evaluationset.current.addEvent(event);
       this.saveEvaluation();
     }
@@ -492,7 +492,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
       first(),
       flatMap((evaluation) => {
         return zip(of(evaluation), this._evaluation.loadEvaluationTemplate(evaluation.template), (evaluation, template) => {
-          if (template != null) {
+          if (template !== null) {
             this._evaluationset = evaluation;
             this._template = template;
           } else {
@@ -515,7 +515,7 @@ export class EvaluationComponent extends GalleryComponent implements OnInit, OnD
     return this._evaluation.loadEvaluationTemplate(url).pipe(
       first(),
       map((template) => {
-        if (template != null) {
+        if (template !== null) {
           this._template = template;
           this._evaluationset = EvaluationSet.fromTemplate(participant, template, name);
         } else {

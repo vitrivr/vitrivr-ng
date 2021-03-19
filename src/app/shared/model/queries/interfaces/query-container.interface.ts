@@ -3,7 +3,9 @@ import {QueryStage} from '../query-stage.model';
 import {QueryTerm} from '../../../../../../openapi/cineast/model/queryTerm';
 
 /**
- * The Query Container corresponds to one StagedSimilarityQuery. It has multiple stages, which can each contain multiple queryterms. Each type of queryterm can only occur once in a query container interface.
+ * The Query Container corresponds to one StagedSimilarityQuery.
+ * It has multiple stages, which can each contain multiple queryterms.
+ * Each type of queryterm can only occur once in a query container interface.
  */
 export interface QueryContainerInterface {
 

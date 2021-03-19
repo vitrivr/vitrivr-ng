@@ -1,7 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, BehaviorSubject} from 'rxjs';
 import {first} from 'rxjs/operators';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {MiscService} from '../../../../openapi/cineast';
 
 /**

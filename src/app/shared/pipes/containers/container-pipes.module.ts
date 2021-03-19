@@ -13,7 +13,9 @@ import {OrderByPipe} from './order-by.pipe';
 
 @NgModule({
   imports: [],
+  // tslint:disable-next-line:max-line-length
   declarations: [OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, OrderBySegmentIdPipe, OrderByPipe],
+  // tslint:disable-next-line:max-line-length
   exports: [OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, OrderBySegmentIdPipe, OrderByPipe]
 })
 export class ContainerPipesModule {

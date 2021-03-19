@@ -57,7 +57,7 @@ export class SketchCanvasComponent implements OnInit {
    * @param event
    */
   public onMousemove(event: MouseEvent) {
-    if (this.paint && event.target == this.canvas.nativeElement) {
+    if (this.paint && event.target === this.canvas.nativeElement) {
       this.current = new Point(event.offsetX, event.offsetY);
       if (this.last !== null) {
         Point.drawLine(this.context, this.last, this.current);
@@ -94,6 +94,7 @@ export class SketchCanvasComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
+    // tslint:disable-next-line:no-unused-expression
     event.target.innerWidth;
   }
 
