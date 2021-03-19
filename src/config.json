@@ -3,8 +3,8 @@
     "host": "default"
   },
   "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
-    "host_objects": "http://localhost:4567/objects/:o"
+    "host_thumbnails": "http://localhost:4567/thumbnails/:o/:s:x",
+    "host_objects": "http://localhost:4567/objects/:n"
   },
   "competition": {
     "teamid": 9,
