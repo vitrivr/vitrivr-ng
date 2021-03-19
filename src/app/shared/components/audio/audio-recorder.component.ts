@@ -103,10 +103,10 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * Starts recording of audio. The actual audio recording is done in the process() method.
    */
   public record(): void {
-    if (this.audiocontext == undefined) {
+    if (this.audiocontext === undefined) {
       return;
     }
-    if (this.stream == undefined) {
+    if (this.stream === undefined) {
       return;
     }
     if (!this.recording && !this.playing) {
@@ -122,14 +122,14 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * @return {boolean}
    */
   public recordingAvailable(): boolean {
-    return this.source != null;
+    return this.source !== null;
   }
 
   /**
    * Starts playback of previously recorded audio (if set).
    */
   public play(): void {
-    if (this.audiocontext == undefined) {
+    if (this.audiocontext === undefined) {
       return;
     }
     if (!this.recording && !this.playing && this.recordingBuffer) {
@@ -149,7 +149,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * Stops either playback or recording, whatever is currently running.
    */
   public stop(): void {
-    if (this.audiocontext == undefined) {
+    if (this.audiocontext === undefined) {
       return;
     }
     if (this.recording) {
@@ -253,7 +253,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * mainly depends on the browser's capabilities.
    */
   public supportsRecording() {
-    return this.audiocontext != undefined && this.stream != undefined;
+    return this.audiocontext !== undefined && this.stream !== undefined;
   }
 
   /**
@@ -402,7 +402,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * establish during recording.
    */
   private setupAudioNodes(): void {
-    if (this.audiocontext != undefined) {
+    if (this.audiocontext !== undefined) {
       this.analyser = this.audiocontext.createAnalyser();
       this.processor = this.audiocontext.createScriptProcessor();
       this.processor.onaudioprocess = (event) => this.process(event.inputBuffer);
@@ -430,14 +430,14 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    */
   private process(input: AudioBuffer) {
     let buffer: AudioBuffer;
-    if (this.recordingBuffer == null) {
+    if (this.recordingBuffer === null) {
       buffer = this.audiocontext.createBuffer(input.numberOfChannels, input.length, input.sampleRate);
     } else {
       buffer = this.audiocontext.createBuffer(input.numberOfChannels, this.recordingBuffer.length + input.length, input.sampleRate);
     }
 
     for (let c = 0; c < input.numberOfChannels; c++) {
-      if (this.recordingBuffer != null) {
+      if (this.recordingBuffer !== null) {
         buffer.copyToChannel(this.recordingBuffer.getChannelData(c), c, 0);
         buffer.copyToChannel(input.getChannelData(c), c, this.recordingBuffer.length);
       } else {

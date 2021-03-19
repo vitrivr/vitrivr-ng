@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs';
+import {from, Observable, of} from 'rxjs';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
@@ -29,9 +29,9 @@ export class VbsInteractionLog implements VbsSubmission {
       flatMap(e => {
         if (e.components.length > 1) {
           const composit = e.components.map(c => VbsInteractionLog.mapAtomicEvent(c, e.timestamp));
-          return Observable.from(composit);
+          return from(composit);
         } else {
-          return Observable.of(<VbsInteraction>(VbsInteractionLog.mapAtomicEvent(e.components[0], e.timestamp)));
+          return of(VbsInteractionLog.mapAtomicEvent(e.components[0], e.timestamp));
         }
       }),
       catchError((e, o) => {

@@ -1,7 +1,7 @@
 import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, ValueType} from './bool-attribute';
-import {BehaviorSubject} from 'rxjs/Rx';
+import {BehaviorSubject} from 'rxjs';
 import {BoolTerm} from './individual/bool-term';
 import {DistinctElementLookupService} from '../../../core/lookup/distinct-element-lookup.service';
 import {first, map} from 'rxjs/operators';

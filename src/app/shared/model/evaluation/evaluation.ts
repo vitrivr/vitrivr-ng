@@ -182,7 +182,7 @@ export class Evaluation {
    * @return New state of the Evaluation object.
    */
   public start(): EvaluationState {
-    if (this._state == EvaluationState.NotStarted || this._state == EvaluationState.Aborted) {
+    if (this._state === EvaluationState.NotStarted || this._state === EvaluationState.Aborted) {
       this._state = EvaluationState.RunningQueries;
       this._begin = new Date();
     }
@@ -196,7 +196,7 @@ export class Evaluation {
    * @return New state of the Evaluation object.
    */
   public accept(features: WeightedFeatureCategory[], results: MediaObjectScoreContainer[]): EvaluationState {
-    if (this._state == EvaluationState.RunningQueries) {
+    if (this._state === EvaluationState.RunningQueries) {
       /* Store per-category weights. */
       this._per_category_weights = {};
       features.forEach((v, i) => {
@@ -225,7 +225,7 @@ export class Evaluation {
    * @return New state of the Evaluation object.
    */
   public complete(): EvaluationState {
-    if (this._state == EvaluationState.RankingResults) {
+    if (this._state === EvaluationState.RankingResults) {
       this._state = EvaluationState.Finished;
       this._end = new Date();
     }
@@ -238,7 +238,7 @@ export class Evaluation {
    * @return New state of the Evaluation object.
    */
   public abort(): EvaluationState {
-    if (this._state != EvaluationState.Aborted && this._state != EvaluationState.NotStarted) {
+    if (this._state !== EvaluationState.Aborted && this._state !== EvaluationState.NotStarted) {
       this._state = EvaluationState.Aborted;
       this._begin = null;
       this._end = null;
@@ -254,7 +254,7 @@ export class Evaluation {
    * @param event EvaluationEvent to be added.
    */
   public addEvent(event: EvaluationEvent) {
-    if (this.state == EvaluationState.RunningQueries) {
+    if (this.state === EvaluationState.RunningQueries) {
       this._events.push(event);
     }
   }
@@ -264,9 +264,9 @@ export class Evaluation {
    * @returns {string}
    */
   public elapsedTime(): string {
-    if (this.state == EvaluationState.NotStarted) {
+    if (this.state === EvaluationState.NotStarted) {
       return '00:00:00';
-    } else if (this.state == EvaluationState.Finished || this.state == EvaluationState.Aborted) {
+    } else if (this.state === EvaluationState.Finished || this.state === EvaluationState.Aborted) {
       return TimeFormatterUtil.toTimer(this._end.getTime() - this._begin.getTime())
     } else {
       return TimeFormatterUtil.toTimer(new Date().getTime() - this._begin.getTime())
@@ -279,7 +279,7 @@ export class Evaluation {
    * @param rating
    */
   public rate(index: number, rating: number) {
-    if (this.state != EvaluationState.RankingResults) {
+    if (this.state !== EvaluationState.RankingResults) {
       return;
     }
     if (index >= this._ratings.length) {

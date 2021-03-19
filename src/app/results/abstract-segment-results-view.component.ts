@@ -18,6 +18,7 @@ import {AppConfig} from '../app.config';
  * More specialized AbstractResultsView, tailored for views which display segments
  */
 @Directive()
+// tslint:disable-next-line:directive-class-suffix
 export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractResultsViewComponent<T> {
 
   protected constructor(_cdr: ChangeDetectorRef,

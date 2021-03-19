@@ -22,7 +22,7 @@ export class EvaluationTemplate {
    */
   public static fromJson(object: any, url: string): EvaluationTemplate {
     try {
-      if (typeof object == 'string') {
+      if (typeof object === 'string') {
         object = JSON.parse(object);
       }
       const template = new EvaluationTemplate(url, object['_name'], object['_description']);

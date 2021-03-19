@@ -39,7 +39,7 @@ export class WaveAudioUtil {
    */
   public static resample(audio: AudioBuffer, channels: number, sampleRate: number) {
     /* If no resampling is necessary, just return a promise. */
-    if (audio.sampleRate == sampleRate && audio.numberOfChannels == channels) {
+    if (audio.sampleRate === sampleRate && audio.numberOfChannels === channels) {
       return Promise.resolve(audio);
     }
 

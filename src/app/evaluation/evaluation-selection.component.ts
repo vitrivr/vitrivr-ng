@@ -52,7 +52,7 @@ export class EvaluationSelectionComponent {
    * Invoked whenever the 'CONTINUE EVALUATION' button is clicked.
    */
   public onContinueClick() {
-    if (!this.enteredId || this.enteredId.length == 0) {
+    if (!this.enteredId || this.enteredId.length === 0) {
       this.snackBar.open('Please enter a valid evaluation ID.', null, {duration: 3000});
       return;
     }

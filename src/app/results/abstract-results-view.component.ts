@@ -20,6 +20,7 @@ import {filter} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
 
 @Directive()
+// tslint:disable-next-line:directive-class-suffix
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
   /** Local reference to the subscription to the QueryService. */
   protected _queryServiceSubscription;

@@ -17,7 +17,7 @@ import {timestamp} from 'rxjs/operators';
   ]
 })
 export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
-;
+
   /** Hidden input for image upload. */
   @ViewChild('audioloader')
   private audioloader: any;
@@ -71,20 +71,20 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
     }
     this._data = null;
     this._timer = timer(0, 500).pipe(timestamp()).subscribe((x) => {
-      if (this._recorder.isPlaying() && this.status != 'Playing') {
+      if (this._recorder.isPlaying() && this.status !== 'Playing') {
         this.start = x.timestamp;
         this.status = 'Playing';
-      } else if (this._recorder.isRecording() && this.status != 'Recording') {
+      } else if (this._recorder.isRecording() && this.status !== 'Recording') {
         this.start = x.timestamp;
         this.status = 'Recording';
-      } else if (!this._recorder.isPlaying() && !this._recorder.isRecording() && this.status != 'Idle') {
+      } else if (!this._recorder.isPlaying() && !this._recorder.isRecording() && this.status !== 'Idle') {
         this.start = 0;
         this.status = 'Idle';
-      } else if (this.status == 'Recording') {
+      } else if (this.status === 'Recording') {
         this._statustext = 'Recording: ' + TimeFormatterUtil.toTimer(x.timestamp - this.start);
-      } else if (this.status == 'Playing') {
+      } else if (this.status === 'Playing') {
         this._statustext = 'Playing: ' + TimeFormatterUtil.toTimer(x.timestamp - this.start) + ' / ' + TimeFormatterUtil.toTimer(this._recorder.duration() * 1000);
-      } else if (this.status == 'Idle') {
+      } else if (this.status === 'Idle') {
         if (this._recorder.length() > 0) {
           this._statustext = 'Idle (Audio available)';
         } else {

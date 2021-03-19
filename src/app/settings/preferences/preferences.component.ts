@@ -224,7 +224,7 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onUseInexactIndexChanged(e: MatSlideToggleChange) {
     this._config.pipe(first()).subscribe(c => {
-      const hints = c.get<Hint[]>('query.config.hints').filter(h => ['inexact', 'exact'].indexOf(h) == -1);
+      const hints = c.get<Hint[]>('query.config.hints').filter(h => ['inexact', 'exact'].indexOf(h) === -1);
       if (e.checked === true) {
         hints.push('inexact');
       } else {
