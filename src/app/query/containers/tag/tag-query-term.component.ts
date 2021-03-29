@@ -6,6 +6,7 @@ import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Tag, TagService} from '../../../../../openapi/cineast';
+import PriorityEnum = Tag.PriorityEnum;
 
 @Component({
   selector: 'app-qt-tag',
@@ -69,6 +70,9 @@ export class TagQueryTermComponent implements OnInit {
    * @param {Tag} tag The tag that should be added.
    */
   public addTag(tag: Tag) {
+    if (!tag.priority) {
+      tag.priority = PriorityEnum.REQUEST
+    }
     this._tags.push(tag);
     this.field.formControl.setValue('');
     this.tagTerm.tags = this._tags;
@@ -103,8 +107,26 @@ export class TagQueryTermComponent implements OnInit {
     })));
   }
 
-  private getAllTagsWithEqualName(tag: Tag): Tag[] {
-    return this._field.currentlyDisplayedTags.filter(t => t.name === tag.name);
+  /**
+   * Stores values for preference set for a tag in a Map<String, String>
+   */
+  public onPriorityChange(priority: PriorityEnum, tag): void {
+    tag.priority = priority;
+    this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
+      return v;
+    })));
+    this.sortTagsByPreference();
+  }
+
+  tagHasPriority(tag): boolean {
+    return tag.priority != null;
+  }
+
+
+  private sortTagsByPreference(): void {
+    const sort = this._tags.sort(function (a, b) {
+      return a.priority > b.priority ? 1 : a.priority < b.priority ? -1 : 0
+    })
   }
 }
 

@@ -10,10 +10,32 @@
         </mat-autocomplete>
     </mat-form-field>
     <mat-chip-list>
-        <mat-chip (removed)="removeTag(tag)" *ngFor="let tag of tags" [removable]="true" [selectable]="true"
+        <mat-chip class="dropdown" (removed)="removeTag(tag)" *ngFor="let tag of tags" [removable]="true"
+                  [selectable]="true"
                   id="{{tag.id}}">
             {{tag.name}}&nbsp;<small>({{tag.id}})</small>
-            <mat-icon matChipRemove>cancel</mat-icon>
+            <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon *ngIf="tagHasPriority(tag)==false">menu</mat-icon>
+                <mat-icon *ngIf="tag.priority == 'REQUIRE'" class="require-icon">warning_amber</mat-icon>
+                <mat-icon *ngIf="tag.priority == 'REQUEST'" class="request-icon">check_circle_outline</mat-icon>
+                <mat-icon *ngIf="tag.priority == 'EXCLUDE'" class="exclude-icon">not_interested</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" [overlapTrigger]="false">
+            <span>
+                <mat-button-toggle-group>
+                    <mat-button-toggle (change)="onPriorityChange('REQUIRE', tag)" value="REQUIRE" class="require-icon">
+                        <mat-icon>warning_amber</mat-icon>
+                    </mat-button-toggle>
+                    <mat-button-toggle (change)="onPriorityChange('REQUEST', tag)" value="REQUEST" class="request-icon">
+                        <mat-icon>check_circle_outline</mat-icon>
+                    </mat-button-toggle>
+                    <mat-button-toggle (change)="onPriorityChange('EXCLUDE', tag)" value="EXCLUDE" class="exclude-icon">
+                        <mat-icon>not_interested</mat-icon>
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+            </span>
+            </mat-menu>
         </mat-chip>
     </mat-chip-list>
 </div>
