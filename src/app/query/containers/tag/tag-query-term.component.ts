@@ -125,7 +125,7 @@ export class TagQueryTermComponent implements OnInit {
 
   private sortTagsByPreference(): void {
     const sort = this._tags.sort(function (a, b) {
-      return a.priority > b.priority ? 1 : a.priority < b.priority ? -1 : 0
+      return a.priority > b.priority ? -1 : a.priority < b.priority ? 1 : 0
     })
   }
 }
