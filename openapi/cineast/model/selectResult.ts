@@ -11,14 +11,7 @@
  */
 
 
-export interface MediaSegmentDescriptor { 
-    segmentId?: string;
-    objectId?: string;
-    start?: number;
-    end?: number;
-    startabs?: number;
-    endabs?: number;
-    count?: number;
-    sequenceNumber?: number;
+export interface SelectResult { 
+    columns?: Array<{ [key: string]: string; }>;
 }
 

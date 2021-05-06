@@ -1,6 +1,6 @@
 {
   "name": "@cineast-openapi/api",
-  "version": "v1-SNAPSHOT.202103290843",
+  "version": "v1-SNAPSHOT.202105060941",
   "description": "OpenAPI client for @cineast-openapi/api",
   "author": "OpenAPI-Generator Contributors",
   "keywords": [

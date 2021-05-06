@@ -15,8 +15,8 @@ import { AbstractMetadataFilterDescriptor } from './abstractMetadataFilterDescri
 export interface OptionallyFilteredIdList { 
     filters?: Array<AbstractMetadataFilterDescriptor>;
     ids?: Array<string>;
-    idList?: Array<string>;
     messageType?: OptionallyFilteredIdList.MessageTypeEnum;
+    idList?: Array<string>;
 }
 export namespace OptionallyFilteredIdList {
     export type MessageTypeEnum = 'PING' | 'Q_SIM' | 'Q_MLT' | 'Q_NESEG' | 'Q_SEG' | 'M_LOOKUP' | 'Q_TEMPORAL' | 'SESSION_START' | 'QR_START' | 'QR_END' | 'QR_ERROR' | 'QR_OBJECT' | 'QR_METADATA_O' | 'QR_METADATA_S' | 'QR_SEGMENT' | 'QR_SIMILARITY';
