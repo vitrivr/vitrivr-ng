@@ -11,6 +11,9 @@ jobs:
       # check out the repo
       - name: Check out the repo
         uses: actions/checkout@v2
+      # get the tag name
+      - name: Tag name
+        run: echo running on tag ${GITHUB_REF##*/}
       # install node 14.x
       - name: Use node 14.x
         uses: actions/setup-node@v2
