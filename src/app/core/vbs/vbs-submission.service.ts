@@ -19,6 +19,7 @@ import {LscSubmission} from '../../shared/model/lsc/interfaces/lsc-submission.mo
 import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
+import {Configuration, SubmissionService} from '../../../../openapi/dres';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -58,6 +59,7 @@ export class VbsSubmissionService {
   private _dres = false;
   private _sessionId = undefined;
   private _lsc = false;
+  private _endpoint = "";
   private readonly _status: BehaviorSubject<UserDetails> = new BehaviorSubject(undefined)
 
   constructor(_config: AppConfig,
@@ -67,13 +69,17 @@ export class VbsSubmissionService {
               private _metadata: MetadataService,
               private _http: HttpClient,
               private _snackBar: MatSnackBar,
+              private _submission: SubmissionService,
               _db: DatabaseService) {
+
+
 
     _config.configAsObservable.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
       this._vbs = config.get<boolean>('competition.vbs');
       this._dres = config.get<boolean>('competition.dres');
       this._sessionId = config.get<string>('competition.sessionid') // technically, with withCredentials not needed anymore
+      this._endpoint = config.get<string>('competition.endpoint');
     });
 
     /* Configuration */
@@ -93,6 +99,14 @@ export class VbsSubmissionService {
         this.cleanup()
       }
     });
+
+    if(this._dres){ // TODO is there a more elegant solution?
+      const config = new Configuration();
+      config.basePath = this._endpoint;
+      this._submission.configuration = new Configuration();
+      // TODO readout sessionId from User / add login mechanism from within vitrivr-vr
+      // Generally, shouldn't this go into a new package 'core/competition' or 'core/dres'
+    }
   }
 
   /**
@@ -281,7 +295,7 @@ export class VbsSubmissionService {
         }
         if (this._dres) {
           // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
-          // id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
+          id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
           // params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
           params = new HttpParams().set('item', String(id)).set('frame', String(frame));
         }
@@ -290,6 +304,7 @@ export class VbsSubmissionService {
         this._submissionLogTable.add(params)
 
         const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params, withCredentials: this._dres});
+          // this._submission.getSubmit(null, String(id),  String(frame), null, null, null); // TODO test and handle return from call.
 
         /* Do some logging and catch HTTP errors. */
         return observable.pipe(

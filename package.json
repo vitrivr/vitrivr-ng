@@ -8,7 +8,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "gen-api": "openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=9.1.12",
+    "gen-api": "openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=11.0.7",
+    "gen-dres-client": "openapi-generator generate -g typescript-angular -i https://raw.githubusercontent.com/dres-dev/DRES/master/doc/oas-client.json -o openapi/dres --skip-validate-spec --additional-properties npmName=@dres-client-openapi/api,ngVersion=11.0.7,enumPropertyNaming=original",
     "e2e": "ng e2e",
     "postinstall": "ngcc"
   },
