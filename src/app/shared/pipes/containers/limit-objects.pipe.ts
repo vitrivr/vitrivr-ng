@@ -14,14 +14,10 @@ export class LimitObjectsPipe implements PipeTransform {
    * @return the elements to be shown, and how many segments are to be rendered for the last element
    */
   public transform(array: Array<MediaObjectScoreContainer>, count: number): [Array<MediaObjectScoreContainer>, number] {
-    if (!array || array.length === 0) {
+    if (!array || array.length === 0 || count === 0) {
       return [[], 0];
     }
-    if (!count) {
-      console.debug(`returning empty array since count is ${count}`);
-      return [[], 0];
-    }
-    console.debug(`limiting to ${count} elements`);
+    console.debug(`Limiting to ${count} media objects.`);
     const _return: Array<MediaObjectScoreContainer> = [];
     let _segmentsInLastObj = 0;
     let _segmentCount = 0;
