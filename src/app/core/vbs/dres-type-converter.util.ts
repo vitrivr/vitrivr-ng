@@ -130,7 +130,7 @@ export class DresTypeConverter {
       sortType: context,
       resultSetAvailability: 'top',
       results: list.map((s, i) => <QueryResult>{item: s.objectId, segment: s.sequenceNumber, score: s.score, rank: i}),
-      events: event.components.map(e => DresTypeConverter.mapAtomicEvent(e, event.timestamp))
+      events: event.components.map(e => DresTypeConverter.mapAtomicEvent(e, event.timestamp)).filter(e => e != null)
     }
 
     /* TODO: What happens with all the category stuff?*/
