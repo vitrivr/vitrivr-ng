@@ -40,9 +40,6 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   /** Local reference to the data source holding the query results.*/
   protected _dataSource: Observable<T> = EMPTY;
 
-  /** The number of items that should be displayed. */
-  protected _count: number = undefined;
-
   /**
    * Default constructor.
    *
