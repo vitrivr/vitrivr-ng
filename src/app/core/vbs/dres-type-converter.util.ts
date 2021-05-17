@@ -21,7 +21,7 @@ export class DresTypeConverter {
   public static mapEventStream(stream: Observable<InteractionEvent>): Observable<QueryEventLog> {
     return stream.pipe(
       map(e => {
-        return <QueryEventLog>{timestamp: e.timestamp, events: e.components.map(c => DresTypeConverter.mapAtomicEvent(c, e.timestamp))};
+        return <QueryEventLog>{timestamp: e.timestamp, events: e.components.map(c => DresTypeConverter.mapAtomicEvent(c, e.timestamp)).filter(c => c != null)};
       }),
       catchError((e, o) => {
         console.log('An error occurred when mapping an event from the event stream to a VbsSubmission: ' + e.message);
