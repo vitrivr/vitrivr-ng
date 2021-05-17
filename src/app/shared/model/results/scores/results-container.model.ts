@@ -194,15 +194,21 @@ export class ResultsContainer {
     return map;
   }
 
+  /**
+   * Check if the results should be reranked. This is done in order to avoid updating the frontend too often.
+   */
   public checkUpdate() {
     if (this._rerank > 0) {
       // check upper limit to avoid call in avalanche of responses
+      // we only rerank if there have been less than 100 calls in the last window
       if (this._rerank < 100) {
         this.rerank();
       } else { // mark unranked changes for next round
         this._rerank = 1;
       }
-    } else if (this._next > 0) { // else if as rerank already calls next
+      return
+    }
+    if (this._next > 0) {
       // check upper limit to avoid call in avalanche of responses
       if (this._next < 100) {
         this.next();
@@ -212,7 +218,9 @@ export class ResultsContainer {
     }
   }
 
-  // force update if there are changes, e.g. on query end
+  /**
+   * force update if there are changes, e.g. on query end
+   */
   public doUpdate() {
     if (this._rerank > 0) {
       this.rerank();

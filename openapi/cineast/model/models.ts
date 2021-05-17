@@ -22,6 +22,8 @@ export * from './ping';
 export * from './queryComponent';
 export * from './queryConfig';
 export * from './queryTerm';
+export * from './selectResult';
+export * from './selectSpecification';
 export * from './sessionState';
 export * from './similarityQuery';
 export * from './similarityQueryResult';
