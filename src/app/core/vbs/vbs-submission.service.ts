@@ -165,12 +165,12 @@ export class VbsSubmissionService {
           /* Submit Log entry to DRES. */
           return this._dresLog.postLogQuery(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting interaction log to VBS server.`);
+              console.log(`Submitting interaction log to DRES.`);
               this._interactionLogTable.add(submission);
             }),
             catchError((err) => {
               this._interactionLogTable.add(submission);
-              return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
             })
           );
         })
@@ -190,10 +190,10 @@ export class VbsSubmissionService {
           /* Do some logging and catch HTTP errors. */
           return this._dresLog.postLogResult(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting result log to VBS server.`);
+              console.log(`Submitting result log to DRES.`);
             }),
             catchError((err) => {
-              return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
             })
           );
         })
