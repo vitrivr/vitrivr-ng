@@ -281,7 +281,7 @@ export class VbsSubmissionService {
         }
         if (this._dres) {
           // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
-          // id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
+          id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
           // params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
           params = new HttpParams().set('item', String(id)).set('frame', String(frame));
         }
