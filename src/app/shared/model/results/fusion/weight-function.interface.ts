@@ -1,6 +1,6 @@
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {MediaObjectScoreContainer} from '../scores/media-object-score-container.model';
-import {SegmentScoreContainer} from '../scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../scores/segment-score-container.model';
 
 
 /**
@@ -14,7 +14,6 @@ export interface FusionFunction {
    *
    * @param features Features to consider when calculating the score.
    * @param mediaObjectScoreContainer MediaObjectScoreContainer for which to calculate the score.
-   * @param containerId the query container id
    *
    * @return Weighted score for teh MediaObjectScoreContainer given the results
    */
@@ -25,11 +24,10 @@ export interface FusionFunction {
    *
    * @param features Features to consider when calculating the score.
    * @param segmentScoreContainer SegmentScoreContainer for which to calculate the score.
-   * @param containerId the query container id
    *
    * @return Weighted score for teh MediaObjectScoreContainer given the results
    */
-  scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: SegmentScoreContainer): number;
+  scoreForSegment(features: WeightedFeatureCategory[], segmentScoreContainer: MediaSegmentScoreContainer): number;
 
   /**
    * Human-readable name

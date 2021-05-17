@@ -6,7 +6,7 @@ import {CollabordinatorService} from '../core/vbs/collabordinator.service';
 import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
 
 @Component({
-  selector: 'api-status',
+  selector: 'app-api-status',
   template: `
     <span>
             <button mat-button [matMenuTriggerFor]="appMenu">
@@ -74,7 +74,7 @@ export class PingComponent {
    * Tries to re-connect to the Cineast service.
    */
   public reconnectCineast() {
-    this._factory.reconnect();
+    this._factory.reconnect(true);
   }
 
   /**

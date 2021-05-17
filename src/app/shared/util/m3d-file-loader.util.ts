@@ -4,10 +4,10 @@ import * as STLLoaderProto from 'three-stl-loader';
 
 /* UGLY: Load the model-file loaders. */
 
-let Loaders = THREE;
+const Loaders = THREE;
 OBJLoaderProto(Loaders);
-let OBJLoader = (Loaders as any).OBJLoader;
-let STLLoader = STLLoaderProto(Loaders);
+const OBJLoader = (Loaders as any).OBJLoader;
+const STLLoader = STLLoaderProto(Loaders);
 
 /* /UGLY */
 
@@ -38,15 +38,15 @@ export class Model3DFileLoader {
    * @param manager LoadingManager to use together with the loader class.
    */
   public static loadOBJFromPath(path: string, callback: Function, manager?: LoadingManager) {
-    let loader = new OBJLoader(manager);
+    const loader = new OBJLoader(manager);
     loader.load(path, (object: any) => {
       if (object) {
-        let geometry: THREE.Geometry = new THREE.Geometry();
+        const geometry: THREE.Geometry = new THREE.Geometry();
         object.traverse((child: any) => {
           if (child instanceof THREE.Mesh) {
             child.updateMatrix();
             if (child.geometry instanceof BufferGeometry) {
-              let partial = (new THREE.Geometry()).fromBufferGeometry(child.geometry);
+              const partial = (new THREE.Geometry()).fromBufferGeometry(child.geometry);
               geometry.merge(partial, child.matrix);
             } else if (child.geometry instanceof Geometry) {
               geometry.merge(child.geometry, child.matrix);
@@ -80,7 +80,7 @@ export class Model3DFileLoader {
    * @param manager LoadingManager to use together with the loader class.
    */
   public static loadSTLFromPath(path: string, callback: Function, manager?: LoadingManager) {
-    let loader = new STLLoader(manager);
+    const loader = new STLLoader(manager);
     loader.load(path, (geometry: any) => {
       if (geometry instanceof BufferGeometry) {
         callback(new THREE.Mesh(new THREE.Geometry().fromBufferGeometry(geometry), new THREE.MeshNormalMaterial()));
@@ -99,7 +99,7 @@ export class Model3DFileLoader {
    * @param manager LoadingManager to use together with the loader class.
    */
   public static loadFromFile(file: File, callback: Function, manager?: LoadingManager) {
-    let filename = file.name.toLowerCase();
+    const filename = file.name.toLowerCase();
     if (filename.endsWith('.obj')) {
       Model3DFileLoader.loadOBJFile(file, callback, manager);
     } else if (filename.endsWith('.stl')) {
@@ -118,7 +118,7 @@ export class Model3DFileLoader {
    * @param manager LoadingManager to use together with the loader class.
    */
   public static loadFromPath(path: string, callback: Function, manager?: LoadingManager) {
-    let lpath = path.toLowerCase();
+    const lpath = path.toLowerCase();
     if (lpath.endsWith('.obj')) {
       Model3DFileLoader.loadOBJFromPath(path, callback, manager);
     } else if (lpath.endsWith('.stl')) {

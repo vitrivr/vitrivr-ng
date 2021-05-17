@@ -1,13 +1,13 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MotionQueryTerm} from '../../../shared/model/queries/motion-query-term.model';
 import {MotionSketchDialogComponent} from './motion-sketch-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {MotionData} from './model/motion-data.model';
 import {first} from 'rxjs/operators';
 
 @Component({
-  selector: 'qt-motion',
+  selector: 'app-qt-motion',
   templateUrl: 'motion-query-term.component.html',
   styleUrls: ['motion-query-term.component.css']
 })

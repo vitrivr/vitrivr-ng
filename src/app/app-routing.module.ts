@@ -7,6 +7,7 @@ import {EvaluationComponent} from './evaluation/evaluation.component';
 import {MiniGalleryComponent} from './results/gallery/mini-gallery.component';
 import {ListComponent} from './results/list/list.component';
 import {TemporalListComponent} from './results/temporal/temporal-list.component';
+import {SegmentdetailsComponent} from './segmentdetails/segmentdetails.component';
 
 /**
  * Defines the application's routes.
@@ -15,6 +16,10 @@ const appRoutes: Routes = [
   {
     path: 'mediaobject/:objectId',
     component: ObjectdetailsComponent
+  },
+  {
+    path: 'mediasegment/:segmentId',
+    component: SegmentdetailsComponent
   },
   {path: 'evaluation', component: EvaluationSelectionComponent},
   {path: 'evaluation/:participant/:template/:name', component: EvaluationComponent},
@@ -28,7 +33,7 @@ const appRoutes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' })
   ],
   exports: [
     RouterModule

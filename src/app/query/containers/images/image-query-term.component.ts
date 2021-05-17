@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {SketchDialogComponent} from './sketch-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {ImageQueryTerm} from '../../../shared/model/queries/image-query-term.model';
 import {ResolverService} from '../../../core/basics/resolver.service';
 import {HttpClient} from '@angular/common/http';
@@ -8,7 +8,7 @@ import {MediaSegmentDragContainer} from '../../../shared/model/internal/media-se
 import {first} from 'rxjs/operators';
 
 @Component({
-  selector: 'qt-image',
+  selector: 'app-qt-image',
   templateUrl: 'image-query-term.component.html',
   styleUrls: ['image-query-term.component.css']
 })

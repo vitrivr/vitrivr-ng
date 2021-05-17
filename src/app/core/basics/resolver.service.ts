@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ConfigService} from './config.service';
-import {MediaType, MediaTypes} from '../../shared/model/media/media-type.model';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import {MediaObject} from '../../shared/model/media/media-object.model';
-import {MediaSegment} from '../../shared/model/media/media-segment.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaObjectDescriptor, MediaSegmentDescriptor} from '../../../../openapi/cineast';
+import {AppConfig} from '../../app.config';
 
 /**
  * Definition of the possible tokens that can be used to build the URL.
@@ -26,7 +24,7 @@ enum Token {
 @Injectable()
 export class ResolverService {
   /** A map containing the definition of file-suffices for thumbnails per mediatype */
-  private suffices: Map<MediaType, string> = new Map();
+  private suffices: Map<MediaObjectDescriptor.MediatypeEnum, string> = new Map();
 
   /** Host string used when resolving URL's to thumbnails. */
   private host_thumbnails: string;
@@ -46,24 +44,41 @@ export class ResolverService {
     Token.SUFFIX
   ].join('|') + ')', 'g');
 
+  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
+    switch (mediatype) {
+      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
+        return 'a_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
+        return 'i_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
+        return 'is_';
+      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
+        return 'm_';
+      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
+        return 'v_';
+      default:
+        return '';
+    }
+  }
+
   /**
    * Default constructor; Initializes the map of suffixes per media-type based on
    * the configuration.
    *
    * @param _configService ConfigService reference; injected.
    */
-  constructor(_configService: ConfigService) {
-    _configService.asObservable().subscribe((config) => {
+  constructor(_configService: AppConfig) {
+    _configService.configAsObservable.subscribe((config) => {
       this.host_thumbnails = config.get('resources.host_thumbnails');
       this.host_objects = config.get('resources.host_objects');
-      let default_suffix: string = config.get('resources.suffix_default');
-      let suffices = config.get('resources.suffix');
-      for (let type of MediaTypes) {
-        let suffix: string = suffices[type];
-        if (typeof suffix == 'string') {
-          this.suffices.set(type, (suffix.charAt(0) == '.' ? '' : '.') + suffix);
+      const default_suffix: string = config.get('resources.suffix_default');
+      const suffices = config.get('resources.suffix');
+      for (const type of Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key])) {
+        const suffix: string = suffices[type];
+        if (typeof suffix === 'string') {
+          this.suffices.set(type, (suffix.charAt(0) === '.' ? '' : '.') + suffix);
         } else {
-          this.suffices.set(type, (default_suffix.charAt(0) == '.' ? '' : '.') + default_suffix);
+          this.suffices.set(type, (default_suffix.charAt(0) === '.' ? '' : '.') + default_suffix);
         }
       }
     });
@@ -74,8 +89,8 @@ export class ResolverService {
    *
    * @param object The MediaObject for which to return the path.
    */
-  public pathToObject(object: MediaObject) {
-    let rep = {};
+  public pathToObject(object: MediaObjectDescriptor) {
+    const rep = {};
     rep[Token.OBJECT_ID] = object.objectId;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
@@ -88,12 +103,12 @@ export class ResolverService {
   /**
    * Resolves and returns the absolute path / URL to the thumbnail of a given combination of MediaSegment and MediaObject.
    *
-   * @param {MediaObject} object The MediaObject for which to return the path / URL
-   * @param {MediaSegment} segment The MediaSegment for which to return the path / URL
+   * @param {object} object The MediaObject for which to return the path / URL
+   * @param {segment} segment The MediaSegment for which to return the path / URL
    * @return {string}
    */
-  public pathToThumbnail(object: MediaObject, segment: MediaSegment) {
-    let rep = {};
+  public pathToThumbnail(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor) {
+    const rep = {};
     rep[Token.OBJECT_ID] = object.objectId;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
@@ -104,8 +119,8 @@ export class ResolverService {
     return this.host_thumbnails.replace(this._regex, (match) => rep[match] || match);
   }
 
-  public pathToSegment(segment: SegmentScoreContainer) {
-    let rep = {};
+  public pathToSegment(segment: MediaSegmentScoreContainer) {
+    const rep = {};
     rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
     rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;
     rep[Token.OBJECT_PATH] = segment.objectScoreContainer.path;
@@ -115,23 +130,5 @@ export class ResolverService {
     rep[Token.SEGMENT_ID] = segment.segmentId;
     rep[Token.SEGMENT_ID_NO_PREFIX] = segment.segmentId.replace(ResolverService.prefixForMediatype(segment.objectScoreContainer.mediatype), '');
     return this.host_objects.replace(this._regex, (match) => rep[match] || match);
-  }
-
-
-  private static prefixForMediatype(mediatype: MediaType) {
-    switch (mediatype) {
-      case 'AUDIO':
-        return 'a_';
-      case 'IMAGE':
-        return 'i_';
-      case 'IMAGE_SEQUENCE':
-        return 'is_';
-      case 'MODEL3D':
-        return 'm_';
-      case 'VIDEO':
-        return 'v_';
-      default:
-        return '';
-    }
   }
 }

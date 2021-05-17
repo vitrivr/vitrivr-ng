@@ -5,91 +5,20 @@ export class EvaluationRating {
   /** The relevance per feature category. */
   private _per_category_relevance: { [key: string]: number; };
 
-  /**
-   * Default constructor of EvaluationRating
-   *
-   * @param objectId
-   * @param segmentId
-   * @param rank
-   * @param relevance
-   */
-  constructor(objectId: String, segmentId: String, rank: number, relevance: number, per_category_relevance: { [key: string]: number; }) {
-    this._objectId = objectId;
-    this._segmentId = segmentId;
-    this._rank = rank;
-    this._relevance = relevance;
-    this._per_category_relevance = per_category_relevance;
-  }
-
   /** ID of the rated multimedia object. */
   private _objectId: String;
 
-  /**
-   * Getter for object ID.
-   *
-   * @return {String}
-   */
-  get objectId() {
-    return this._segmentId;
-  }
-
   /** ID of the rated multimedia segment. */
-  private _segmentId: String;
-
-  /**
-   * Getter for segment ID.
-   *
-   * @return {String}
-   */
-  get segmentId() {
-    return this._segmentId;
-  }
+  private readonly _segmentId: String;
 
   /** Rank of the item in the list of results (zero based). */
-  private _rank;
-
-  /**
-   * Getter for rank.
-   *
-   * @return {number}
-   */
-  get rank() {
-    return this._rank;
-  }
+  private readonly _rank;
 
   /** The relevance of the item as determined by Cineast. */
-  private _relevance: number;
-
-  /**
-   * Getter for relevance.
-   *
-   * @return {number}
-   */
-  get relevance() {
-    return this._relevance;
-  }
+  private readonly _relevance: number;
 
   /** User rating between 0 and 3. Defaults to -1, which is equal to not rated. */
   private _rating = -1;
-
-  /**
-   * Getter for rating.
-   *
-   * @returns {any}
-   */
-  get rating() {
-    return this._rating;
-  }
-
-  /**
-   * Setter for rating.
-   * @param value
-   */
-  set rating(value) {
-    if (value >= 0 && value <= 3) {
-      this._rating = value;
-    }
-  }
 
   /**
    * Creates and returns a compact object representation of the EvaluationSet (no
@@ -112,13 +41,44 @@ export class EvaluationRating {
   /**
    * Deserialises an EvaluationRating from a plain JavaScript object. The field-names in the object must
    * correspond to the field names of the EvaluationSet, without the _ prefix.
-   *
-   * @param object
-   * @return {EvaluationRating}
    */
   public static deserialise(object: any): EvaluationRating {
-    let rating = new EvaluationRating(object['objectId'], object['segmentId'], object['rank'], object['relevance'], object['per_category_relevance']);
+    const rating = new EvaluationRating(object['objectId'], object['segmentId'], object['rank'], object['relevance'], object['per_category_relevance']);
     rating._rating = object['rating'];
     return rating;
+  }
+
+  constructor(objectId: String, segmentId: String, rank: number, relevance: number, per_category_relevance: { [key: string]: number; }) {
+    this._objectId = objectId;
+    this._segmentId = segmentId;
+    this._rank = rank;
+    this._relevance = relevance;
+    this._per_category_relevance = per_category_relevance;
+  }
+
+  get objectId() {
+    return this._segmentId;
+  }
+
+  get segmentId() {
+    return this._segmentId;
+  }
+
+  get rank() {
+    return this._rank;
+  }
+
+  get relevance() {
+    return this._relevance;
+  }
+
+  get rating() {
+    return this._rating;
+  }
+
+  set rating(value) {
+    if (value >= 0 && value <= 3) {
+      this._rating = value;
+    }
   }
 }

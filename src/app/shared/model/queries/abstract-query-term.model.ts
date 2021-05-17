@@ -1,5 +1,5 @@
 import {QueryTermInterface} from './interfaces/query-term.interface';
-import {QueryTermType} from './interfaces/query-term-type.interface';
+import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
 
 export abstract class AbstractQueryTerm implements QueryTermInterface {
   /**
@@ -13,7 +13,7 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
    * @param type Type of the QueryTerm
    * @param categories Default categories
    */
-  protected constructor(public readonly type: QueryTermType, public readonly categories: string[] = []) {
+  protected constructor(public readonly type: QueryTerm.TypeEnum, public readonly categories: string[] = []) {
   }
 
 
@@ -25,7 +25,7 @@ export abstract class AbstractQueryTerm implements QueryTermInterface {
    */
   public pushCategory(category: string) {
     const index: number = this.categories.indexOf(category);
-    if (index == -1) {
+    if (index === -1) {
       this.categories.push(category);
     }
   }

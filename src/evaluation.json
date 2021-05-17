@@ -1,22 +1,26 @@
 {
-  "_name" : "Default Evaluation Template",
-  "_description" : "This is the default evaluation template.",
-  "_scenarios" : [
+  "_name": "Default Evaluation Template",
+  "_description": "This is the default evaluation template.",
+  "_scenarios": [
     {
-      "_id" : 1,
-      "_name" : "3D model / Airplanes",
-      "_description" : "Look for 3D models of airplanes.",
-      "_k" : 15,
-      "_material" : [
-        {"_name" : "Test", "_url" : "http://www.test.ch", "_description" : "This is a description."}
+      "_id": 1,
+      "_name": "3D model / Airplanes",
+      "_description": "Look for 3D models of airplanes.",
+      "_k": 15,
+      "_material": [
+        {
+          "_name": "Test",
+          "_url": "http://www.test.ch",
+          "_description": "This is a description."
+        }
       ]
     },
     {
-      "_id" : 2,
-      "_name" : "3D model / Airplanes",
-      "_description" : "Look for 3D models of airplanes.",
-      "_k" : 15,
-      "_material" : []
+      "_id": 2,
+      "_name": "3D model / Airplanes",
+      "_description": "Look for 3D models of airplanes.",
+      "_k": 15,
+      "_material": []
     }
   ]
 }

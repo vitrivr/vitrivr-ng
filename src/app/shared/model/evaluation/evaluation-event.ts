@@ -1,8 +1,6 @@
 export type EventType = 'STARTED' | 'ENDED' | 'FEATURE_AVAILABLE';
 
 export class EvaluationEvent {
-  constructor(public readonly queryId: string, public readonly time: Date, public readonly type: EventType, public readonly context: string) {
-  }
 
   /**
    * Creates and returns a compact object representation of the EvaluationEvent (no
@@ -29,5 +27,8 @@ export class EvaluationEvent {
    */
   public static deserialise(object: any): EvaluationEvent {
     return new EvaluationEvent(object['queryId'], object['time'], object['type'], object['context']);
+  }
+
+  constructor(public readonly queryId: string, public readonly time: Date, public readonly type: EventType, public readonly context: string) {
   }
 }

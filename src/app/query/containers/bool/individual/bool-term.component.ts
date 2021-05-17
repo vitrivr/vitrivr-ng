@@ -1,7 +1,7 @@
 import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {BoolTerm} from './bool-term';
 
 @Component({
@@ -49,7 +49,7 @@ export class BoolTermComponent implements OnInit {
    * By default, the operator is set to equals since that is supported by all boolean types
    */
   get operatorValue(): BoolOperator {
-    if (this.currentOperator == null) {
+    if (this.currentOperator === null) {
       return BoolOperator.EQ;
     }
     return this.currentOperator;
@@ -124,8 +124,8 @@ export class BoolTermComponent implements OnInit {
   }
 
 
-  private attributeIsText(attr: BoolAttribute) {
-    return attr.valueType.valueOf() == 2 || attr.valueType.valueOf() == 3;
+  attributeIsText(attr: BoolAttribute) {
+    return attr.valueType.valueOf() === 2 || attr.valueType.valueOf() === 3;
   }
 
   /**
@@ -154,14 +154,14 @@ export class BoolTermComponent implements OnInit {
       case ValueType.DATE:
       case ValueType.NUMERIC:
       case ValueType.TEXT:
-        if (this.term.values && this.term.values != []) {
+        if (this.term.values && this.term.values !== []) {
           this.inputValue = this.term.values[0];
         } else {
           this.inputValue = '';
         }
         break;
       case ValueType.RANGE:
-        if (this.term.values && this.term.values != []) {
+        if (this.term.values && this.term.values !== []) {
           const min = this.term.values[0];
           const max = this.term.values[1];
           this.minValue = min;
@@ -172,13 +172,13 @@ export class BoolTermComponent implements OnInit {
         }
         break;
     }
-    if (this.currentAttributeObservable.getValue().valueType == ValueType.RANGE) {
+    if (this.currentAttributeObservable.getValue().valueType === ValueType.RANGE) {
       this.updateRangeValue();
     }
     this.updateTerm();
   }
 
   isOption(): boolean {
-    return this.attribute.valueType.valueOf() == 0 || this.attribute.valueType.valueOf() == 5;
+    return this.attribute.valueType.valueOf() === 0 || this.attribute.valueType.valueOf() === 5;
   }
 }

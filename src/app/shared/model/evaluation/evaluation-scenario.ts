@@ -2,6 +2,24 @@ import {EvaluationMaterial} from './evaluation-material';
 
 export class EvaluationScenario {
 
+  /** Default K value to calculate p@K and number of items a user is supposed to rate. */
+  private readonly _id: string;
+
+  /** Name of the evaluation scenario. */
+  private readonly _name: string;
+
+  /** Description of the evaluation scenario. Can be HTML! */
+  private readonly _description: string;
+
+  /** Default K value to calculate p@K and number of items a user is supposed to rate. */
+  private readonly _k = 15;
+
+  /** Array containing the material that can be used to fulfill the scenario. */
+  private readonly _material: EvaluationMaterial[] = [];
+
+  /** Array containing the material that can is used as illustration. */
+  private readonly _illustrations: EvaluationMaterial[] = [];
+
 
   /**
    *
@@ -21,9 +39,6 @@ export class EvaluationScenario {
     this._material = material;
   }
 
-  /** Default K value to calculate p@K and number of items a user is supposed to rate. */
-  private _id: string;
-
   /**
    * Getter for description.
    *
@@ -32,9 +47,6 @@ export class EvaluationScenario {
   get id(): string {
     return this._id;
   }
-
-  /** Name of the evaluation scenario. */
-  private _name: string;
 
   /**
    * Getter for description.
@@ -45,9 +57,6 @@ export class EvaluationScenario {
     return this._name;
   }
 
-  /** Description of the evaluation scenario. Can be HTML! */
-  private _description: string;
-
   /**
    * Getter for description.
    *
@@ -56,9 +65,6 @@ export class EvaluationScenario {
   get description(): string {
     return this._description;
   }
-
-  /** Default K value to calculate p@K and number of items a user is supposed to rate. */
-  private _k: number = 15;
 
   /**
    * Getter for K.
@@ -69,9 +75,6 @@ export class EvaluationScenario {
     return this._k;
   }
 
-  /** Array containing the material that can be used to fulfill the scenario. */
-  private _material: EvaluationMaterial[] = [];
-
   /**
    * Getter for material.
    *
@@ -80,9 +83,6 @@ export class EvaluationScenario {
   get material(): EvaluationMaterial[] {
     return this._material;
   }
-
-  /** Array containing the material that can is used as illustration. */
-  private _illustrations: EvaluationMaterial[] = [];
 
   /**
    * Getter for illustrations

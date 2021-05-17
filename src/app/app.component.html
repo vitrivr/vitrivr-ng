@@ -1,77 +1,80 @@
 <mat-toolbar color="primary">
-  <img src="../assets/images/vitrivr_logo.png">
+    <img src="../assets/images/vitrivr_logo.png">
 
-  <span class="spacer-flex"></span>
+    <span class="spacer-flex"></span>
 
-  <button (click)="querysidenav.toggle()" mat-icon-button matTooltip="Toggle query sidebar">
-    <mat-icon>search</mat-icon>
-  </button>
+    <button (click)="querysidenav.toggle()" mat-icon-button matTooltip="Toggle query sidebar">
+        <mat-icon>search</mat-icon>
+    </button>
 
-  <span class="spacer-xlarge"></span>
+    <span class="spacer-xlarge"></span>
 
-  <a *ngIf="!(config|async).get('competition.teamid')" mat-icon-button matTooltip="Gallery view" routerLink="/gallery"
-     routerLinkActive="active" skipLocationChange="true">
-    <mat-icon>grid_on</mat-icon>
-  </a>
+    <a *ngIf="!(config|async).get('competition.teamid')" mat-icon-button matTooltip="Gallery view" routerLink="/gallery"
+       routerLinkActive="active" skipLocationChange="true">
+        <mat-icon>grid_on</mat-icon>
+    </a>
 
-  <span class="spacer-medium"></span>
+    <span class="spacer-medium"></span>
 
-  <a mat-icon-button matTooltip="Mini-gallery view" routerLink="/mini-gallery" routerLinkActive="active"
-     skipLocationChange="true">
-    <mat-icon>view_comfy</mat-icon>
-  </a>
+    <a mat-icon-button matTooltip="Mini-gallery view" routerLink="/mini-gallery" routerLinkActive="active"
+       skipLocationChange="true">
+        <mat-icon>view_comfy</mat-icon>
+    </a>
 
-  <span class="spacer-medium"></span>
+    <span class="spacer-medium"></span>
 
-  <a mat-icon-button matTooltip="List view" routerLink="/list" routerLinkActive="active" skipLocationChange="true">
-    <mat-icon>list</mat-icon>
-  </a>
+    <a mat-icon-button matTooltip="List view" routerLink="/list" routerLinkActive="active" skipLocationChange="true">
+        <mat-icon>list</mat-icon>
+    </a>
 
-  <span class="spacer-medium"></span>
+    <span class="spacer-medium"></span>
 
-  <a mat-icon-button matTooltip="Temporal Scoring view" routerLink="/temporal-list" routerLinkActive="active"
-     skipLocationChange="true">
-    <mat-icon>filter_list</mat-icon>
-  </a>
+    <a mat-icon-button matTooltip="Temporal Scoring view" routerLink="/temporal-list" routerLinkActive="active"
+       skipLocationChange="true">
+        <mat-icon>filter_list</mat-icon>
+    </a>
 
-  <span class="spacer-xlarge"></span>
+    <span class="spacer-xlarge"></span>
 
-  <a *ngIf="(config|async).get('evaluation.active')" mat-icon-button matTooltip="Navigate to evaluation module" routerLink="/evaluation"
-     routerLinkActive="active" skipLocationChange="true">
-    <mat-icon>assessment</mat-icon>
-  </a>
+    <a *ngIf="(config|async).get('evaluation.active')" mat-icon-button matTooltip="Navigate to evaluation module"
+       routerLink="/evaluation"
+       routerLinkActive="active" skipLocationChange="true">
+        <mat-icon>assessment</mat-icon>
+    </a>
 
-  <span *ngIf="(config|async).get('evaluation.active')" class="spacer-medium"></span>
+    <span *ngIf="(config|async).get('evaluation.active')" class="spacer-medium"></span>
 
-  <button (click)="showHistory()" mat-icon-button matTooltip="Show query history.">
-    <mat-icon>history</mat-icon>
-  </button>
+    <button (click)="showHistory()" mat-icon-button matTooltip="Show query history.">
+        <mat-icon>history</mat-icon>
+    </button>
 
-  <button (click)="featuressidenav.toggle()" mat-icon-button matTooltip="Toggle query refinement sidebar">
-    <mat-icon>storage</mat-icon>
-  </button>
+    <button (click)="settingssidenav.toggle()" mat-icon-button [matBadge]="settingsbadge"
+            matTooltip="Toggle query refinement sidebar">
+        <mat-icon>storage</mat-icon>
+    </button>
 
-  <span class="spacer-flex"></span>
+    <span class="spacer-flex"></span>
 
-  <api-status>
-    <mat-icon>av timer</mat-icon>
-  </api-status>
+    <app-api-status>
+        <mat-icon>av timer</mat-icon>
+    </app-api-status>
 </mat-toolbar>
 
 <div>
-  <mat-progress-bar *ngIf="(loading|async)" [attr.color]="'accent'" mode="query"></mat-progress-bar>
+    <mat-progress-bar *ngIf="(loading|async)" [attr.color]="'accent'" mode="query"></mat-progress-bar>
 </div>
 
 <mat-sidenav-container fullscreen style="margin-top:75px;">
-  <mat-sidenav #querysidenav [opened]="true" class="left" mode="side">
-    <app-query-sidebar></app-query-sidebar>
-  </mat-sidenav>
+    <mat-sidenav #querysidenav [opened]="true" class="left" mode="side">
+        <app-query-sidebar></app-query-sidebar>
+    </mat-sidenav>
 
-  <mat-sidenav-content id="scrollable">
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
+    <mat-sidenav-content id="scrollable">
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
 
-  <mat-sidenav #featuressidenav class="right" mode="side" position="end">
-    <settings></settings>
-  </mat-sidenav>
+    <mat-sidenav (openedChange)="settingsComponent.toggled($event)" #settingssidenav class="right" mode="side"
+                 position="end">
+        <app-settings #settingsComponent></app-settings>
+    </mat-sidenav>
 </mat-sidenav-container>

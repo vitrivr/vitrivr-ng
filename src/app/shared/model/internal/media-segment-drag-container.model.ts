@@ -1,7 +1,5 @@
-import {MediaType} from '../media/media-type.model';
-import {MediaSegment} from '../media/media-segment.model';
-import {SegmentScoreContainer} from '../results/scores/segment-score-container.model';
-import {MediaObject} from '../media/media-object.model';
+import {MediaSegmentScoreContainer} from '../results/scores/segment-score-container.model';
+import {MediaObjectDescriptor, MediaSegmentDescriptor} from '../../../../../openapi/cineast';
 
 /**
  * This is an internal helper class used for Drag & Drop operatoin. It contains information on a dragged MediaSegment.
@@ -11,32 +9,6 @@ export class MediaSegmentDragContainer {
   public static FORMAT = 'application/vitrivr-mediasegment';
 
   /**
-   *
-   * @param {MediaType} _object The MediaObject packaged in this MediaSegmentDragContainer
-   * @param {MediaSegment} _segment The MediaSegment packaged in this MediaSegmentDragContainer
-   */
-  private constructor(private _object: MediaObject, private _segment: MediaSegment) {
-  }
-
-  /**
-   * Getter for mediatype
-   *
-   * @return {MediaType}
-   */
-  get object(): MediaObject {
-    return this._object;
-  }
-
-  /**
-   * Getter for segment.
-   *
-   * @return {MediaSegment}
-   */
-  get segment(): MediaSegment {
-    return this._segment;
-  }
-
-  /**
    * Creates a new MediaSegmentDragContainer from a provided JSON string. The JSON must contain they
    * keys 'mediatype' and 'segment'.
    *
@@ -44,18 +16,35 @@ export class MediaSegmentDragContainer {
    * @return {MediaSegmentDragContainer} Resulting MediaSegmentDragContainer.
    */
   public static fromJSON(json: string): MediaSegmentDragContainer {
-    let object = JSON.parse(json);
+    const object = JSON.parse(json);
     return new MediaSegmentDragContainer(object['object'], object['segment']);
   }
 
   /**
    * Creates a new MediaSegmentDragContainer from a provided SegmentScoreContainer.
    *
-   * @param {SegmentScoreContainer} container The SegmentScoreContainer that should be transformed.
+   * @param {MediaSegmentScoreContainer} container The SegmentScoreContainer that should be transformed.
    * @return {MediaSegmentDragContainer} Resulting MediaSegmentDragContainer.
    */
-  public static fromScoreContainer(container: SegmentScoreContainer): MediaSegmentDragContainer {
+  public static fromScoreContainer(container: MediaSegmentScoreContainer): MediaSegmentDragContainer {
     return new MediaSegmentDragContainer(container.objectScoreContainer, container);
+  }
+
+  public constructor(private _object: MediaObjectDescriptor, private _segment: MediaSegmentDescriptor) {
+  }
+
+  /**
+   * Getter for mediatype
+   */
+  get object(): MediaObjectDescriptor {
+    return this._object;
+  }
+
+  /**
+   * Getter for segment.
+   */
+  get segment(): MediaSegmentDescriptor {
+    return this._segment;
   }
 
   /**

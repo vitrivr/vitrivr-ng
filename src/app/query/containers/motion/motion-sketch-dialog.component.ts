@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import {MatDialogRef} from '@angular/material/dialog';
 import {TrackingSketchCanvasComponent} from '../../../shared/components/sketch/tracking-sketch-canvas.component';
 import {MotionData} from './model/motion-data.model';
 import {MotionArrowFactory} from './model/motion-arrow-factory.model';
@@ -9,7 +9,7 @@ import {Point} from '../../../shared/components/sketch/model/point.model';
 
 @Component({
 
-  selector: 'motion-sketchpad',
+  selector: 'app-motion-sketchpad',
   templateUrl: 'motion-sketch-dialog.component.html',
 })
 export class MotionSketchDialogComponent implements AfterViewInit {
@@ -69,11 +69,11 @@ export class MotionSketchDialogComponent implements AfterViewInit {
    *  Triggered whenever someone clicks the 'Save' button; Closes the dialog.
    */
   public onSaveClicked() {
-    let motion = <MotionData>{foreground: [], background: []};
-    for (let drawable of this._sketchpad.drawables) {
+    const motion = <MotionData>{foreground: [], background: []};
+    for (const drawable of this._sketchpad.drawables) {
       if (drawable instanceof MotionArrow) {
-        let normalised: Point[] = [];
-        for (let p of drawable.points) {
+        const normalised: Point[] = [];
+        for (const p of drawable.points) {
           normalised.push(new Point(p.x / this._sketchpad.width, p.y / this._sketchpad.height))
         }
         if (drawable.type == 'FOREGROUND') {

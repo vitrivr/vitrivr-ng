@@ -1,15 +1,14 @@
-import {VbsResult} from '../vbs/interfaces/vbs-result.model';
 import {LscResult} from './interfaces/lsc-result.model';
 import {VbsResultsLog} from '../../../core/vbs/vbs-results-log.model';
 import {LscSubmission} from './interfaces/lsc-submission.model';
-import {SegmentScoreContainer} from '../results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../results/scores/segment-score-container.model';
 import {InteractionEvent} from '../events/interaction-event.model';
 import {InteractionEventType} from '../events/interaction-event-type.model';
 
 export class LscUtil {
 
 
-  static mapSegmentScoreContainer(team: string, memberId: number, context: string, list: SegmentScoreContainer[], event: InteractionEvent): LscSubmission {
+  static mapSegmentScoreContainer(team: string, memberId: number, context: string, list: MediaSegmentScoreContainer[], event: InteractionEvent): LscSubmission {
     const _categories: string[] = [];
     const _types: string[] = [];
     const _results: LscResult[] = [];

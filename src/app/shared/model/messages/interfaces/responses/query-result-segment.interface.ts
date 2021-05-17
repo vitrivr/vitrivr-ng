@@ -1,9 +1,9 @@
 import {QueryResult} from './query-result.interface';
-import {MediaSegment} from '../../../media/media-segment.model';
+import {MediaSegmentDescriptor} from '../../../../../../../openapi/cineast';
 
 /**
  *
  */
 export interface SegmentQueryResult extends QueryResult {
-  content: MediaSegment[],
+  content: MediaSegmentDescriptor[],
 }

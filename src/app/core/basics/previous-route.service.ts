@@ -25,6 +25,11 @@ export class PreviousRouteService {
     return this.previousUrl;
   }
 
+  public goToRoot() {
+    console.debug(`navigating to root`)
+    this._router.navigate(['/'])
+  }
+
   public goToPrevious() {
     console.debug(`navigating to previous location: ${this.getPreviousRoute()}`);
     this._router.navigate([this.getPreviousRoute()], {skipLocationChange: true})

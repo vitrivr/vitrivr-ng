@@ -1,10 +1,10 @@
 import {Component, Input} from '@angular/core';
 import {TextQueryTerm} from '../../../shared/model/queries/text-query-term.model';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import {ConfigService} from '../../../core/basics/config.service';
+import {MatCheckboxChange} from '@angular/material/checkbox';
+import {AppConfig} from '../../../app.config';
 
 @Component({
-  selector: 'qt-text',
+  selector: 'app-qt-text',
   templateUrl: 'text-query-term.component.html',
   styleUrls: ['text-query-term.component.css']
 })
@@ -26,8 +26,8 @@ export class TextQueryTermComponent {
    *
    * @param _configService
    */
-  constructor(_configService: ConfigService) {
-    _configService.subscribe(c => {
+  constructor(_configService: AppConfig) {
+    _configService.configAsObservable.subscribe(c => {
       this.categories.length = 0;
       c.get<[string, string][]>('query.text.categories').forEach(v => {
         this.categories.push(v)

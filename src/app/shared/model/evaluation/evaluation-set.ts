@@ -9,6 +9,80 @@ export class EvaluationSet {
   /** ID of the evaluation set. Required for unique identification. */
   private _id: string;
 
+  /** URL of the evaluation template that was used to create the set. */
+  private _template: string;
+
+  /** Name of the participant. */
+  private _name: string;
+
+  /** Current / active evaluation. Should correspond with the position. */
+  private _current: Evaluation;
+
+  /** Current position in the evaluation set. */
+  private _position = 0;
+
+  /**
+   * Creates and returns a compact object representation of the EvaluationSet (no
+   * type). This representation can be used for serialisation.
+   *
+   * @param set EvaluationSet that should be serialised
+   * @return {{segmentId: string, template: string, evaluations: Array}}
+   */
+  public static serialise(set: EvaluationSet): any {
+    const object = {
+      id: set._id,
+      template: set._template,
+      position: set._position,
+      name: set._name,
+      evaluations: []
+    };
+    for (const evaluation of set._evaluations) {
+      object.evaluations.push(Evaluation.serialise(evaluation));
+    }
+    return object;
+  }
+
+  /**
+   * Deserialises an EvaluationSet from a plain JavaScript object. The field-names in the object must
+   * correspond to the field names of the EvaluationSet, without the _ prefix.
+   *
+   * @param object
+   * @return {EvaluationSet}
+   */
+  public static deserialise(object: any): EvaluationSet {
+    const set = new EvaluationSet();
+    set._id = object['id'];
+    set._template = object['template'];
+    set._name = object['name'];
+    set._evaluations = [];
+    for (const evaluation of object['evaluations']) {
+      set._evaluations.push(Evaluation.deserialise(evaluation));
+    }
+    set._position = object['position'];
+    set._current = set._evaluations[set._position];
+    return set;
+  }
+
+  /**
+   * Constructs and returns a new EvaluationSet from an EvaluationTemplate.
+   *
+   * @param id ID of the new EvaluationSet. That ID should identify the participant.
+   * @param template The EvaluationTemplate that should be used.
+   * @param name Optional name of the participant
+   */
+  public static fromTemplate(id: string, template: EvaluationTemplate, name?: string): EvaluationSet {
+    const set = new EvaluationSet();
+    set._id = id;
+    set._template = template.uri;
+    for (let i = 0; i < template.numberOfScenarios(); i++) {
+      set._evaluations.push(Evaluation.fromScenario(template.evaluationScenario(i)));
+    }
+    set._position = 0;
+    set._current = set._evaluations[0];
+    set._name = name ? name : 'anonymous';
+    return set
+  }
+
   /**
    * Getter for ID.
    *
@@ -17,9 +91,6 @@ export class EvaluationSet {
   get id(): string {
     return this._id;
   }
-
-  /** URL of the evaluation template that was used to create the set. */
-  private _template: string;
 
   /**
    * Getter for template.
@@ -30,9 +101,6 @@ export class EvaluationSet {
     return this._template;
   }
 
-  /** Name of the participant. */
-  private _name: string;
-
   /**
    * Getter for name.
    * s
@@ -42,9 +110,6 @@ export class EvaluationSet {
     return this._name;
   }
 
-  /** Current / active evaluation. Should correspond with the position. */
-  private _current: Evaluation;
-
   /**
    * Getter for current.
    *
@@ -53,9 +118,6 @@ export class EvaluationSet {
   get current(): Evaluation {
     return this._current;
   }
-
-  /** Current position in the evaluation set. */
-  private _position = 0;
 
   /**
    * Getter for position.
@@ -77,68 +139,6 @@ export class EvaluationSet {
       this._position = position;
       this._current = this._evaluations[this._position];
     }
-  }
-
-  /**
-   * Creates and returns a compact object representation of the EvaluationSet (no
-   * type). This representation can be used for serialisation.
-   *
-   * @param set EvaluationSet that should be serialised
-   * @return {{segmentId: string, template: string, evaluations: Array}}
-   */
-  public static serialise(set: EvaluationSet): any {
-    let object = {
-      id: set._id,
-      template: set._template,
-      position: set._position,
-      name: set._name,
-      evaluations: []
-    };
-    for (let evaluation of set._evaluations) {
-      object.evaluations.push(Evaluation.serialise(evaluation));
-    }
-    return object;
-  }
-
-  /**
-   * Deserialises an EvaluationSet from a plain JavaScript object. The field-names in the object must
-   * correspond to the field names of the EvaluationSet, without the _ prefix.
-   *
-   * @param object
-   * @return {EvaluationSet}
-   */
-  public static deserialise(object: any): EvaluationSet {
-    let set = new EvaluationSet();
-    set._id = object['id'];
-    set._template = object['template'];
-    set._name = object['name'];
-    set._evaluations = [];
-    for (let evaluation of object['evaluations']) {
-      set._evaluations.push(Evaluation.deserialise(evaluation));
-    }
-    set._position = object['position'];
-    set._current = set._evaluations[set._position];
-    return set;
-  }
-
-  /**
-   * Constructs and returns a new EvaluationSet from an EvaluationTemplate.
-   *
-   * @param id ID of the new EvaluationSet. That ID should identify the participant.
-   * @param template The EvaluationTemplate that should be used.
-   * @param name Optional name of the participant
-   */
-  public static fromTemplate(id: string, template: EvaluationTemplate, name?: string): EvaluationSet {
-    let set = new EvaluationSet();
-    set._id = id;
-    set._template = template.uri;
-    for (let i = 0; i < template.numberOfScenarios(); i++) {
-      set._evaluations.push(Evaluation.fromScenario(template.evaluationScenario(i)));
-    }
-    set._position = 0;
-    set._current = set._evaluations[0];
-    set._name = name ? name : 'anonymous';
-    return set
   }
 
   /**
@@ -178,7 +178,7 @@ export class EvaluationSet {
    * @return {boolean}
    */
   public finished(): boolean {
-    for (let evaluation of this._evaluations) {
+    for (const evaluation of this._evaluations) {
       if (evaluation.state !== EvaluationState.Finished) {
         return false;
       }

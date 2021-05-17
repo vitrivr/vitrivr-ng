@@ -2,6 +2,8 @@ deploy.log
 
 src/app/**/*.js
 src/app/**/*.map
+src/app/core/openapi/**
+!src/app/core/openapi/.gitkeep
 
 # compiled output
 /dist
@@ -47,3 +49,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# DRES Client Bindings
+openapi/dres/

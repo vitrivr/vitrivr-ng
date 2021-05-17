@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {TemporalDistanceComponent} from './temporal-distance.component';
 
@@ -6,7 +6,7 @@ describe('TemporalDistanceComponent', () => {
   let component: TemporalDistanceComponent;
   let fixture: ComponentFixture<TemporalDistanceComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TemporalDistanceComponent]
     })

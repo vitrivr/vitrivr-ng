@@ -6,7 +6,7 @@ import {QueryService} from '../core/queries/query.service';
 
 @Component({
 
-  selector: 'history',
+  selector: 'app-history',
   template: `
     <div [style.display]="'flex'">
       <h2 class="mat-h2">Query history</h2>
@@ -31,6 +31,12 @@ import {QueryService} from '../core/queries/query.service';
 })
 export class HistoryComponent {
 
+  /** Reference to the Observable exposing the list of HistoryContainers. */
+  private _history: Observable<HistoryContainer[]>;
+
+  /** Reference to the Observable exposing the number of HistoryContainers. */
+  private _count: Observable<number>;
+
   /**
    * Constructor for HistoryComponent.
    *
@@ -42,18 +48,12 @@ export class HistoryComponent {
     this._history = _service.list;
   }
 
-  /** Reference to the Observable exposing the list of HistoryContainers. */
-  private _history: Observable<HistoryContainer[]>;
-
   /**
    * Getter for _history.
    */
   get history(): Observable<HistoryContainer[]> {
     return this._history;
   }
-
-  /** Reference to the Observable exposing the number of HistoryContainers. */
-  private _count: Observable<number>;
 
   /**
    * Getter for _count.

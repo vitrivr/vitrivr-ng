@@ -9,15 +9,28 @@ import {SelectionService} from '../../core/selection/selection.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {FilterService} from '../../core/queries/filter.service';
 import {Observable} from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'gallery',
+  selector: 'app-gallery',
   templateUrl: 'gallery.component.html',
   styleUrls: ['gallery.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectScoreContainer[]> {
+
+  /** Name of this GalleryComponent. */
+  protected name = 'object_gallery';
+
+  /** Reference to the MediaObjectScoreContainer that is currently in focus. */
+  protected _focus: MediaObjectScoreContainer;
+
+  /* The size of an individual tile in pixels. */
+  private _tilesize = 250;
+
+  /* The gap between two tile in pixels. */
+  private _tilegap = 15;
+
   /**
    * Default constructor.
    *
@@ -30,15 +43,11 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
    * @param _snackBar The MatSnackBar component used to display the SnackBar.
    * @param _resolver
    */
-  constructor(_cdr: ChangeDetectorRef, _queryService: QueryService, _filterService: FilterService, _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router, _snackBar: MatSnackBar, protected _resolver: ResolverService) {
+  constructor(_cdr: ChangeDetectorRef, _queryService: QueryService, _filterService: FilterService,
+              _selectionService: SelectionService, _eventBusService: EventBusService, _router: Router,
+              _snackBar: MatSnackBar, public _resolver: ResolverService) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
   }
-
-  /** Name of this GalleryComponent. */
-  protected name = 'object_gallery';
-
-  /** Reference to the MediaObjectScoreContainer that is currently in focus. */
-  protected _focus: MediaObjectScoreContainer;
 
   /**
    * Sets the focus to the provided MediaObjectScoreContainer.
@@ -48,9 +57,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
   set focus(focus: MediaObjectScoreContainer) {
     this._focus = focus;
   }
-
-  /* The size of an individual tile in pixels. */
-  private _tilesize: number = 250;
 
   /**
    * Getter for size of an individual tile in the gallery.
@@ -72,9 +78,6 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
       this._tilesize = value;
     }
   }
-
-  /* The gap between two tile in pixels. */
-  private _tilegap: number = 15;
 
   /**
    * Getter for gap between two individual tiles in pixels.
@@ -112,7 +115,7 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
    * @return {boolean}
    */
   public inFocus(mediaobject: MediaObjectScoreContainer) {
-    return this._focus == mediaobject;
+    return this._focus === mediaobject;
   }
 
   scrollIncrement(): number {
