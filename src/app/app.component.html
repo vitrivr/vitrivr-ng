@@ -9,7 +9,7 @@
 
     <span class="spacer-xlarge"></span>
 
-    <a *ngIf="!(config|async).get('competition.teamid')" mat-icon-button matTooltip="Gallery view" routerLink="/gallery"
+    <a *ngIf="!(config|async).get('competition.host')" mat-icon-button matTooltip="Gallery view" routerLink="/gallery"
        routerLinkActive="active" skipLocationChange="true">
         <mat-icon>grid_on</mat-icon>
     </a>

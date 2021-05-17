@@ -10,15 +10,11 @@ export class NotificationService {
 
   private _dresStatusBadge = new BehaviorSubject('')
 
-  constructor(
-    private _submissionService: VbsSubmissionService,
-    private _configService: AppConfig
-  ) {
-    combineLatest([this._submissionService.statusObservable(), this._configService.configAsObservable]).pipe(tap(([status, config]) => {
-      if (config._config.competition.dres) {
+  constructor(private _submissionService: VbsSubmissionService, private _configService: AppConfig) {
+    combineLatest([this._submissionService.statusObservable, this._configService.configAsObservable]).pipe(tap(([status, config]) => {
+      if (config._config.competition.host) {
         if (status) {
-          /* Only give ok if we receive a username from dres*/
-          if (status.username) {
+          if (status) {
             this._dresStatusBadge.next('')
             return
           }

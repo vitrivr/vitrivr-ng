@@ -16,7 +16,7 @@ import {AppConfig} from '../app.config';
 @NgModule({
   imports: [ApiModule.forRoot(() => {
     return new Configuration({
-      basePath: `${AppConfig.settings.endpointRest}`
+      basePath: `${AppConfig.settings.cineastEndpointRest}`
     })
   }), LookupModule, BasicModule, EvaluationModule, VbsModule, SelectionModule, QueryModule],
   exports: [ApiModule, LookupModule, BasicModule, EvaluationModule, VbsModule, SelectionModule, QueryModule],

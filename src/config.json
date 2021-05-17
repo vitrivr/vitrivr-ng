@@ -1,19 +1,17 @@
 {
   "api": {
-    "host": "default"
+    "host": "10.34.58.87"
   },
   "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:o/:s:x",
-    "host_objects": "http://localhost:4567/objects/:n"
+    "host_thumbnails": "http://10.34.58.178/V3C1/V3C1jpg/:o/:s.jpg",
+    "host_objects": "http://10.34.58.178/V3C1/:n"
   },
   "competition": {
-    "teamid": 9,
-    "toolid": 1,
-    "endpoint": "https://dmi-dres.dmi.unibas.ch:8443/",
-    "log": false,
+    "host": "dmi-dres.dmi.unibas.ch:443",
+    "tls": true,
+    "log": true,
     "lsc": false,
-    "vbs": false,
-    "dres": false
+    "vbs": true
   },
   "mlt": {
     "VIDEO": [

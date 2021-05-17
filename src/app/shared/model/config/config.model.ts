@@ -2,6 +2,7 @@ import {Tag} from '../../../core/selection/tag.model';
 import {FeatureCategories} from '../results/feature-categories.model';
 import {QuerySettings} from './query-settings.model';
 import * as DEEPMERGE from 'deepmerge';
+import {AppConfig} from '../../../app.config';
 
 
 export class Config {
@@ -42,33 +43,26 @@ export class Config {
       templates: [] /* URLs */
     },
     competition: {
-      /* The team number within the competition contest. */
-      teamid: null,
+      /* Toggles VBS mode; determines type of information that is submitted. */
+      vbs: false,
 
-      /* The tool number within the competition context (each instance should have its own ID). */
-      toolid: null,
+      /* Toggles LSC mode; determines type of information that is submitted. */
+      lsc: false,
 
-      /* If DRES is used */
-      dres: false,
+      /* Host of the DRES endpoint (fqn + port, no protocol). */
+      host: null,
 
-      /* The sessionId. Each participant has its own sessionId, it is displayed in the user profile of the participant of DRES */
-      sessionid: null,
+      /* Flag indicating whether or not TLS should be used to communicate with DRES. */
+      tls: false,
 
-      /* URL to the competition endpoint. */
-      endpoint: null,
-
-      /* Whether or not logging (interaction & results) should be enabled. */
+      /* Flag indicating whether or not logging (interaction & results) should be enabled. */
       log: false,
 
       /* The timer interval at which logs are submitted to the competition server. */
       loginterval: 5000,
 
       /* URL to the Collabordinator endpoint. */
-      collabordinator: null,
-
-      lsc: false,
-
-      competition: false
+      collabordinator: null
     },
     tags: [
       new Tag('Red', 0),
@@ -184,22 +178,10 @@ export class Config {
   /**
    * Returns URL to WebSocket endpoint for Vitrivr NG.
    */
-  get endpoint_ws(): string {
+  get cineastEndpointWs(): string {
     const scheme = this._config.api.ws_secure ? 'wss://' : 'ws://';
     if (this._config.api.host && this._config.api.port) {
       return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/websocket';
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Full URL to HTTP/RESTful endpoint for Vitrivr NG.
-   */
-  get endpoint_http(): string {
-    const scheme = this._config.api.http_secure ? 'https://' : 'http://';
-    if (this._config.api.host && this._config.api.port) {
-      return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/';
     } else {
       return null;
     }
@@ -210,10 +192,22 @@ export class Config {
    * Fully qualified with the schema (if secured, this is HTTPS, otherwise HTTP)
    * the host and the port.
    */
-  get endpointRest(): string {
+  get cineastEndpointRest(): string {
     const scheme = this._config.api.http_secure ? 'https://' : 'http://';
     if (this._config.api.host && this._config.api.port) {
       return scheme + this._config.api.host + ':' + this._config.api.port;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Full URL to HTTP/HTTPs RESTful endpoint for DRES.
+   */
+  get dresEndpointRest() {
+    const scheme = this._config.competition.tls ? 'https://' : 'http://';
+    if (this._config.competition.host) {
+      return `${scheme}${this._config.competition.host}`
     } else {
       return null;
     }

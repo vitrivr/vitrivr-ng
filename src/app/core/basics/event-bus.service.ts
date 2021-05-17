@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
+import {filter, tap} from 'rxjs/operators';
 
 /**
  * This is a simple application singleton used to emmit application wide events usually triggered by some sort of user-interaction. It
@@ -16,6 +17,9 @@ export class EventBusService {
   /** The subject used to track the currently active view. */
   private _currentView: Subject<string> = new BehaviorSubject<string>(null);
 
+  /** The subject used to track the currently active view. */
+  private _lastQuery: Subject<InteractionEvent> = new BehaviorSubject<InteractionEvent>(null);
+
   /**
    * Publishes a nev InteractionEvent to the bus.
    *
@@ -26,6 +30,9 @@ export class EventBusService {
     if (event.components[0] && event.components[0].type === InteractionEventType.NAVIGATE) {
       this._currentView.next(event.components[0].context.get('n:component'));
     }
+    if (event.components.filter(c => c.context.has('q:categories')).length > 0) {
+      this._lastQuery.next(event) /* TODO: Check this 'definition' of a query. */
+    }
   }
 
   /**
@@ -35,6 +42,15 @@ export class EventBusService {
    */
   public currentView(): Observable<string> {
     return this._currentView.asObservable()
+  }
+
+  /**
+   * Returns an observable that allows a consumer to be informed about the last query issued.
+   *
+   * @return {Observable<InteractionEvent>}
+   */
+  public lastQuery(): Observable<InteractionEvent> {
+    return this._lastQuery.asObservable()
   }
 
   /**

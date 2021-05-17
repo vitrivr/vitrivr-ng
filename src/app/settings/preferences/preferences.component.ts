@@ -6,7 +6,7 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
 import Dexie from 'dexie';
-import {VbsInteractionLog} from '../../core/vbs/vbs-interaction-log.model';
+import {DresTypeConverter} from '../../core/vbs/dres-type-converter.util';
 import {fromPromise} from 'rxjs/internal-compatibility';
 import * as JSZip from 'jszip';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
@@ -30,7 +30,7 @@ export class PreferencesComponent implements AfterContentInit {
   private _submissionLogTable: Dexie.Table<any, number>;
 
   /** Table for persisting interaction logs. */
-  private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
+  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
 
   private _dresStatus: BehaviorSubject<string> = new BehaviorSubject<string>('')
   _dresStatusBadgeValue: string;
@@ -56,15 +56,15 @@ export class PreferencesComponent implements AfterContentInit {
    * @return {Observable<string>}
    */
   get cineastEndpoint(): Observable<string> {
-    return this._config.pipe(map(c => c.endpoint_ws));
+    return this._config.pipe(map(c => c.cineastEndpointWs));
   }
 
   get dresEnabled(): Observable<boolean> {
-    return this._config.pipe(map(c => c._config.competition.dres))
+    return this._config.pipe(map(c => c._config.competition.host != null))
   }
 
   get dresAddress(): Observable<string> {
-    return this._config.pipe(map(c => c._config.competition.endpoint))
+    return this._config.pipe(map(c => c._config.competition.host))
   }
 
   get dresStatus(): Observable<string> {
