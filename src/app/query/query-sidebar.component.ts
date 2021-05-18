@@ -8,7 +8,6 @@ import {InteractionEventType} from '../shared/model/events/interaction-event-typ
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
-import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fusion-function.model';
 
 
 @Component({
@@ -18,6 +17,9 @@ import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fu
 export class QuerySidebarComponent implements OnInit {
   /** StagedQueryContainer's held by the current instance of ResearchComponent. */
   public readonly containers: QueryContainerInterface[] = [];
+
+  // TODO: Add containers for maxLength and distance/sequential
+
   @ViewChildren(QueryContainerComponent) queryContainers: QueryList<QueryContainerComponent>;
   /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
   private _lastEnter = 0;
@@ -40,20 +42,19 @@ export class QuerySidebarComponent implements OnInit {
   }
 
   /**
-   * Triggers the similarity onSearchClicked by packing all configured QueryContainers into a single
-   * SimilarityQuery message, and submitting that message to the QueryService.
+   * Triggers the temporal onSearchClicked by packing all configured QueryContainers into a single
+   * TemporalQuery message, and submitting that message to the QueryService.
    *
    * context changes are only part of competition logging and not part of the message sent to cineast
    */
   public onSearchClicked() {
+    let tempDist = []
     if (this.queryContainers && this.queryContainers.length >= 2) {
-      const tempDist = this.getTemporalDistance();
-      if (tempDist) {
-        TemporalFusionFunction.instance().setTemporalDistance(tempDist);
-      }
+      tempDist = this.getTemporalDistances();
     }
+    const maxLength = this.getMaxLength();
 
-    this._queryService.findSimilar(this.containers);
+    this._queryService.findTemporal(this.containers, tempDist, maxLength);
   }
 
   /**
@@ -110,5 +111,24 @@ export class QuerySidebarComponent implements OnInit {
       }
     }
     return null;
+  }
+
+  /* Traverse all elements and retrieve the time distances */
+  private getTemporalDistances(): number[] {
+    const timeDistances = [this.containers.length - 1];
+    if (this.containers.length > 1) {
+      const i = 0;
+      this.queryContainers.forEach((container) => {
+        if (i > 0) {
+          timeDistances[i - 1] = container.temporalDistances.first.time;
+        }
+      });
+    }
+    return timeDistances
+  }
+
+  // TODO: Implement this in the frontend with a new container!
+  private getMaxLength(): number {
+    return 1000;
   }
 }

@@ -20,7 +20,6 @@ import {HistoryService} from './history.service';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
-import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
@@ -33,6 +32,7 @@ import {InteractionEvent} from '../../shared/model/events/interaction-event.mode
 import {EventBusService} from '../basics/event-bus.service';
 import {AppConfig} from '../../app.config';
 import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult} from '../../../../openapi/cineast';
+import {TemporalQueryV2} from '../../shared/model/messages/queries/temporal-queryV2.model';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 
 /**
@@ -179,6 +179,31 @@ export class QueryService {
   }
 
   /**
+   * Starts a new temporal query. Success is indicated by the return value.
+   *
+   * Note: Temporal queries can only be started if no query is currently running.
+   *
+   * @param containers The list of QueryContainers used to create the query.
+   * @param timeDistances The list of time distances between the containers
+   * @param maxLength The maximal length of the temporal sequences
+   * @returns {boolean} true if query was issued, false otherwise.
+   */
+  public findTemporal(containers: QueryContainerInterface[], timeDistances: number[], maxLength: number): boolean {
+    if (!this._socket) {
+      console.warn('No socket available, not executing temporal query');
+      return false;
+    }
+    if (this._running > 0) {
+      console.warn('There is already a query running');
+    }
+    this._config.configAsObservable.pipe(first()).subscribe(config => {
+      const query = new TemporalQueryV2(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
+        new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), timeDistances, maxLength);
+      this._socket.next(query)
+    });
+  }
+
+  /**
    * Starts a new More-Like-This query. Success is indicated by the return value.
    *
    * Note: More-Like-This queries can only be started if no query is currently running.
@@ -226,8 +251,8 @@ export class QueryService {
         return;
       }
       _cat
-        .filter(c => categories.indexOf(c) === -1)
-        .forEach(c => categories.push(c));
+      .filter(c => categories.indexOf(c) === -1)
+      .forEach(c => categories.push(c));
       if (categories.length > 0) {
         this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
       }
