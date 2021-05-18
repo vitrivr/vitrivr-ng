@@ -237,8 +237,8 @@ export class PreferencesComponent implements AfterContentInit {
   ngAfterContentInit(): void {
     this._submissionService.statusObservable.subscribe(status => {
       if (status) {
-        if (status.username) {
-          this._dresStatus.next(`${status.username} as ${status.role}: ${status.sessionId}`)
+        if (status) {
+          this._dresStatus.next(`${status.sessionId}`)
           return;
         }
         this._dresStatus.next('not logged in')

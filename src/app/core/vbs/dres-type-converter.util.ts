@@ -21,7 +21,7 @@ export class DresTypeConverter {
   public static mapEventStream(stream: Observable<InteractionEvent>): Observable<QueryEventLog> {
     return stream.pipe(
       map(e => {
-        return <QueryEventLog>{timestamp: e.timestamp, events: e.components.map(c => DresTypeConverter.mapAtomicEvent(c, e.timestamp))};
+        return <QueryEventLog>{timestamp: e.timestamp, events: e.components.map(c => DresTypeConverter.mapAtomicEvent(c, e.timestamp)).filter(c => c != null)};
       }),
       catchError((e, o) => {
         console.log('An error occurred when mapping an event from the event stream to a VbsSubmission: ' + e.message);
@@ -57,7 +57,7 @@ export class DresTypeConverter {
       case InteractionEventType.MLT:
         return <QueryEvent>{category: 'IMAGE', type: 'globalFeatures', value: 'mlt', timestamp: timestamp};
       case InteractionEventType.QUERY_TAG:
-        return <QueryEvent>{category: 'TEXT', type: 'concept', value: component.context.get('q:value'), timestamp: timestamp};
+        return <QueryEvent>{category: 'TEXT', type: 'concept', timestamp: timestamp};
       case InteractionEventType.QUERY_FULLTEXT: {
         const c = component.context.get('q:categories');
         const types = [];
@@ -98,7 +98,7 @@ export class DresTypeConverter {
         }
       }
       case InteractionEventType.FILTER:
-        return <QueryEvent>{category: 'FILTER', type: component.context.get('f:type'), value: component.context.get('f:value'), timestamp: timestamp};
+        return <QueryEvent>{category: 'FILTER', type: component.context.get('f:type'), timestamp: timestamp};
       case InteractionEventType.EXPAND:
         return <QueryEvent>{category: 'BROWSING', type: 'temporalContext', timestamp: timestamp};
       case InteractionEventType.REFINE:
@@ -111,7 +111,7 @@ export class DresTypeConverter {
       case InteractionEventType.CLEAR:
         return <QueryEvent>{category: 'BROWSING', type: 'resetAll', timestamp: timestamp};
       case InteractionEventType.NAVIGATE:
-        return <QueryEvent>{category: 'BROWSING', type: 'toolLayout', value: component.context.get('n:component'), timestamp: timestamp};
+        return <QueryEvent>{category: 'BROWSING', type: 'toolLayout', timestamp: timestamp};
       default:
         break;
     }
@@ -130,7 +130,7 @@ export class DresTypeConverter {
       sortType: context,
       resultSetAvailability: 'top',
       results: list.map((s, i) => <QueryResult>{item: s.objectId, segment: s.sequenceNumber, score: s.score, rank: i}),
-      events: event.components.map(e => DresTypeConverter.mapAtomicEvent(e, event.timestamp))
+      events: event.components.map(e => DresTypeConverter.mapAtomicEvent(e, event.timestamp)).filter(e => e != null)
     }
 
     /* TODO: What happens with all the category stuff?*/

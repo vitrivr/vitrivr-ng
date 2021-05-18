@@ -53,8 +53,14 @@ export class VbsSubmissionService {
   /** Internal flag used to determine if LSC competition is running. */
   private _lsc = false;
 
+  /** SessionID retrieved from DRES endpoint, automatically connected via second tab. Does not support private mode */
+  private _sessionId = undefined;
+
   /** Observable used to query the DRES status.*/
   private readonly _status: Observable<SessionId>
+
+  /** Observable used to query the DRES user */
+  private readonly _user: Observable<UserDetails>
 
   constructor(private _config: AppConfig,
               private _eventbus: EventBusService,
@@ -80,6 +86,9 @@ export class VbsSubmissionService {
       }
     });
     this._status = this._dresUser.getApiUserSession()
+    this._status.subscribe(status => {
+      this._sessionId = status.sessionId;
+    })
   }
 
   /**
@@ -154,14 +163,14 @@ export class VbsSubmissionService {
         filter(submission => submission != null),
         mergeMap((submission: QueryEventLog) => {
           /* Submit Log entry to DRES. */
-          return this._dresLog.postLogQuery('', submission).pipe(
+          return this._dresLog.postLogQuery(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting interaction log to VBS server.`);
+              console.log(`Submitting interaction log to DRES.`);
               this._interactionLogTable.add(submission);
             }),
             catchError((err) => {
               this._interactionLogTable.add(submission);
-              return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
             })
           );
         })
@@ -179,12 +188,12 @@ export class VbsSubmissionService {
         filter(submission => submission != null),
         mergeMap((submission: QueryResultLog) => {
           /* Do some logging and catch HTTP errors. */
-          return this._dresLog.postLogResult('', submission).pipe(
+          return this._dresLog.postLogResult(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting result log to VBS server.`);
+              console.log(`Submitting result log to DRES.`);
             }),
             catchError((err) => {
-              return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
             })
           );
         })
