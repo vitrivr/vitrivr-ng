@@ -49,6 +49,3 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-
-# DRES Client Bindings
-openapi/dres/
