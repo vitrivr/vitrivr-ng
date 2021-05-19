@@ -1,0 +1,15 @@
+<div class="mat-elevation-z8" draggable="true"
+     style="margin:10px;padding:10px;margin-bottom:15px;margin-top:15px; position:relative">
+  <div>
+    <h4>Temporal scoring mode</h4>
+  </div>
+  <div>
+    <mat-form-field style="font-size:14px;">
+      <!-- <mat-label>Temporal Distance</mat-label>-->
+      <mat-select [(value)]="mode" (selectionChange)="onModeChanged()">
+        <mat-option [value]="'SEQUENTIAL'">sequential</mat-option>
+        <mat-option [value]="'TEMPORAL_DISTANCE'">temporal distance</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>

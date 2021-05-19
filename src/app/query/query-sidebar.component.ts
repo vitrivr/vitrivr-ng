@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, HostListener, OnInit, QueryList, ViewChildren, AfterViewInit} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {QueryContainerInterface} from '../shared/model/queries/interfaces/query-container.interface';
 import {StagedQueryContainer} from '../shared/model/queries/staged-query-container.model';
@@ -8,21 +8,26 @@ import {InteractionEventType} from '../shared/model/events/interaction-event-typ
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
+import {TemporalModeContainerComponent} from './temporal-mode/temporal-mode-container.component';
+import {TemporalLengthContainerComponent} from './temporal-sequence-length/temporal-length-container.component';
+import {TemporalMode} from './temporal-mode/temporal-mode-container.model';
 
 
 @Component({
   selector: 'app-query-sidebar',
   templateUrl: 'query-sidebar.component.html'
 })
-export class QuerySidebarComponent implements OnInit {
+export class QuerySidebarComponent implements OnInit, AfterViewInit {
   /** StagedQueryContainer's held by the current instance of ResearchComponent. */
   public readonly containers: QueryContainerInterface[] = [];
 
-  // TODO: Add containers for maxLength and distance/sequential
+  @ViewChildren(TemporalModeContainerComponent) temporalMode: QueryList<TemporalModeContainerComponent>;
+  @ViewChildren(TemporalLengthContainerComponent) temporalLength: QueryList<TemporalLengthContainerComponent>;
 
   @ViewChildren(QueryContainerComponent) queryContainers: QueryList<QueryContainerComponent>;
   /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
   private _lastEnter = 0;
+  public mode: TemporalMode = 'TEMPORAL_DISTANCE';
 
   constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService) {
   }
@@ -32,6 +37,12 @@ export class QuerySidebarComponent implements OnInit {
    */
   public ngOnInit() {
     this.addQueryTermContainer();
+  }
+
+  ngAfterViewInit() {
+    this.queryContainers.changes.subscribe(_ =>
+      this.modeChange(this.mode) // subsequent calls to modeChange
+    );
   }
 
   /**
@@ -97,38 +108,31 @@ export class QuerySidebarComponent implements OnInit {
     }
   }
 
-  /**
-   * To traverse the dom tree with @viewchildren, all the children need the annotation (i.e. decorator)
-   */
-  private getTemporalDistance() {
-    if (this.queryContainers && this.queryContainers.length >= 2) {
-      const second = this.queryContainers.toArray()[1] as QueryContainerComponent;
-      if (second.temporalDistances && second.temporalDistances.length >= 1) {
-        const temporalDistanceComponent = second.temporalDistances.first;
-        if (temporalDistanceComponent) {
-          return temporalDistanceComponent.getTemporalDistanceFromUser();
-        }
-      }
-    }
-    return null;
-  }
-
   /* Traverse all elements and retrieve the time distances */
   private getTemporalDistances(): number[] {
-    const timeDistances = [this.containers.length - 1];
-    if (this.containers.length > 1) {
-      const i = 0;
+    if (this.containers.length > 1 && this.temporalMode.first.isTimeDistance()) {
+      const timeDistances = [this.containers.length - 1];
+      let i = 0;
       this.queryContainers.forEach((container) => {
         if (i > 0) {
-          timeDistances[i - 1] = container.temporalDistances.first.time;
+          timeDistances[i - 1] = container.temporalDistances.first.getTemporalDistanceFromUser();
         }
+        i += 1;
       });
+      return timeDistances
+    } else {
+      return [];
     }
-    return timeDistances
   }
 
-  // TODO: Implement this in the frontend with a new container!
   private getMaxLength(): number {
-    return 1000;
+    return this.temporalLength.first.getTemporalMaxLengthFromUser();
+  }
+
+  public modeChange(mode: TemporalMode) {
+    this.mode = mode;
+    this.queryContainers.forEach((container) => {
+      container.changeMode(mode);
+    })
   }
 }

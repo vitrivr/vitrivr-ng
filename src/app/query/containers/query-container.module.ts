@@ -14,6 +14,7 @@ import {SemanticQueryTermModule} from './semantic/semantic-query-term.module';
 import {BoolQueryTermModule} from './bool/bool-query-term.module';
 import {TemporalDistanceModule} from '../temporal-distance/temporal-distance.module';
 import {QueryStageModule} from './query-stage.module';
+import {TemporalDistanceV2Module} from '../temporal-distanceV2/temporal-distanceV2.module';
 
 @NgModule({
   imports: [
@@ -30,7 +31,8 @@ import {QueryStageModule} from './query-stage.module';
     SemanticQueryTermModule,
     BoolQueryTermModule,
     TemporalDistanceModule,
-    QueryStageModule
+    QueryStageModule,
+    TemporalDistanceV2Module
   ],
   declarations: [QueryContainerComponent],
   exports: [QueryContainerComponent]
