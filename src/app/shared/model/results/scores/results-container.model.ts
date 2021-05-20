@@ -25,6 +25,8 @@ import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
 import {MediaObjectMetadataDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../../../openapi/cineast';
 import {AppConfig} from '../../../../app.config';
 import {MediaObjectDescriptor} from '../../../../../../openapi/cineast/model/mediaObjectDescriptor';
+import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
+import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -36,12 +38,17 @@ export class ResultsContainer {
   /** Internal data structure that contains all MediaObjectScoreContainers. */
   private _results_objects: MediaObjectScoreContainer[] = [];
 
+  /** Internal data structure that contains all TemporalObjects. */
+  private _temporal_objects: TemporalObjectSegments[] = [];
+
   /** Internal data structure that contains all SegmentScoreContainers. */
   private _results_segments: MediaSegmentScoreContainer[] = [];
   /** A subject that can be used to publish changes to the results. */
   private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
   /** A subject that can be used to publish changes to the results. */
   private _results_segments_subject: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
+
+  private _temporal_objects_subject: BehaviorSubject<TemporalObjectSegments[]> = new BehaviorSubject(this._temporal_objects);
 
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
   private _rerank = 0;
@@ -114,6 +121,10 @@ export class ResultsContainer {
 
   get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
     return this._results_features_subject.asObservable();
+  }
+
+  get temporalObjectsAsObservable(): Observable<TemporalObjectSegments[]> {
+    return this._temporal_objects_subject.asObservable();
   }
 
   /**
@@ -455,12 +466,37 @@ export class ResultsContainer {
   }
 
   /**
+   * Processes the TemporalQueryResult message. Stores the objectId and the corresponding TemporalObject.
+   *
+   * @param temp TemporalQueryResult message
+   * @return {boolean} True, if TemporalQueryResult was processed i.e. queryId corresponded with that of the message.
+   */
+  public processTemporalMessage(temp: TemporalQueryResult) {
+    if (temp.queryId !== this.queryId) {
+      console.warn(`similarity result query id ${temp.queryId} does not match query id ${this.queryId}`);
+      return false;
+    }
+
+    for (const resultTemporalObject of temp.content) {
+      this._temporal_objects.push(new TemporalObjectSegments(
+        this._objectid_to_object_map.get(resultTemporalObject.objectId),
+        resultTemporalObject.segments.map(segment => this._segmentid_to_segment_map.get(segment)),
+        resultTemporalObject.score
+        )
+      );
+    }
+
+    return true;
+  }
+
+  /**
    * Completes the two subjects and invalidates them thereby.
    */
   public complete() {
     this._results_objects_subject.complete();
     this._results_segments_subject.complete();
     this._results_features_subject.complete();
+    this._temporal_objects_subject.complete();
   }
 
   /**

@@ -6,8 +6,7 @@ import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segm
 export class ScoredPathSegment {
   constructor(
     public readonly segment: MediaSegmentScoreContainer,
-    public readonly score: number,
-    public readonly mark: boolean) {
+    public readonly score: number) {
   }
 
   get toString(): string {

@@ -6,17 +6,16 @@ import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segm
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Observable} from 'rxjs';
-import {VbsSubmissionService} from 'app/core/vbs/vbs-submission.service';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {SelectionService} from '../../core/selection/selection.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {FilterService} from '../../core/queries/filter.service';
-import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {ScoredPath} from './scored-path.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
 import {AppConfig} from '../../app.config';
+import {Path} from './path.model';
 
 @Component({
 
@@ -26,8 +25,6 @@ import {AppConfig} from '../../app.config';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemporalListComponent extends AbstractSegmentResultsViewComponent<ScoredPathObjectContainer[]> {
-  /** Reference to the temporal fusion function */
-  private _fusion = TemporalFusionFunction.instance();
 
   /** Name of this TemporalListComponent. */
   protected name = 'temporal_list';
@@ -96,13 +93,12 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
    */
   protected subscribe(results: ResultsContainer) {
     if (results) {
-      this._fusion.reset();
-      this._dataSource = results.mediaobjectsAsObservable.map(objects => {
+      this._dataSource = results.temporalObjectsAsObservable.map(objects => {
         if (objects.length === 0) {
           return [];
         }
         return objects.map(
-          object => new ScoredPathObjectContainer(object, Array.from(this._fusion.computePaths(results.features, object).values()))
+          object => new ScoredPathObjectContainer(object.object, [new ScoredPath(new Path(new Map(object.segments.map(obj => [obj.start, obj]))), object.score)])
         );
       });
     }

@@ -20,7 +20,6 @@ import {HistoryService} from './history.service';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
-import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
@@ -34,6 +33,7 @@ import {AppConfig} from '../../app.config';
 import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult} from '../../../../openapi/cineast';
 import {TemporalQueryV2} from '../../shared/model/messages/queries/temporal-queryV2.model';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
+import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -128,7 +128,6 @@ export class QueryService {
       console.warn('There is already a query running');
     }
     this._config.configAsObservable.pipe(first()).subscribe(config => {
-      TemporalFusionFunction.queryContainerCount = containers.length;
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
       this._socket.next(query)
     });
@@ -377,6 +376,12 @@ export class QueryService {
       case 'QR_SIMILARITY':
         const sim = <SimilarityQueryResult>message;
         if (this._results && this._results.processSimilarityMessage(sim)) {
+          this._subject.next('UPDATED');
+        }
+        break;
+      case 'QR_TEMPORAL':
+        const temp = <TemporalQueryResult>message;
+        if (this._results && this._results.processTemporalMessage(temp)) {
           this._subject.next('UPDATED');
         }
         break;

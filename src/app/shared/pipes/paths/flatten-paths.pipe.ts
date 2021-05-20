@@ -13,10 +13,8 @@ export class FlattenPathsPipe implements PipeTransform {
     }
 
     const tuples = new Array<ScoredPathSegment>();
-    let mark = false;
     object.scoredPaths.sort((a, b) => b.score - a.score).forEach(scoredPath => {
-      scoredPath.segments.forEach(segment => tuples.push(new ScoredPathSegment(segment, scoredPath.score, mark)));
-      mark = !mark;
+      scoredPath.segments.forEach(segment => tuples.push(new ScoredPathSegment(segment, scoredPath.score)));
     });
     return tuples;
   }
