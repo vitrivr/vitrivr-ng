@@ -13,7 +13,6 @@ const STLLoader = STLLoaderProto(Loaders);
 
 import LoadingManager = THREE.LoadingManager;
 import BufferGeometry = THREE.BufferGeometry;
-import Geometry = THREE.Geometry;
 
 
 export class Model3DFileLoader {
@@ -41,15 +40,13 @@ export class Model3DFileLoader {
     const loader = new OBJLoader(manager);
     loader.load(path, (object: any) => {
       if (object) {
-        const geometry: THREE.Geometry = new THREE.Geometry();
+        const geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
         object.traverse((child: any) => {
           if (child instanceof THREE.Mesh) {
             child.updateMatrix();
             if (child.geometry instanceof BufferGeometry) {
-              const partial = (new THREE.Geometry()).fromBufferGeometry(child.geometry);
-              geometry.merge(partial, child.matrix);
-            } else if (child.geometry instanceof Geometry) {
-              geometry.merge(child.geometry, child.matrix);
+              const partial = child.geometry;
+              geometry.merge(partial);
             }
           }
         });
@@ -83,8 +80,6 @@ export class Model3DFileLoader {
     const loader = new STLLoader(manager);
     loader.load(path, (geometry: any) => {
       if (geometry instanceof BufferGeometry) {
-        callback(new THREE.Mesh(new THREE.Geometry().fromBufferGeometry(geometry), new THREE.MeshNormalMaterial()));
-      } else if (geometry instanceof Geometry) {
         callback(new THREE.Mesh(geometry, new THREE.MeshNormalMaterial()));
       }
     });

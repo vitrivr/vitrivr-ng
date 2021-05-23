@@ -14,6 +14,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-slider/ngx-slider": "2.0.3",
     "@angular/animations": "11.0.7",
     "@angular/cdk": "11.0.3",
     "@angular/common": "11.0.7",
@@ -34,7 +35,6 @@
     "dexie": "^3.0.3",
     "flatted": "3.0.4",
     "jszip": "3.5.0",
-    "@angular-slider/ngx-slider": "2.0.3",
     "ngx-color-picker": "11.0.0",
     "ngx-infinite-scroll": "10.0.1",
     "npm": "^6.14.11",
