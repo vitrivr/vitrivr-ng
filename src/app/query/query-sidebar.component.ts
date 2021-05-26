@@ -37,9 +37,12 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
     this.addQueryTermContainer();
   }
 
+  /**
+   * Subscribe the query containers to the mode change possible by the temporal mode component
+   */
   ngAfterViewInit() {
     this.queryContainers.changes.subscribe(_ =>
-      this.modeChange(this.mode) // subsequent calls to modeChange
+      this.modeChange(this.mode) // subsequent calls to modeChange will trigger an update to the mode of the component
     );
   }
 
@@ -127,6 +130,10 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
     return this.temporalMode.first.getTemporalMaxLengthFromUser();
   }
 
+  /**
+   * Change the mode and update all query containers with the new mode
+   * @param mode New temporal mode
+   */
   public modeChange(mode: TemporalMode) {
     this.mode = mode;
     this.queryContainers.forEach((container) => {

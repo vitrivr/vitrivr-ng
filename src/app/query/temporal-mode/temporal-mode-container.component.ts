@@ -13,14 +13,16 @@ export class TemporalModeContainerComponent {
   maxLength = 600;
 
   mode: TemporalMode = 'TEMPORAL_DISTANCE';
-  /** A reference to the lists of QueryContainers (to enable removing the container). */
+  /** A reference to the lists of QueryContainers (to enable updating the mode). */
   @Input() inList: QueryContainerInterface[];
 
+  /** Output emitter to update the current temporal mode */
   @Output() onModeChange = new EventEmitter<any>();
 
   constructor() {
   }
 
+  /** On a mode change, update the mode by emitting the current mode */
   public onModeChanged() {
     this.onModeChange.emit(this.mode);
   }

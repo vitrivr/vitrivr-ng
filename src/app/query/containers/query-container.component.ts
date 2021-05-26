@@ -20,8 +20,10 @@ export class QueryContainerComponent {
   /** A reference to the lists of QueryContainers (to enable removing the container). */
   @Input() inList: QueryContainerInterface[];
 
+  /** A reference to the temporal mode (To transfer information from it to the other containers) */
   @Input() mode: TemporalMode;
 
+  /** Temporal Distance components to retrieve the temporal distance input provided by the user */
   @ViewChildren(TemporalDistanceV2Component) temporalDistances: QueryList<TemporalDistanceV2Component>;
 
   /** A reference to the observable Config exposed by ConfigService. */
@@ -107,10 +109,12 @@ export class QueryContainerComponent {
     // console.log(`[QueryC.down] After = ${this.inList}`)
   }
 
+  /** Change the temporal mode to the one selected */
   public changeMode(mode: TemporalMode) {
     this.mode = mode;
   }
 
+  /** Check if we currently score with the temporal distance mode */
   get isTimeDistance(): boolean {
     return this.mode === 'TEMPORAL_DISTANCE' && this.isNotFirst;
   }
