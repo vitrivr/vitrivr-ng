@@ -9,7 +9,6 @@ import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
 import {TemporalModeContainerComponent} from './temporal-mode/temporal-mode-container.component';
-import {TemporalLengthContainerComponent} from './temporal-sequence-length/temporal-length-container.component';
 import {TemporalMode} from './temporal-mode/temporal-mode-container.model';
 
 
@@ -22,7 +21,6 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
   public readonly containers: QueryContainerInterface[] = [];
 
   @ViewChildren(TemporalModeContainerComponent) temporalMode: QueryList<TemporalModeContainerComponent>;
-  @ViewChildren(TemporalLengthContainerComponent) temporalLength: QueryList<TemporalLengthContainerComponent>;
 
   @ViewChildren(QueryContainerComponent) queryContainers: QueryList<QueryContainerComponent>;
   /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
@@ -126,7 +124,7 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
   }
 
   private getMaxLength(): number {
-    return this.temporalLength.first.getTemporalMaxLengthFromUser();
+    return this.temporalMode.first.getTemporalMaxLengthFromUser();
   }
 
   public modeChange(mode: TemporalMode) {

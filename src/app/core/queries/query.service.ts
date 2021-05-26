@@ -72,7 +72,7 @@ export class QueryService {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
       this._socket.pipe(
-        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
+        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_TEMPORAL', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
       ).subscribe((msg: Message) => this.onApiMessage(msg));
     });
     this._config.configAsObservable.subscribe(config => {

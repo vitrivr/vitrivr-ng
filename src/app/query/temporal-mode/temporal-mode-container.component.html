@@ -1,15 +1,27 @@
 <div class="mat-elevation-z8" draggable="true"
      style="margin:10px;padding:10px;margin-bottom:15px;margin-top:15px; position:relative">
-  <div>
-    <h4>Temporal scoring mode</h4>
+  <div class="wrapper">
+    <div class="text-item">
+      <b>Temporal mode</b>
+    </div>
+    <div class="selection-item">
+      <mat-form-field>
+        <mat-select [(value)]="mode" (selectionChange)="onModeChanged()">
+          <mat-option [value]="'SEQUENTIAL'" matTooltip="Sequential temporal scoring">sequential</mat-option >
+          <mat-option [value]="'TEMPORAL_DISTANCE'" matTooltip="Time distance temporal scoring">temporal distance</mat-option>
+        </mat-select >
+      </mat-form-field>
+    </div>
   </div>
-  <div>
-    <mat-form-field style="font-size:14px;">
-      <!-- <mat-label>Temporal Distance</mat-label>-->
-      <mat-select [(value)]="mode" (selectionChange)="onModeChanged()">
-        <mat-option [value]="'SEQUENTIAL'">sequential</mat-option>
-        <mat-option [value]="'TEMPORAL_DISTANCE'">temporal distance</mat-option>
-      </mat-select>
-    </mat-form-field>
+  <div class="wrapper">
+    <div class="text-item">
+      <b>Max sequence length</b>
+    </div>
+    <div class="selection-item">
+      <mat-form-field>
+        <input matInput type="number" value="30" [(ngModel)]="maxLength" style="text-align: right" matTooltip="Set the maximal length of a temporal sequence">
+        <span matSuffix>sec.</span>
+      </mat-form-field>
+    </div>
   </div>
 </div>

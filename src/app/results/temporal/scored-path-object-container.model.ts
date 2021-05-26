@@ -1,44 +1,30 @@
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 import {ScoredPath} from './scored-path.model';
-import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {ScoredPathSegment} from './scored-path-segment.model';
 
 /**
  * A container of ScoredPath elements which belong to the same object.
  */
 export class ScoredPathObjectContainer {
 
-  /**
-   * The best scored path, this is important, as these containers are to be sorted based on that best path
-   */
-  public readonly bestPath;
+  private tuples = new Array<ScoredPathSegment>();
 
   /**
    * Creates a new container
    * @param objectScoreContainer the MediaObjectScoreContainer to which all these paths belong to
    * @param scoredPaths All the ScoredPath elements for the object
+   * @param bestPath The best scored path, this is important, as these containers are to be sorted based on that best path
    */
   constructor(public readonly objectScoreContainer: MediaObjectScoreContainer,
-              public readonly scoredPaths: ScoredPath[]) {
-    if (scoredPaths.length > 1) {
-      /* the bestPath is the one with the highest score */
-      this.bestPath = scoredPaths.sort((a, b) => b.score - a.score)[0];
-    } else if (scoredPaths.length === 1) {
-      this.bestPath = scoredPaths[0];
-    } else {
-      console.log(`ScoredPath empty for ${objectScoreContainer.objectId}`);
-      this.bestPath = undefined;
-    }
+              public readonly scoredPaths: ScoredPath[],
+              public readonly bestPath) {
+    scoredPaths.forEach(scoredPath => {
+      scoredPath.segments.forEach(segment => this.tuples.push(new ScoredPathSegment(segment, scoredPath.score)));
+    });
   }
 
-  /**
-   * Returns all segments of this object, ordered by their path score in descending order.
-   */
-  get segmentsInPathOrderedDesc(): MediaSegmentScoreContainer[] {
-    const segments = [];
-    this.scoredPaths.sort((a, b) => b.score - a.score).forEach(scoredPath => {
-      scoredPath.segments.forEach(segment => segments.push(segment));
-    });
-    return segments;
+  public getFlattenPaths(): Array<ScoredPathSegment> {
+    return this.tuples;
   }
 
   public toString() {

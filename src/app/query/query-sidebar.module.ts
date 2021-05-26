@@ -7,10 +7,9 @@ import {QuerySidebarComponent} from './query-sidebar.component';
 import {QueryContainerModule} from './containers/query-container.module';
 import {TemporalDistanceModule} from './temporal-distance/temporal-distance.module';
 import {TemporalModeContainerModule} from './temporal-mode/temporal-mode-container.module';
-import {TemporalLengthContainerModule} from './temporal-sequence-length/temporal-length-container.module';
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, SketchModule, QueryContainerModule, TemporalDistanceModule, TemporalModeContainerModule, TemporalLengthContainerModule],
+  imports: [MaterialModule, BrowserModule, FormsModule, SketchModule, QueryContainerModule, TemporalDistanceModule, TemporalModeContainerModule],
   declarations: [QuerySidebarComponent],
   exports: [QuerySidebarComponent]
 })

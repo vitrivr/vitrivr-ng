@@ -10,6 +10,8 @@ import {TemporalMode} from './temporal-mode-container.model';
 
 export class TemporalModeContainerComponent {
 
+  maxLength = 600;
+
   mode: TemporalMode = 'TEMPORAL_DISTANCE';
   /** A reference to the lists of QueryContainers (to enable removing the container). */
   @Input() inList: QueryContainerInterface[];
@@ -25,5 +27,9 @@ export class TemporalModeContainerComponent {
 
   public isTimeDistance(): boolean {
     return this.mode === 'TEMPORAL_DISTANCE';
+  }
+
+  public getTemporalMaxLengthFromUser(): number {
+    return this.maxLength;
   }
 }

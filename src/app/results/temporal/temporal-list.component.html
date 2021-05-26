@@ -11,7 +11,7 @@
          infiniteScroll>
 
         <div
-                *ngFor="let objectPathContainer of (((dataSource | async) | OrderObjectByBestPathScorePipe) | FilterPipe: (objectFilter|async) | LimitPipe : count)"
+                *ngFor="let objectPathContainer of ((dataSource | async) | FilterPipe: (objectFilter|async) | LimitPipe : count)"
                 class="objectPathContainer">
             <app-result-segment-preview-tile *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
                                              [mltEnabled]="false"

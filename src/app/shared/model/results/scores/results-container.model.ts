@@ -476,6 +476,7 @@ export class ResultsContainer {
       console.warn(`similarity result query id ${temp.queryId} does not match query id ${this.queryId}`);
       return false;
     }
+    console.time(`Processing Temporal Message (${this.queryId})`);
 
     for (const resultTemporalObject of temp.content) {
       this._temporal_objects.push(new TemporalObjectSegments(

@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/co
 import {QueryService} from '../../core/queries/query.service';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {Router} from '@angular/router';
-import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Observable} from 'rxjs';
@@ -46,38 +45,12 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
    * Getter for the filters that should be applied to SegmentScoreContainer.
    * Returns true for all objects that should be included
    */
-  get scoredPathFilter(): Observable<((v: ScoredPath) => boolean)[]> {
-    return this._filterService.objectFilters.map(filters =>
-      filters.map(filter => function (scoredPath: ScoredPath): boolean {
-        let good = true;
-        scoredPath.path.pathMap.forEach(value => {
-          if (filter(value.objectScoreContainer)) {
-            return;
-          }
-          good = false;
-        });
-        return good;
-      })
-    );
-  }
-
-  /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   * Returns true for all objects that should be included
-   */
   get objectFilter(): Observable<((v: ScoredPathObjectContainer) => boolean)[]> {
     return this._filterService.objectFilters.map(filters =>
       filters.map(filter => function (scoredPathContainer: ScoredPathObjectContainer): boolean {
         return filter(scoredPathContainer.objectScoreContainer);
       })
     );
-  }
-
-  /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   */
-  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
-    return this._filterService.segmentFilter;
   }
 
   get pathSegmentFilter(): Observable<((v: ScoredPathSegment) => boolean)[]> {
@@ -98,7 +71,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
           return [];
         }
         return objects.map(
-          object => new ScoredPathObjectContainer(object.object, [new ScoredPath(new Path(new Map(object.segments.map(obj => [obj.start, obj]))), object.score)])
+          object => new ScoredPathObjectContainer(object.object, [new ScoredPath(new Path(new Map(object.segments.map(obj => [obj.start, obj]))), object.score)], object.score)
         );
       });
     }

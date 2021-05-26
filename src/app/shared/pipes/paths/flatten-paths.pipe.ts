@@ -8,14 +8,6 @@ import {ScoredPathObjectContainer} from '../../../results/temporal/scored-path-o
 export class FlattenPathsPipe implements PipeTransform {
 
   public transform(object: ScoredPathObjectContainer): Array<ScoredPathSegment> {
-    if (!object.scoredPaths || object.scoredPaths.length === 0) {
-      return [];
-    }
-
-    const tuples = new Array<ScoredPathSegment>();
-    object.scoredPaths.sort((a, b) => b.score - a.score).forEach(scoredPath => {
-      scoredPath.segments.forEach(segment => tuples.push(new ScoredPathSegment(segment, scoredPath.score)));
-    });
-    return tuples;
+    return object.getFlattenPaths();
   }
 }
