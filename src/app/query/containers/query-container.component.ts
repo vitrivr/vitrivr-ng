@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {TemporalDistanceV2Component} from '../temporal-distanceV2/temporal-distanceV2.component';
 import {AppConfig} from '../../app.config';
 import {QueryTerm} from '../../../../openapi/cineast';
-import {TemporalMode} from '../temporal-mode/temporal-mode-container.model';
+import {TemporalMode} from '../../settings/preferences/temporal-mode-container.model';
 
 @Component({
   selector: 'app-query-container',

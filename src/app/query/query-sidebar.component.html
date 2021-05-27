@@ -16,8 +16,6 @@
         </button>
     </div>
 
-    <app-temporal-mode-container [inList]="containers" (onModeChange)="modeChange($event)"></app-temporal-mode-container>
-
     <app-query-container *ngFor="let container of containers" [containerModel]=container
                          [inList]="containers" [mode]="mode"></app-query-container>
 

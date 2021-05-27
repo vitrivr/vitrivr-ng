@@ -12,6 +12,7 @@ import * as JSZip from 'jszip';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
+import {TemporalMode} from './temporal-mode-container.model';
 
 @Component({
 
@@ -34,6 +35,9 @@ export class PreferencesComponent implements AfterContentInit {
 
   private _dresStatus: BehaviorSubject<string> = new BehaviorSubject<string>('')
   _dresStatusBadgeValue: string;
+
+  maxLength = 600;
+  mode: TemporalMode = 'TEMPORAL_DISTANCE'
 
   /**
    * Constructor for PreferencesComponent
@@ -99,6 +103,15 @@ export class PreferencesComponent implements AfterContentInit {
       map(c => c.get<Hint[]>('query.config.hints')),
       map(h => h.indexOf('inexact') > -1 && h.indexOf('exact') === -1)
     );
+  }
+
+  public onModeChanged(mode: TemporalMode) {
+    this.mode = mode;
+    this._config.pipe(first()).subscribe(c => { c.mode = mode });
+  }
+
+  public onMaxLengthSaveClicked() {
+    this._config.pipe(first()).subscribe(c => { c.maxLength = this.maxLength });
   }
 
   /**

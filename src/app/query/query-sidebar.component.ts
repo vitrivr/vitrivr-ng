@@ -8,8 +8,10 @@ import {InteractionEventType} from '../shared/model/events/interaction-event-typ
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
-import {TemporalModeContainerComponent} from './temporal-mode/temporal-mode-container.component';
-import {TemporalMode} from './temporal-mode/temporal-mode-container.model';
+import {TemporalMode} from '../settings/preferences/temporal-mode-container.model';
+import {Observable} from 'rxjs';
+import {Config} from '../shared/model/config/config.model';
+import {AppConfig} from '../app.config';
 
 
 @Component({
@@ -17,17 +19,20 @@ import {TemporalMode} from './temporal-mode/temporal-mode-container.model';
   templateUrl: 'query-sidebar.component.html'
 })
 export class QuerySidebarComponent implements OnInit, AfterViewInit {
+
+  private _config: Observable<Config>;
+
   /** StagedQueryContainer's held by the current instance of ResearchComponent. */
   public readonly containers: QueryContainerInterface[] = [];
-
-  @ViewChildren(TemporalModeContainerComponent) temporalMode: QueryList<TemporalModeContainerComponent>;
 
   @ViewChildren(QueryContainerComponent) queryContainers: QueryList<QueryContainerComponent>;
   /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
   private _lastEnter = 0;
   public mode: TemporalMode = 'TEMPORAL_DISTANCE';
+  public maxLength = 600;
 
-  constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService) {
+  constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService, private _configService: AppConfig) {
+    this._config = this._configService.configAsObservable;
   }
 
   /**
@@ -41,6 +46,9 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
    * Subscribe the query containers to the mode change possible by the temporal mode component
    */
   ngAfterViewInit() {
+    this._config.subscribe(c => {
+      this.modeChange(c.mode)
+    });
     this.queryContainers.changes.subscribe(_ =>
       this.modeChange(this.mode) // subsequent calls to modeChange will trigger an update to the mode of the component
     );
@@ -60,13 +68,17 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
    * context changes are only part of competition logging and not part of the message sent to cineast
    */
   public onSearchClicked() {
+    this._config.subscribe(c => {
+      this.maxLength = c.maxLength;
+      this.mode = c.mode;
+    });
+
     let tempDist = []
-    if (this.queryContainers && this.queryContainers.length >= 2) {
+    if (this.queryContainers && this.queryContainers.length >= 2 && this.mode === 'TEMPORAL_DISTANCE') {
       tempDist = this.getTemporalDistances();
     }
-    const maxLength = this.getMaxLength();
 
-    this._queryService.findTemporal(this.containers, tempDist, maxLength);
+    this._queryService.findTemporal(this.containers, tempDist, this.maxLength);
   }
 
   /**
@@ -111,7 +123,7 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
 
   /* Traverse all elements and retrieve the time distances */
   private getTemporalDistances(): number[] {
-    if (this.containers.length > 1 && this.temporalMode.first.isTimeDistance()) {
+    if (this.containers.length > 1 && this.mode) {
       const timeDistances = [this.containers.length - 1];
       let i = 0;
       this.queryContainers.forEach((container) => {
@@ -124,10 +136,6 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
     } else {
       return [];
     }
-  }
-
-  private getMaxLength(): number {
-    return this.temporalMode.first.getTemporalMaxLengthFromUser();
   }
 
   /**

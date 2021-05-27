@@ -24,6 +24,29 @@
         </mat-slide-toggle>
     </mat-list-item>
 
+    <h2 mat-subheader>Temporal mode</h2>
+    <mat-list-item>
+        <mat-form-field  fxLayoutAlign="center">
+            <mat-select [value]="mode" (selectionChange)="onModeChanged($event.value)">
+                <mat-option [value]="'SEQUENTIAL'" matTooltip="Sequential temporal scoring">sequential</mat-option>
+                <mat-option [value]="'TEMPORAL_DISTANCE'" matTooltip="Time distance temporal scoring">temporal distance</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </mat-list-item>
+
+    <h2 mat-subheader>Max sequence length</h2>
+    <mat-list-item>
+        <mat-form-field  fxLayoutAlign="center">
+            <input matInput type="number" value="30" [(ngModel)]="maxLength" style="text-align: right" matTooltip="Set the maximal length of a temporal sequence">
+            <span matSuffix>sec.</span>
+        </mat-form-field>
+    </mat-list-item>
+    <mat-list-item>
+        <button (click)="onMaxLengthSaveClicked()" color="primary" mat-raised-button
+                matTooltip="Change the maximal length of a temporal sequence">Set
+        </button>
+    </mat-list-item>
+
     <h2 mat-subheader>Reset settings</h2>
     <mat-list-item fxLayout="row" fxLayoutAlign="center">
         <button (click)="onResetButtonClicked()" color="warn" mat-raised-button
