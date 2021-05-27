@@ -88,25 +88,21 @@ export class QueryContainerComponent {
    * Handler to move this query container one up (in the list of query containers)
    */
   public moveQueryContainerUp() {
-    // console.log(`[QueryC.up] Before = ${this.inList}`);
     if (this.isNotFirst) {
       const index = this.index;
       const container = this.inList[index - 1];
       this.inList[index - 1] = this.containerModel;
       this.inList[index] = container;
     }
-    // console.log(`[QueryC.up] After = ${this.inList}`)
   }
 
   public moveQueryContainerDown() {
-    // console.log(`[QueryC.down] Before = ${this.inList}`);
     if (this.isNotLast) {
       const index = this.index;
       const container = this.inList[index + 1];
       this.inList[index + 1] = this.containerModel;
       this.inList[index] = container;
     }
-    // console.log(`[QueryC.down] After = ${this.inList}`)
   }
 
   /** Change the temporal mode to the one selected */
@@ -114,7 +110,7 @@ export class QueryContainerComponent {
     this.mode = mode;
   }
 
-  /** Check if we currently score with the temporal distance mode */
+  /** Tests whether or not to display distance to previous container */
   get isTimeDistance(): boolean {
     return this.mode === 'TEMPORAL_DISTANCE' && this.isNotFirst;
   }

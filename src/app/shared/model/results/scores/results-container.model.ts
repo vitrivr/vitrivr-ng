@@ -297,7 +297,8 @@ export class ResultsContainer {
   /**
    * Re-ranks the objects and segments, i.e. calculates new scores, using the provided list of
    * results and weightPercentage function. If none are provided, the default ones define in the ResultsContainer
-   * are used.
+   * are used. Not necessary for the temporal results as no additional information is expected that would change the
+   * temporal ranking.
    *
    * @param {WeightedFeatureCategory[]} features
    * @param {FusionFunction} weightFunction
@@ -530,6 +531,10 @@ export class ResultsContainer {
         })
       });
     });
+    const temporalList = [];
+    this._temporal_objects.forEach(obj => {
+      temporalList.push({objectId: obj.object.objectId, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
+    })
     return {
       queryId: this.queryId,
       objects: this._results_objects.map(obj => obj.serialize()),
@@ -548,7 +553,8 @@ export class ResultsContainer {
         });
         return metadata;
       })),
-      similarity: similarityList
+      similarity: similarityList,
+      temporal: temporalList
     };
   }
 
@@ -560,6 +566,7 @@ export class ResultsContainer {
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
+    this._temporal_objects_subject.next(this._temporal_objects);
   }
 
   /**

@@ -8,6 +8,12 @@ import {TemporalMode} from './temporal-mode-container.model';
   styleUrls: ['./temporal-mode-container.component.css']
 })
 
+/**
+ * A TemporalModeContainerComponent is the first container displayed to the user on the sidebar after the search and clear buttons.
+ *
+ * It is situated at this location because the mode and max length preference directly influence the querying behaviour of vitrivr and allows for an easy exchange of information between this
+ * container and the others.
+ */
 export class TemporalModeContainerComponent {
 
   maxLength = 600;
