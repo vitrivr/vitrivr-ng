@@ -12,11 +12,12 @@ import {ContainerPipesModule} from '../shared/pipes/containers/container-pipes.m
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {TemporalManagementComponent} from './temporal/temporal-management.component';
 
 @NgModule({
   imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, NgxSliderModule, ContainerPipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule, ],
-  declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent],
-  exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent]
+  declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent, TemporalManagementComponent],
+  exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, TemporalManagementComponent]
 })
 export class SettingsModule {
 
