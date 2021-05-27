@@ -119,6 +119,7 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onResetButtonClicked() {
     this._configService.load();
+    this.mode = 'TEMPORAL_DISTANCE';
   }
 
   /**
