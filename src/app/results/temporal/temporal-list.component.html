@@ -11,14 +11,26 @@
          infiniteScroll>
 
         <div
-                *ngFor="let objectPathContainer of ((dataSource | async) | FilterPipe: (objectFilter|async) | LimitPipe : count)"
+                *ngFor="let objectPathContainer of ((dataSource | async) | FilterPipe: (objectFilter|async) | LimitPipe : count); let i = index"
                 class="objectPathContainer">
+
+            <button (click)="toggleItem(i)" mat-mini-fab color="warn" class="icon-button right-corner"
+                    matTooltip="Toggle object container">
+                <span [hidden]="getToggle(i)">
+                    <mat-icon inline=true style="font-size:1.5em;vertical-align: top">check_box_outline_blank</mat-icon>
+                </span>
+                <span [hidden]="!getToggle(i)">
+                    <mat-icon inline=true style="font-size:1.5em;vertical-align: top">indeterminate_check_box</mat-icon>
+                </span>
+            </button>
+            <span [hidden]="!getToggle(i)">
             <app-result-segment-preview-tile *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
                                              [mltEnabled]="false"
                                              [container]="this"
                                              [score]="pathSegment.score"
                                              [segment]="pathSegment.segment"
                                              class=""></app-result-segment-preview-tile>
+            </span>
         </div>
     </div>
 </div>

@@ -27,6 +27,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
 
   /** Name of this TemporalListComponent. */
   protected name = 'temporal_list';
+  public toggle = [];
 
   constructor(_cdr: ChangeDetectorRef,
               _queryService: QueryService,
@@ -61,6 +62,14 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
     return 100;
   }
 
+  toggleItem(index: number) {
+    this.toggle[index] = !this.toggle[index];
+  }
+
+  getToggle(index: number): boolean {
+    return this.toggle[index];
+  }
+
   /**
    * Subscribes to the data exposed by the ResultsContainer.
    */
@@ -69,6 +78,9 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
       this._dataSource = results.temporalObjectsAsObservable.map(objects => {
         if (objects.length === 0) {
           return [];
+        }
+        for (let i = 0; i < objects.length; i++) {
+          this.toggle.push(true);
         }
         return objects.map(
           object => new ScoredPathObjectContainer(object.object, [new ScoredPath(new Path(new Map(object.segments.map(obj => [obj.start, obj]))), object.score)], object.score)
