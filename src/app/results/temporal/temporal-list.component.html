@@ -10,7 +10,8 @@
          [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="list"
          infiniteScroll>
 
-        <div *ngFor="let objectPathContainer of ((dataSource | async) | FilterPipe: (objectFilter|async) | LimitPipe : count); let i = index">
+        <ng-container *ngIf="((dataSource | async) | FilterPipe: (objectFilter|async) | LimitPipe : count) as pipeRes">
+        <div *ngFor="let objectPathContainer of pipeRes; let i = index; trackBy: trackByFunction; last as lastObject">
             <button (click)="toggleItem(i)" mat-mini-fab color="warn" class="icon-button top-right-button"
                     matTooltip="Toggle object container">
                     <span [hidden]="getToggle(i)">
@@ -36,5 +37,6 @@
                 <HR>
             </span>
         </div>
+        </ng-container>
     </div>
 </div>
