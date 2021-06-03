@@ -40,6 +40,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
               _resolver: ResolverService,
               _dialog: MatDialog) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog);
+    this._count = this.scrollIncrement() * 5;
   }
 
   /**
