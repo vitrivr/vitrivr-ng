@@ -11,13 +11,15 @@ import {SettingsComponent} from './settings/settings.component';
 import {NotificationService} from './core/basics/notification.service';
 import {AppConfig} from './app.config';
 
+/** Enumeration of all possible views */
+enum View { GALLERY, LIST, TEMPORAL}
+
 @Component({
   selector: 'app-vitrivr',
   templateUrl: 'app.component.html',
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit, AfterViewInit {
-
   settingsbadge = '';
   @ViewChild('settingsComponent')
   private settingsComponent: SettingsComponent
@@ -27,6 +29,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   /** Observable that return the loading state of the QueryService. */
   private readonly _loading: Observable<boolean>;
+
+  /** Variable to safe currently selected view */
+  public _active_view: View;
 
   /**
    * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
@@ -44,6 +49,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       })
     );
     this._config = _configService.configAsObservable;
+    this._active_view = View.GALLERY;
   }
 
   /**
@@ -95,5 +101,15 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this.settingsbadge = el)
+  }
+
+  /** Change the active view to the given one */
+  public setActiveView(view: View) {
+    this._active_view = view;
+  }
+
+  /** Check if a given view is active */
+  public isView(view: View) {
+    return this._active_view === view;
   }
 }
