@@ -1,7 +1,7 @@
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 
 /**
- * This is a tuple of <SegmentScoreContainer,score (of path)>, this is used for rendering
+ * This is a tuple of <SegmentScoreContainer, score (of path)>, this is used for rendering
  */
 export class ScoredPathSegment {
   constructor(

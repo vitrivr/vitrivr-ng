@@ -3,6 +3,6 @@ import {MediaObjectScoreContainer} from '../results/scores/media-object-score-co
 
 export class TemporalObjectSegments {
 
-  constructor(public readonly object: MediaObjectScoreContainer, public readonly segments: MediaSegmentScoreContainer[], public readonly score: number) {
+  constructor(public readonly object: MediaObjectScoreContainer, public segments: MediaSegmentScoreContainer[], public score: number) {
   }
 }

@@ -12,9 +12,9 @@ export class OrderObjectByBestPathScorePipe implements PipeTransform {
     }
     return array.sort((a: ScoredPathObjectContainer, b: ScoredPathObjectContainer) => {
       if (desc) {
-        return b.bestPath.score - a.bestPath.score
+        return b._score - a._score
       } else {
-        return a.bestPath.score - b.bestPath.score;
+        return a._score - b._score;
       }
     });
   }

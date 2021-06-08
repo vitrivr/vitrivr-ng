@@ -15,7 +15,6 @@ import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
 import {AppConfig} from '../../app.config';
 import {Path} from './path.model';
-import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 
 @Component({
 

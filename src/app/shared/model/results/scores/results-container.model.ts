@@ -35,11 +35,11 @@ export class ResultsContainer {
   /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
   private _segmentid_to_segment_map: Map<string, MediaSegmentScoreContainer> = new Map();
 
+  /** A Map that maps objectId's to their TemporalObjectSegments. */
+  private _objectid_to_temporal_object_map: Map<string, TemporalObjectSegments> = new Map();
+
   /** Internal data structure that contains all MediaObjectScoreContainers. */
   private _results_objects: MediaObjectScoreContainer[] = [];
-
-  /** Internal data structure that contains all TemporalObjects. */
-  private _temporal_objects: TemporalObjectSegments[] = [];
 
   /** Internal data structure that contains all SegmentScoreContainers. */
   private _results_segments: MediaSegmentScoreContainer[] = [];
@@ -48,7 +48,7 @@ export class ResultsContainer {
   /** A subject that can be used to publish changes to the results. */
   private _results_segments_subject: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
 
-  private _temporal_objects_subject: BehaviorSubject<TemporalObjectSegments[]> = new BehaviorSubject(this._temporal_objects);
+  private _temporal_objects_subject: BehaviorSubject<TemporalObjectSegments[]> = new BehaviorSubject(Array.from(this._objectid_to_temporal_object_map.values()));
 
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
   private _rerank = 0;
@@ -380,6 +380,7 @@ export class ResultsContainer {
         this._results_segments.push(ssc);
         this._segmentid_to_segment_map.set(segment.segmentId, ssc);
       }
+      this.updateTemporalSegments(ssc);
     }
     console.timeEnd(`Processing Segment Message (${this.queryId})`);
 
@@ -480,15 +481,42 @@ export class ResultsContainer {
     console.time(`Processing Temporal Message (${this.queryId})`);
 
     for (const resultTemporalObject of temp.content) {
-      this._temporal_objects.push(new TemporalObjectSegments(
-        this._objectid_to_object_map.get(resultTemporalObject.objectId),
-        resultTemporalObject.segments.map(segment => this._segmentid_to_segment_map.get(segment)),
-        resultTemporalObject.score
+      let mosc;
+      if (!this._objectid_to_temporal_object_map.has(resultTemporalObject.objectId)) {
+        mosc = new TemporalObjectSegments(
+          this._objectid_to_object_map.get(resultTemporalObject.objectId),
+          resultTemporalObject.segments.map(segment => this._segmentid_to_segment_map.get(segment)),
+          resultTemporalObject.score
         )
-      );
+        this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
+      } else {
+        this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).score = resultTemporalObject.score;
+        resultTemporalObject.segments.map(segment => {
+          const tmpSegment = this._segmentid_to_segment_map.get(segment);
+          if (this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.indexOf(tmpSegment) === -1) {
+            this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.push(tmpSegment)
+          }
+        });
+      }
     }
 
     return true;
+  }
+
+  private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
+    let mosc;
+    if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
+      mosc = new TemporalObjectSegments(
+        this._objectid_to_object_map.get(segment.objectId),
+        [segment],
+        segment.score
+      )
+      this._objectid_to_temporal_object_map.set(segment.objectId, mosc)
+    } else {
+      if (this._objectid_to_temporal_object_map.get(segment.objectId).segments.indexOf(segment) === -1) {
+        this._objectid_to_temporal_object_map.get(segment.objectId).segments.push(segment)
+      }
+    }
   }
 
   /**
@@ -532,7 +560,7 @@ export class ResultsContainer {
       });
     });
     const temporalList = [];
-    this._temporal_objects.forEach(obj => {
+    Array.from(this._objectid_to_temporal_object_map.values()).forEach(obj => {
       temporalList.push({objectId: obj.object.objectId, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
     })
     return {
@@ -566,7 +594,7 @@ export class ResultsContainer {
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
-    this._temporal_objects_subject.next(this._temporal_objects);
+    this._temporal_objects_subject.next(Array.from(this._objectid_to_temporal_object_map.values()));
   }
 
   /**
