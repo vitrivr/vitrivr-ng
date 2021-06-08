@@ -16,7 +16,7 @@
           <div class="container">
             <button (click)="toggleItem(i)" mat-mini-fab color="warn" class="icon-button right-corner"
                     matTooltip="Toggle object container">
-              <mat-icon inline=true style="font-size:1.5em;vertical-align: top">check_box_outline_blank</mat-icon>
+              <mat-icon inline=true style="font-size:1.5em;vertical-align: top">check_box</mat-icon>
             </button>
             <div class="objectPathContainer">
               <app-result-segment-preview-tile *ngFor="let pathSegment of (objectPathContainer | FlattenPathsPipe | OrderByScoredPathSegmentPipe)"
