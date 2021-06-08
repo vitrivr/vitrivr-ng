@@ -15,6 +15,7 @@ import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
 import {AppConfig} from '../../app.config';
 import {Path} from './path.model';
+import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 
 @Component({
 
@@ -76,6 +77,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
    */
   protected subscribe(results: ResultsContainer) {
     if (results) {
+      this.toggle = [];
       this._dataSource = results.temporalObjectsAsObservable.map(objects => {
         if (objects.length === 0) {
           return [];
@@ -88,5 +90,19 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
         );
       });
     }
+  }
+
+  /**
+   * This is a helper method to facilitate updating the the list correct. It is necessary due to nesting in the template (two NgFor). To determine, whether to update the view,
+   * angular only takes the outer observable into account. As long as this observable doesn't change, there is no update. Doe to the hierarchical nature of the data, it is -
+   * however - entirely possible that the outer observable is not changed while segments are being added to the container.
+   *
+   * This function created a unique identifier per ScoredPathObjectContainer which takes the number of segments into account.
+   *
+   * @param index
+   * @param {ScoredPathObjectContainer} item
+   */
+  public trackByFunction(index, item: ScoredPathObjectContainer) {
+    return item.objectScoreContainer.objectId + '_' + item.getSize();
   }
 }

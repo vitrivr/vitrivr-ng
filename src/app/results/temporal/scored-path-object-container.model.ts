@@ -30,4 +30,8 @@ export class ScoredPathObjectContainer {
   public toString() {
     return `${this.objectScoreContainer.objectId}::${this.bestPath}`
   }
+
+  public getSize(): number {
+    return this.tuples.length;
+  }
 }
