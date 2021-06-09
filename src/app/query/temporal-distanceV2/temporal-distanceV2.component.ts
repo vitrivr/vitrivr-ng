@@ -8,7 +8,7 @@ import {Component, OnInit} from '@angular/core';
 })
 export class TemporalDistanceV2Component implements OnInit {
 
-  time = 30; // seconds
+  time = 10; // seconds
 
   constructor() {
   }
