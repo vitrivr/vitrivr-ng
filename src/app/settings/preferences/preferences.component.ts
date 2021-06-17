@@ -107,11 +107,15 @@ export class PreferencesComponent implements AfterContentInit {
 
   public onModeChanged(mode: TemporalMode) {
     this.mode = mode;
-    this._config.pipe(first()).subscribe(c => { c.mode = mode });
+    this._config.pipe(first()).subscribe(c => {
+      c.mode = mode
+    });
   }
 
   public onMaxLengthSaveClicked() {
-    this._config.pipe(first()).subscribe(c => { c.maxLength = this.maxLength });
+    this._config.pipe(first()).subscribe(c => {
+      c.maxLength = this.maxLength
+    });
   }
 
   /**
@@ -250,15 +254,16 @@ export class PreferencesComponent implements AfterContentInit {
 
   ngAfterContentInit(): void {
     this._submissionService.statusObservable.subscribe(status => {
-      if (status) {
         if (status) {
           this._dresStatus.next(`${status.sessionId}`)
           return;
         }
         this._dresStatus.next('not logged in')
         return
-      }
-    })
+      },
+      error => {
+        this._dresStatus.next('not logged in')
+      })
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }

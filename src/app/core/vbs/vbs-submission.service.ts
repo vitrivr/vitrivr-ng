@@ -15,7 +15,7 @@ import Dexie from 'dexie';
 import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
-import {LogService, QueryEventLog, QueryResultLog, SessionId, StatusService, SubmissionService, SuccessfulSubmissionsStatus, UserService} from '../../../../openapi/dres';
+import {LogService, QueryEventLog, QueryResultLog, SessionId, StatusService, SubmissionService, SuccessfulSubmissionsStatus, SuccessStatus, UserService} from '../../../../openapi/dres';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -87,8 +87,11 @@ export class VbsSubmissionService {
     });
     this._status = this._dresUser.getApiUserSession()
     this._status.subscribe(status => {
-      this._sessionId = status.sessionId;
-    })
+        this._sessionId = status.sessionId;
+      },
+      error => {
+        console.error('failed to connect to DRES', error)
+      })
   }
 
   /**
@@ -129,6 +132,7 @@ export class VbsSubmissionService {
    * @param time The video timestamp to submit.
    */
   public submit(segment: MediaSegmentScoreContainer, time: number) {
+    this._submissionLogTable.add([segment, time])
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
     this._selection.add(this._selection.availableTags[0], segment.segmentId);
@@ -162,15 +166,18 @@ export class VbsSubmissionService {
         }),
         filter(submission => submission != null),
         mergeMap((submission: QueryEventLog) => {
+          this._interactionLogTable.add(submission);
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return new BehaviorSubject(undefined)
+          }
           /* Submit Log entry to DRES. */
           return this._dresLog.postLogQuery(this._sessionId, submission).pipe(
             tap(o => {
               console.log(`Submitting interaction log to DRES.`);
-              this._interactionLogTable.add(submission);
             }),
             catchError((err) => {
-              this._interactionLogTable.add(submission);
-              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err}).`)
             })
           );
         })
@@ -187,6 +194,7 @@ export class VbsSubmissionService {
         map(([results, context, queryInfo]) => DresTypeConverter.mapSegmentScoreContainer(context, results, queryInfo)),
         filter(submission => submission != null),
         mergeMap((submission: QueryResultLog) => {
+          this._resultsLogTable.add(submission)
           /* Do some logging and catch HTTP errors. */
           return this._dresLog.postLogResult(this._sessionId, submission).pipe(
             tap(o => {
