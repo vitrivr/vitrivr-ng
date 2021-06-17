@@ -9,10 +9,8 @@
 }
 
 .top-right-button-toggled {
-    position: relative;
-    right: -96%;
-    border: none;
-    outline: none;
+    position: absolute;
+    right: -5px;
 }
 
 .right-corner {
@@ -28,6 +26,12 @@
     position: relative;
     border: 1px solid black;
     margin-bottom: 10px;
+}
+
+.borderless-container {
+    position: relative;
+    margin-bottom: 50px;
+    border: none;
 }
 
 .segment {

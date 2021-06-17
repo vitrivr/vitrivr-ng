@@ -112,7 +112,7 @@ export class VbsSubmissionService {
   }
 
   /**
-   * Submits the provided SegmentScoreContainer and to the VBS endpoint. Uses the segment's start timestamp as timepoint.
+   * Submits the provided SegmentScoreContainer to the VBS endpoint. Uses the segment's start timestamp as timepoint.
    *
    * @param {MediaSegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
    */
