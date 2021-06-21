@@ -7,6 +7,7 @@ import {InteractionEventComponent} from '../../shared/model/events/interaction-e
 import {QueryEvent, QueryEventLog, QueryResult, QueryResultLog} from '../../../../openapi/dres';
 import {map} from 'rxjs/internal/operators/map';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegments';
 
 /**
  * Utility  class for converting {InteractionEvent}s to {QueryEventLog} used by DRES.
@@ -49,6 +50,7 @@ export class DresTypeConverter {
         return <QueryEvent>{category: 'BROWSING', type: 'videoPlayer', value: component.context.get('i:mediaobject') + ': ' + component.context.get('i:starttime'), timestamp: timestamp}
       case InteractionEventType.NEW_QUERY_STAGE:
       case InteractionEventType.NEW_QUERY_CONTAINER:
+        console.warn(`interaction logging for ${component.type} is unsupported`)
         break;
       case InteractionEventType.QUERY_MOTION:
         return <QueryEvent>{category: 'SKETCH', type: 'motion', timestamp: timestamp};
@@ -78,6 +80,12 @@ export class DresTypeConverter {
         }
         if (c.indexOf('audio') > -1) {
           types.push('custom');
+        }
+        if (c.indexOf('visualtextcoembedding') > -1) {
+          types.push('jointEmbedding');
+        }
+        if (types.length === 0) {
+          console.warn(`no type available for ${c} in interaction logging`)
         }
         return <QueryEvent>{category: 'TEXT', value: types.join(','), timestamp: timestamp};
       }
@@ -117,6 +125,16 @@ export class DresTypeConverter {
     }
   }
 
+  static mapTemporalScoreContainer(context: string, list: TemporalObjectSegments[], event: InteractionEvent) {
+    return <QueryResultLog>{
+      timestamp: Date.now(),
+      sortType: context,
+      resultSetAvailability: 'top',
+      results: list.flatMap((obj, i) => obj.segments.map(s => <QueryResult>{item: s.objectId, segment: s.sequenceNumber, score: obj.score, rank: i})),
+      events: event.components.map(e => DresTypeConverter.mapAtomicEvent(e, event.timestamp)).filter(e => e != null)
+    }
+  }
+
   /**
    * Maps a list of {SegmentScoreContainer}s to a {QueryResultLog}.
    *
@@ -126,7 +144,8 @@ export class DresTypeConverter {
    * @return {QueryResultLog}
    */
   public static mapSegmentScoreContainer(context: string, list: MediaSegmentScoreContainer[], event: InteractionEvent): QueryResultLog {
-    return <QueryResultLog>{timestamp: Date.now(),
+    return <QueryResultLog>{
+      timestamp: Date.now(),
       sortType: context,
       resultSetAvailability: 'top',
       results: list.map((s, i) => <QueryResult>{item: s.objectId, segment: s.sequenceNumber, score: s.score, rank: i}),
@@ -246,5 +265,4 @@ export class DresTypeConverter {
         return null;
     }
   }
-
 }

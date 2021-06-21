@@ -26,7 +26,8 @@ import {Path} from './path.model';
 export class TemporalListComponent extends AbstractSegmentResultsViewComponent<ScoredPathObjectContainer[]> {
 
   /** Name of this TemporalListComponent. */
-  protected name = 'temporal_list';
+  public static COMPONENT_NAME = 'temporal_list'
+  protected name = TemporalListComponent.COMPONENT_NAME;
   public toggle = [];
 
   constructor(_cdr: ChangeDetectorRef,

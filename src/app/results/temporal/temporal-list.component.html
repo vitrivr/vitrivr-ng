@@ -10,7 +10,7 @@
        [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="list"
        infiniteScroll>
 
-    <ng-container *ngIf="((((dataSource | async) | FilterPipe: (objectFilter|async)) | OrderByScorePipe) | LimitPathsPipe : count) as pipeRes">
+    <ng-container *ngIf="(((dataSource | async) | FilterPipe: (objectFilter|async)) | LimitPathsPipe : count) as pipeRes">
       <div *ngFor="let objectPathContainer of pipeRes[0]; let i = index; trackBy: trackByFunction; last as lastObject">
         <span [hidden]="!getToggle(i)">
           <div class="container">

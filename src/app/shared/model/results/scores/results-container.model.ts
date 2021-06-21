@@ -594,7 +594,8 @@ export class ResultsContainer {
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
-    this._temporal_objects_subject.next(Array.from(this._objectid_to_temporal_object_map.values()));
+    // sort in descending order
+    this._temporal_objects_subject.next(Array.from(this._objectid_to_temporal_object_map.values()).sort((a, b) => b.score - a.score));
   }
 
   /**
