@@ -137,7 +137,7 @@ export class VbsSubmissionService {
    * @param time The video timestamp to submit.
    */
   public submit(segment: MediaSegmentScoreContainer, time: number) {
-    this._submissionLogTable.add([segment, time])
+    this._submissionLogTable.add([segment.segmentId, time])
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
     this._selection.add(this._selection.availableTags[0], segment.segmentId);
