@@ -9,7 +9,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2015",
+    "target": "es2018",
     "noStrictGenericChecks": true,
     "typeRoots": [
       "node_modules/@types"
@@ -19,6 +19,6 @@
       "three",
       "jszip"
     ],
-    "lib": ["es2015", "dom"]
+    "lib": ["es2020", "dom"]
   }
 }
