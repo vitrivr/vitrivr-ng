@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
+import {combineLatest, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
 import {EventBusService} from '../basics/event-bus.service';
@@ -167,14 +167,17 @@ export class VbsSubmissionService {
         filter(submission => submission != null),
         mergeMap((submission: QueryEventLog) => {
           this._interactionLogTable.add(submission);
+
           /* Stop if no sessionId is set */
           if (!this._sessionId) {
-            return new BehaviorSubject(undefined)
+            return EMPTY
           }
+
           /* Submit Log entry to DRES. */
+          console.log(`Submitting interaction log to DRES.`);
           return this._dresLog.postLogQuery(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting interaction log to DRES.`);
+              console.log(`Successfully submitted interaction log to DRES.`);
             }),
             catchError((err) => {
               return of(`Failed to submit segment to DRES due to a HTTP error (${err}).`)
@@ -195,10 +198,17 @@ export class VbsSubmissionService {
         filter(submission => submission != null),
         mergeMap((submission: QueryResultLog) => {
           this._resultsLogTable.add(submission)
+
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return EMPTY
+          }
+
           /* Do some logging and catch HTTP errors. */
+          console.log(`Submitting result log to DRES...`);
           return this._dresLog.postLogResult(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting result log to DRES.`);
+              console.log(`Successfully submitted result log to DRES!`);
             }),
             catchError((err) => {
               return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
