@@ -9,9 +9,9 @@
   <div (scrolled)="incrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
        [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="list"
        infiniteScroll>
-
+    <!-- Filter paths by object filters, then limit for rendering efficiency -->
     <ng-container *ngIf="(((dataSource | async) | FilterPipe: (objectFilter|async)) | LimitPathsPipe : count) as pipeRes">
-      <div *ngFor="let objectPathContainer of pipeRes[0]; let i = index; trackBy: trackByFunction; last as lastObject">
+      <div *ngFor="let tempObject of pipeRes[0]; let i = index; trackBy: trackByFunction">
         <span [hidden]="!getToggle(i)">
           <div class="container">
             <button (click)="toggleItem(i)" mat-mini-fab color="warn" class="icon-button right-corner"
@@ -19,10 +19,10 @@
               <mat-icon inline=true style="font-size:1.5em;vertical-align: top">check_box</mat-icon>
             </button>
             <div class="objectPathContainer">
-              <app-result-segment-preview-tile *ngFor="let pathSegment of (objectPathContainer | FlattenPathsPipe | OrderByScoredPathSegmentPipe)"
+              <app-result-segment-preview-tile *ngFor="let segment of (tempObject.segments | FilterPipe : (segmentFilter|async))"
                                                [container]="this"
-                                               [score]="pathSegment.score"
-                                               [segment]="pathSegment.segment"
+                                               [score]="segment.score"
+                                               [segment]="segment"
                                                class=""></app-result-segment-preview-tile>
             </div>
           </div>

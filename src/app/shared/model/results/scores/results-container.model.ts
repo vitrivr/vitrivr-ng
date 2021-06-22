@@ -491,8 +491,12 @@ export class ResultsContainer {
         this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
       } else {
         this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).score = resultTemporalObject.score;
-        resultTemporalObject.segments.map(segment => {
+        resultTemporalObject.segments.forEach(segment => {
           const tmpSegment = this._segmentid_to_segment_map.get(segment);
+          if (!tmpSegment) {
+            console.log(`cannot add undefined segment! ${segment}`)
+            return
+          }
           if (this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.indexOf(tmpSegment) === -1) {
             this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.push(tmpSegment)
           }
@@ -505,6 +509,10 @@ export class ResultsContainer {
 
   private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
     let mosc;
+    if (!segment) {
+      console.error('received undefined segment, exiting')
+      return
+    }
     if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
       mosc = new TemporalObjectSegments(
         this._objectid_to_object_map.get(segment.objectId),

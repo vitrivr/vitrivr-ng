@@ -15,6 +15,8 @@ import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
 import {AppConfig} from '../../app.config';
 import {Path} from './path.model';
+import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegments';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 
 @Component({
 
@@ -23,7 +25,7 @@ import {Path} from './path.model';
   styleUrls: ['temporal-list.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TemporalListComponent extends AbstractSegmentResultsViewComponent<ScoredPathObjectContainer[]> {
+export class TemporalListComponent extends AbstractSegmentResultsViewComponent<TemporalObjectSegments[]> {
 
   /** Name of this TemporalListComponent. */
   public static COMPONENT_NAME = 'temporal_list'
@@ -48,16 +50,12 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
    * Getter for the filters that should be applied to SegmentScoreContainer.
    * Returns true for all objects that should be included
    */
-  get objectFilter(): Observable<((v: ScoredPathObjectContainer) => boolean)[]> {
+  get objectFilter(): Observable<((v: TemporalObjectSegments) => boolean)[]> {
     return this._filterService.objectFilters.map(filters =>
-      filters.map(filter => function (scoredPathContainer: ScoredPathObjectContainer): boolean {
-        return filter(scoredPathContainer.objectScoreContainer);
+      filters.map(filter => function (obj: TemporalObjectSegments): boolean {
+        return filter(obj.object);
       })
     );
-  }
-
-  get pathSegmentFilter(): Observable<((v: ScoredPathSegment) => boolean)[]> {
-    return null;
   }
 
   scrollIncrement(): number {
@@ -73,6 +71,13 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
   }
 
   /**
+   * Getter for the filters that should be applied to SegmentScoreContainer.
+   */
+  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
+    return this._filterService.segmentFilter;
+  }
+
+  /**
    * Subscribes to the data exposed by the ResultsContainer.
    */
   protected subscribe(results: ResultsContainer) {
@@ -85,9 +90,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
         for (let i = 0; i < objects.length; i++) {
           this.toggle.push(true);
         }
-        return objects.map(
-          object => new ScoredPathObjectContainer(object.object, [new ScoredPath(new Path(new Map(object.segments.map(obj => [obj.start, obj]))), object.score)], object.score)
-        );
+        return objects;
       });
     }
   }
@@ -102,7 +105,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
    * @param index
    * @param {ScoredPathObjectContainer} item
    */
-  public trackByFunction(index, item: ScoredPathObjectContainer) {
-    return item.objectScoreContainer.objectId + '_' + item.getSize();
+  public trackByFunction(index, item: TemporalObjectSegments) {
+    return item.object.objectId + '_' + item.segments.length;
   }
 }
