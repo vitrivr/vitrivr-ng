@@ -102,7 +102,7 @@ export class Config {
         categories: []
       },
       boolean: [],
-      staged: false
+      staged: true
     },
     refinement: {
       filters: [
