@@ -2,9 +2,10 @@ import {Component, Input, QueryList, ViewChildren} from '@angular/core';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
 import {Config} from '../../shared/model/config/config.model';
 import {Observable} from 'rxjs';
-import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.component';
+import {TemporalDistanceV2Component} from '../temporal-distanceV2/temporal-distanceV2.component';
 import {AppConfig} from '../../app.config';
 import {QueryTerm} from '../../../../openapi/cineast';
+import {TemporalMode} from '../../settings/preferences/temporal-mode-container.model';
 
 @Component({
   selector: 'app-query-container',
@@ -19,7 +20,11 @@ export class QueryContainerComponent {
   /** A reference to the lists of QueryContainers (to enable removing the container). */
   @Input() inList: QueryContainerInterface[];
 
-  @ViewChildren(TemporalDistanceComponent) temporalDistances: QueryList<TemporalDistanceComponent>;
+  /** A reference to the temporal mode (To transfer information from it to the other containers) */
+  @Input() mode: TemporalMode;
+
+  /** Temporal Distance components to retrieve the temporal distance input provided by the user */
+  @ViewChildren(TemporalDistanceV2Component) temporalDistances: QueryList<TemporalDistanceV2Component>;
 
   /** A reference to the observable Config exposed by ConfigService. */
   private readonly _config: Observable<Config>;
@@ -83,24 +88,30 @@ export class QueryContainerComponent {
    * Handler to move this query container one up (in the list of query containers)
    */
   public moveQueryContainerUp() {
-    console.log(`[QueryC.up] Before = ${this.inList}`);
     if (this.isNotFirst) {
       const index = this.index;
       const container = this.inList[index - 1];
       this.inList[index - 1] = this.containerModel;
       this.inList[index] = container;
     }
-    console.log(`[QueryC.up] After = ${this.inList}`)
   }
 
   public moveQueryContainerDown() {
-    console.log(`[QueryC.down] Before = ${this.inList}`);
     if (this.isNotLast) {
       const index = this.index;
       const container = this.inList[index + 1];
       this.inList[index + 1] = this.containerModel;
       this.inList[index] = container;
     }
-    console.log(`[QueryC.down] After = ${this.inList}`)
+  }
+
+  /** Change the temporal mode to the one selected */
+  public changeMode(mode: TemporalMode) {
+    this.mode = mode;
+  }
+
+  /** Tests whether or not to display distance to previous container */
+  get isTimeDistance(): boolean {
+    return this.mode === 'TEMPORAL_DISTANCE' && this.isNotFirst;
   }
 }

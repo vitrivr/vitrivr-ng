@@ -1,24 +1,42 @@
 <div style="padding:10px;">
-    <p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
-        search...</p>
+  <p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
+    search...</p>
 
-    <p *ngIf="!(dataSource | async) && loading" class="background-prompt">
-        <mat-spinner></mat-spinner>
-    </p>
+  <p *ngIf="!(dataSource | async) && loading" class="background-prompt">
+    <mat-spinner></mat-spinner>
+  </p>
 
-    <div (scrolled)="incrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
-         [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="list"
-         infiniteScroll>
+  <div (scrolled)="incrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
+       [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="list"
+       infiniteScroll>
 
-        <div
-                *ngFor="let objectPathContainer of (((dataSource | async) | OrderObjectByBestPathScorePipe) | FilterPipe: (objectFilter|async) | LimitPipe : count)"
-                class="objectPathContainer">
-            <app-result-segment-preview-tile *ngFor="let pathSegment of objectPathContainer | FlattenPathsPipe"
-                                             [mltEnabled]="false"
-                                             [container]="this"
-                                             [score]="pathSegment.score"
-                                             [segment]="pathSegment.segment"
-                                             class="{{pathSegment.mark ? 'marked' : ''}}"></app-result-segment-preview-tile>
-        </div>
-    </div>
+    <ng-container *ngIf="(((dataSource | async) | FilterPipe: (objectFilter|async)) | LimitPathsPipe : count) as pipeRes">
+      <div *ngFor="let objectPathContainer of pipeRes[0]; let i = index; trackBy: trackByFunction; last as lastObject">
+        <span [hidden]="!getToggle(i)">
+          <div class="container">
+            <button (click)="toggleItem(i)" mat-mini-fab color="warn" class="icon-button right-corner"
+                    matTooltip="Toggle object container">
+              <mat-icon inline=true style="font-size:1.5em;vertical-align: top">check_box</mat-icon>
+            </button>
+            <div class="objectPathContainer">
+              <app-result-segment-preview-tile *ngFor="let pathSegment of (objectPathContainer | FlattenPathsPipe | OrderByScoredPathSegmentPipe)"
+                                               [container]="this"
+                                               [score]="pathSegment.score"
+                                               [segment]="pathSegment.segment"
+                                               class=""></app-result-segment-preview-tile>
+            </div>
+          </div>
+        </span>
+        <span [hidden]="getToggle(i)">
+          <div class="borderless-container">
+          <button (click)="toggleItem(i)" mat-mini-fab color="warn" class="icon-button  right-corner"
+                  matTooltip="Toggle object container">
+            <mat-icon inline=true style="font-size:1.5em;vertical-align: top">check_box_outline_blank</mat-icon>
+        </button>
+                <HR>
+          </div>
+        </span>
+      </div>
+    </ng-container>
+  </div>
 </div>

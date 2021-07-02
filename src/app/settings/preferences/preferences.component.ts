@@ -12,6 +12,7 @@ import * as JSZip from 'jszip';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
+import {TemporalMode} from './temporal-mode-container.model';
 
 @Component({
 
@@ -34,6 +35,9 @@ export class PreferencesComponent implements AfterContentInit {
 
   private _dresStatus: BehaviorSubject<string> = new BehaviorSubject<string>('')
   _dresStatusBadgeValue: string;
+
+  maxLength = 600;
+  mode: TemporalMode = 'TEMPORAL_DISTANCE'
 
   /**
    * Constructor for PreferencesComponent
@@ -101,11 +105,25 @@ export class PreferencesComponent implements AfterContentInit {
     );
   }
 
+  public onModeChanged(mode: TemporalMode) {
+    this.mode = mode;
+    this._config.pipe(first()).subscribe(c => {
+      c.mode = mode
+    });
+  }
+
+  public onMaxLengthSaveClicked() {
+    this._config.pipe(first()).subscribe(c => {
+      c.maxLength = this.maxLength
+    });
+  }
+
   /**
    * Resets the config and reloads it.
    */
   public onResetButtonClicked() {
     this._configService.load();
+    this.mode = 'TEMPORAL_DISTANCE';
   }
 
   /**
@@ -236,15 +254,16 @@ export class PreferencesComponent implements AfterContentInit {
 
   ngAfterContentInit(): void {
     this._submissionService.statusObservable.subscribe(status => {
-      if (status) {
         if (status) {
           this._dresStatus.next(`${status.sessionId}`)
           return;
         }
         this._dresStatus.next('not logged in')
         return
-      }
-    })
+      },
+      error => {
+        this._dresStatus.next('not logged in')
+      })
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }

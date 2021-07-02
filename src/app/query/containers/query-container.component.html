@@ -15,8 +15,11 @@
             <mat-icon>keyboard_arrow_up</mat-icon>
         </button>
         <mat-divider></mat-divider>
-        <app-temporal-distance></app-temporal-distance>
-        <mat-divider></mat-divider>
+        <span *ngIf="isTimeDistance">
+            <app-temporal-distanceV2></app-temporal-distanceV2>
+            <mat-divider></mat-divider>
+        </span>
+
     </div>
 
     <!-- all available query modes -->

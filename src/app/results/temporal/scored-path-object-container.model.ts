@@ -1,47 +1,44 @@
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 import {ScoredPath} from './scored-path.model';
-import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {ScoredPathSegment} from './scored-path-segment.model';
+import {ScoreContainer} from '../../shared/model/results/scores/compound-score-container.model';
+import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
+import {FusionFunction} from '../../shared/model/results/fusion/weight-function.interface';
+import {StringDoublePair} from '../../../../openapi/cineast';
 
 /**
  * A container of ScoredPath elements which belong to the same object.
  */
-export class ScoredPathObjectContainer {
+export class ScoredPathObjectContainer extends ScoreContainer {
 
-  /**
-   * The best scored path, this is important, as these containers are to be sorted based on that best path
-   */
-  public readonly bestPath;
+  private tuples = new Array<ScoredPathSegment>();
 
   /**
    * Creates a new container
    * @param objectScoreContainer the MediaObjectScoreContainer to which all these paths belong to
    * @param scoredPaths All the ScoredPath elements for the object
+   * @param _score The score of this path
    */
   constructor(public readonly objectScoreContainer: MediaObjectScoreContainer,
-              public readonly scoredPaths: ScoredPath[]) {
-    if (scoredPaths.length > 1) {
-      /* the bestPath is the one with the highest score */
-      this.bestPath = scoredPaths.sort((a, b) => b.score - a.score)[0];
-    } else if (scoredPaths.length === 1) {
-      this.bestPath = scoredPaths[0];
-    } else {
-      console.log(`ScoredPath empty for ${objectScoreContainer.objectId}`);
-      this.bestPath = undefined;
-    }
-  }
-
-  /**
-   * Returns all segments of this object, ordered by their path score in descending order.
-   */
-  get segmentsInPathOrderedDesc(): MediaSegmentScoreContainer[] {
-    const segments = [];
-    this.scoredPaths.sort((a, b) => b.score - a.score).forEach(scoredPath => {
-      scoredPath.segments.forEach(segment => segments.push(segment));
+              public readonly scoredPaths: ScoredPath[],
+              readonly _score) {
+    super();
+    scoredPaths.forEach(scoredPath => {
+      scoredPath.segments.forEach(segment => this.tuples.push(new ScoredPathSegment(segment, scoredPath.score)));
     });
-    return segments;
   }
 
-  public toString() {
-    return `${this.objectScoreContainer.objectId}::${this.bestPath}`
+  public getFlattenPaths(): Array<ScoredPathSegment> {
+    return this.tuples;
+  }
+
+  public getSize(): number {
+    return this.tuples.length;
+  }
+
+  addSimilarity(category: WeightedFeatureCategory, similarity: StringDoublePair, containerId: number): void {
+  }
+
+  update(features: WeightedFeatureCategory[], func: FusionFunction, containerId: number): void {
   }
 }

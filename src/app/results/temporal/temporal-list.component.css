@@ -1,9 +1,5 @@
 .objectPathContainer {
-    border: 1px solid black;
-
     padding: 4px;
-    margin-bottom: 10px;
-
     display: grid;
     grid-template-columns: repeat(auto-fill, 120px);
     grid-template-rows: repeat(auto-fill, 110px);
@@ -12,18 +8,30 @@
     grid-column-gap: 5px;
 }
 
-.scoredPath {
-    width: 100%;
-    border: 1px solid #808080;
-    padding: 4px;
+.top-right-button-toggled {
+    position: absolute;
+    right: -5px;
+}
+
+.right-corner {
+    position: relative;
+    top: 5px;
+    right: 5px;
+    float: right;
+    border: none;
+    outline: none;
+}
+
+.container {
+    position: relative;
+    border: 1px solid black;
     margin-bottom: 10px;
-    /*
-        display: grid;
-        grid-template-columns: repeat(auto-fill,120px);
-        grid-template-rows: repeat(auto-fill,110px);
-        grid-auto-flow: row;
-        grid-row-gap: 5px;
-        grid-column-gap: 5px;*/
+}
+
+.borderless-container {
+    position: relative;
+    margin-bottom: 50px;
+    border: none;
 }
 
 .segment {

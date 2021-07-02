@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
+import {combineLatest, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
 import {EventBusService} from '../basics/event-bus.service';
@@ -15,7 +15,8 @@ import Dexie from 'dexie';
 import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
-import {LogService, QueryEventLog, QueryResultLog, SessionId, StatusService, SubmissionService, SuccessfulSubmissionsStatus, UserService} from '../../../../openapi/dres';
+import {LogService, QueryEventLog, QueryResultLog, SessionId, StatusService, SubmissionService, SuccessfulSubmissionsStatus, SuccessStatus, UserService} from '../../../../openapi/dres';
+ import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -31,6 +32,10 @@ export class VbsSubmissionService {
 
   /** Reference to the subscription that is used to submit updates to the results list. */
   private _resultsSubscription: Subscription;
+
+  /** Reference to the subscription for temporal scoring objects that is used to submit updates to the results list. */
+  private _temporalResultsSubscription: Subscription;
+
 
   /** Reference to the subscription that is used to submit interaction logs on a regular basis to the VBS server. */
   private _interactionlogSubscription: Subscription;
@@ -87,8 +92,11 @@ export class VbsSubmissionService {
     });
     this._status = this._dresUser.getApiUserSession()
     this._status.subscribe(status => {
-      this._sessionId = status.sessionId;
-    })
+        this._sessionId = status.sessionId;
+      },
+      error => {
+        console.error('failed to connect to DRES', error)
+      })
   }
 
   /**
@@ -112,7 +120,7 @@ export class VbsSubmissionService {
   }
 
   /**
-   * Submits the provided SegmentScoreContainer and to the VBS endpoint. Uses the segment's start timestamp as timepoint.
+   * Submits the provided SegmentScoreContainer to the VBS endpoint. Uses the segment's start timestamp as timepoint.
    *
    * @param {MediaSegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
    */
@@ -129,6 +137,7 @@ export class VbsSubmissionService {
    * @param time The video timestamp to submit.
    */
   public submit(segment: MediaSegmentScoreContainer, time: number) {
+    this._submissionLogTable.add([segment.segmentId, time])
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
     this._selection.add(this._selection.availableTags[0], segment.segmentId);
@@ -162,15 +171,21 @@ export class VbsSubmissionService {
         }),
         filter(submission => submission != null),
         mergeMap((submission: QueryEventLog) => {
+          this._interactionLogTable.add(submission);
+
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return EMPTY
+          }
+
           /* Submit Log entry to DRES. */
+          console.log(`Submitting interaction log to DRES.`);
           return this._dresLog.postLogQuery(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting interaction log to DRES.`);
-              this._interactionLogTable.add(submission);
+              console.log(`Successfully submitted interaction log to DRES.`);
             }),
             catchError((err) => {
-              this._interactionLogTable.add(submission);
-              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err}).`)
             })
           );
         })
@@ -183,14 +198,57 @@ export class VbsSubmissionService {
         debounceTime(1000)
       ); /* IMPORTANT: Limits the number of submissions to one per second. */
 
+      /* Setup results subscription, which is triggered upon change to the result set. */
+      const temporalResultsSubscription = this._queryService.observable.pipe(
+        filter(f => f === 'ENDED'),
+        mergeMap(f => this._queryService.results.temporalObjectsAsObservable),
+        debounceTime(1000)
+      ); /* IMPORTANT: Limits the number of submissions to one per second. */
+
+
       this._resultsSubscription = combineLatest([resultSubscription, this._eventbus.currentView(), this._eventbus.lastQuery()]).pipe(
+        filter(([results, context, queryInfo]) => context != TemporalListComponent.COMPONENT_NAME),
         map(([results, context, queryInfo]) => DresTypeConverter.mapSegmentScoreContainer(context, results, queryInfo)),
         filter(submission => submission != null),
         mergeMap((submission: QueryResultLog) => {
+          this._resultsLogTable.add(submission)
+
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return EMPTY
+          }
+
           /* Do some logging and catch HTTP errors. */
+          console.log(`Submitting result log to DRES...`);
           return this._dresLog.postLogResult(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting result log to DRES.`);
+              console.log(`Successfully submitted result log to DRES!`);
+            }),
+            catchError((err) => {
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
+            })
+          );
+        })
+      ).subscribe();
+
+      /* Heavily duplicated code from above */
+      this._temporalResultsSubscription = combineLatest([temporalResultsSubscription, this._eventbus.currentView(), this._eventbus.lastQuery()]).pipe(
+        filter(([results, context, queryInfo]) => context === TemporalListComponent.COMPONENT_NAME),
+        map(([results, context, queryInfo]) => DresTypeConverter.mapTemporalScoreContainer(context, results, queryInfo)),
+        filter(submission => submission != null),
+        mergeMap((submission: QueryResultLog) => {
+          this._resultsLogTable.add(submission)
+
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return EMPTY
+          }
+
+          /* Do some logging and catch HTTP errors. */
+          console.log(`Submitting temporal result log to DRES...`);
+          return this._dresLog.postLogResult(this._sessionId, submission).pipe(
+            tap(o => {
+              console.log(`Successfully submitted result log to DRES!`);
             }),
             catchError((err) => {
               return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)

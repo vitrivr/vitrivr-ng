@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
-import {filter, tap} from 'rxjs/operators';
 
 /**
  * This is a simple application singleton used to emmit application wide events usually triggered by some sort of user-interaction. It

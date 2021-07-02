@@ -25,6 +25,8 @@ import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
 import {MediaObjectMetadataDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../../../openapi/cineast';
 import {AppConfig} from '../../../../app.config';
 import {MediaObjectDescriptor} from '../../../../../../openapi/cineast/model/mediaObjectDescriptor';
+import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
+import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -32,6 +34,9 @@ export class ResultsContainer {
 
   /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
   private _segmentid_to_segment_map: Map<string, MediaSegmentScoreContainer> = new Map();
+
+  /** A Map that maps objectId's to their TemporalObjectSegments. */
+  private _objectid_to_temporal_object_map: Map<string, TemporalObjectSegments> = new Map();
 
   /** Internal data structure that contains all MediaObjectScoreContainers. */
   private _results_objects: MediaObjectScoreContainer[] = [];
@@ -42,6 +47,8 @@ export class ResultsContainer {
   private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
   /** A subject that can be used to publish changes to the results. */
   private _results_segments_subject: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
+
+  private _temporal_objects_subject: BehaviorSubject<TemporalObjectSegments[]> = new BehaviorSubject(Array.from(this._objectid_to_temporal_object_map.values()));
 
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
   private _rerank = 0;
@@ -114,6 +121,10 @@ export class ResultsContainer {
 
   get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
     return this._results_features_subject.asObservable();
+  }
+
+  get temporalObjectsAsObservable(): Observable<TemporalObjectSegments[]> {
+    return this._temporal_objects_subject.asObservable();
   }
 
   /**
@@ -286,7 +297,8 @@ export class ResultsContainer {
   /**
    * Re-ranks the objects and segments, i.e. calculates new scores, using the provided list of
    * results and weightPercentage function. If none are provided, the default ones define in the ResultsContainer
-   * are used.
+   * are used. Not necessary for the temporal results as no additional information is expected that would change the
+   * temporal ranking.
    *
    * @param {WeightedFeatureCategory[]} features
    * @param {FusionFunction} weightFunction
@@ -368,6 +380,7 @@ export class ResultsContainer {
         this._results_segments.push(ssc);
         this._segmentid_to_segment_map.set(segment.segmentId, ssc);
       }
+      this.updateTemporalSegments(ssc);
     }
     console.timeEnd(`Processing Segment Message (${this.queryId})`);
 
@@ -455,12 +468,65 @@ export class ResultsContainer {
   }
 
   /**
+   * Processes the TemporalQueryResult message. Stores the objectId and the corresponding TemporalObject.
+   *
+   * @param temp TemporalQueryResult message
+   * @return {boolean} True, if TemporalQueryResult was processed i.e. queryId corresponded with that of the message.
+   */
+  public processTemporalMessage(temp: TemporalQueryResult) {
+    if (temp.queryId !== this.queryId) {
+      console.warn(`similarity result query id ${temp.queryId} does not match query id ${this.queryId}`);
+      return false;
+    }
+    console.time(`Processing Temporal Message (${this.queryId})`);
+
+    for (const resultTemporalObject of temp.content) {
+      let mosc;
+      if (!this._objectid_to_temporal_object_map.has(resultTemporalObject.objectId)) {
+        mosc = new TemporalObjectSegments(
+          this._objectid_to_object_map.get(resultTemporalObject.objectId),
+          resultTemporalObject.segments.map(segment => this._segmentid_to_segment_map.get(segment)),
+          resultTemporalObject.score
+        )
+        this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
+      } else {
+        this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).score = resultTemporalObject.score;
+        resultTemporalObject.segments.map(segment => {
+          const tmpSegment = this._segmentid_to_segment_map.get(segment);
+          if (this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.indexOf(tmpSegment) === -1) {
+            this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.push(tmpSegment)
+          }
+        });
+      }
+    }
+
+    return true;
+  }
+
+  private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
+    let mosc;
+    if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
+      mosc = new TemporalObjectSegments(
+        this._objectid_to_object_map.get(segment.objectId),
+        [segment],
+        segment.score
+      )
+      this._objectid_to_temporal_object_map.set(segment.objectId, mosc)
+    } else {
+      if (this._objectid_to_temporal_object_map.get(segment.objectId).segments.indexOf(segment) === -1) {
+        this._objectid_to_temporal_object_map.get(segment.objectId).segments.push(segment)
+      }
+    }
+  }
+
+  /**
    * Completes the two subjects and invalidates them thereby.
    */
   public complete() {
     this._results_objects_subject.complete();
     this._results_segments_subject.complete();
     this._results_features_subject.complete();
+    this._temporal_objects_subject.complete();
   }
 
   /**
@@ -493,6 +559,10 @@ export class ResultsContainer {
         })
       });
     });
+    const temporalList = [];
+    Array.from(this._objectid_to_temporal_object_map.values()).forEach(obj => {
+      temporalList.push({objectId: obj.object.objectId, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
+    })
     return {
       queryId: this.queryId,
       objects: this._results_objects.map(obj => obj.serialize()),
@@ -511,7 +581,8 @@ export class ResultsContainer {
         });
         return metadata;
       })),
-      similarity: similarityList
+      similarity: similarityList,
+      temporal: temporalList
     };
   }
 
@@ -523,6 +594,8 @@ export class ResultsContainer {
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
+    // sort in descending order
+    this._temporal_objects_subject.next(Array.from(this._objectid_to_temporal_object_map.values()).sort((a, b) => b.score - a.score));
   }
 
   /**

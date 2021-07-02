@@ -14,7 +14,7 @@ import {StringDoublePair} from '../../../../../../openapi/cineast';
  * to rank the research-results in the UI.
  */
 export abstract class ScoreContainer {
-;
+
   /** Score value. How it is obtained is up to the implementing class. */
   protected _score = 0;
 
