@@ -18,6 +18,7 @@ import {ResultsModule} from './results/results.module';
 import {MatBadgeModule} from '@angular/material/badge';
 import {AppConfig} from './app.config';
 import {SegmentdetailsModule} from './segmentdetails/segmentdetails.module';
+import { IiifComponent } from './iiif/iiif.component';
 
 /**
  * Method used to laod the application config
@@ -44,7 +45,7 @@ export function initializeConfig(appConfig: AppConfig) {
     QuerySidebarModule,
     MatBadgeModule
   ],
-  declarations: [AppComponent, PingComponent],
+  declarations: [AppComponent, PingComponent, IiifComponent],
   providers: [AppConfig, {provide: APP_INITIALIZER, useFactory: initializeConfig, deps: [AppConfig], multi: true}],
   bootstrap: [AppComponent]
 })
