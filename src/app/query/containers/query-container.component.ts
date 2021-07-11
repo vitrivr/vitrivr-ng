@@ -2,7 +2,7 @@ import {Component, Input, QueryList, ViewChildren} from '@angular/core';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
 import {Config} from '../../shared/model/config/config.model';
 import {Observable} from 'rxjs';
-import {TemporalDistanceV2Component} from '../temporal-distanceV2/temporal-distanceV2.component';
+import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.component';
 import {AppConfig} from '../../app.config';
 import {QueryTerm} from '../../../../openapi/cineast';
 import {TemporalMode} from '../../settings/preferences/temporal-mode-container.model';
@@ -24,7 +24,7 @@ export class QueryContainerComponent {
   @Input() mode: TemporalMode;
 
   /** Temporal Distance components to retrieve the temporal distance input provided by the user */
-  @ViewChildren(TemporalDistanceV2Component) temporalDistances: QueryList<TemporalDistanceV2Component>;
+  @ViewChildren(TemporalDistanceComponent) temporalDistances: QueryList<TemporalDistanceComponent>;
 
   /** A reference to the observable Config exposed by ConfigService. */
   private readonly _config: Observable<Config>;

@@ -19,7 +19,6 @@ import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxr
 import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
 import {Config} from '../../config/config.model';
 import {FilterType} from '../../../../settings/refinement/filtertype.model';
-import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
 import {MediaObjectMetadataDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../../../openapi/cineast';
@@ -76,7 +75,7 @@ export class ResultsContainer {
    * @param {string} queryId Unique ID of the query. Used to filter messages!
    * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
    */
-  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
+  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = new AverageFusionFunction()) {
   }
 
   /**
@@ -242,9 +241,6 @@ export class ResultsContainer {
 
   public setScoreFunction(scoreFunction: string) {
     switch (scoreFunction.toUpperCase()) {
-      case 'TEMPORAL':
-        this.scoreFunction = TemporalFusionFunction.instance();
-        break;
       case 'AVERAGE':
         this.scoreFunction = new AverageFusionFunction();
         break;
