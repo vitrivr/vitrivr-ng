@@ -1,9 +1,10 @@
-import {Component, Inject, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {ResolverService} from '../core/basics/resolver.service';
 import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
+import * as openseadragon from 'openseadragon';
 
 @Component({
 
@@ -11,7 +12,7 @@ import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
   templateUrl: 'quick-viewer.component.html',
   styleUrls: ['quick-viewer.component.css']
 })
-export class QuickViewerComponent {
+export class QuickViewerComponent implements AfterViewInit {
 
   /** Reference to the audio player. */
   @ViewChild('audioplayer')
@@ -24,9 +25,6 @@ export class QuickViewerComponent {
   /** Reference to the img tag for preview. */
   @ViewChild('imageviewer')
   private imageviewer: any;
-
-  /** SegmentScoreContainer that is currently in focus. */
-  public _segment: MediaSegmentScoreContainer;
 
   /**
    *
@@ -44,6 +42,9 @@ export class QuickViewerComponent {
     }
   }
 
+  /** SegmentScoreContainer that is currently in focus. */
+  public _segment: MediaSegmentScoreContainer;
+
   /**
    * Getter for SegmentScoreContainer.
    *
@@ -60,6 +61,24 @@ export class QuickViewerComponent {
    */
   get mediaobject(): MediaObjectScoreContainer {
     return this._segment.objectScoreContainer;
+  }
+
+  get iiifResourceUrl(): string {
+    const baseUrl = this.mediaobject.metadata.get('JSON.resourceUrl')
+    return baseUrl != null && baseUrl.trim().length !== 0 ? baseUrl : null;
+  }
+
+  ngAfterViewInit(): void {
+    console.log('Creating an openseadragon viewer with the url: ', this.iiifResourceUrl)
+    const viewer = openseadragon({
+      id: 'openseadragon',
+      preserveViewport: true,
+      visibilityRatio: 1,
+      minZoomLevel: 1,
+      defaultZoomLevel: 1,
+      prefixUrl: '/assets/images/openseadragon/',
+      tileSources: [`${this.iiifResourceUrl}`]
+    });
   }
 
   /**
