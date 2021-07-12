@@ -64,6 +64,7 @@ export class QueryService {
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
 
+
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
               @Inject(AppConfig) private _config: AppConfig,
@@ -129,6 +130,7 @@ export class QueryService {
     this._config.configAsObservable.pipe(first()).subscribe(config => {
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
       this._socket.next(query)
+        console.log(query);
     });
 
     /** Log Interaction */

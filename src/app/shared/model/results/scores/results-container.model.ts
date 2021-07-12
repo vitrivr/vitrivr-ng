@@ -69,6 +69,11 @@ export class ResultsContainer {
    */
   private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
+    /** List of all elements where the boolean properties are met ( hard Requirement*/
+    private _booleanelements = [] ;
+    /**True if boolean used as hard requirement*/
+    private _booelanashardreq: boolean;
+
   /**
    * Constructor for ResultsContainer.
    *
@@ -309,9 +314,28 @@ export class ResultsContainer {
       console.debug(`no weight function given for rerank(), using weight function inherent to the results container: ${this.scoreFunction.name()}`);
       weightFunction = this.scoreFunction;
     }
-
     console.time(`Rerank (${this.queryId})`);
+      console.log(this._results_objects);
 
+    this._results_objects.forEach((mediaObject) => {
+      let isrelevant = false;
+      this._booleanelements.forEach((segid) => {
+        if (mediaObject.hassegment(segid)) {
+          isrelevant = true;
+          }
+          });
+      if (!isrelevant) {
+        const ind = this._results_objects.indexOf(mediaObject);
+        this._results_objects.splice(ind, 1);
+      }
+    });
+    let index = 0;
+    this._results_segments.forEach((segmentObject) => {
+      if (this._booleanelements.indexOf(segmentObject.segmentId) === -1) {
+          this._results_segments.splice(index, 1)
+          index += 1;
+      }
+    });
 
     this._results_objects.forEach((mediaObject) => {
       mediaObject.update(features, weightFunction);
@@ -446,6 +470,13 @@ export class ResultsContainer {
       return false;
     }
 
+
+    if (sim.category === 'boolean') {
+      console.log('called add boolean')
+        console.log(sim)
+      this.addboolelement(sim);
+    }
+
     /* Get and (if missing) add a unique feature. */
     const feature = this.uniqueFeature(sim.category);
 
@@ -463,6 +494,14 @@ export class ResultsContainer {
     return true;
   }
 
+
+  public addboolelement(sim: SimilarityQueryResult) {
+      for (const object of sim.content) {
+          if (this._booleanelements.indexOf(object.key) === -1) {
+              this._booleanelements.push(object.key)
+          }
+      }
+  }
   /**
    * Processes the TemporalQueryResult message. Stores the objectId and the corresponding TemporalObject.
    *

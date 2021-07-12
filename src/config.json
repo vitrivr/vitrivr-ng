@@ -4,7 +4,11 @@
   },
   "resources": {
     "host_thumbnails": "http://localhost:4567/thumbnails/:o/:s:x",
-    "host_objects": "http://localhost:4567/objects/:n"
+    "host_objects": "http://localhost:4567/objects/:n",
+    "suffix": {
+      "IMAGE": "jpg",
+      "VIDEO": "png"
+    }
   },
   "competition": {
     "host": "dmi-dres.dmi.unibas.ch:443",
@@ -58,9 +62,9 @@
       [
         "Example Dropdown",
         "OPTIONS",
-        "features.option",
-        "ONE",
-        "TWO",
+        "test_table.key",
+        1,
+        50,
         "THREE"
       ],
       [

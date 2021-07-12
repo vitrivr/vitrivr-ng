@@ -30,6 +30,12 @@ export class BoolTermComponent implements OnInit {
 
   private _value: any[] = [];
 
+  newModel =  false;
+
+  public weights: any[] = ['strict', 'moderate', 'lose'];
+
+ _extendenModel = 'strict';
+
   get currentAttribute(): Observable<BoolAttribute> {
     return this.currentAttributeObservable;
   }
@@ -80,6 +86,15 @@ export class BoolTermComponent implements OnInit {
     this._value = [value];
     this.updateTerm();
   }
+
+
+
+
+
+
+
+
+
 
 
   private updateRangeValue() {
@@ -181,4 +196,5 @@ export class BoolTermComponent implements OnInit {
   isOption(): boolean {
     return this.attribute.valueType.valueOf() === 0 || this.attribute.valueType.valueOf() === 5;
   }
+
 }

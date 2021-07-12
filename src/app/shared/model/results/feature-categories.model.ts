@@ -16,4 +16,5 @@ export type FeatureCategories =
   'lightfield' |
   'sphericalharmonicslow' |
   'sphericalharmonicsdefault' |
+  'boolean' |
   'sphericalharmonicshigh';
