@@ -63,6 +63,9 @@ export class QuickViewerComponent implements AfterViewInit {
     return this._segment.objectScoreContainer;
   }
 
+  /**
+   * Returns the URL of the IIIF Image API resource's info.json file
+   */
   get iiifResourceUrl(): string {
     let baseUrl = this.mediaobject.metadata.get('JSON.resourceUrl')
     if (baseUrl == null || baseUrl.trim().length === 0) {
@@ -74,6 +77,9 @@ export class QuickViewerComponent implements AfterViewInit {
     return baseUrl + 'info.json';
   }
 
+  /**
+   * Initialize the openseadragon viewer to load the IIIF Image API resource if applicable
+   */
   ngAfterViewInit(): void {
     console.log('Creating an openseadragon viewer with the url: ', this.iiifResourceUrl)
     const viewer = openseadragon({

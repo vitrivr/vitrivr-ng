@@ -25,7 +25,7 @@ export class ObjectviewerComponent {
   @Input() mediaobject: MediaObjectDescriptor;
 
   constructor(
-    private  _eventBusService: EventBusService,
+    private _eventBusService: EventBusService,
     public _resolver: ResolverService,
     private _historyService: PreviousRouteService,
   ) {
@@ -58,4 +58,23 @@ export class ObjectviewerComponent {
     context.set('i:starttime', segment.startabs);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.PLAY, context)))
   }
+
+  /**
+   * Returns the IIIF Image API URL if available or else returns the path using {@link _resolver}
+   */
+  public getImageUrl(): string {
+    const _resolverPath = this._resolver.pathToObject(this.mediaobject);
+    // @ts-ignore
+    let baseUrl = this.mediaobject._metadata.get('JSON.resourceUrl')
+    if (baseUrl == null || baseUrl.trim().length === 0) {
+      return _resolverPath;
+    }
+    if (!baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.concat('/')
+    }
+    // @ts-ignore
+    const quality = this.mediaobject._metadata.get('JSON.quality') || 'default'
+    return baseUrl + `full/,400/0/${quality}.jpg`;
+  }
+
 }
