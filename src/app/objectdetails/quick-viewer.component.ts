@@ -64,8 +64,14 @@ export class QuickViewerComponent implements AfterViewInit {
   }
 
   get iiifResourceUrl(): string {
-    const baseUrl = this.mediaobject.metadata.get('JSON.resourceUrl')
-    return baseUrl != null && baseUrl.trim().length !== 0 ? baseUrl : null;
+    let baseUrl = this.mediaobject.metadata.get('JSON.resourceUrl')
+    if (baseUrl == null || baseUrl.trim().length === 0) {
+      return null;
+    }
+    if (!baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.concat('/')
+    }
+    return baseUrl + 'info.json';
   }
 
   ngAfterViewInit(): void {
@@ -77,7 +83,7 @@ export class QuickViewerComponent implements AfterViewInit {
       minZoomLevel: 1,
       defaultZoomLevel: 1,
       prefixUrl: '/assets/images/openseadragon/',
-      tileSources: [`${this.iiifResourceUrl}`]
+      tileSources: [this.iiifResourceUrl]
     });
   }
 
