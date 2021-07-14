@@ -4,7 +4,7 @@
      id="{{id}}">
     <img (click)="onTileClicked($event)"
          *ngIf="!(this._keyboardService.ctrlPressed | async) || !inFocus" draggable="false"
-         src="{{container._resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}"/>
+         src="{{imageUrl}}"/>
 
     <vg-player (onPlayerReady)="onPlayerReady($event, segment)" *ngIf="(playVideo(segment) | async) ">
         <video #media [autoplay]="true" [vgMedia]="media" preload="auto"

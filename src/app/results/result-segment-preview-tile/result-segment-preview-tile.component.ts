@@ -48,11 +48,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   @Input() score: number;
 
-  /**
-   * A flag whether this preview is in focus or not.
-   */
-  private _focus = false;
-
   constructor(readonly _keyboardService: KeyboardService,
               private _queryService: QueryService,
               private _eventBusService: EventBusService,
@@ -61,6 +56,11 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
               private _resolver: ResolverService,
               private _configService: AppConfig) {
   }
+
+  /**
+   * A flag whether this preview is in focus or not.
+   */
+  private _focus = false;
 
   /**
    * Sets the flag, that this preview is in focus
@@ -85,6 +85,25 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   }
 
   /**
+   * Returns the IIIF Image API URL if available or else returns the path using {@link _resolver}
+   */
+  get imageUrl(): string {
+    const _resolverPath = this._resolver.pathToThumbnail(this.segment.objectScoreContainer, this.segment);
+    if (this.segment.metadata) {
+      let baseUrl = this.segment.objectScoreContainer.metadataForKey('JSON.resourceUrl')
+      if (baseUrl == null || baseUrl.trim().length === 0) {
+        return _resolverPath;
+      }
+      if (!baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.concat('/')
+      }
+      const quality = this.segment.objectScoreContainer.metadataForKey('JSON.quality') || 'default'
+      return baseUrl + `square/120,100/0/${quality}.jpg`;
+    }
+    return _resolverPath;
+  }
+
+  /**
    * Invokes when a user clicks the 'Find neighbouring segments' button.
    */
   public onNeighborsButtonClicked() {
@@ -106,7 +125,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   public onSubmitButtonClicked() {
     this._vbs.submitSegment(this.segment);
   }
-
 
   /**
    * Returns true, if the submit (to VBS) button should be displayed for the given segment and false otherwise. This depends on the configuration and
@@ -163,6 +181,5 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
       api.seekTime(segment.startabs);
     }
   }
-
 
 }
