@@ -7,6 +7,7 @@ import {DistinctElementLookupService} from '../../../core/lookup/distinct-elemen
 import {first, map} from 'rxjs/operators';
 import {AppConfig} from '../../../app.config';
 import {MiscService} from '../../../../../openapi/cineast';
+import {QueryService} from '../../../core/queries/query.service';
 
 @Component({
   selector: 'app-qt-bool',
@@ -27,6 +28,8 @@ export class BoolQueryTermComponent implements OnInit {
     [new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT)]
   );
 
+  boolAsFilter = false;
+
   public ngOnInit() {
     /* only add an empty term if there are none currently present*/
     if (this.boolTerm.terms.length !== 0) {
@@ -35,7 +38,7 @@ export class BoolQueryTermComponent implements OnInit {
     this.addBoolTermComponent();
   }
 
-  constructor(
+  constructor(private _queryService: QueryService,
     _configService: AppConfig,
     private _resolver: ComponentFactoryResolver,
     _booleanService: MiscService,
@@ -77,5 +80,9 @@ export class BoolQueryTermComponent implements OnInit {
 
   public addBoolTermComponent() {
     this.boolTerm.terms.push(new BoolTerm(this.possibleAttributes.getValue()[0].featureName, this.possibleAttributes.getValue()[0].operators[0], null));
+  }
+  public changeBoolToFilter() {
+    this._queryService.setBooleanAsFilter(this.boolAsFilter);
+    console.log('Changed Boolean to a filter')
   }
 }

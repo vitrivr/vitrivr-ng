@@ -64,6 +64,8 @@ export class QueryService {
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
 
+  private _booleanasfilter = false;
+
 
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
@@ -461,7 +463,7 @@ export class QueryService {
   private startNewQuery(queryId: string) {
     /* Start the actual query. */
     if (!this._results || (this._results && this._results.queryId !== queryId)) {
-      this._results = new ResultsContainer(queryId);
+      this._results = new ResultsContainer(queryId, this._booleanasfilter);
       this._interval_map.set(queryId, window.setInterval(() => this._results.checkUpdate(), 2500));
       if (this._scoreFunction) {
         this._results.setScoreFunction(this._scoreFunction);
@@ -501,5 +503,10 @@ export class QueryService {
     this._running -= 1;
     this._subject.next('ERROR' as QueryChange);
     console.log('QueryService received error: ' + message.message);
+  }
+  public setBooleanAsFilter(value: boolean): void {
+    this._booleanasfilter = value;
+    console.log('BOOLEAN IS NOW CHANGED TO');
+    console.log(this._booleanasfilter);
   }
 }

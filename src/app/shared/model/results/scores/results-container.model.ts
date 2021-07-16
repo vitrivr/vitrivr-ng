@@ -26,6 +26,8 @@ import {AppConfig} from '../../../../app.config';
 import {MediaObjectDescriptor} from '../../../../../../openapi/cineast/model/mediaObjectDescriptor';
 import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
 import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
+import {AnimationUtils} from 'three';
+import convertArray = AnimationUtils.convertArray;
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -71,8 +73,8 @@ export class ResultsContainer {
 
     /** List of all elements where the boolean properties are met ( hard Requirement*/
     private _booleanelements = [] ;
-    /**True if boolean used as hard requirement*/
-    private _booelanashardreq: boolean;
+/*    /!**True if boolean used as hard requirement*!/
+    private _booleanasfilter = false;*/
 
   /**
    * Constructor for ResultsContainer.
@@ -80,7 +82,7 @@ export class ResultsContainer {
    * @param {string} queryId Unique ID of the query. Used to filter messages!
    * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
    */
-  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = new AverageFusionFunction()) {
+  constructor(public readonly queryId: string, private booleanasfilter: boolean, private scoreFunction: FusionFunction = new AverageFusionFunction()) {
   }
 
   /**
@@ -137,7 +139,7 @@ export class ResultsContainer {
    */
   // tslint:disable-next-line:member-ordering
   public static deserialize(data: any): ResultsContainer {
-    const container = new ResultsContainer(data['queryId']);
+    const container = new ResultsContainer(data['queryId'], false); /*NEED TO BE DONE BOOLASFILTER, currently Hardcoded*/
     container.processObjectMessage(<MediaObjectQueryResult>{queryId: container.queryId, content: <MediaObjectDescriptor[]>data['objects']});
     container.processSegmentMessage(<MediaSegmentQueryResult>{queryId: container.queryId, content: <MediaSegmentDescriptor[]>data['segments']});
     container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
@@ -238,6 +240,8 @@ export class ResultsContainer {
    */
   public doUpdate() {
     if (this._rerank > 0) {
+      console.log(this._results_objects);
+      console.log(this._results_segments);
       this.rerank();
     } else if (this._next > 0) { // else if as rerank already calls next
       this.next();
@@ -315,27 +319,6 @@ export class ResultsContainer {
       weightFunction = this.scoreFunction;
     }
     console.time(`Rerank (${this.queryId})`);
-      console.log(this._results_objects);
-
-    this._results_objects.forEach((mediaObject) => {
-      let isrelevant = false;
-      this._booleanelements.forEach((segid) => {
-        if (mediaObject.hassegment(segid)) {
-          isrelevant = true;
-          }
-          });
-      if (!isrelevant) {
-        const ind = this._results_objects.indexOf(mediaObject);
-        this._results_objects.splice(ind, 1);
-      }
-    });
-    let index = 0;
-    this._results_segments.forEach((segmentObject) => {
-      if (this._booleanelements.indexOf(segmentObject.segmentId) === -1) {
-          this._results_segments.splice(index, 1)
-          index += 1;
-      }
-    });
 
     this._results_objects.forEach((mediaObject) => {
       mediaObject.update(features, weightFunction);
@@ -343,8 +326,29 @@ export class ResultsContainer {
         segment.update(features, weightFunction);
       });
     });
+  if (this.booleanasfilter) {
 
+    const temp_result_object = [];
+    console.log(this._results_objects);
+    this._results_objects.forEach((mediaObject) => {
 
+      this._booleanelements.forEach((segId) => {
+        if (mediaObject.hasSegment(segId)) {
+          temp_result_object.push(mediaObject);
+        }
+      });
+    });
+    console.log(temp_result_object);
+    this._results_objects = temp_result_object;
+    const temp_seg_container = [];
+    this._results_segments.forEach((segmentObject) => {
+      if (this._booleanelements.indexOf(segmentObject.segmentId) !== -1) {
+        temp_seg_container.push(segmentObject);
+      }
+    });
+    this._results_segments = temp_seg_container;
+    console.log(this._results_objects)
+  }
     /* Other methods calling rerank() depend on this next() call */
     this.next();
     console.timeEnd(`Rerank (${this.queryId})`);
@@ -403,7 +407,6 @@ export class ResultsContainer {
       this.updateTemporalSegments(ssc);
     }
     console.timeEnd(`Processing Segment Message (${this.queryId})`);
-
     /* Re-rank on the UI side - this also invokes next(). */
     this._rerank += 1;
 
@@ -487,7 +490,6 @@ export class ResultsContainer {
         segment.addSimilarity(feature, similarity, sim.containerId);
       }
     }
-
 
     /* Re-rank the results (calling this method also causes an invocation of next(). */
     this._rerank += 1;
@@ -650,6 +652,7 @@ export class ResultsContainer {
       mosc = new MediaObjectScoreContainer(objectId);
       this._objectid_to_object_map.set(objectId, mosc);
       this._results_objects.push(mosc);
+      console.log('push');
     }
 
     /* Optional: Update MediaObjectScoreContainer. */
