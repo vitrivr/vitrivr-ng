@@ -65,16 +65,8 @@ export class ObjectviewerComponent {
   public getImageUrl(): string {
     const _resolverPath = this._resolver.pathToObject(this.mediaobject);
     // @ts-ignore
-    let baseUrl = this.mediaobject._metadata.get('JSON.resourceUrl')
-    if (baseUrl == null || baseUrl.trim().length === 0) {
-      return _resolverPath;
-    }
-    if (!baseUrl.endsWith('/')) {
-      baseUrl = baseUrl.concat('/')
-    }
-    // @ts-ignore
     const quality = this.mediaobject._metadata.get('JSON.quality') || 'default'
-    return baseUrl + `full/,400/0/${quality}.jpg`;
+    return _resolverPath + `full/,400/0/${quality}.jpg`;
   }
 
 }

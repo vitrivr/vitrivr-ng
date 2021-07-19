@@ -67,12 +67,9 @@ export class QuickViewerComponent implements AfterViewInit {
    * Returns the URL of the IIIF Image API resource's info.json file
    */
   get iiifResourceUrl(): string {
-    let baseUrl = this.mediaobject.metadata.get('JSON.resourceUrl')
+    const baseUrl = this._resolver.iiifUrlToObject(this.mediaobject)
     if (baseUrl == null || baseUrl.trim().length === 0) {
       return null;
-    }
-    if (!baseUrl.endsWith('/')) {
-      baseUrl = baseUrl.concat('/')
     }
     return baseUrl + 'info.json';
   }

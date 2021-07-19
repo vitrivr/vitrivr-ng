@@ -44,23 +44,6 @@ export class ResolverService {
     Token.SUFFIX
   ].join('|') + ')', 'g');
 
-  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
-    switch (mediatype) {
-      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
-        return 'a_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
-        return 'i_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
-        return 'is_';
-      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
-        return 'm_';
-      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
-        return 'v_';
-      default:
-        return '';
-    }
-  }
-
   /**
    * Default constructor; Initializes the map of suffixes per media-type based on
    * the configuration.
@@ -84,12 +67,33 @@ export class ResolverService {
     });
   }
 
+  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
+    switch (mediatype) {
+      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
+        return 'a_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
+        return 'i_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
+        return 'is_';
+      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
+        return 'm_';
+      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
+        return 'v_';
+      default:
+        return '';
+    }
+  }
+
   /**
    * Resolves and returns the absolute path / URL to a MediaObject.
    *
    * @param object The MediaObject for which to return the path.
    */
   public pathToObject(object: MediaObjectDescriptor) {
+    const iiifUrl = this.iiifUrlToObject(object)
+    if (iiifUrl) {
+      return iiifUrl
+    }
     const rep = {};
     rep[Token.OBJECT_ID] = object.objectId;
     rep[Token.OBJECT_NAME] = object.name;
@@ -98,6 +102,27 @@ export class ResolverService {
     rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
     rep[Token.SUFFIX] = this.suffices.get(object.mediatype);
     return this.host_objects.replace(this._regex, (match) => rep[match] || match);
+  }
+
+  /**
+   * Resolves and returns the IIIF Resource URL to a MediaObject.
+   *
+   * @param object The MediaObject for which to return the URL.
+   */
+  public iiifUrlToObject(object: MediaObjectDescriptor): string {
+    // @ts-ignore
+    const metadata = object._metadata
+    if (metadata) {
+      let baseUrl = metadata.get('JSON.resourceUrl')
+      if (!(baseUrl == null || baseUrl.trim().length === 0)) {
+        if (!baseUrl.endsWith('/')) {
+          baseUrl = baseUrl.concat('/')
+        }
+        return baseUrl
+      }
+      return null
+    }
+    return null
   }
 
   /**
