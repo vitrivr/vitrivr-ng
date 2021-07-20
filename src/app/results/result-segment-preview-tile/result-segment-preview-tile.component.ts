@@ -48,6 +48,11 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   @Input() score: number;
 
+  /**
+   * A flag whether this preview is in focus or not.
+   */
+  private _focus = false;
+
   constructor(readonly _keyboardService: KeyboardService,
               private _queryService: QueryService,
               private _eventBusService: EventBusService,
@@ -56,11 +61,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
               private _resolver: ResolverService,
               private _configService: AppConfig) {
   }
-
-  /**
-   * A flag whether this preview is in focus or not.
-   */
-  private _focus = false;
 
   /**
    * Sets the flag, that this preview is in focus
