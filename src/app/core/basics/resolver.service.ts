@@ -44,6 +44,23 @@ export class ResolverService {
     Token.SUFFIX
   ].join('|') + ')', 'g');
 
+  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
+    switch (mediatype) {
+      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
+        return 'a_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
+        return 'i_';
+      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
+        return 'is_';
+      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
+        return 'm_';
+      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
+        return 'v_';
+      default:
+        return '';
+    }
+  }
+
   /**
    * Default constructor; Initializes the map of suffixes per media-type based on
    * the configuration.
@@ -65,23 +82,6 @@ export class ResolverService {
         }
       }
     });
-  }
-
-  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
-    switch (mediatype) {
-      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
-        return 'a_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
-        return 'i_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
-        return 'is_';
-      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
-        return 'm_';
-      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
-        return 'v_';
-      default:
-        return '';
-    }
   }
 
   /**
@@ -113,7 +113,7 @@ export class ResolverService {
     // @ts-ignore
     const metadata = object._metadata
     if (metadata) {
-      let baseUrl = metadata.get('JSON.resourceUrl')
+      let baseUrl = metadata.get('IIIF.resourceUrl')
       if (!(baseUrl == null || baseUrl.trim().length === 0)) {
         if (!baseUrl.endsWith('/')) {
           baseUrl = baseUrl.concat('/')

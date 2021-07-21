@@ -90,15 +90,15 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   get imageUrl(): string {
     const _resolverPath = this._resolver.pathToThumbnail(this.segment.objectScoreContainer, this.segment);
     if (this.segment.metadata) {
-      let baseUrl = this.segment.objectScoreContainer.metadataForKey('JSON.resourceUrl')
+      let baseUrl = this.segment.objectScoreContainer.metadataForKey('IIIF.resourceUrl')
       if (baseUrl == null || baseUrl.trim().length === 0) {
         return _resolverPath;
       }
       if (!baseUrl.endsWith('/')) {
         baseUrl = baseUrl.concat('/')
       }
-      const quality = this.segment.objectScoreContainer.metadataForKey('JSON.quality') || 'default'
-      return baseUrl + `square/120,100/0/${quality}.jpg`;
+      const quality = this.segment.objectScoreContainer.metadataForKey('IIIF.quality') || 'default'
+      return baseUrl + `full/120,80/0/${quality}.jpg`;
     }
     return _resolverPath;
   }
