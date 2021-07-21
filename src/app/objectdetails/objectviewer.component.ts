@@ -59,14 +59,4 @@ export class ObjectviewerComponent {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.PLAY, context)))
   }
 
-  /**
-   * Returns the IIIF Image API URL if available or else returns the path using {@link _resolver}
-   */
-  public getImageUrl(): string {
-    const _resolverPath = this._resolver.pathToObject(this.mediaobject);
-    // @ts-ignore
-    const quality = this.mediaobject._metadata.get('JSON.quality') || 'default'
-    return _resolverPath + (this._resolver.iiifUrlToObject(this.mediaobject) ? `full/,400/0/${quality}.jpg` : '');
-  }
-
 }

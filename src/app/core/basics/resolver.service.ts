@@ -105,34 +105,20 @@ export class ResolverService {
   }
 
   /**
-   * Resolves and returns the IIIF Resource URL to a MediaObject.
-   *
-   * @param object The MediaObject for which to return the URL.
-   */
-  public iiifUrlToObject(object: MediaObjectDescriptor): string {
-    // @ts-ignore
-    const metadata = object._metadata
-    if (metadata) {
-      let baseUrl = metadata.get('IIIF.resourceUrl')
-      if (!(baseUrl == null || baseUrl.trim().length === 0)) {
-        if (!baseUrl.endsWith('/')) {
-          baseUrl = baseUrl.concat('/')
-        }
-        return baseUrl
-      }
-      return null
-    }
-    return null
-  }
-
-  /**
    * Resolves and returns the absolute path / URL to the thumbnail of a given combination of MediaSegment and MediaObject.
+   * If an IIIF resource URL is available then it is returned instead of the absolute path.
    *
    * @param {object} object The MediaObject for which to return the path / URL
    * @param {segment} segment The MediaSegment for which to return the path / URL
+   * @param height Optional height parameter to control the height parameter in the IIIF Image API URL
+   * @param width Optional width parameter to control the width parameter in the IIIF Image API URL
    * @return {string}
    */
-  public pathToThumbnail(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor) {
+  public pathToThumbnail(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor, height?: number, width?: number) {
+    const iiifUrl = this.iiifUrlToObject(object, false, height, width);
+    if (iiifUrl) {
+      return iiifUrl
+    }
     const rep = {};
     rep[Token.OBJECT_ID] = object.objectId;
     rep[Token.OBJECT_NAME] = object.name;
@@ -155,5 +141,40 @@ export class ResolverService {
     rep[Token.SEGMENT_ID] = segment.segmentId;
     rep[Token.SEGMENT_ID_NO_PREFIX] = segment.segmentId.replace(ResolverService.prefixForMediatype(segment.objectScoreContainer.mediatype), '');
     return this.host_objects.replace(this._regex, (match) => rep[match] || match);
+  }
+
+  /**
+   * Resolves and returns the IIIF Resource URL to a MediaObject.
+   *
+   * @param object The MediaObject for which to return the URL.
+   * @param rawPath Set to true if raw base URL is required without any parameters appended to it
+   * @param height Optional height parameter to control the dimensions of the image
+   * @param width Optional width parameter to control the dimensions of the image
+   */
+  public iiifUrlToObject(object: MediaObjectDescriptor, rawPath?: boolean,  height?: number, width?: number): string {
+    // @ts-ignore
+    const metadata = object._metadata
+    if (!metadata) {
+      return null
+    }
+    let baseUrl = metadata.get('IIIF.resourceUrl')
+    if (!(baseUrl == null || baseUrl.trim().length === 0)) {
+      if (!baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.concat('/')
+      }
+      if (!rawPath) {
+        const xWidth = width ? width : ''
+        const yHeight = height ? height : ''
+        const domain = 'IIIF'
+        const size = (height || width) ? (xWidth + ',' + yHeight) : (metadata.get('IIIF.size') || 'full')
+        const region = metadata.get(domain + '.region') || 'full'
+        const rotation = metadata.get(domain + '.rotation') || '0'
+        const quality = metadata.get(domain + '.quality') || 'default'
+        const extension = metadata.get(domain + '.extension') || 'jpg'
+        baseUrl = baseUrl.concat(`${region}/${size}/${rotation}/${quality}.${extension}`)
+      }
+      return baseUrl
+    }
+    return null
   }
 }

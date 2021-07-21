@@ -85,25 +85,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   }
 
   /**
-   * Returns the IIIF Image API URL if available or else returns the path using {@link _resolver}
-   */
-  get imageUrl(): string {
-    const _resolverPath = this._resolver.pathToThumbnail(this.segment.objectScoreContainer, this.segment);
-    if (this.segment.metadata) {
-      let baseUrl = this.segment.objectScoreContainer.metadataForKey('IIIF.resourceUrl')
-      if (baseUrl == null || baseUrl.trim().length === 0) {
-        return _resolverPath;
-      }
-      if (!baseUrl.endsWith('/')) {
-        baseUrl = baseUrl.concat('/')
-      }
-      const quality = this.segment.objectScoreContainer.metadataForKey('IIIF.quality') || 'default'
-      return baseUrl + `full/120,80/0/${quality}.jpg`;
-    }
-    return _resolverPath;
-  }
-
-  /**
    * Invokes when a user clicks the 'Find neighbouring segments' button.
    */
   public onNeighborsButtonClicked() {
