@@ -8,6 +8,7 @@ import {first, map} from 'rxjs/operators';
 import {AppConfig} from '../../../app.config';
 import {MiscService} from '../../../../../openapi/cineast';
 import {QueryService} from '../../../core/queries/query.service';
+import {BooleanService} from '../../../core/queries/boolean.service';
 
 @Component({
   selector: 'app-qt-bool',
@@ -39,6 +40,7 @@ export class BoolQueryTermComponent implements OnInit {
   }
 
   constructor(private _queryService: QueryService,
+              private _boolService: BooleanService,
     _configService: AppConfig,
     private _resolver: ComponentFactoryResolver,
     _booleanService: MiscService,
@@ -83,6 +85,7 @@ export class BoolQueryTermComponent implements OnInit {
   }
   public changeBoolToFilter() {
     this._queryService.setBooleanAsFilter(this.boolAsFilter);
+    this._boolService.findBool('test_table', 'key', '2');
     console.log('Changed Boolean to a filter')
   }
 }

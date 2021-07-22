@@ -18,4 +18,5 @@ export type MessageType =
   | 'QR_SEGMENT'
   | 'QR_METADATA_O'
   | 'QR_METADATA_S'
-  | 'M_LOOKUP';
+  | 'M_LOOKUP'
+    | 'B_LOOKUP';
