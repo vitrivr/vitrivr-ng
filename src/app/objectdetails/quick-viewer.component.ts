@@ -78,7 +78,12 @@ export class QuickViewerComponent implements AfterViewInit {
     const viewer = openseadragon({
       id: 'openseadragon',
       preserveViewport: true,
+      showNavigator:  true,
       visibilityRatio: 1,
+      // Initial rotation angle
+      degrees: parseFloat(this.mediaobject.metadata.get('IIIF.rotation')) || 0,
+      // Show rotation buttons
+      showRotationControl: true,
       minZoomLevel: 1,
       defaultZoomLevel: 1,
       prefixUrl: '/assets/images/openseadragon/',
