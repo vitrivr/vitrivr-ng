@@ -1,6 +1,10 @@
-<mat-checkbox [(ngModel)]="boolAsFilter" (ngModelChange)="changeBoolToFilter()" > Use Boolean as Filter </mat-checkbox>
+<div [style.display]="'flex'" [style.padding-left]="'10px'" [style.text-align]="'left'" [style.width]="'100%'"
+     class="options">
+<mat-checkbox [style.text-align]="'left'" [(ngModel)]="boolAsFilter" (ngModelChange)="changeBoolToFilter()" > Use Boolean as Filter </mat-checkbox>
+</div>
+
 <app-qt-bool-component *ngFor="let term of boolTerm.terms" [boolTerm]="boolTerm" [term]="term"
-                       [possibleAttributes]="possibleAttributes"></app-qt-bool-component>
+                       [possibleAttributes]="possibleAttributes" [boolLookupQueries]="boolLookupQueries"></app-qt-bool-component>
 <button (click)="addBoolTermComponent()" mat-icon-button matTooltip="Add boolean query term">
     <mat-icon>add</mat-icon>
 </button>

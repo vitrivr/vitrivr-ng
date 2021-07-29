@@ -26,22 +26,12 @@
 
         <!-- Freetext Field for Numbers & Text -->
         <mat-form-field *ngIf="attributeIsText(currentAttrAsync)" class="options">
-            <input [(ngModel)]="inputValue" matInput placeholder="Search text">
+            <input [(ngModel)]="inputValue"  matInput placeholder="Search text">
         </mat-form-field>
 
 
-        <mat-checkbox [(ngModel)]="newModel"> Activate Extended Boolean Model </mat-checkbox>
-
-
-        <!-- Dropdown EXTENDEND BOOLEAN MODEL -->
-        <mat-select *ngIf="newModel" [(ngModel)]="_extendenModel" class="options" required>
-            <mat-option *ngFor="let weight of weights" [value]="weight">
-                {{weight}}
-            </mat-option>
-        </mat-select>
-
         <!-- Dropdown for Options -->
-        <mat-select *ngIf="isOption()" [(ngModel)]="inputValue" class="options" required>
+        <mat-select *ngIf="isOption()" [(ngModel)]="inputValue" (ngModelChange)="getResults()" class="options" required>
             <mat-option *ngFor="let option of currentAttrAsync.options" [value]="option">
                 {{option}}
             </mat-option>
@@ -63,6 +53,19 @@
                     thumbLabel [displayWith]="formatLabel" tickInterval="auto" min="currentAttrAsync.range[0]" max="currentAttrAsync.range[1]" [(ngModel)]="inputValue">
         </mat-slider>
         -->
+
+
+        <!-- Ceckbox to use new BooleanModel -->
+        <mat-checkbox [(ngModel)]="newModel"> Activate Extended Boolean Model </mat-checkbox>
+
+        <!-- Dropdown EXTENDEND BOOLEAN MODEL -->
+        <mat-select *ngIf="newModel" [(ngModel)]="_extendedModel" class="options" required>
+            <mat-option *ngFor="let weight of weights" [value]="weight">
+                {{weight}}
+            </mat-option>
+        </mat-select>
+
+        <p>Query results {{results}} out of {{totalResults}}</p>
 
     </ng-container>
 </div>

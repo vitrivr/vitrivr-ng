@@ -33,6 +33,8 @@ import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, M
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -64,7 +66,7 @@ export class QueryService {
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
 
-  private _booleanasfilter = false;
+  public _booleanasfilter = new BehaviorSubject(false);
 
 
   constructor(@Inject(HistoryService) private _history,
@@ -463,7 +465,7 @@ export class QueryService {
   private startNewQuery(queryId: string) {
     /* Start the actual query. */
     if (!this._results || (this._results && this._results.queryId !== queryId)) {
-      this._results = new ResultsContainer(queryId, this._booleanasfilter);
+      this._results = new ResultsContainer(queryId, this._booleanasfilter.getValue());
       this._interval_map.set(queryId, window.setInterval(() => this._results.checkUpdate(), 2500));
       if (this._scoreFunction) {
         this._results.setScoreFunction(this._scoreFunction);
@@ -505,8 +507,8 @@ export class QueryService {
     console.log('QueryService received error: ' + message.message);
   }
   public setBooleanAsFilter(value: boolean): void {
-    this._booleanasfilter = value;
+    this._booleanasfilter.next(value);
     console.log('BOOLEAN IS NOW CHANGED TO');
-    console.log(this._booleanasfilter);
+    console.log(value);
   }
 }

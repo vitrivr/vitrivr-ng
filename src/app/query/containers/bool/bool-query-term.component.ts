@@ -1,6 +1,6 @@
 import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
-import {BoolAttribute, ValueType} from './bool-attribute';
+import {BoolAttribute, BoolOperator, ValueType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs';
 import {BoolTerm} from './individual/bool-term';
 import {DistinctElementLookupService} from '../../../core/lookup/distinct-element-lookup.service';
@@ -9,6 +9,8 @@ import {AppConfig} from '../../../app.config';
 import {MiscService} from '../../../../../openapi/cineast';
 import {QueryService} from '../../../core/queries/query.service';
 import {BooleanService} from '../../../core/queries/boolean.service';
+import {BooleanLookupQuery} from '../../../shared/model/messages/queries/boolean-lookupquery.model';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: 'app-qt-bool',
@@ -29,7 +31,11 @@ export class BoolQueryTermComponent implements OnInit {
     [new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT)]
   );
 
-  boolAsFilter = false;
+  boolAsFilter: boolean;
+
+  totalResults: Subject<number>;
+
+  boolLookupQueries: BooleanLookupQuery[] = [];
 
   public ngOnInit() {
     /* only add an empty term if there are none currently present*/
@@ -77,7 +83,9 @@ export class BoolQueryTermComponent implements OnInit {
         }
       });
       this.possibleAttributes.next(next);
-    })
+    });
+      this.boolAsFilter = this._queryService._booleanasfilter.getValue();
+      this._boolService.findBool([new BooleanLookupQuery('test_table', 'id', '2', 'EQ', 0)] , 'B_ALL', 0);
   }
 
   public addBoolTermComponent() {
@@ -85,7 +93,6 @@ export class BoolQueryTermComponent implements OnInit {
   }
   public changeBoolToFilter() {
     this._queryService.setBooleanAsFilter(this.boolAsFilter);
-    this._boolService.findBool('test_table', 'key', '2');
     console.log('Changed Boolean to a filter')
   }
 }

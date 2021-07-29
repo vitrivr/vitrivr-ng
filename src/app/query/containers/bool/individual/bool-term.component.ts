@@ -1,8 +1,11 @@
-import {Component, Injectable, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {BoolTerm} from './bool-term';
+import {BooleanService} from '../../../../core/queries/boolean.service';
+import {filter, first} from 'rxjs/operators';
+import {BooleanLookupQuery} from '../../../../shared/model/messages/queries/boolean-lookupquery.model';
 
 @Component({
   selector: 'app-qt-bool-component',
@@ -18,6 +21,7 @@ export class BoolTermComponent implements OnInit {
 
   @Input() public readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
 
+  @Input() public boolLookupQueries: BooleanLookupQuery[];
   /** Current selection */
   public currentAttributeObservable: BehaviorSubject<BoolAttribute> =
     new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT));
@@ -34,7 +38,17 @@ export class BoolTermComponent implements OnInit {
 
   public weights: any[] = ['strict', 'moderate', 'lose'];
 
- _extendenModel = 'strict';
+ _extendedModel = 'strict';
+
+ boolComponentID: number;
+
+ private results: number;
+ private totalResults: number;
+
+ constructor(private _boolService: BooleanService,
+             private changeDet: ChangeDetectorRef) {
+
+}
 
   get currentAttribute(): Observable<BoolAttribute> {
     return this.currentAttributeObservable;
@@ -126,6 +140,15 @@ export class BoolTermComponent implements OnInit {
    */
   public onRemoveButtonClicked() {
     this.boolTerm.removeTerm(this.term);
+    let ind = -1;
+    this.boolLookupQueries.forEach((q, index) => {
+          if (q.componentID === this.boolComponentID) {
+              ind = index;
+          }
+      });
+    if (ind !== -1) {
+        this.boolLookupQueries.splice(ind, 1);
+    }
   }
 
   /**
@@ -191,10 +214,38 @@ export class BoolTermComponent implements OnInit {
       this.updateRangeValue();
     }
     this.updateTerm();
+/*    this._boolService._nmbofitems.pipe(first()).subscribe( x => {
+        this.results = x;
+        this.changeDet.detectChanges()
+        });*/
+      this._boolService._totalresults.subscribe(x => {this.totalResults = x;
+          this.results = x;
+          this.changeDet.detectChanges()
+      });
+    this._boolService._nmbofitems.pipe(filter(x => x.has(this.boolComponentID))).subscribe( x => {
+        console.log(x);
+        this.results = x.get(this.boolComponentID);
+        this.changeDet.detectChanges()
+    });
+    this.boolComponentID = this._boolService.getComponentID();
   }
 
   isOption(): boolean {
     return this.attribute.valueType.valueOf() === 0 || this.attribute.valueType.valueOf() === 5;
+  }
+
+  getResults(): void {
+      let exists = false;
+      this.boolLookupQueries.forEach((q, index) => {
+          if (q.componentID === this.boolComponentID) {
+              this.boolLookupQueries[index] = new BooleanLookupQuery('test_table', 'key', this._value[0], BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID);
+              exists = true;
+          }
+      });
+      if (!exists) {
+          this.boolLookupQueries.push(new BooleanLookupQuery('test_table', 'key', this._value[0], BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID));
+      }
+      this._boolService.findBool(this.boolLookupQueries, 'B_QUERY', this.boolComponentID);
   }
 
 }

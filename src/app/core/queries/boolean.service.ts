@@ -12,7 +12,14 @@ import {HistoryService} from './history.service';
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {EventBusService} from '../basics/event-bus.service';
 import {AppConfig} from '../../app.config';
-import {BooleanLookup} from '../../shared/model/messages/queries/boolean-lookup.model';
+import {BooleanLookup, BooleanLookupType} from '../../shared/model/messages/queries/boolean-lookup.model';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {OBJExporter} from 'three/examples/jsm/exporters/OBJExporter';
+import {Observer} from 'rxjs/Observer';
+import {BoolLookupMessage} from '../../shared/model/messages/interfaces/responses/bool-lookup.interface';
+import {BoolOperator} from '../../query/containers/bool/bool-attribute';
+import {BooleanLookupQuery} from '../../shared/model/messages/queries/boolean-lookupquery.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -44,9 +51,13 @@ export class BooleanService {
     /** Flag indicating whether a query is currently being executed. */
     private _running = 0;
 
-    private nmbofitems: number;
+    public _nmbofitems: Subject<Map<number, number>> = new Subject<Map<number, number>>();
 
+    public _message: Subject<Message> = new Subject<Message>();
 
+    public _totalresults: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+
+    private _componentIDCounter = 0;
 
     constructor(@Inject(HistoryService) private _history,
                 @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
@@ -79,14 +90,14 @@ export class BooleanService {
     }
 
     /**
-     * Starts a new similarity query. Success is indicated by the return value.
+     * Starts a new BooleanLookup query. Success is indicated by the return value.
      *
      * Note: Similarity queries can only be started if no query is currently running.
      *
      * @param containers The list of QueryContainers used to create the query.
      * @returns {boolean} true if query was issued, false otherwise.
      */
-    public findBool(entity: string, attribute: string, value: string): boolean {
+    public findBool(queries: BooleanLookupQuery[], type: BooleanLookupType, componentID: number): boolean {
         if (!this._socket) {
             console.warn('No socket available, not executing Boolean query');
             return false;
@@ -95,7 +106,7 @@ export class BooleanService {
             console.warn('There is already a query running');
         }
         this._config.configAsObservable.pipe(first()).subscribe(config => {
-            const query = new BooleanLookup(entity, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), attribute, value);
+            const query = new BooleanLookup( new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), queries, type, componentID);
             this._socket.next(query)
             console.log(query);
         });
@@ -132,22 +143,36 @@ export class BooleanService {
      */
     private onApiMessage(message: Message): void {
         console.log(message);
-        switch (message.messageType) {
+        this._message.next(message);
+        const res = <BoolLookupMessage>message;
+        if (this._totalresults.getValue() === 0) {
+            this._totalresults.next(res.numberofElements);
+        } else {
+            this._nmbofitems.next(new Map([[res.componentID, res.numberofElements]]));
+            console.log(new Map([[res.componentID, res.numberofElements]]));
+            switch (message.messageType) {
 
-/*            case 'Q_BOOL':
-                const qs = <QueryStart>message;
-                console.time(`Query (${qs.queryId})`);
-                /!*this.startNewFindAll(message);*!/
-                break;*/
-            case 'QR_ERROR':
-                console.timeEnd(`Query (${(<QueryError>message).queryId})`);
-                this.errorOccurred(<QueryError>message);
-                break;
-            case 'QR_END':
-                console.timeEnd(`Query (${(<QueryError>message).queryId})`);
-                this.finalizeQuery((<QueryError>message).queryId);
-                break;
+                /*            case 'Q_BOOL':
+                                const qs = <QueryStart>message;
+                                console.time(`Query (${qs.queryId})`);
+                                /!*this.startNewFindAll(message);*!/
+                                break;*/
+                case 'QR_ERROR':
+                    console.timeEnd(`Query (${(<QueryError>message).queryId})`);
+                    this.errorOccurred(<QueryError>message);
+                    break;
+                case 'QR_END':
+                    console.timeEnd(`Query (${(<QueryError>message).queryId})`);
+                    this.finalizeQuery((<QueryError>message).queryId);
+                    break;
+            }
         }
+    }
+
+
+    public getComponentID(): number {
+        this._componentIDCounter = this._componentIDCounter + 1;
+        return this._componentIDCounter;
     }
 
     /**
@@ -201,4 +226,5 @@ export class BooleanService {
         this._subject.next('ERROR' as QueryChange);
         console.log('QueryService received error: ' + message.message);
     }
+    
 }
