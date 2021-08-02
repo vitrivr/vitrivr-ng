@@ -56,10 +56,10 @@
 
 
         <!-- Ceckbox to use new BooleanModel -->
-        <mat-checkbox [(ngModel)]="newModel"> Activate Extended Boolean Model </mat-checkbox>
+        <mat-checkbox  *ngIf="boolAsFilter" [(ngModel)]="newModel" (ngModelChange)="updateRelevant()"> Activate Extended Boolean Model </mat-checkbox>
 
         <!-- Dropdown EXTENDEND BOOLEAN MODEL -->
-        <mat-select *ngIf="newModel" [(ngModel)]="_extendedModel" class="options" required>
+        <mat-select *ngIf="newModel" [(ngModel)]="extendedModel" class="options" required>
             <mat-option *ngFor="let weight of weights" [value]="weight">
                 {{weight}}
             </mat-option>

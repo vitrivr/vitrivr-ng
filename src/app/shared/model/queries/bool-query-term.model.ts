@@ -10,6 +10,7 @@ export class BoolQueryTerm extends AbstractQueryTerm {
 
   public readonly terms: BoolTerm[] = [];
 
+
   constructor() {
     super(QueryTerm.TypeEnum.BOOLEAN, ['boolean']);
   }
@@ -26,6 +27,6 @@ export class BoolQueryTerm extends AbstractQueryTerm {
    * Updates serialization
    */
   update() {
-    this.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.terms));
+    this.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.terms.filter(term => term.relevant === true)));
   }
 }

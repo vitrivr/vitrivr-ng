@@ -36,14 +36,17 @@ export class BoolTermComponent implements OnInit {
 
   newModel =  false;
 
-  public weights: any[] = ['strict', 'moderate', 'lose'];
+  public weights: any[] = ['Strict', 'Preferred'];
 
- _extendedModel = 'strict';
+ @Input() public boolAsFilter: boolean;
 
  boolComponentID: number;
 
  private results: number;
+
  private totalResults: number;
+
+ private _extendedModel: string;
 
  constructor(private _boolService: BooleanService,
              private changeDet: ChangeDetectorRef) {
@@ -104,11 +107,13 @@ export class BoolTermComponent implements OnInit {
 
 
 
-
-
-
-
-
+  get extendedModel(): string {
+        return this._extendedModel;
+  }
+  set extendedModel(value: string) {
+        this._extendedModel = value;
+        this.updateRelevant();
+  }
 
 
   private updateRangeValue() {
@@ -225,16 +230,18 @@ export class BoolTermComponent implements OnInit {
     this._boolService._nmbofitems.pipe(filter(x => x.has(this.boolComponentID))).subscribe( x => {
         console.log(x);
         this.results = x.get(this.boolComponentID);
-        this.changeDet.detectChanges()
+        this.changeDet.detectChanges();
+        this.updateRelevant();
     });
     this.boolComponentID = this._boolService.getComponentID();
+      this.extendedModel = 'Strict';
   }
 
   isOption(): boolean {
     return this.attribute.valueType.valueOf() === 0 || this.attribute.valueType.valueOf() === 5;
   }
 
-  getResults(): void {
+  public getResults(): void {
       let exists = false;
       this.boolLookupQueries.forEach((q, index) => {
           if (q.componentID === this.boolComponentID) {
@@ -246,6 +253,15 @@ export class BoolTermComponent implements OnInit {
           this.boolLookupQueries.push(new BooleanLookupQuery('test_table', 'key', this._value[0], BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID));
       }
       this._boolService.findBool(this.boolLookupQueries, 'B_QUERY', this.boolComponentID);
+      console.log(this.extendedModel);
+      }
+  private updateRelevant(): void {
+      if (this.newModel && this._extendedModel !== 'Strict' && this.results > this._boolService.getthreshold()) {
+          this.term.relevant = false;
+          console.log('GOT CALLED');
+      } else {
+          this.term.relevant = true;
+      }
+      this.boolTerm.update();
   }
-
 }

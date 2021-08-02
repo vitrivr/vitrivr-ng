@@ -89,7 +89,7 @@ export class BoolQueryTermComponent implements OnInit {
   }
 
   public addBoolTermComponent() {
-    this.boolTerm.terms.push(new BoolTerm(this.possibleAttributes.getValue()[0].featureName, this.possibleAttributes.getValue()[0].operators[0], null));
+    this.boolTerm.terms.push(new BoolTerm(this.possibleAttributes.getValue()[0].featureName, this.possibleAttributes.getValue()[0].operators[0], null, true));
   }
   public changeBoolToFilter() {
     this._queryService.setBooleanAsFilter(this.boolAsFilter);

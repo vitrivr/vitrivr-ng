@@ -8,10 +8,12 @@ export class BoolTerm {
   public attribute: string;
   public operator: string;
   public values: any[];
+  public relevant: boolean;
 
-  constructor(attribute: string, operator: string, value: any[]) {
+  constructor(attribute: string, operator: string, value: any[], relevant: boolean) {
     this.attribute = attribute;
     this.operator = operator;
     this.values = value;
+    this.relevant = relevant;
   }
 }

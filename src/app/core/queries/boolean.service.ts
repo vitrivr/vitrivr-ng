@@ -51,13 +51,19 @@ export class BooleanService {
     /** Flag indicating whether a query is currently being executed. */
     private _running = 0;
 
+    /** Number of elements returned for each Bool Term Component*/
     public _nmbofitems: Subject<Map<number, number>> = new Subject<Map<number, number>>();
 
     public _message: Subject<Message> = new Subject<Message>();
 
+    /** Number of total available results in the database */
     public _totalresults: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
+    /** Saves each BoolTerm Component ID in order to give unique IDs to each new component */
     private _componentIDCounter = 0;
+
+    /** Saves each BoolTerm Component ID in order to give unique IDs to each new component */
+    private _threshold = 3;
 
     constructor(@Inject(HistoryService) private _history,
                 @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
@@ -174,6 +180,9 @@ export class BooleanService {
         this._componentIDCounter = this._componentIDCounter + 1;
         return this._componentIDCounter;
     }
+    public getthreshold(): number {
+        return this._threshold;
+    }
 
     /**
      * Updates the local state in response to a QR_START message. This method triggers an observable change in the QueryService class.
@@ -226,5 +235,5 @@ export class BooleanService {
         this._subject.next('ERROR' as QueryChange);
         console.log('QueryService received error: ' + message.message);
     }
-    
+
 }

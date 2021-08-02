@@ -60,12 +60,18 @@
         "features_daily.text"
       ],
       [
-        "Example Dropdown",
+        "Key Value",
         "OPTIONS",
         "test_table.key",
         1,
         50,
-        "THREE"
+        4
+      ],
+      [
+        "Challenge Value",
+        "OPTIONS",
+        "test_table.value",
+        200
       ],
       [
         "Example Range",

@@ -193,13 +193,13 @@ export class QueryService {
    * @returns {boolean} true if query was issued, false otherwise.
    */
   public findTemporal(containers: QueryContainerInterface[], timeDistances: number[], maxLength: number): boolean {
-    if (!this._socket) {
-      console.warn('No socket available, not executing temporal query');
-      return false;
-    }
-    if (this._running > 0) {
-      console.warn('There is already a query running');
-    }
+      if (!this._socket) {
+          console.warn('No socket available, not executing temporal query');
+          return false;
+      }
+      if (this._running > 0) {
+          console.warn('There is already a query running');
+      }
     this._config.configAsObservable.pipe(first()).subscribe(config => {
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
         new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), timeDistances, maxLength);
@@ -234,7 +234,7 @@ export class QueryService {
               return;
             case 'TEXT':
               context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
+              _components.push(new Int$eractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
               return;
             case 'BOOLEAN':
               context.set('q:value', (t as BoolQueryTerm).terms)
