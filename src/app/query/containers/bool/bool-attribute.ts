@@ -37,6 +37,7 @@ export class BoolAttribute {
   public minValue: number;
   public maxValue: number;
   public readonly featureName: string;
+  public readonly  possibleValues: string[];
 
   /**
    * Default Operators are available per ValueType
@@ -112,10 +113,13 @@ export class BoolAttribute {
    * @param options for the Options ValueType, a list of strings can be provided which will be displayed in a dropdown
    * @param range for the Between ValueType, two numbers can be provided. A slider will enable to user to set the desired range.
    */
-  constructor(displayName: string, featureName: string, valueType: ValueType, operators?: BoolOperator[], options?: string[], range?: [number, number]) {
+  constructor(displayName: string, featureName: string, valueType: ValueType, operators?: BoolOperator[], options?: string[], range?: [number, number], possibleValues?: string[]) {
     this.displayName = displayName;
     this.featureName = featureName;
     this.valueType = valueType;
+    if (possibleValues) {
+      this.possibleValues = possibleValues;
+    }
     if (operators) {
       this.operators = operators;
     } else {
@@ -135,4 +139,5 @@ export class BoolAttribute {
       this.maxValue = this.sliderOptions.ceil;
     }
   }
+
 }

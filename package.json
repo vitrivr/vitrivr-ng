@@ -28,6 +28,7 @@
     "@angular/platform-browser-dynamic": "11.0.7",
     "@angular/router": "11.0.7",
     "@openapitools/openapi-generator-cli": "^1.0.15-4.3.1",
+    "@swimlane/ngx-charts": "^18.0.1",
     "@types/jszip": "^3.4.1",
     "@types/three": "^0.93.31",
     "@videogular/ngx-videogular": "2.1.0",

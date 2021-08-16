@@ -17,6 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
+import { BooleanLookupResult } from '../model/models';
 import { ColumnSpecification } from '../model/models';
 import { DistinctElementsResult } from '../model/models';
 import { SelectResult } from '../model/models';
@@ -85,6 +86,59 @@ export class MiscService {
             throw Error("key may not be null if value is not object or array");
         }
         return httpParams;
+    }
+
+    /**
+     * Find all metadata for specific object id in given domain
+     * Find all metadata for specific object id in given domain
+     * @param table The table in which the data is stored
+     * @param column The colmn with the data
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public findAllElements(table: string, column: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<BooleanLookupResult>;
+    public findAllElements(table: string, column: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<BooleanLookupResult>>;
+    public findAllElements(table: string, column: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<BooleanLookupResult>>;
+    public findAllElements(table: string, column: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        console.log('GOT CALED')
+        console.log(table)
+        console.log(`${this.configuration.basePath}/api/v1/find/boolean/range/all/in/${encodeURIComponent(String(table))}/${encodeURIComponent(String(column))}`)
+        if (table === null || table === undefined) {
+            throw new Error('Required parameter table was null or undefined when calling findAllElements.');
+        }
+        if (column === null || column === undefined) {
+            throw new Error('Required parameter column was null or undefined when calling findAllElements.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+        console.log('GOT CALE22222D')
+        return this.httpClient.get<BooleanLookupResult>(`${this.configuration.basePath}/api/v1/find/boolean/range/all/in/${encodeURIComponent(String(table))}/${encodeURIComponent(String(column))}`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
     }
 
     /**

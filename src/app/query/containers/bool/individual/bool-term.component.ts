@@ -83,6 +83,7 @@ export class BoolTermComponent implements OnInit {
    */
   set operatorValue(value: BoolOperator) {
     this.currentOperator = value;
+    this.getResults();
     this.updateTerm();
   }
 
@@ -128,6 +129,7 @@ export class BoolTermComponent implements OnInit {
     this.currentAttributeObservable.getValue().maxValue = value;
     this.updateRangeValue();
     this.updateTerm();
+    this.getResults();
   }
 
   get minValue(): number {
@@ -138,6 +140,7 @@ export class BoolTermComponent implements OnInit {
     this.currentAttributeObservable.getValue().minValue = value;
     this.updateRangeValue();
     this.updateTerm();
+    this.getResults();
   }
 
   /**
@@ -228,7 +231,6 @@ export class BoolTermComponent implements OnInit {
           this.changeDet.detectChanges()
       });
     this._boolService._nmbofitems.pipe(filter(x => x.has(this.boolComponentID))).subscribe( x => {
-        console.log(x);
         this.results = x.get(this.boolComponentID);
         this.changeDet.detectChanges();
         this.updateRelevant();
@@ -245,20 +247,19 @@ export class BoolTermComponent implements OnInit {
       let exists = false;
       this.boolLookupQueries.forEach((q, index) => {
           if (q.componentID === this.boolComponentID) {
-              this.boolLookupQueries[index] = new BooleanLookupQuery('test_table', 'key', this._value[0], BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID);
+              this.boolLookupQueries[index] = new BooleanLookupQuery('test_table', this.term.attribute.split('.')[1], this._value,
+                  BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID);
               exists = true;
           }
       });
       if (!exists) {
-          this.boolLookupQueries.push(new BooleanLookupQuery('test_table', 'key', this._value[0], BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID));
+          this.boolLookupQueries.push(new BooleanLookupQuery('test_table', 'key', this._value, BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID));
       }
       this._boolService.findBool(this.boolLookupQueries, 'B_QUERY', this.boolComponentID);
-      console.log(this.extendedModel);
       }
   private updateRelevant(): void {
-      if (this.newModel && this._extendedModel !== 'Strict' && this.results > this._boolService.getthreshold()) {
+      if (this.newModel && this._extendedModel !== 'Strict' && this.results < this._boolService.getthreshold()) {
           this.term.relevant = false;
-          console.log('GOT CALLED');
       } else {
           this.term.relevant = true;
       }

@@ -1,4 +1,4 @@
-import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@angular/core';
+import {Component, ComponentFactoryResolver, Injectable, Input, OnInit, OnDestroy} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, BoolOperator, ValueType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs';
@@ -18,7 +18,7 @@ import {Subject} from 'rxjs/Subject';
   styleUrls: ['bool-query-term.component.css']
 })
 @Injectable()
-export class BoolQueryTermComponent implements OnInit {
+export class BoolQueryTermComponent implements OnInit, OnDestroy {
 
   // TODO add logic to store multiple queries with a combination.
   //  1) the BoolQueryTerm should support it,
@@ -33,8 +33,6 @@ export class BoolQueryTermComponent implements OnInit {
 
   boolAsFilter: boolean;
 
-  totalResults: Subject<number>;
-
   boolLookupQueries: BooleanLookupQuery[] = [];
 
   public ngOnInit() {
@@ -45,6 +43,10 @@ export class BoolQueryTermComponent implements OnInit {
     this.addBoolTermComponent();
   }
 
+    /** Resets the Booleanfilter to false */
+  public ngOnDestroy(): void {
+      this._queryService.setBooleanAsFilter(false);
+  }
   constructor(private _queryService: QueryService,
               private _boolService: BooleanService,
     _configService: AppConfig,
@@ -67,15 +69,21 @@ export class BoolQueryTermComponent implements OnInit {
             next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, v.slice(3, v.length), null));
             break;
           case ValueType.RANGE.valueOf():
-            next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, null, [v[3], v[4]]));
+              const tableR: string = v[5];
+              const columnR: string = v[6];
+              _distinctLookupService.getAllElements(tableR, columnR).pipe(first()).subscribe( value => {
+                      next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, null, [v[3], v[4]], value));
+                      this.possibleAttributes.next(next);
+              });
             break;
           case ValueType.DYNAMICOPTIONS.valueOf():
-            const table: string = v[3];
-            const column: string = v[4];
-            _booleanService.findDistinctElementsByColumn()
-            _distinctLookupService.getDistinct(table, column).pipe(first(), map(list => list.sort())).forEach(el => {
-              next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, el, null));
-              this.possibleAttributes.next(next);
+              const table: string = v[3];
+              const column: string = v[4];
+              _distinctLookupService.getAllElements(table, column).pipe(first()).subscribe( value => {
+                  _distinctLookupService.getDistinct(table, column).pipe(first(), map(list => list.sort())).forEach(el => {
+                      next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, el, null, value));
+                      this.possibleAttributes.next(next);
+                });
             });
             break;
           default:
@@ -85,7 +93,7 @@ export class BoolQueryTermComponent implements OnInit {
       this.possibleAttributes.next(next);
     });
       this.boolAsFilter = this._queryService._booleanasfilter.getValue();
-      this._boolService.findBool([new BooleanLookupQuery('test_table', 'id', '2', 'EQ', 0)] , 'B_ALL', 0);
+      this._boolService.findBool([new BooleanLookupQuery('test_table', 'id', [], 'EQ', 0)] , 'B_ALL', 0);
   }
 
   public addBoolTermComponent() {
@@ -93,6 +101,6 @@ export class BoolQueryTermComponent implements OnInit {
   }
   public changeBoolToFilter() {
     this._queryService.setBooleanAsFilter(this.boolAsFilter);
-    console.log('Changed Boolean to a filter')
   }
 }
+

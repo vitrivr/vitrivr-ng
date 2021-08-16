@@ -3,7 +3,7 @@
     "host": "default"
   },
   "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:o/:s:x",
+    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
     "host_objects": "http://localhost:4567/objects/:n",
     "suffix": {
       "IMAGE": "jpg",
@@ -60,6 +60,11 @@
         "features_daily.text"
       ],
       [
+        "Example TEXT",
+        "TEXT",
+        "test_table.domain"
+      ],
+      [
         "Key Value",
         "OPTIONS",
         "test_table.key",
@@ -74,18 +79,20 @@
         200
       ],
       [
-        "Example Range",
-        "RANGE",
-        "features.range",
-        5,
-        20
+        "Example Dynamic",
+        "DYNAMICOPTIONS",
+        "test_table.key",
+        "test_table",
+        "key"
       ],
       [
-        "Example Dynamic Options",
-        "DYNAMICOPTIONS",
-        "features.option",
-        "features",
-        "option"
+        "Example Range",
+        "RANGE",
+        "test_table.key",
+        1,
+        50,
+        "test_table",
+        "key"
       ]
     ],
     "staged": true

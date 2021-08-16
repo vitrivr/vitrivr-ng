@@ -14,6 +14,8 @@ export class DistinctElementLookupService {
 
   private cache = {};
 
+  private cacheAll = [];
+
   constructor(@Inject(MiscService) private _miscService: MiscService) {
   }
 
@@ -29,4 +31,17 @@ export class DistinctElementLookupService {
       return res.distinctElements
     });
   }
+    /**
+     * Returns all the posible values for a Range Retriever
+     */
+    public getAllElements(table: string, column: string): Observable<string[]> {
+        if (this.cacheAll[table + column]) {
+            console.log(this.cacheAll);
+            return new BehaviorSubject(this.cache[table + column])
+        }
+        return this._miscService.findAllElements(table, column).pipe(first()).map(res => {
+            this.cacheAll[table + column] = res.content;
+            return res.content
+        });
+    }
 }

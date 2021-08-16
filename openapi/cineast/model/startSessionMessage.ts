@@ -17,7 +17,7 @@ export interface StartSessionMessage {
     messageType?: StartSessionMessage.MessageTypeEnum;
 }
 export namespace StartSessionMessage {
-    export type MessageTypeEnum = 'PING' | 'Q_SIM' | 'Q_MLT' | 'Q_NESEG' | 'Q_SEG' | 'M_LOOKUP' | 'Q_TEMPORAL' | 'SESSION_START' | 'QR_START' | 'QR_END' | 'QR_ERROR' | 'QR_OBJECT' | 'QR_METADATA_O' | 'QR_METADATA_S' | 'QR_SEGMENT' | 'QR_SIMILARITY';
+    export type MessageTypeEnum = 'PING' | 'Q_SIM' | 'Q_MLT' | 'Q_NESEG' | 'Q_SEG' | 'M_LOOKUP' | 'Q_TEMPORAL' | 'B_LOOKUP' | 'SESSION_START' | 'QR_START' | 'QR_END' | 'QR_ERROR' | 'QR_OBJECT' | 'QR_METADATA_O' | 'QR_METADATA_S' | 'QR_SEGMENT' | 'QR_SIMILARITY' | 'QR_TEMPORAL' | 'QR_BOOL';
     export const MessageTypeEnum = {
         PING: 'PING' as MessageTypeEnum,
         QSIM: 'Q_SIM' as MessageTypeEnum,
@@ -26,6 +26,7 @@ export namespace StartSessionMessage {
         QSEG: 'Q_SEG' as MessageTypeEnum,
         MLOOKUP: 'M_LOOKUP' as MessageTypeEnum,
         QTEMPORAL: 'Q_TEMPORAL' as MessageTypeEnum,
+        BLOOKUP: 'B_LOOKUP' as MessageTypeEnum,
         SESSIONSTART: 'SESSION_START' as MessageTypeEnum,
         QRSTART: 'QR_START' as MessageTypeEnum,
         QREND: 'QR_END' as MessageTypeEnum,
@@ -34,7 +35,9 @@ export namespace StartSessionMessage {
         QRMETADATAO: 'QR_METADATA_O' as MessageTypeEnum,
         QRMETADATAS: 'QR_METADATA_S' as MessageTypeEnum,
         QRSEGMENT: 'QR_SEGMENT' as MessageTypeEnum,
-        QRSIMILARITY: 'QR_SIMILARITY' as MessageTypeEnum
+        QRSIMILARITY: 'QR_SIMILARITY' as MessageTypeEnum,
+        QRTEMPORAL: 'QR_TEMPORAL' as MessageTypeEnum,
+        QRBOOL: 'QR_BOOL' as MessageTypeEnum
     };
 }
 

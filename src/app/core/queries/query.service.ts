@@ -65,9 +65,8 @@ export class QueryService {
 
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
-
+  /** Flag indicating whether Boolean query Items should act as a filter to a Result Set */
   public _booleanasfilter = new BehaviorSubject(false);
-
 
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
@@ -203,7 +202,8 @@ export class QueryService {
     this._config.configAsObservable.pipe(first()).subscribe(config => {
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
         new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), timeDistances, maxLength);
-      this._socket.next(query)
+      this._socket.next(query);
+        console.log(query);
     });
 
     /** Log Interaction */
@@ -234,7 +234,7 @@ export class QueryService {
               return;
             case 'TEXT':
               context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
-              _components.push(new Int$eractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
               return;
             case 'BOOLEAN':
               context.set('q:value', (t as BoolQueryTerm).terms)
@@ -508,7 +508,5 @@ export class QueryService {
   }
   public setBooleanAsFilter(value: boolean): void {
     this._booleanasfilter.next(value);
-    console.log('BOOLEAN IS NOW CHANGED TO');
-    console.log(value);
   }
 }

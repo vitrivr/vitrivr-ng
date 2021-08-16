@@ -338,7 +338,6 @@ export class ResultsContainer {
         }
       });
     });
-    console.log(temp_result_object);
     this._results_objects = temp_result_object;
     const temp_seg_container = [];
     this._results_segments.forEach((segmentObject) => {
@@ -476,7 +475,6 @@ export class ResultsContainer {
 
     if (sim.category === 'boolean') {
       console.log('called add boolean')
-        console.log(sim)
       this.addboolelement(sim);
     }
 

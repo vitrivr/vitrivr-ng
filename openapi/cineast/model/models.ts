@@ -1,4 +1,5 @@
 export * from './abstractMetadataFilterDescriptor';
+export * from './booleanLookupResult';
 export * from './columnSpecification';
 export * from './credentials';
 export * from './distinctElementsResult';

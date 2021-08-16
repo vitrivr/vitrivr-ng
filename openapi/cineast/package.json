@@ -1,6 +1,6 @@
 {
   "name": "@cineast-openapi/api",
-  "version": "v1-SNAPSHOT.202105060941",
+  "version": "v1-SNAPSHOT.202108070108",
   "description": "OpenAPI client for @cineast-openapi/api",
   "author": "OpenAPI-Generator Contributors",
   "keywords": [
@@ -12,15 +12,15 @@
     "build": "ng-packagr -p ng-package.json"
   },
   "peerDependencies": {
-    "@angular/core": "^9.1.12",
+    "@angular/core": "^11.0.7",
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@angular/common": "^9.1.12",
-    "@angular/compiler": "^9.1.12",
-    "@angular/compiler-cli": "^9.1.12",
-    "@angular/core": "^9.1.12",
-    "@angular/platform-browser": "^9.1.12",
+    "@angular/common": "^11.0.7",
+    "@angular/compiler": "^11.0.7",
+    "@angular/compiler-cli": "^11.0.7",
+    "@angular/core": "^11.0.7",
+    "@angular/platform-browser": "^11.0.7",
     "ng-packagr": "^9.0.1",
     "reflect-metadata": "^0.1.3",
     "rxjs": "^6.5.3",

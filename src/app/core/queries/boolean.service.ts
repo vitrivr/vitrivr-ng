@@ -20,6 +20,7 @@ import {Observer} from 'rxjs/Observer';
 import {BoolLookupMessage} from '../../shared/model/messages/interfaces/responses/bool-lookup.interface';
 import {BoolOperator} from '../../query/containers/bool/bool-attribute';
 import {BooleanLookupQuery} from '../../shared/model/messages/queries/boolean-lookupquery.model';
+import {MiscService} from '../../../../openapi/cineast';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -63,11 +64,12 @@ export class BooleanService {
     private _componentIDCounter = 0;
 
     /** Saves each BoolTerm Component ID in order to give unique IDs to each new component */
-    private _threshold = 3;
+    private _threshold = 5;
 
     constructor(@Inject(HistoryService) private _history,
                 @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
                 @Inject(AppConfig) private _config: AppConfig,
+                @Inject(MiscService) private _miscService: MiscService,
                 private _eventBusService: EventBusService) {
         _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
             this._socket = ws;
@@ -113,8 +115,8 @@ export class BooleanService {
         }
         this._config.configAsObservable.pipe(first()).subscribe(config => {
             const query = new BooleanLookup( new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), queries, type, componentID);
-            this._socket.next(query)
             console.log(query);
+            this._socket.next(query)
         });
     }
 
@@ -148,7 +150,6 @@ export class BooleanService {
      * @param message
      */
     private onApiMessage(message: Message): void {
-        console.log(message);
         this._message.next(message);
         const res = <BoolLookupMessage>message;
         if (this._totalresults.getValue() === 0) {
@@ -235,5 +236,6 @@ export class BooleanService {
         this._subject.next('ERROR' as QueryChange);
         console.log('QueryService received error: ' + message.message);
     }
+
 
 }
