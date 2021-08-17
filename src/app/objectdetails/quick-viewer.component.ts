@@ -67,13 +67,20 @@ export class QuickViewerComponent implements AfterViewInit {
    * Returns the URL of the IIIF Image API resource's info.json file
    */
   get iiifResourceUrl(): string {
-    return this._resolver.iiifUrlToObject(this.mediaobject, true) + 'info.json';
+    return this._resolver.iiifUrlToObject(this.mediaobject, true);
   }
 
   /**
    * Initialize the openseadragon viewer to load the IIIF Image API resource if applicable
    */
   ngAfterViewInit(): void {
+    let url = this.iiifResourceUrl
+    if (!url) {
+      return null
+    } else {
+      url = url + 'info.json';
+    }
+    console.log('ngAfterViewInit URL ', url)
     console.log('Creating an openseadragon viewer with the url: ', this.iiifResourceUrl)
     const viewer = openseadragon({
       id: 'openseadragon',
@@ -87,7 +94,7 @@ export class QuickViewerComponent implements AfterViewInit {
       minZoomLevel: 1,
       defaultZoomLevel: 1,
       prefixUrl: '/assets/images/openseadragon/',
-      tileSources: [this.iiifResourceUrl]
+      tileSources: [url]
     });
   }
 
