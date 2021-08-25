@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
@@ -32,7 +32,7 @@ export class QuickViewerComponent implements AfterViewInit {
    * @param _resolver ResolverService reference that is being injected.
    * @param _vbs VbsSubmissionService reference that is being injected.
    */
-  public constructor(@Inject(MAT_DIALOG_DATA) data: any, readonly _resolver: ResolverService, readonly _vbs: VbsSubmissionService) {
+  public constructor(@Inject(MAT_DIALOG_DATA) data: any, readonly _resolver: ResolverService, readonly _vbs: VbsSubmissionService, private _ngZone: NgZone) {
     if (data instanceof MediaObjectScoreContainer) {
       this._segment = data.representativeSegment;
     } else if (data instanceof MediaSegmentScoreContainer) {
@@ -80,22 +80,21 @@ export class QuickViewerComponent implements AfterViewInit {
     } else {
       url = url + 'info.json';
     }
-    console.log('ngAfterViewInit URL ', url)
-    console.log('Creating an openseadragon viewer with the url: ', this.iiifResourceUrl)
-    const viewer = openseadragon({
-      id: 'openseadragon',
-      preserveViewport: true,
-      showNavigator:  true,
-      visibilityRatio: 1,
-      // Initial rotation angle
-      degrees: parseFloat(this.mediaobject.metadata.get('IIIF.rotation')) || 0,
-      // Show rotation buttons
-      showRotationControl: true,
-      minZoomLevel: 1,
-      defaultZoomLevel: 1,
-      prefixUrl: '/assets/images/openseadragon/',
-      tileSources: [url]
-    });
+    this._ngZone.runOutsideAngular(() => openseadragon({
+        id: 'openseadragon',
+        preserveViewport: true,
+        showNavigator: true,
+        visibilityRatio: 1,
+        // Initial rotation angle
+        degrees: parseFloat(this.mediaobject.metadata.get('IIIF.rotation')) || 0,
+        // Show rotation buttons
+        showRotationControl: true,
+        minZoomLevel: 1,
+        defaultZoomLevel: 1,
+        prefixUrl: '/assets/images/openseadragon/',
+        tileSources: [url]
+      })
+    );
   }
 
   /**

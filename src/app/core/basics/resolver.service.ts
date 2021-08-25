@@ -166,7 +166,7 @@ export class ResolverService {
         const xWidth = width ? width : ''
         const yHeight = height ? height : ''
         const domain = 'IIIF'
-        const size = (height || width) ? (xWidth + ',' + yHeight) : (metadata.get('IIIF.size') || 'full')
+        const size = (height || width) ? (xWidth + ',' + yHeight) : (metadata.get(domain + '.size') || 'full')
         const region = metadata.get(domain + '.region') || 'full'
         const rotation = metadata.get(domain + '.rotation') || '0'
         const quality = metadata.get(domain + '.quality') || 'default'
