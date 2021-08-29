@@ -3,13 +3,13 @@ import {QueryTermInterface} from './interfaces/query-term.interface';
 import {ImageQueryTerm} from './image-query-term.model';
 import {AudioQueryTerm} from './audio-query-term.model';
 import {M3DQueryTerm} from './m3d-query-term.model';
-import {QueryTermType} from './interfaces/query-term-type.interface';
 import {BoolQueryTerm} from './bool-query-term.model';
 import {MotionQueryTerm} from './motion-query-term.model';
 import {TextQueryTerm} from './text-query-term.model';
 import {TagQueryTerm} from './tag-query-term.model';
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
 import {QueryStage} from './query-stage.model';
+import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
 
 export class StagedQueryContainer implements QueryContainerInterface {
 
@@ -21,40 +21,40 @@ export class StagedQueryContainer implements QueryContainerInterface {
   /**
    * Internal cache for the queryterms. Since each queryterm can only occur once in the current implementation of vitrivr-ng, this is enough.
    */
-  private _cache: Map<QueryTermType, QueryTermInterface> = new Map();
+  private _cache: Map<QueryTerm.TypeEnum, QueryTermInterface> = new Map();
 
 
   public constructor() {
     this.stages.push(new QueryStage());
   }
 
-  public addTerm(type: QueryTermType): boolean {
+  public addTerm(type: QueryTerm.TypeEnum): boolean {
     if (this._cache.has(type)) {
       return false;
     }
     switch (type) {
-      case 'IMAGE':
+      case QueryTerm.TypeEnum.IMAGE:
         this._cache.set(type, new ImageQueryTerm());
         break;
-      case 'AUDIO':
+      case QueryTerm.TypeEnum.AUDIO:
         this._cache.set(type, new AudioQueryTerm());
         break;
-      case 'MODEL3D':
+      case QueryTerm.TypeEnum.MODEL3D:
         this._cache.set(type, new M3DQueryTerm());
         break;
-      case 'MOTION':
+      case QueryTerm.TypeEnum.MOTION:
         this._cache.set(type, new MotionQueryTerm());
         break;
-      case 'TEXT':
+      case QueryTerm.TypeEnum.TEXT:
         this._cache.set(type, new TextQueryTerm());
         break;
-      case 'TAG':
+      case QueryTerm.TypeEnum.TAG:
         this._cache.set(type, new TagQueryTerm());
         break;
-      case 'SEMANTIC':
+      case QueryTerm.TypeEnum.SEMANTIC:
         this._cache.set(type, new SemanticQueryTerm());
         break;
-      case 'BOOLEAN':
+      case QueryTerm.TypeEnum.BOOLEAN:
         this._cache.set(type, new BoolQueryTerm());
         break;
       default:
@@ -68,7 +68,7 @@ export class StagedQueryContainer implements QueryContainerInterface {
     return true;
   }
 
-  public removeTerm(type: QueryTermType): boolean {
+  public removeTerm(type: QueryTerm.TypeEnum): boolean {
     if (this._cache.has(type)) {
       this.stages.forEach(stage => {
         if (stage.terms.indexOf(this._cache.get(type)) > -1) {
@@ -83,11 +83,11 @@ export class StagedQueryContainer implements QueryContainerInterface {
     }
   }
 
-  public hasTerm(type: QueryTermType): boolean {
+  public hasTerm(type: QueryTerm.TypeEnum): boolean {
     return this._cache.has(type);
   }
 
-  public getTerm(type: QueryTermType): QueryTermInterface {
+  public getTerm(type: QueryTerm.TypeEnum): QueryTermInterface {
     return this._cache.get(type)
   }
 }

@@ -1,6 +1,2 @@
-import {Tag} from '../../../misc/tag.model';
+import {Tag} from '../../../../../../../openapi/cineast';
 
-export interface TagQueryResult {
-  queryId: string;
-  tags: Tag[];
-}

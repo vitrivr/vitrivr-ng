@@ -17,86 +17,23 @@ export class Evaluation {
   /** Date/time of the begin of the current evaluation. */
   private _begin: Date;
 
-  /**
-   * Getter for begin date.
-   *
-   * @return {Date}
-   */
-  get begin(): Date {
-    return this._begin;
-  }
-
   /** Date/time of the end of the current evaluation. */
   private _end: Date;
-
-  /**
-   * Getter for end date.
-   *
-   * @return {Date}
-   */
-  get end(): Date {
-    return this._end;
-  }
 
   /** The number of items that should be ranked (counted from the top). */
   private _k: number;
 
-  /**
-   * Getter for the K.
-   *
-   * @return {number}
-   */
-  get k(): number {
-    return this._k;
-  }
-
   /** State indicator; true if evaluation is running and false otherwise. */
   private _state: EvaluationState = EvaluationState.NotStarted;
-
-  /**
-   * Getter for evaluation state.
-   *
-   * @returns {EvaluationState}
-   */
-  get state(): EvaluationState {
-    return this._state;
-  }
 
   /** ID of the EvaluationScenario */
   private _scenario: string;
 
-  /**
-   * Getter for scenario.
-   *
-   * @return {EvaluationScenario}
-   */
-  get scenario(): string {
-    return this._scenario;
-  }
-
   /** List of evaluation events. */
   private _events: EvaluationEvent[] = [];
 
-  /**
-   * Getter for EvaluationEvents
-   *
-   * @return {EvaluationEvent[]}
-   */
-  get events(): EvaluationEvent[] {
-    return this._events;
-  }
-
   /** List of evaluation events. */
   private _ratings: EvaluationRating[] = [];
-
-  /**
-   * Getter for EvaluationRating
-   *
-   * @return {EvaluationRating[]}
-   */
-  get ratings(): EvaluationRating[] {
-    return this._ratings;
-  }
 
   /**
    * Creates and returns a compact object representation of the Evaluation (no
@@ -106,7 +43,7 @@ export class Evaluation {
    * @return {{scenario: string, begin: Date, end: Date, k: number, events: EvaluationEvent[], ratings: Array, state: number, dcg: number, pAtK: number}}
    */
   public static serialise(evaluation: Evaluation): any {
-    let object = {
+    const object = {
       scenario: evaluation._scenario,
       begin: evaluation._begin,
       end: evaluation._end,
@@ -122,12 +59,12 @@ export class Evaluation {
     };
 
     /* Serialise ratings and push them into the array. */
-    for (let rating of evaluation._ratings) {
+    for (const rating of evaluation._ratings) {
       object.ratings.push(EvaluationRating.serialise(rating));
     }
 
     /* Serialise events and push them into the array. */
-    for (let event of evaluation._events) {
+    for (const event of evaluation._events) {
       object.events.push(EvaluationEvent.serialise(event));
     }
 
@@ -142,7 +79,7 @@ export class Evaluation {
    * @return {Evaluation}
    */
   public static deserialise(object: any): Evaluation {
-    let evaluation = new Evaluation();
+    const evaluation = new Evaluation();
     evaluation._begin = object['begin'];
     evaluation._end = object['end'];
     evaluation._scenario = object['scenario'];
@@ -153,12 +90,12 @@ export class Evaluation {
     evaluation._events = [];
 
     /* De-serialise ratings and push them into the array. */
-    for (let rating of object['ratings']) {
+    for (const rating of object['ratings']) {
       evaluation._ratings.push(EvaluationRating.deserialise(rating));
     }
 
     /* De-serialise events and push them into the array. */
-    for (let event of object['events']) {
+    for (const event of object['events']) {
       evaluation._events.push(EvaluationEvent.deserialise(event));
     }
 
@@ -170,10 +107,73 @@ export class Evaluation {
    * @param scenario
    */
   public static fromScenario(scenario: EvaluationScenario): Evaluation {
-    let evaluation = new Evaluation();
+    const evaluation = new Evaluation();
     evaluation._scenario = scenario.id;
     evaluation._k = scenario.k;
     return evaluation;
+  }
+
+  /**
+   * Getter for begin date.
+   *
+   * @return {Date}
+   */
+  get begin(): Date {
+    return this._begin;
+  }
+
+  /**
+   * Getter for end date.
+   *
+   * @return {Date}
+   */
+  get end(): Date {
+    return this._end;
+  }
+
+  /**
+   * Getter for the K.
+   *
+   * @return {number}
+   */
+  get k(): number {
+    return this._k;
+  }
+
+  /**
+   * Getter for evaluation state.
+   *
+   * @returns {EvaluationState}
+   */
+  get state(): EvaluationState {
+    return this._state;
+  }
+
+  /**
+   * Getter for scenario.
+   *
+   * @return {EvaluationScenario}
+   */
+  get scenario(): string {
+    return this._scenario;
+  }
+
+  /**
+   * Getter for EvaluationEvents
+   *
+   * @return {EvaluationEvent[]}
+   */
+  get events(): EvaluationEvent[] {
+    return this._events;
+  }
+
+  /**
+   * Getter for EvaluationRating
+   *
+   * @return {EvaluationRating[]}
+   */
+  get ratings(): EvaluationRating[] {
+    return this._ratings;
   }
 
   /**
@@ -182,7 +182,7 @@ export class Evaluation {
    * @return New state of the Evaluation object.
    */
   public start(): EvaluationState {
-    if (this._state == EvaluationState.NotStarted || this._state == EvaluationState.Aborted) {
+    if (this._state === EvaluationState.NotStarted || this._state === EvaluationState.Aborted) {
       this._state = EvaluationState.RunningQueries;
       this._begin = new Date();
     }
@@ -196,7 +196,7 @@ export class Evaluation {
    * @return New state of the Evaluation object.
    */
   public accept(features: WeightedFeatureCategory[], results: MediaObjectScoreContainer[]): EvaluationState {
-    if (this._state == EvaluationState.RunningQueries) {
+    if (this._state === EvaluationState.RunningQueries) {
       /* Store per-category weights. */
       this._per_category_weights = {};
       features.forEach((v, i) => {
@@ -207,7 +207,7 @@ export class Evaluation {
       this._ratings = [];
       results.forEach((v1: MediaObjectScoreContainer, index: number) => {
         if (index < this._k + 10) {
-          let per_category_relevance: { [key: string]: number } = {};
+          const per_category_relevance: { [key: string]: number } = {};
           v1.representativeSegment.scoresPerCategory.forEach((v2, k2) => {
             per_category_relevance[k2.name] = v2;
           });
@@ -225,7 +225,7 @@ export class Evaluation {
    * @return New state of the Evaluation object.
    */
   public complete(): EvaluationState {
-    if (this._state == EvaluationState.RankingResults) {
+    if (this._state === EvaluationState.RankingResults) {
       this._state = EvaluationState.Finished;
       this._end = new Date();
     }
@@ -238,7 +238,7 @@ export class Evaluation {
    * @return New state of the Evaluation object.
    */
   public abort(): EvaluationState {
-    if (this._state != EvaluationState.Aborted && this._state != EvaluationState.NotStarted) {
+    if (this._state !== EvaluationState.Aborted && this._state !== EvaluationState.NotStarted) {
       this._state = EvaluationState.Aborted;
       this._begin = null;
       this._end = null;
@@ -254,7 +254,7 @@ export class Evaluation {
    * @param event EvaluationEvent to be added.
    */
   public addEvent(event: EvaluationEvent) {
-    if (this.state == EvaluationState.RunningQueries) {
+    if (this.state === EvaluationState.RunningQueries) {
       this._events.push(event);
     }
   }
@@ -264,9 +264,9 @@ export class Evaluation {
    * @returns {string}
    */
   public elapsedTime(): string {
-    if (this.state == EvaluationState.NotStarted) {
+    if (this.state === EvaluationState.NotStarted) {
       return '00:00:00';
-    } else if (this.state == EvaluationState.Finished || this.state == EvaluationState.Aborted) {
+    } else if (this.state === EvaluationState.Finished || this.state === EvaluationState.Aborted) {
       return TimeFormatterUtil.toTimer(this._end.getTime() - this._begin.getTime())
     } else {
       return TimeFormatterUtil.toTimer(new Date().getTime() - this._begin.getTime())
@@ -279,7 +279,7 @@ export class Evaluation {
    * @param rating
    */
   public rate(index: number, rating: number) {
-    if (this.state != EvaluationState.RankingResults) {
+    if (this.state !== EvaluationState.RankingResults) {
       return;
     }
     if (index >= this._ratings.length) {
@@ -356,7 +356,7 @@ export class Evaluation {
    * @return {number}
    */
   public idealDiscountedCummulativeGain() {
-    let array: EvaluationRating[] = [];
+    const array: EvaluationRating[] = [];
     let idcg = 0;
 
     /* Extract ratings from map. */

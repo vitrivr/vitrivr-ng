@@ -1,7 +1,7 @@
 import {AfterContentInit, Component, ViewChild} from '@angular/core';
 import {MatTab, MatTabChangeEvent} from '@angular/material/tabs';
-import {InformationComponent} from './information/information.component';
 import {EventBusService} from '../core/basics/event-bus.service';
+import {InformationComponent} from './information/information.component';
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';

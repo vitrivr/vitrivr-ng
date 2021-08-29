@@ -1,9 +1,6 @@
-/**
- *
- */
 import {QueryResult} from './query-result.interface';
-import {MediaObjectMetadata} from '../../../media/media-object-metadata.model';
+import {MediaObjectMetadataDescriptor} from '../../../../../../../openapi/cineast';
 
 export interface ObjectMetadataQueryResult extends QueryResult {
-  content: MediaObjectMetadata[],
+  content: MediaObjectMetadataDescriptor[],
 }

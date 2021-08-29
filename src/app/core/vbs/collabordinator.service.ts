@@ -1,11 +1,11 @@
 import {Inject, Injectable} from '@angular/core';
-import {ConfigService} from '../basics/config.service';
 import {filter} from 'rxjs/operators';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {CollabordinatorMessage} from '../../shared/model/messages/collaboration/collabordinator-message.model';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {Tag} from '../selection/tag.model';
 import {Config} from '../../shared/model/config/config.model';
+import {AppConfig} from '../../app.config';
 
 /**
  * The {@link CollabordinatorService} is a {@link BehaviorSubject} that interacts with the Collabordinator web service via
@@ -25,9 +25,9 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
    *
    * @param _config ConfigService instance that serves the recent config.
    */
-  constructor(@Inject(ConfigService) _config: ConfigService) {
+  constructor(@Inject(AppConfig) _config: AppConfig) {
     super();
-    _config.pipe(
+    _config.configAsObservable.pipe(
       filter(c => c.get<string>('competition.collabordinator') != null)
     ).subscribe(c => {
       this._config = c;

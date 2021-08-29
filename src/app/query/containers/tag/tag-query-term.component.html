@@ -20,11 +20,16 @@
                 <button mat-icon-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger"
                         (mousedown)="menuTrigger.openMenu()">
                     <mat-icon *ngIf="ifPreferenceExists(tag)==false">menu</mat-icon>
+                  <!--
+                  NOTE: Uncommented since tag preferences are not yet OpenApi supported.
                     <mat-icon *ngIf="tag.preference == Preference.MUST" class="greene-icon">favorite</mat-icon>
                     <mat-icon *ngIf="tag.preference == Preference.COULD" class="yellow-icon">thumb_up</mat-icon>
                     <mat-icon *ngIf="tag.preference == Preference.NOT" class="red-icon">not_interested</mat-icon>
+                    -->
                 </button>
                 <mat-menu #menu="matMenu" [overlapTrigger]="false">
+                  <!--
+                  NOTE: Uncommented since tag preferences are not yet OpenApi supported.
           <span (mouseleave)="menuTrigger.closeMenu()">
             <mat-button-toggle-group>
             <mat-button-toggle (change)="onPreferenceChange(Preference.MUST, tag)" value="must" class="greene-icon">
@@ -38,6 +43,7 @@
               </mat-button-toggle>
               </mat-button-toggle-group>
           </span>
+          -->
                 </mat-menu>
             </mat-chip>
         </div>

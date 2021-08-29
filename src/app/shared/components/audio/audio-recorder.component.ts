@@ -1,11 +1,11 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 @Component({
-  selector: 'record-audio',
+  selector: 'app-record-audio',
   template: `
-    <div>
-        <canvas #visualize width='{{width}}' height='{{height}}' (drop)="onRecorderDropped($event)" (dragover)="onRecorderDragOver($event)"></canvas>
-    </div>`
+      <div>
+          <canvas width='{{width}}' height='{{height}}' (drop)="onRecorderDropped($event)" (dragover)="onRecorderDragOver($event)"></canvas>
+      </div>`
 })
 
 /**
@@ -18,8 +18,8 @@ import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
  */
 export class AudioRecorderComponent implements OnInit, OnDestroy {
   /** Width and height of the visualization canvas. */
-  @Input() width: number = 400;
-  @Input() height: number = 150;
+  @Input() width = 400;
+  @Input() height = 150;
   /** Canvas used for visualization. */
   @ViewChild('visualize') private canvas: any;
   /** AudioContext used for audio signal processing. */
@@ -55,10 +55,10 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
   private recordingBuffer: AudioBuffer;
 
   /** Flag indicating whether any recording is currently taking place. */
-  private recording: boolean = false;
+  private recording = false;
 
   /** Flag indicating whether any playback is currently taking place. */
-  private playing: boolean = false;
+  private playing = false;
 
   /**
    * Requests access to the user's microphone. If this succeeds, a MediaStream object is passed
@@ -103,10 +103,10 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * Starts recording of audio. The actual audio recording is done in the process() method.
    */
   public record(): void {
-    if (this.audiocontext == undefined) {
+    if (this.audiocontext === undefined) {
       return;
     }
-    if (this.stream == undefined) {
+    if (this.stream === undefined) {
       return;
     }
     if (!this.recording && !this.playing) {
@@ -122,14 +122,14 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * @return {boolean}
    */
   public recordingAvailable(): boolean {
-    return this.source != null;
+    return this.source !== null;
   }
 
   /**
    * Starts playback of previously recorded audio (if set).
    */
   public play(): void {
-    if (this.audiocontext == undefined) {
+    if (this.audiocontext === undefined) {
       return;
     }
     if (!this.recording && !this.playing && this.recordingBuffer) {
@@ -149,7 +149,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * Stops either playback or recording, whatever is currently running.
    */
   public stop(): void {
-    if (this.audiocontext == undefined) {
+    if (this.audiocontext === undefined) {
       return;
     }
     if (this.recording) {
@@ -253,7 +253,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * mainly depends on the browser's capabilities.
    */
   public supportsRecording() {
-    return this.audiocontext != undefined && this.stream != undefined;
+    return this.audiocontext !== undefined && this.stream !== undefined;
   }
 
   /**
@@ -280,7 +280,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
     if (this.isPlaying() || this.isRecording()) {
       this.stop();
     }
-    let reader = new FileReader();
+    const reader = new FileReader();
     reader.addEventListener('load', () => {
       this.loadAudioFromBuffer(<ArrayBuffer>reader.result);
     });
@@ -402,7 +402,7 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * establish during recording.
    */
   private setupAudioNodes(): void {
-    if (this.audiocontext != undefined) {
+    if (this.audiocontext !== undefined) {
       this.analyser = this.audiocontext.createAnalyser();
       this.processor = this.audiocontext.createScriptProcessor();
       this.processor.onaudioprocess = (event) => this.process(event.inputBuffer);
@@ -430,14 +430,14 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    */
   private process(input: AudioBuffer) {
     let buffer: AudioBuffer;
-    if (this.recordingBuffer == null) {
+    if (this.recordingBuffer === null) {
       buffer = this.audiocontext.createBuffer(input.numberOfChannels, input.length, input.sampleRate);
     } else {
       buffer = this.audiocontext.createBuffer(input.numberOfChannels, this.recordingBuffer.length + input.length, input.sampleRate);
     }
 
     for (let c = 0; c < input.numberOfChannels; c++) {
-      if (this.recordingBuffer != null) {
+      if (this.recordingBuffer !== null) {
         buffer.copyToChannel(this.recordingBuffer.getChannelData(c), c, 0);
         buffer.copyToChannel(input.getChannelData(c), c, this.recordingBuffer.length);
       } else {
@@ -456,12 +456,12 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * by evaluating the frequency-data in the AnalyzerNode and drawing it onto the canvas.
    */
   private visualize() {
-    let rafID = window.requestAnimationFrame(() => this.visualize());
-    let context = this.canvas.nativeElement.getContext('2d');
-    let barWidth = (context.canvas.width / this.frequencyBinCount) * 2.5;
+    const rafID = window.requestAnimationFrame(() => this.visualize());
+    const context = this.canvas.nativeElement.getContext('2d');
+    const barWidth = (context.canvas.width / this.frequencyBinCount) * 2.5;
     let barHeight: number;
     let x = 0;
-    let color = '';
+    const color = '';
     if (this.playing) {
 
     }

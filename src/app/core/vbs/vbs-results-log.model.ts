@@ -1,6 +1,6 @@
 import {SubmissionType, VbsSubmission} from '../../shared/model/vbs/interfaces/vbs-submission.model';
 import {VbsResult} from '../../shared/model/vbs/interfaces/vbs-result.model';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 
@@ -26,9 +26,6 @@ export class VbsResultsLog implements VbsSubmission {
   /** Constant, since vitrivr NG always returns the top K results. */
   public readonly resultSetAvailability: string = 'top';
 
-  constructor(public readonly teamId: string, public readonly memberId: number) {
-  }
-
   /**
    * Maps a list of {SegmentScoreContainer}s to a {VbsResultsLog}.
    *
@@ -39,7 +36,7 @@ export class VbsResultsLog implements VbsSubmission {
    * @param event the interactionevent of the query
    * @return List of {VbsResultsLog}
    */
-  public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: SegmentScoreContainer[], event: InteractionEvent): VbsResultsLog {
+  public static mapSegmentScoreContainer(teamId: string, memberId: number, context: string, list: MediaSegmentScoreContainer[], event: InteractionEvent): VbsResultsLog {
     const results = new VbsResultsLog(teamId, memberId);
     event.components.forEach(component => {
       if (component.type === InteractionEventType.NEW_QUERY_CONTAINER) {
@@ -152,5 +149,8 @@ export class VbsResultsLog implements VbsSubmission {
       default:
         return null;
     }
+  }
+
+  constructor(public readonly teamId: string, public readonly memberId: number) {
   }
 }

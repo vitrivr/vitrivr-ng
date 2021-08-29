@@ -1,16 +1,15 @@
 import {ScoreContainer} from './compound-score-container.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
-import {WeightedFeatureCategory} from '../weighted-feature-category.model';
-import {Similarity} from '../../media/similarity.model';
-import {MediaSegment} from '../../media/media-segment.model';
+import {WeightedFeatureCategory} from '../weighted-feature-category.model'
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
+import {MediaSegmentDescriptor, StringDoublePair} from '../../../../../../openapi/cineast';
 
 /**
  * The SegmentScoreContainer is a ScoreContainer for MediaSegments. It is associated with
  * a single segment (e.g. a shot of a video) and holds the score for that segment. That
  * score is determined by the actual scores of the segment (per category).
  */
-export class SegmentScoreContainer extends ScoreContainer implements MediaSegment {
+export class MediaSegmentScoreContainer extends ScoreContainer implements MediaSegmentDescriptor {
   /** ID of the object this SegmentScoreContainer belongsTo. */
   public readonly objectId: string;
   /** ID of the segment this SegmentScoreContainer belongsTo (objectId + segmentId = unique). */
@@ -26,13 +25,19 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
   /** Absolute end time of the MediaSegment in seconds. */
   public readonly endabs: number;
 
+  /** List of scores. Maps per containerId the category and similarity score. */
+  private _scores: Map<number, Map<WeightedFeatureCategory, number>> = new Map();
+
+  /** Map containing the metadata that belongs to the segment. Can be empty! */
+  private _metadata: Map<string, string> = new Map();
+
   /**
    * Default constructor.
    *
    * @param {MediaSegment} _mediaSegment Reference to the MediaSegment this container has been created for.
    * @param {MediaObjectScoreContainer} _objectScoreContainer Reference to the MediaObjectScoreContainer that contains this SegmentScoreContainer.
    */
-  public constructor(private readonly _mediaSegment: MediaSegment, private readonly _objectScoreContainer: MediaObjectScoreContainer) {
+  public constructor(private readonly _mediaSegment: MediaSegmentDescriptor, private readonly _objectScoreContainer: MediaObjectScoreContainer) {
     super();
 
     /* Make a logic check: objectId of MediaSegment must match that of the MediaObjectScoreContainer. */
@@ -50,9 +55,6 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
     this.endabs = _mediaSegment.endabs;
   }
 
-  /** List of scores. Maps per containerId the category and similarity score. */
-  private _scores: Map<number, Map<WeightedFeatureCategory, number>> = new Map();
-
   /**
    * Returns the map of scores
    *
@@ -60,9 +62,6 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
   get scores(): Map<number, Map<WeightedFeatureCategory, number>> {
     return this._scores;
   }
-
-  /** Map containing the metadata that belongs to the segment. Can be empty! */
-  private _metadata: Map<string, string> = new Map();
 
   /**
    * Returns the map of metadata.
@@ -105,7 +104,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * the actual value to their respective arrays. The segmentId of the Similarity object
    * must be equal to the segmentId of the SegmentScoreContainer.
    */
-  public addSimilarity(category: WeightedFeatureCategory, similarity: Similarity, containerId: number): boolean {
+  public addSimilarity(category: WeightedFeatureCategory, similarity: StringDoublePair, containerId: number): boolean {
     if (similarity.key !== this._mediaSegment.segmentId) {
       return false;
     }
@@ -124,8 +123,7 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
    * @param func The fusion function that should be used to calculate the score.
    */
   public update(features: WeightedFeatureCategory[], func: FusionFunction) {
-    const score = func.scoreForSegment(features, this);
-    this._score = score;
+    this._score = func.scoreForSegment(features, this);
   }
 
   /**
@@ -140,8 +138,8 @@ export class SegmentScoreContainer extends ScoreContainer implements MediaSegmen
   /**
    * Serializes this SegmentScoreContainer into a plain JavaScript object.
    */
-  public serialize(): MediaSegment {
-    return <MediaSegment>{
+  public serialize(): MediaSegmentDescriptor {
+    return <MediaSegmentDescriptor>{
       segmentId: this.segmentId,
       objectId: this.objectId,
       sequenceNumber: this.sequenceNumber,

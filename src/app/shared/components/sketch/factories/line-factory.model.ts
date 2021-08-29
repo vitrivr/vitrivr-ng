@@ -4,7 +4,13 @@ import {Point} from '../model/point.model';
 
 export class LineFactory implements DrawableFactory<Line> {
   /** Colour setting that should be used with new Lines. */
-  private _color: string = '#000000';
+  private _color = '#000000';
+
+  /** Linesize setting that should be used with new Lines. */
+  private _linesize = 5;
+
+  /** Threshold setting that should be used with new Lines. */
+  private _threshold = 10;
 
   /**
    * Getter for color.
@@ -24,9 +30,6 @@ export class LineFactory implements DrawableFactory<Line> {
     this._color = value;
   }
 
-  /** Linesize setting that should be used with new Lines. */
-  private _linesize: number = 5;
-
   /**
    * Getter for linesize.
    *
@@ -44,9 +47,6 @@ export class LineFactory implements DrawableFactory<Line> {
   set linesize(value: number) {
     this._linesize = value;
   }
-
-  /** Threshold setting that should be used with new Lines. */
-  private _threshold: number = 10;
 
   /**
    * Getter for threshold.

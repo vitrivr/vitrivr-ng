@@ -1,19 +1,19 @@
 import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {SketchCanvas} from '../../../shared/components/sketch/sketch-canvas.component';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {SketchCanvasComponent} from '../../../shared/components/sketch/sketch-canvas.component';
 
 @Component({
 
-  selector: 'sketchpad',
+  selector: 'app-sketchpad',
   templateUrl: 'sketch-dialog.component.html',
   styleUrls: ['sketch-dialog.component.css']
 })
 
-export class SketchDialogComponent implements OnInit, AfterViewInit {
+export class SketchDialogComponent implements AfterViewInit {
   /** Default linesize when opening the dialog. */
   public static readonly DEFAULT_LINESIZE = 10.0;
   /** Current color (default: black). */
-  public color: string = '#000000';
+  public color = '#000000';
   /** Current linesize (default: DEFAULT_LINESIZE). */
   public linesize: number = SketchDialogComponent.DEFAULT_LINESIZE;
   /** List of preset colors. */
@@ -32,32 +32,22 @@ export class SketchDialogComponent implements OnInit, AfterViewInit {
   private imageloader: any;
   /** Sketch-canvas component. */
   @ViewChild('sketch')
-  private _sketchpad: SketchCanvas;
+  private _sketchpad: SketchCanvasComponent;
 
   /**
    * Constructor for SketchDialogComponent.
-   *
-   * @param _dialogRef
-   * @param _data
    */
   constructor(private _dialogRef: MatDialogRef<SketchDialogComponent>, @Inject(MAT_DIALOG_DATA) private _data: any) {
     _dialogRef.disableClose = true;
   }
 
   /**
-   * Lifecycle Hook (onInit): Loads the injected image data (if specified).
-   */
-  public ngOnInit(): void {
-    if (this._data && typeof this._data === 'string') {
-      this._sketchpad.setImageBase64(<string>this._data);
-      this._data = null;
-    }
-  }
-
-  /**
    * Lifecycle Hook (afterViewIniti): Sets the default linesize and colour.
    */
   public ngAfterViewInit(): void {
+    if (this._data && typeof this._data === 'string') {
+      this._sketchpad.setImageBase64(<string>this._data);
+    }
     this._sketchpad.setLineSize(this.linesize);
     this._sketchpad.setActiveColor(this.color);
   }

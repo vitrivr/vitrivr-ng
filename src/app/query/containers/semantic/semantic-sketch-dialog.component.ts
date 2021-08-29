@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Inject, OnInit, Optional, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {SketchCanvas} from '../../../shared/components/sketch/sketch-canvas.component';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {SketchCanvasComponent} from '../../../shared/components/sketch/sketch-canvas.component';
 import {SemanticCategory} from '../../../shared/model/queries/semantic/semantic-category.model';
 import {SemanticMap} from '../../../shared/model/queries/semantic/semantic-map.model';
 import {FormControl} from '@angular/forms';
@@ -10,7 +10,7 @@ import {map} from 'rxjs/internal/operators/map';
 
 @Component({
 
-  selector: 'semantic-sketchpad',
+  selector: 'app-semantic-sketchpad',
   templateUrl: 'semantic-sketch-dialog.component.html',
   styleUrls: ['semantic-sketch-dialog.component.css']
 })
@@ -23,7 +23,7 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
   /** Current line size (default: DEFAULT_LINESIZE). */
   public linesize: number = SemanticSketchDialogComponent.DEFAULT_LINESIZE;
   /** Observable for all the SemanticCategories (filtered and ordered). */
-  private _filteredCategories: Observable<SemanticCategory[]>;
+  private readonly _filteredCategories: Observable<SemanticCategory[]>;
   /** Observable for all currently used SemanticCategories. */
   private _used: BehaviorSubject<SemanticCategory[]> = new BehaviorSubject([]);
   /** Hidden input for image upload. */
@@ -31,7 +31,13 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
   private imageloader: any;
   /** Sketch-canvas component. */
   @ViewChild('sketch')
-  private _sketchpad: SketchCanvas;
+  private _sketchpad: SketchCanvasComponent;
+
+  /** List of all SemanticCategories. */
+  private _categories: SemanticCategory[] = SemanticCategory.LIST;
+
+  /** Currently selected SemanticCategory (pencil) */
+  private _selected: SemanticCategory = this._categories[0];
 
   /**
    *
@@ -40,7 +46,7 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
    */
   constructor(private _dialogRef: MatDialogRef<SemanticSketchDialogComponent>, @Optional() @Inject(MAT_DIALOG_DATA) private _data: SemanticMap) {
     _dialogRef.disableClose = true;
-    let filtered = this.formCtrl.valueChanges.pipe(
+    const filtered = this.formCtrl.valueChanges.pipe(
       startWith(''),
       map(filter => filter.toLowerCase()),
       map(filter => {
@@ -54,11 +60,11 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
     this._filteredCategories = combineLatest(filtered, this._used).pipe(
       map((array: [SemanticCategory[], SemanticCategory[]]) => {
         return array[0].sort((a, b) => {
-          let ia = array[1].indexOf(a);
-          let ib = array[1].indexOf(b);
-          if (ia == -1 && ib != -1) {
+          const ia = array[1].indexOf(a);
+          const ib = array[1].indexOf(b);
+          if (ia === -1 && ib !== -1) {
             return 1;
-          } else if (ia != -1 && ib == -1) {
+          } else if (ia !== -1 && ib === -1) {
             return -1;
           } else if (a.name < b.name) {
             return -1
@@ -72,18 +78,12 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
     );
   }
 
-  /** List of all SemanticCategories. */
-  private _categories: SemanticCategory[] = SemanticCategory.LIST;
-
   /**
    * Returns the list of SemanticCategories (ordered by selection).
    */
   get categories(): Observable<SemanticCategory[]> {
     return this._filteredCategories;
   }
-
-  /** Currently selected SemanticCategory (pencil) */
-  private _selected: SemanticCategory = this._categories[0];
 
   /**
    * Getter for selected.
@@ -130,8 +130,8 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
   public onItemSelected(selection: SemanticCategory) {
     this._selected = selection;
     this._sketchpad.setActiveColor(selection.color);
-    let arr = this._used.getValue().concat().slice();
-    if (arr.indexOf(selection) == -1) {
+    const arr = this._used.getValue().concat().slice();
+    if (arr.indexOf(selection) === -1) {
       arr.push(selection);
       this._used.next(arr);
     }
@@ -168,8 +168,8 @@ export class SemanticSketchDialogComponent implements OnInit, AfterViewInit {
    * @param selected
    */
   public onOptionSelected(selected: string) {
-    for (let category of this._categories) {
-      if (category.name == selected) {
+    for (const category of this._categories) {
+      if (category.name === selected) {
         this.onItemSelected(category);
         break;
       }

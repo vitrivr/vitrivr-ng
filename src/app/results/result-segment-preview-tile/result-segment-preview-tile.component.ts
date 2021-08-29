@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {first} from 'rxjs/operators';
 import {KeyboardService} from '../../core/basics/keyboard.service';
@@ -7,7 +7,6 @@ import {QueryService} from '../../core/queries/query.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {ResolverService} from '../../core/basics/resolver.service';
-import {ConfigService} from '../../core/basics/config.service';
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
@@ -15,6 +14,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
 import {Observable} from 'rxjs';
 import {VgApiService} from '@videogular/ngx-videogular/core';
+import {AppConfig} from '../../app.config';
 
 /**
  * Dedicated component for the preview of a segment.
@@ -34,12 +34,12 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   /**
    * The segment this preview is for
    */
-  @Input() segment: SegmentScoreContainer;
+  @Input() segment: MediaSegmentScoreContainer;
 
   /**
    * The container this segment preview is in
    */
-  @Input() container: AbstractSegmentResultsViewComponent<SegmentScoreContainer[]>;
+  @Input() container: AbstractSegmentResultsViewComponent<MediaSegmentScoreContainer[]>;
 
   /**
    * The score of the segment. Will be used for the coloring of the background.
@@ -48,19 +48,19 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   @Input() score: number;
 
+  /**
+   * A flag whether this preview is in focus or not.
+   */
+  private _focus = false;
+
   constructor(readonly _keyboardService: KeyboardService,
               private _queryService: QueryService,
               private _eventBusService: EventBusService,
               private _vbs: VbsSubmissionService,
               private _dialog: MatDialog,
               private _resolver: ResolverService,
-              private _configService: ConfigService) {
+              private _configService: AppConfig) {
   }
-
-  /**
-   * A flag whether this preview is in focus or not.
-   */
-  private _focus = false;
 
   /**
    * Sets the flag, that this preview is in focus
@@ -86,22 +86,17 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
 
   /**
    * Invokes when a user clicks the 'Find neighbouring segments' button.
-   *
-   * @param {SegmentScoreContainer} segment
    */
   public onNeighborsButtonClicked() {
-    this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupCount'));
+    this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.config.get<number>('query.config.neighboringSegmentLookupCount'));
   }
 
   /**
    * Invokes when a user right clicks the 'Find neighbouring segments' button. Loads neighbouring segments with
    * a count of 500.
-   *
-   * @param {Event} event
-   * @param {SegmentScoreContainer} segment
    */
   public onNeighborsButtonRightClicked(event: Event) {
-    this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.getValue().get<number>('query.config.neighboringSegmentLookupAllCount'));
+    this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.config.get<number>('query.config.neighboringSegmentLookupAllCount'));
     event.preventDefault();
   }
 
@@ -125,9 +120,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
 
   /**
    * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
-   *
-   * @param {MouseEvent} event
-   * @param {SegmentScoreContainer} segment
    */
   public onTileClicked(event: MouseEvent) {
     if (event.shiftKey) {
@@ -150,7 +142,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    * This **has** to be a lambda, as otherwise the scope would not be retained
    * @param segment
    */
-  playVideo = (segment: SegmentScoreContainer) => {
+  playVideo = (segment: MediaSegmentScoreContainer) => {
     return this._keyboardService.ctrlPressed.map(el => el && segment.objectScoreContainer.mediatype === 'VIDEO' && this.inFocus);
   };
 
@@ -159,14 +151,14 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    * @param api
    * @param segment
    */
-  public onPlayerReady(api: VgApiService, segment: SegmentScoreContainer) {
+  public onPlayerReady(api: VgApiService, segment: MediaSegmentScoreContainer) {
     api.getDefaultMedia().subscriptions.loadedData.pipe(first()).subscribe(() => this.seekToFocusPosition(api, segment));
   }
 
   /**
    * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
    */
-  public seekToFocusPosition(api: VgApiService, segment: SegmentScoreContainer) {
+  public seekToFocusPosition(api: VgApiService, segment: MediaSegmentScoreContainer) {
     if (segment) {
       api.seekTime(segment.startabs);
     }

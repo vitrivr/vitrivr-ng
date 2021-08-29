@@ -1,11 +1,11 @@
 import {Component, ViewChild} from '@angular/core';
 import {M3DLoaderComponent} from '../../../shared/components/m3d/m3d-loader.component';
-import { MatDialogRef } from '@angular/material/dialog';
+import {MatDialogRef} from '@angular/material/dialog';
 
 
 @Component({
 
-  selector: 'm3dloader-dialog',
+  selector: 'app-m3dloader-dialog',
   templateUrl: 'm3d-loader-dialog.component.html'
 })
 

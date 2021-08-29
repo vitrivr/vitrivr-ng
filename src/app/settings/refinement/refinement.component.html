@@ -8,7 +8,7 @@
                     value="{{feature.weightPercentage}}"></mat-slider>
         <span class="label constrained"> {{feature.weightPercentage}}%</span>
     </div>
-    <weight-distribution *ngIf="features.length > 0" [features]="features"></weight-distribution>
+    <app-weight-distribution *ngIf="features.length > 0" [features]="features"></app-weight-distribution>
 
     <h3 class="mat-h3">Filters</h3>
 
@@ -76,27 +76,21 @@
             <form class="example-form">
                 <mat-form-field style="width:40%;">
                     <mat-label>Minimum</mat-label>
-                    <input type="number" matInput (input)="minValue(entry.key, $event.target.value)" [value]="min(entry.key)" placeholder="{{sliderObject(entry.value).min}}">
-                    <mat-hint align="start"><strong>Minimum: {{sliderObject(entry.value).sliderOptions().floor}}</strong></mat-hint>
+                    <input type="number" matInput (input)="minValue(entry.key, $event.target.value)"
+                           [value]="min(entry.key)" placeholder="{{sliderObject(entry.value).min}}">
+                    <mat-hint align="start">
+                        <strong>Minimum: {{sliderObject(entry.value).sliderOptions().floor}}</strong></mat-hint>
                 </mat-form-field>
                 <mat-form-field style="width:40%;">
                     <mat-label>Maximum</mat-label>
-                    <input type="number" matInput (input)="maxValue(entry.key, $event.target.value)" [value]="max(entry.key)" placeholder="{{sliderObject(entry.value).max}}">
-                    <mat-hint align="start"><strong>Maximum: {{sliderObject(entry.value).sliderOptions().ceil}}</strong></mat-hint>
+                    <input type="number" matInput (input)="maxValue(entry.key, $event.target.value)"
+                           [value]="max(entry.key)" placeholder="{{sliderObject(entry.value).max}}">
+                    <mat-hint align="start"><strong>Maximum: {{sliderObject(entry.value).sliderOptions().ceil}}</strong>
+                    </mat-hint>
                 </mat-form-field>
             </form>
         </div>
 
-        <!--
-        ng5-slider is broken with angular 7+
-        <div *ngIf="mdShowFilterCategory(entry.key) && isSlider(entry.value)" style="width: 90%;">
-            <ng5-slider (highValueChange)="maxSliderChange(entry.key, $event)"
-                        (valueChange)="minSliderChange(entry.key, $event)"
-                        [highValue]="sliderObject(entry.value).max"
-                        [options]="sliderObject(entry.value).sliderOptions()"
-                        [value]="sliderObject(entry.value).min"></ng5-slider>
-        </div>
-        -->
         <br/>
     </div>
 </div>

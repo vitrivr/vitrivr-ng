@@ -1,8 +1,8 @@
-import {QueryTermType} from './query-term-type.interface';
-
 /**
  * General interface of a QueryTerm (e.g. text, tag, sketch)
  */
+import {QueryTerm} from '../../../../../../openapi/cineast/model/queryTerm';
+
 export interface QueryTermInterface {
   /**
    * List of retrieval categories that should be used as part of this findSimilar.
@@ -12,7 +12,7 @@ export interface QueryTermInterface {
   /**
    * Type of QueryTerm. Must correspond to one the types defined above.
    */
-  type: QueryTermType
+  type: QueryTerm.TypeEnum
 
   /**
    * The Base64 encoded data contained in this QueryTerm.

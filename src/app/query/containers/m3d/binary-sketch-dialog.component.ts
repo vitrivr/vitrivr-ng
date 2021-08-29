@@ -1,10 +1,10 @@
 import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {SketchCanvas} from '../../../shared/components/sketch/sketch-canvas.component';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {SketchCanvasComponent} from '../../../shared/components/sketch/sketch-canvas.component';
 
 @Component({
 
-  selector: 'binary-sketchpad',
+  selector: 'app-binary-sketchpad',
   templateUrl: 'binary-sketch-dialog.component.html'
 })
 
@@ -12,7 +12,7 @@ export class BinarySketchDialogComponent implements AfterViewInit {
   /** Default linesize when opening the dialog. */
   public static readonly DEFAULT_LINESIZE = 10.0;
   /** Default color (black) . */
-  public color: string = '#FFFFFF';
+  public color = '#FFFFFF';
   /** Current linesize (default: DEFAULT_LINESIZE). */
   public linesize: number = BinarySketchDialogComponent.DEFAULT_LINESIZE;
   /** Hidden input for image upload. */
@@ -20,7 +20,7 @@ export class BinarySketchDialogComponent implements AfterViewInit {
   private imageloader: any;
   /** Sketch-canvas component. */
   @ViewChild('sketch')
-  private _sketchpad: SketchCanvas;
+  private _sketchpad: SketchCanvasComponent;
 
   /**
    *
@@ -64,8 +64,6 @@ export class BinarySketchDialogComponent implements AfterViewInit {
 
   /**
    * Triggered when the slider-value for the line-size changes.
-   *
-   * @param size
    */
   public onLineSizeChange() {
     this._sketchpad.setLineSize(this.linesize);

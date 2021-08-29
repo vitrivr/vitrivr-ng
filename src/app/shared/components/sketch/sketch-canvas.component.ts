@@ -2,15 +2,15 @@ import {Component, ElementRef, HostListener, Input, OnInit, ViewChild} from '@an
 import {Point} from './model/point.model';
 
 @Component({
-  selector: 'sketch-canvas',
+  selector: 'app-sketch-canvas',
   template: `
       <canvas #sketch width='{{width}}' height='{{height}}' style="display: block; border: solid 1px; background-image: url(\'assets/images/transparent.png\')" (mousedown)="onMousedown($event)"
               (mouseup)="onMouseup($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMousemove($event)" (drop)="onCanvasDropped($event)" (dragover)="onCanvasDragOver($event)"></canvas>`
 })
 
-export class SketchCanvas implements OnInit {
-  @Input() width: number = 400;
-  @Input() height: number = 400;
+export class SketchCanvasComponent implements OnInit {
+  @Input() width = 400;
+  @Input() height = 400;
   @ViewChild('sketch', {static: true}) private canvas: ElementRef;
   private context: CanvasRenderingContext2D;
   private paint = false;
@@ -21,7 +21,7 @@ export class SketchCanvas implements OnInit {
    * Lifecycle Hook (onInit): Initialises the drawing context.
    */
   public ngOnInit() {
-    let canvas = this.canvas.nativeElement;
+    const canvas = this.canvas.nativeElement;
     this.context = canvas.getContext('2d');
   }
 
@@ -57,7 +57,7 @@ export class SketchCanvas implements OnInit {
    * @param event
    */
   public onMousemove(event: MouseEvent) {
-    if (this.paint && event.target == this.canvas.nativeElement) {
+    if (this.paint && event.target === this.canvas.nativeElement) {
       this.current = new Point(event.offsetX, event.offsetY);
       if (this.last !== null) {
         Point.drawLine(this.context, this.last, this.current);
@@ -94,6 +94,7 @@ export class SketchCanvas implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
+    // tslint:disable-next-line:no-unused-expression
     event.target.innerWidth;
   }
 
@@ -129,7 +130,7 @@ export class SketchCanvas implements OnInit {
    * @param data
    */
   public setImageBase64(data: string) {
-    let image = new Image();
+    const image = new Image();
     image.src = data;
     image.onload = function () {
       this.context.drawImage(image, 0, 0, this.context.canvas.width, this.context.canvas.height);

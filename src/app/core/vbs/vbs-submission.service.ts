@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {ConfigService} from '../basics/config.service';
 import {BehaviorSubject, combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
@@ -18,6 +17,8 @@ import Dexie from 'dexie';
 import {LscUtil} from '../../shared/model/lsc/lsc.util';
 import {LscSubmission} from '../../shared/model/lsc/interfaces/lsc-submission.model';
 import {UserDetails} from './dres/model/userdetails.model';
+import {AppConfig} from '../../app.config';
+import {MetadataService} from '../../../../openapi/cineast';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -29,7 +30,7 @@ export class VbsSubmissionService {
   private _config: Observable<[string, string, number, boolean, number]>;
 
   /** The subject used to submit segments to the VBS service. */
-  private _submitSubject = new Subject<[SegmentScoreContainer, number]>();
+  private _submitSubject = new Subject<[MediaSegmentScoreContainer, number]>();
 
   /** Reference to the subscription that is used to issue submits to the VBS server. */
   private _submitSubscription: Subscription;
@@ -59,15 +60,16 @@ export class VbsSubmissionService {
   private _lsc = false;
   private readonly _status: BehaviorSubject<UserDetails> = new BehaviorSubject(undefined)
 
-  constructor(_config: ConfigService,
+  constructor(_config: AppConfig,
               private _eventbus: EventBusService,
               private _queryService: QueryService,
               private _selection: SelectionService,
+              private _metadata: MetadataService,
               private _http: HttpClient,
               private _snackBar: MatSnackBar,
               _db: DatabaseService) {
 
-    _config.subscribe(config => {
+    _config.configAsObservable.subscribe(config => {
       this._lsc = config.get<boolean>('competition.lsc');
       this._vbs = config.get<boolean>('competition.vbs');
       this._dres = config.get<boolean>('competition.dres');
@@ -75,7 +77,7 @@ export class VbsSubmissionService {
     });
 
     /* Configuration */
-    this._config = _config.asObservable().pipe(
+    this._config = _config.configAsObservable.pipe(
       filter(c => c.get<string>('competition.endpoint') != null),
       map(c => <[string, string, number, boolean, number]>[c.get<string>('competition.endpoint').endsWith('/') ? c.get<string>('competition.endpoint').slice(0, -1) : c.get<string>('competition.endpoint'), c.get<string>('competition.teamid'), c.get<number>('competition.toolid'), c.get<boolean>('competition.log'), c.get<number>('competition.loginterval')])
     );
@@ -116,9 +118,9 @@ export class VbsSubmissionService {
   /**
    * Submits the provided SegmentScoreContainer and to the VBS endpoint. Uses the segment's start timestamp as timepoint.
    *
-   * @param {SegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
+   * @param {MediaSegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
    */
-  public submitSegment(segment: SegmentScoreContainer) {
+  public submitSegment(segment: MediaSegmentScoreContainer) {
     if (this.isOn) {
       this.submit(segment, (segment.startabs + segment.endabs) / 2);
     }
@@ -127,10 +129,10 @@ export class VbsSubmissionService {
   /**
    * Submits the provided SegmentScoreContainer and the given time to the VBS endpoint.
    *
-   * @param {SegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
+   * @param {MediaSegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
    * @param time The video timestamp to submit.
    */
-  public submit(segment: SegmentScoreContainer, time: number) {
+  public submit(segment: MediaSegmentScoreContainer, time: number) {
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
     this._selection.add(this._selection.availableTags[0], segment.segmentId);
@@ -252,7 +254,7 @@ export class VbsSubmissionService {
 
     /* Setup submission subscription, which is triggered manually. */
     this._submitSubscription = this._submitSubject.pipe(
-      map(([segment, time]): [SegmentScoreContainer, number] => {
+      map(([segment, time]): [MediaSegmentScoreContainer, number] => {
         if (this._vbs || this._dres) {
           let fps = Number.parseFloat(segment.objectScoreContainer.metadataForKey('technical.fps'));
           if (Number.isNaN(fps) || !Number.isFinite(fps)) {
@@ -275,7 +277,6 @@ export class VbsSubmissionService {
         }
         if (this._vbs) {
           id = parseInt(segment.objectId.replace('v_', ''), 10).toString();
-          id = segment.objectId
           params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', id).set('frame', String(frame));
         }
         if (this._dres) {
@@ -333,21 +334,25 @@ export class VbsSubmissionService {
   }
 
   public checkConnection(endpoint: string) {
-    this._http.get(String(`${endpoint}/api/user`), {responseType: 'text', withCredentials: this._dres}).pipe(
-      tap(msg => {
-          this._status.next(JSON.parse(msg))
-        }, // noop
-        err => {
-          const msg = `You are not logged in to DRES at ${endpoint}`
-          console.debug(`api/user request to DRES endpoint at ${endpoint} failed, you are not logged in`)
-          this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION * 2, panelClass: 'snackbar-error'});
-          this._status.next(new UserDetails(undefined, undefined, undefined, undefined))
-        }),
-      catchError(err => {
-        console.log(err)
-        return of(undefined)
-      })
-    ).subscribe();
+    if (this._dres) {
+      this._http.get(String(`${endpoint}/api/user`), {responseType: 'text', withCredentials: this._dres}).pipe(
+        tap(msg => {
+            this._status.next(JSON.parse(msg))
+          }, // noop
+          err => {
+            const msg = `You are not logged in to DRES at ${endpoint}`
+            console.debug(`api/user request to DRES endpoint at ${endpoint} failed, you are not logged in`)
+            this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION * 2, panelClass: 'snackbar-error'});
+            this._status.next(new UserDetails(undefined, undefined, undefined, undefined))
+          }),
+        catchError(err => {
+          console.log(err)
+          return of(undefined)
+        })
+      ).subscribe();
+    } else {
+      console.debug(`dres flag not set in config, not checking connection to competition server`)
+    }
   }
 
   public statusObservable(): Observable<UserDetails> {

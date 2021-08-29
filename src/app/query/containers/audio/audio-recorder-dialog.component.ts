@@ -1,5 +1,5 @@
 import {Component, Inject, OnDestroy, OnInit, Optional, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AudioRecorderComponent} from '../../../shared/components/audio/audio-recorder.component';
 import {Subscription, timer} from 'rxjs';
 import {TimeFormatterUtil} from '../../../shared/util/timer-formatter.util';
@@ -9,7 +9,7 @@ import {timestamp} from 'rxjs/operators';
 
 @Component({
 
-  selector: 'audio-recorder',
+  selector: 'app-audio-recorder',
   templateUrl: 'audio-recorder-dialog.component.html',
   styles: [
     '.play-active {  color: #008000; text-shadow: 0 0 6px #009800; }',
@@ -17,6 +17,7 @@ import {timestamp} from 'rxjs/operators';
   ]
 })
 export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
+
   /** Hidden input for image upload. */
   @ViewChild('audioloader')
   private audioloader: any;
@@ -27,6 +28,13 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
   /** A time used to keep track of state changes in the audio-recorder. */
   private _timer: Subscription;
 
+  /** Audio-recorder component. */
+  @ViewChild('recorder')
+  private _recorder: AudioRecorderComponent;
+
+  /** Text representing the current status of the audio-recorder. */
+  private _statustext: String;
+
   /**
    *
    * @param dialogRef
@@ -34,10 +42,6 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
    */
   constructor(private dialogRef: MatDialogRef<AudioRecorderDialogComponent>, @Optional() @Inject(MAT_DIALOG_DATA) private _data?: any) {
   }
-
-  /** Audio-recorder component. */
-  @ViewChild('recorder')
-  private _recorder: AudioRecorderComponent;
 
   /**
    * Getter for AudioRecorderComponent.
@@ -47,9 +51,6 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
   get recorder(): AudioRecorderComponent {
     return this._recorder;
   }
-
-  /** Text representing the current status of the audio-recorder. */
-  private _statustext: String;
 
   /**
    * Getter for statustext.
@@ -70,20 +71,20 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
     }
     this._data = null;
     this._timer = timer(0, 500).pipe(timestamp()).subscribe((x) => {
-      if (this._recorder.isPlaying() && this.status != 'Playing') {
+      if (this._recorder.isPlaying() && this.status !== 'Playing') {
         this.start = x.timestamp;
         this.status = 'Playing';
-      } else if (this._recorder.isRecording() && this.status != 'Recording') {
+      } else if (this._recorder.isRecording() && this.status !== 'Recording') {
         this.start = x.timestamp;
         this.status = 'Recording';
-      } else if (!this._recorder.isPlaying() && !this._recorder.isRecording() && this.status != 'Idle') {
+      } else if (!this._recorder.isPlaying() && !this._recorder.isRecording() && this.status !== 'Idle') {
         this.start = 0;
         this.status = 'Idle';
-      } else if (this.status == 'Recording') {
+      } else if (this.status === 'Recording') {
         this._statustext = 'Recording: ' + TimeFormatterUtil.toTimer(x.timestamp - this.start);
-      } else if (this.status == 'Playing') {
+      } else if (this.status === 'Playing') {
         this._statustext = 'Playing: ' + TimeFormatterUtil.toTimer(x.timestamp - this.start) + ' / ' + TimeFormatterUtil.toTimer(this._recorder.duration() * 1000);
-      } else if (this.status == 'Idle') {
+      } else if (this.status === 'Idle') {
         if (this._recorder.length() > 0) {
           this._statustext = 'Idle (Audio available)';
         } else {
@@ -109,7 +110,7 @@ export class AudioRecorderDialogComponent implements OnInit, OnDestroy {
   public onFileAvailable(event: any) {
     this._recorder.loadAudioFromFile(event.target.files[0]);
     this.audioloader.nativeElement.value = null;
-  };
+  }
 
   /**
    * Triggered whenever the record-button is pressed. Either starts recording or

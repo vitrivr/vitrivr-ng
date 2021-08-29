@@ -1,5 +1,4 @@
-import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {ConfigService} from '../../core/basics/config.service';
+import {AfterContentInit, Component} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
@@ -7,18 +6,16 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
 import Dexie from 'dexie';
-import {VbsResultsLog} from '../../core/vbs/vbs-results-log.model';
 import {VbsInteractionLog} from '../../core/vbs/vbs-interaction-log.model';
 import {fromPromise} from 'rxjs/internal-compatibility';
 import * as JSZip from 'jszip';
-import {UserDetails} from '../../core/vbs/dres/model/userdetails.model';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
-import {NotificationUtil} from '../../shared/util/notification.util';
 import {NotificationService} from '../../core/basics/notification.service';
+import {AppConfig} from '../../app.config';
 
 @Component({
 
-  selector: 'preferences',
+  selector: 'app-preferences',
   templateUrl: './preferences.component.html'
 })
 export class PreferencesComponent implements AfterContentInit {
@@ -42,12 +39,12 @@ export class PreferencesComponent implements AfterContentInit {
    * Constructor for PreferencesComponent
    */
   constructor(
-    private _configService: ConfigService,
+    private _configService: AppConfig,
     private _db: DatabaseService,
     private _submissionService: VbsSubmissionService,
     private _notificationService: NotificationService
   ) {
-    this._config = this._configService.asObservable();
+    this._config = this._configService.configAsObservable;
     this._resultsLogTable = _db.db.table('log_results');
     this._interactionLogTable = _db.db.table('log_interaction');
     this._submissionLogTable = _db.db.table('log_submission');
@@ -108,7 +105,7 @@ export class PreferencesComponent implements AfterContentInit {
    * Resets the config and reloads it.
    */
   public onResetButtonClicked() {
-    this._configService.reset();
+    this._configService.load();
   }
 
   /**
@@ -147,30 +144,6 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onDownloadResultsLog() {
     const data = [];
-    fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
-      data.push(o)
-    }))
-      .pipe(
-        first(),
-        map(() => {
-          const zip = new JSZip();
-          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
-          for (let i = 0; i < data.length; i++) {
-            zip.file(`vitrivrng-results-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
-          }
-          return zip
-        })
-      )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
-          (result) => {
-            window.open(window.URL.createObjectURL(result));
-          },
-          (error) => {
-            console.log(error);
-          }
-        )
-      });
     fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
@@ -251,7 +224,7 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onUseInexactIndexChanged(e: MatSlideToggleChange) {
     this._config.pipe(first()).subscribe(c => {
-      const hints = c.get<Hint[]>('query.config.hints').filter(h => ['inexact', 'exact'].indexOf(h) == -1);
+      const hints = c.get<Hint[]>('query.config.hints').filter(h => ['inexact', 'exact'].indexOf(h) === -1);
       if (e.checked === true) {
         hints.push('inexact');
       } else {

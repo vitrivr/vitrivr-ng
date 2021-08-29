@@ -1,17 +1,12 @@
-import {MediaType} from '../../media/media-type.model';
 import {FusionFunction} from '../fusion/weight-function.interface';
 import {MediaObjectScoreContainer} from './media-object-score-container.model';
-import {SegmentScoreContainer} from './segment-score-container.model';
+import {MediaSegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FeatureCategories} from '../feature-categories.model';
-import {MediaObject} from '../../media/media-object.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
-import {MediaSegment} from '../../media/media-segment.model';
-import {Similarity} from '../../media/similarity.model';
-import {MediaObjectMetadata} from '../../media/media-object-metadata.model';
 import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
 import 'rxjs-compat/add/operator/map';
 import 'rxjs-compat/add/operator/merge';
@@ -20,7 +15,6 @@ import 'rxjs-compat/add/operator/zip';
 import 'rxjs-compat/add/operator/filter';
 import 'rxjs-compat/add/operator/combineLatest';
 import {AbstractRefinementOption} from '../../../../settings/refinement/refinementoption.model';
-import {ConfigService} from '../../../../core/basics/config.service';
 import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxrefinement.model';
 import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
 import {Config} from '../../config/config.model';
@@ -28,31 +22,30 @@ import {FilterType} from '../../../../settings/refinement/filtertype.model';
 import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
-import {MediaObjectQueryResult} from '../../messages/interfaces/responses/query-result-object.interface';
-import {MediaSegmentQueryResult} from '../../messages/interfaces/responses/query-result-segment.interface';
-import {QueryResultTopTags} from '../../messages/interfaces/responses/query-result-top-tags';
+import {MediaObjectDescriptor, MediaObjectMetadataDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../../../openapi/cineast';
+import {AppConfig} from '../../../../app.config';
 
 export class ResultsContainer {
+  /** An array that will contain the top 10 related tags to a result set **/
+  public topTagsArray: any[];
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
   private _objectid_to_object_map: Map<string, MediaObjectScoreContainer> = new Map();
-
   /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
-  private _segmentid_to_segment_map: Map<string, SegmentScoreContainer> = new Map();
-
+  private _segmentid_to_segment_map: Map<string, MediaSegmentScoreContainer> = new Map();
   /** Internal data structure that contains all MediaObjectScoreContainers. */
   private _results_objects: MediaObjectScoreContainer[] = [];
-
   /** Internal data structure that contains all SegmentScoreContainers. */
-  private _results_segments: SegmentScoreContainer[] = [];
+  private _results_segments: MediaSegmentScoreContainer[] = [];
   /** A subject that can be used to publish changes to the results. */
   private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
   /** A subject that can be used to publish changes to the results. */
-  private _results_segments_subject: BehaviorSubject<SegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
-
+  private _results_segments_subject: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
   private _rerank = 0;
   /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
   private _next = 0;
+  /** A subject that can be used to publish changes to the results. */
+  private _results_topTags_subject: BehaviorSubject<String[]>;
 
   /** List of all the results that were returned and hence are known to the results container. */
   private _features: WeightedFeatureCategory[] = [];
@@ -67,97 +60,7 @@ export class ResultsContainer {
    * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
    * be filtered).
    */
-  private _mediatypes: Map<MediaType, boolean> = new Map();
-
-  /** An array that will contain the top 10 related tags to a result set **/
-  public topTagsArray: any[];
-  /** A subject that can be used to publish changes to the results. */
-  private _results_topTags_subject: BehaviorSubject<String[]> = new BehaviorSubject(this.topTagsArray);
-
-
-  /**
-   * Constructor for ResultsContainer.
-   *
-   * @param {string} queryId Unique ID of the query. Used to filter messages!
-   * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
-   */
-  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
-  }
-
-  public checkUpdate() {
-    if (this._rerank > 0) {
-      // check upper limit to avoid call in avalanche of responses
-      if (this._rerank < 100) {
-        this.rerank();
-      } else { // mark unranked changes for next round
-        this._rerank = 1;
-      }
-    } else if (this._next > 0) { // else if as rerank already calls next
-      // check upper limit to avoid call in avalanche of responses
-      if (this._next < 100) {
-        this.next();
-      } else { // mark unpublished changes for next round
-        this._next = 1;
-      }
-    }
-  }
-
-  // force update if there are changes, e.g. on query end
-  public doUpdate() {
-    if (this._rerank > 0) {
-      this.rerank();
-    } else if (this._next > 0) { // else if as rerank already calls next
-      this.next();
-    }
-  }
-
-  /**
-   * Getter for the list of results.
-   *
-   * @returns {WeightedFeatureCategory[]}
-   */
-  get features(): WeightedFeatureCategory[] {
-    return this._features;
-  }
-
-  /**
-   * Getter for the list of mediatypes.
-   *
-   * @return {Map<MediaType, boolean>}
-   */
-  get mediatypes(): Map<MediaType, boolean> {
-    return this._mediatypes;
-  }
-
-  /**
-   * Returns the number of objects contained in this ResultsContainer.
-   */
-  get objectCount(): number {
-    return this._results_objects.length;
-  }
-
-  /**
-   * Returns the number of segments contained in this ResultsContainer.
-   */
-  get segmentCount(): number {
-    return this._results_segments.length;
-  }
-
-  get mediaobjectsAsObservable(): Observable<MediaObjectScoreContainer[]> {
-    return this._results_objects_subject.asObservable()
-  }
-
-  get segmentsAsObservable(): Observable<SegmentScoreContainer[]> {
-    return this._results_segments_subject.asObservable();
-  }
-
-  get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
-    return this._results_features_subject.asObservable();
-  }
-
-  get topTagsAsObservable(): Observable<String[]> {
-    return this._results_topTags_subject.asObservable();
-  }
+  private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
 
   /**
@@ -167,11 +70,11 @@ export class ResultsContainer {
   // tslint:disable-next-line:member-ordering
   public static deserialize(data: any): ResultsContainer {
     const container = new ResultsContainer(data['queryId']);
-    container.processObjectMessage(<MediaObjectQueryResult>{queryId: container.queryId, content: <MediaObject[]>data['objects']});
-    container.processSegmentMessage(<MediaSegmentQueryResult>{queryId: container.queryId, content: <MediaSegment[]>data['segments']});
+    container.processObjectMessage(<MediaObjectQueryResult>{queryId: container.queryId, content: <MediaObjectDescriptor[]>data['objects']});
+    container.processSegmentMessage(<MediaSegmentQueryResult>{queryId: container.queryId, content: <MediaSegmentDescriptor[]>data['segments']});
     container.processObjectMetadataMessage(<ObjectMetadataQueryResult>{
       queryId: container.queryId,
-      content: <MediaObjectMetadata[]>data['objectMetadata']
+      content: <MediaObjectMetadataDescriptor[]>data['objectMetadata']
     });
     container.processSegmentMetadataMessage(<SegmentMetadataQueryResult>{
       queryId: container.queryId,
@@ -239,6 +142,91 @@ export class ResultsContainer {
     return map;
   }
 
+  /**
+   * Constructor for ResultsContainer.
+   *
+   * @param {string} queryId Unique ID of the query. Used to filter messages!
+   * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
+   */
+  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
+    this._results_topTags_subject = new BehaviorSubject(this.topTagsArray);
+  }
+
+  /**
+   * Getter for the list of results.
+   *
+   * @returns {WeightedFeatureCategory[]}
+   */
+  get features(): WeightedFeatureCategory[] {
+    return this._features;
+  }
+
+  /**
+   * Getter for the list of mediatypes.
+   *
+   * @return {Map<MediaType, boolean>}
+   */
+  get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
+    return this._mediatypes;
+  }
+
+  /**
+   * Returns the number of objects contained in this ResultsContainer.
+   */
+  get objectCount(): number {
+    return this._results_objects.length;
+  }
+
+  /**
+   * Returns the number of segments contained in this ResultsContainer.
+   */
+  get segmentCount(): number {
+    return this._results_segments.length;
+  }
+
+  get mediaobjectsAsObservable(): Observable<MediaObjectScoreContainer[]> {
+    return this._results_objects_subject.asObservable()
+  }
+
+  get segmentsAsObservable(): Observable<MediaSegmentScoreContainer[]> {
+    return this._results_segments_subject.asObservable();
+  }
+
+  get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
+    return this._results_features_subject.asObservable();
+  }
+
+  get topTagsAsObservable(): Observable<String[]> {
+    return this._results_topTags_subject.asObservable();
+  }
+
+  public checkUpdate() {
+    if (this._rerank > 0) {
+      // check upper limit to avoid call in avalanche of responses
+      if (this._rerank < 100) {
+        this.rerank();
+      } else { // mark unranked changes for next round
+        this._rerank = 1;
+      }
+    } else if (this._next > 0) { // else if as rerank already calls next
+      // check upper limit to avoid call in avalanche of responses
+      if (this._next < 100) {
+        this.next();
+      } else { // mark unpublished changes for next round
+        this._next = 1;
+      }
+    }
+  }
+
+  // force update if there are changes, e.g. on query end
+  public doUpdate() {
+    if (this._rerank > 0) {
+      this.rerank();
+    } else if (this._next > 0) { // else if as rerank already calls next
+      this.next();
+    }
+  }
+
   public setScoreFunction(scoreFunction: string) {
     switch (scoreFunction.toUpperCase()) {
       case 'TEMPORAL':
@@ -266,9 +254,9 @@ export class ResultsContainer {
    * @param _configService used to determine filter type for metadata
    * @return a map of all metadata keys with all possible values
    */
-  public metadataAsObservable(_configService: ConfigService): Observable<Map<string, AbstractRefinementOption>> {
+  public metadataAsObservable(_configService: AppConfig): Observable<Map<string, AbstractRefinementOption>> {
 
-    return this.segmentsAsObservable.combineLatest(_configService, function (resultList, config) {
+    return this.segmentsAsObservable.combineLatest(_configService.configAsObservable, function (resultList, config) {
       const map: Map<string, AbstractRefinementOption> = new Map();
       return ResultsContainer.fillMap(map, resultList, config)
     }).combineLatest(this._results_objects_subject, function (map, objects) {
@@ -286,7 +274,7 @@ export class ResultsContainer {
    * @param type MediaType that should be changed.
    * @param active New filter status. True = is visible, false = will be filtered
    */
-  public toggleMediatype(type: MediaType, active: boolean) {
+  public toggleMediatype(type: MediaObjectDescriptor.MediatypeEnum, active: boolean) {
     if (this._mediatypes.has(type)) {
       this._mediatypes.set(type, active);
     }
@@ -470,14 +458,15 @@ export class ResultsContainer {
    * @param topTags QueryResultTopTags message
    * @return {boolean} True, if SimilarityQueryResult was processed i.e. queryId corresponded with that of the message.
    */
-/*  public processTopTagsMessage(topTags: QueryResultTopTags) {
-    if (topTags.queryId !== this.queryId) {
-      console.warn(`similarity result query id ${topTags.queryId} does not match query id ${this.queryId}`);
-      return false;
-    }
-    this.topTagsArray = topTags.tags;
-    console.log('results-container.model: ', this.topTagsArray);
-  }*/
+
+  /*  public processTopTagsMessage(topTags: QueryResultTopTags) {
+      if (topTags.queryId !== this.queryId) {
+        console.warn(`similarity result query id ${topTags.queryId} does not match query id ${this.queryId}`);
+        return false;
+      }
+      this.topTagsArray = topTags.tags;
+      console.log('results-container.model: ', this.topTagsArray);
+    }*/
 
   /**
    * Completes the two subjects and invalidates them thereby.
@@ -515,7 +504,7 @@ export class ResultsContainer {
     this._results_segments.forEach(seg => {
       seg.scores.forEach((categoryMap, containerId) => {
         categoryMap.forEach((score, category) => {
-          similarityList.push(<Similarity>{category: category.name, key: seg.segmentId, value: score, containerId: containerId})
+          similarityList.push(<StringDoublePair>{category: category.name, key: seg.segmentId, value: score, containerId: containerId})
         })
       });
     });
@@ -524,7 +513,7 @@ export class ResultsContainer {
       objects: this._results_objects.map(obj => obj.serialize()),
       segments: this._results_segments.map(seg => seg.serialize()),
       objectMetadata: this.flatten(this._results_objects.map(obj => {
-        const metadata: MediaObjectMetadata[] = [];
+        const metadata: MediaObjectMetadataDescriptor[] = [];
         obj.metadata.forEach((v, k) => {
           metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
@@ -561,7 +550,7 @@ export class ResultsContainer {
    * @param {MediaObject} object The optional MediaObject. If set, the properties of the unique MediaObjectScoreContainer are updated.
    * @return {MediaObjectScoreContainer}
    */
-  private uniqueMediaObjectScoreContainer(objectId: string, object?: MediaObject): MediaObjectScoreContainer {
+  private uniqueMediaObjectScoreContainer(objectId: string, object?: MediaObjectDescriptor): MediaObjectScoreContainer {
     let mosc;
     if (this._objectid_to_object_map.has(objectId)) {
       mosc = this._objectid_to_object_map.get(objectId);

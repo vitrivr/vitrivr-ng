@@ -4,7 +4,7 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatSliderChange} from '@angular/material/slider';
 import {QueryChange, QueryService} from '../../core/queries/query.service';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
-import {BehaviorSubject, EMPTY, Observable} from 'rxjs';
+import {EMPTY, Observable} from 'rxjs';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
@@ -12,14 +12,14 @@ import {ContextKey, InteractionEventComponent} from '../../shared/model/events/i
 import {filter} from 'rxjs/operators';
 import {FilterService} from '../../core/queries/filter.service';
 import {ColorLabel} from '../../shared/model/misc/colorlabel.model';
-import {MediaType} from '../../shared/model/media/media-type.model';
-import {ConfigService} from '../../core/basics/config.service';
 import {AbstractRefinementOption} from './refinementoption.model';
 import {CheckboxRefinementModel} from './checkboxrefinement.model';
 import {SliderRefinementModel} from './sliderrefinement.model';
 import {FilterType} from './filtertype.model';
 import {SelectionService} from '../../core/selection/selection.service';
 import {Tag} from '../../core/selection/tag.model';
+import {AppConfig} from '../../app.config';
+import {MediaObjectDescriptor} from '../../../../openapi/cineast/model/mediaObjectDescriptor';
 
 @Component({
 
@@ -55,7 +55,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
   constructor(private _queryService: QueryService,
               private _filterService: FilterService,
               private _eventBusService: EventBusService,
-              private _configService: ConfigService,
+              private _configService: AppConfig,
               public _selectionService: SelectionService,
               private _cdr: ChangeDetectorRef) {
   }
@@ -141,7 +141,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
    * Triggered whenever the type filter selection changes. Reports the change to the FilterService,
    * which will update the filter settings accordingly.
    */
-  public onTypeFilterChanged(type: MediaType, event: MatCheckboxChange) {
+  public onTypeFilterChanged(type: MediaObjectDescriptor.MediatypeEnum, event: MatCheckboxChange) {
     if (!this._queryService.results) {
       return;
     }

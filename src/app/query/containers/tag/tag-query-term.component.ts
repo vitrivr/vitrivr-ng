@@ -2,11 +2,11 @@ import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
-import {Preference, Tag} from '../../../shared/model/misc/tag.model';
-import {debounceTime, map, mergeAll, startWith} from 'rxjs/operators';
+import {Preference} from '../../../shared/model/misc/tag.model';
+import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {LookupService} from '../../../core/lookup/lookup.service';
+import {Tag, TagService} from '../../../../../openapi/cineast';
 
 import {ResultSetInfoService} from '../../../core/queries/result-set-info.service';
 
@@ -16,40 +16,28 @@ import {ResultSetInfoService} from '../../../core/queries/result-set-info.servic
 })
 
 @Component({
-  selector: 'qt-tag',
+  selector: 'app-qt-tag',
   templateUrl: 'tag-query-term.component.html',
   styleUrls: ['tag-query-term.component.css']
 })
 export class TagQueryTermComponent implements OnInit {
 
-  /** The TagQueryTerm object associated with this TagQueryTermComponent. That object holds all the query settings. */
-  @Input()
-  private tagTerm: TagQueryTerm;
-
-  /** List of tag fields currently displayed. */
-  private _field: FieldGroup;
-  /** List of tag fields currently displayed. */
-  private _tags: Tag[] = [];
-
   /**
    * make enum available in html https://stackoverflow.com/questions/44045311/cannot-approach-typescript-enum-within-html
    */
   Preference = Preference;
+  /** The TagQueryTerm object associated with this TagQueryTermComponent. That object holds all the query settings. */
+  @Input()
+  private tagTerm: TagQueryTerm;
+  /** List of tag fields currently displayed. */
+  private readonly _field: FieldGroup;
 
-  constructor(private _lookupService: LookupService, private _matsnackbar: MatSnackBar, private _resultSetInfoService: ResultSetInfoService) {
-    this._field = new FieldGroup(_lookupService);
+  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar, private _resultSetInfoService: ResultSetInfoService) {
+    this._field = new FieldGroup(_tagService);
   }
 
-  ngOnInit(): void {
-    if (this.tagTerm.data) {
-      this._tags = this.tagTerm.tags;
-    }
-    this._resultSetInfoService.currentNewTagForQuery.subscribe(message => {
-      if (message) {
-        this.addTag(message);
-      }
-    });
-  }
+  /** List of tag fields currently displayed. */
+  private _tags: Tag[] = [];
 
   get tags() {
     return this._tags;
@@ -57,6 +45,20 @@ export class TagQueryTermComponent implements OnInit {
 
   get field() {
     return this._field;
+  }
+
+  ngOnInit(): void {
+    if (this.tagTerm.data) {
+      this._tags = this.tagTerm.tags;
+    }
+    /*
+    NOTE: Uncommented since tag preferences are not yet OpenApi supported.
+    this._resultSetInfoService.currentNewTagForQuery.subscribe(message => {
+      if (message) {
+        this.addTag(message);
+      }
+    });
+     */
   }
 
   /**
@@ -87,9 +89,12 @@ export class TagQueryTermComponent implements OnInit {
    * @param {Tag} tag The tag that should be added.
    */
   public addTag(tag: Tag) {
+    /*
+    NOTE: Uncommented since tag preferences are not yet OpenApi supported.
     if (!tag.preference) {
       tag.preference = Preference.COULD;
     }
+     */
     this._tags.push(tag);
     this.field.formControl.setValue('');
     this.tagTerm.tags = this._tags;
@@ -105,7 +110,10 @@ export class TagQueryTermComponent implements OnInit {
    */
   public addTags(tags: Tag[]) {
     tags.forEach(tag => {
+      /*
+      NOTE: Uncommented since tag preferences are not yet OpenApi supported.
       tag.preference = Preference.COULD;
+       */
       this.addTag(tag);
     })
   }
@@ -129,7 +137,10 @@ export class TagQueryTermComponent implements OnInit {
   /**
    * Stores values for preference set for a tag in a Map<String, String>
    */
-  public onPreferenceChange(preference: Preference, tag): void {
+
+  /*
+  public onPreferenceChange(preference: Preference, tag): void
+  NOTE: Uncommented since tag preferences are not yet OpenApi supported.
     tag.preference = preference;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
@@ -140,12 +151,16 @@ export class TagQueryTermComponent implements OnInit {
   ifPreferenceExists(tag): boolean {
     return tag.preference != null;
   }
+   */
 
 
   private sortTagsByPreference(): void {
+    /*
+    NOTE: Uncommented since tag preferences are not yet OpenApi supported.
     const sort = this._tags.sort(function (a, b) {
       return a.preference > b.preference ? 1 : a.preference < b.preference ? -1 : 0
-    })
+    });
+     */
   }
 }
 
@@ -161,16 +176,13 @@ export class FieldGroup {
 
   public currentlyDisplayedTags: Array<Tag> = new Array<Tag>();
 
-  /** The currently selected tag. */
-  private _selection: Tag;
-
-  constructor(private _lookupService: LookupService) {
+  constructor(private _tags: TagService) {
     this.filteredTags = this.formControl.valueChanges.pipe(
       debounceTime(250),
       startWith(''),
       map((tag: string) => {
         if (tag.length >= 3) {
-          return this._lookupService.matching(tag)
+          return this._tags.findTagsBy('matchingname', tag).pipe(first()).map(res => res.tags);
         } else {
           return EMPTY;
         }
@@ -183,6 +195,9 @@ export class FieldGroup {
     });
   }
 
+  /** The currently selected tag. */
+  private _selection: Tag;
+
   get selection(): Tag {
     return this._selection;
   }
@@ -190,6 +205,4 @@ export class FieldGroup {
   set selection(value: Tag) {
     this._selection = value;
   }
-
-
 }

@@ -1,14 +1,14 @@
 <p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
-  search...</p>
+    search...</p>
 
 <p *ngIf="!(dataSource | async) && loading" class="background-prompt">
-  <mat-spinner></mat-spinner>
+    <mat-spinner></mat-spinner>
 </p>
 
 <div (scrolled)="incrementCount()" [fromRoot]="true" [infiniteScrollContainer]="'#scrollable'"
      [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="mini-gallery"
      infiniteScroll>
-  <app-result-segment-preview-tile
-      *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count; trackBy: segmentTracking"
-      [container]="this" [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
+    <app-result-segment-preview-tile
+            *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count; trackBy: segmentTracking"
+            [container]="this" [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
 </div>

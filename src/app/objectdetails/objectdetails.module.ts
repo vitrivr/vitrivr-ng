@@ -11,9 +11,10 @@ import {ContainerPipesModule} from '../shared/pipes/containers/container-pipes.m
 import {AdvancedMediaPlayerModule} from '../shared/components/video/advanced-video-player.module';
 import {MetadataDetailsComponent} from './metadata-details.component';
 import {ObjectviewerComponent} from './objectviewer.component';
+import {SegmentfeaturesModule} from '../segmentdetails/segmentfeatures.module';
 
 @NgModule({
-  imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, ContainerPipesModule, AdvancedMediaPlayerModule],
+  imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, ContainerPipesModule, AdvancedMediaPlayerModule, SegmentfeaturesModule],
   declarations: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent, ObjectviewerComponent],
   exports: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent, ObjectviewerComponent],
 })

@@ -9,7 +9,6 @@ import {QueryError} from '../../shared/model/messages/interfaces/responses/query
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {NeighboringSegmentQuery} from '../../shared/model/messages/queries/neighboring-segment-query.model';
 import {ReadableQueryConfig} from '../../shared/model/messages/queries/readable-query-config.model';
-import {ConfigService} from '../basics/config.service';
 import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
 import {FeatureCategories} from '../../shared/model/results/feature-categories.model';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
@@ -21,7 +20,6 @@ import {HistoryService} from './history.service';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
-import {SegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
@@ -30,7 +28,6 @@ import {ResultSetInfoService} from './result-set-info.service';
 import {QueryResultTopCaptions} from '../../shared/model/messages/interfaces/responses/query-result-top-captions';
 import {CaptionWithCount} from '../../shared/model/misc/caption-with-count.model';
 import {Tag} from '../../shared/model/misc/tag.model';
-import {LookupService} from '../lookup/lookup.service';
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {TextQueryTerm} from '../../shared/model/queries/text-query-term.model';
@@ -39,8 +36,9 @@ import {TagQueryTerm} from '../../shared/model/queries/tag-query-term.model';
 
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {EventBusService} from '../basics/event-bus.service';
-import {MediaSegmentQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment.interface';
-import {MediaObjectQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object.interface';
+import {AppConfig} from '../../app.config';
+import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult} from '../../../../openapi/cineast';
+import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -58,32 +56,28 @@ export type QueryChange = 'STARTED' | 'ENDED' | 'ERROR' | 'UPDATED' | 'FEATURE' 
  */
 @Injectable()
 export class QueryService {
+  tagOccurrenceArray: Tag[];
+  captionsOccurrenceMap: Map<string, number>;
+  topTags: string;
   /** Subject that allows Observers to subscribe to changes emitted from the QueryService. */
   private _subject: Subject<QueryChange> = new Subject();
   /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
   private _socket: WebSocketSubject<Message>;
   private _scoreFunction: string;
+  /** Rerank handler of the ResultsContainer. */
+  private _interval_map: Map<string, number> = new Map();
 
   /** Results of a query. May be empty. */
   private _results: ResultsContainer;
-  /** Rerank handler of the ResultsContainer. */
-  private _interval_map: Map<string, number> = new Map();
 
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
 
-  tagOccurrenceArray: Tag[];
-  captionsOccurrenceMap: Map<string, number>;
-
-  topTags: string;
-
-
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
-              @Inject(ConfigService) private _config: ConfigService,
               @Inject(ResultSetInfoService) private resultSetInfoService,
-              @Inject(LookupService) private _lookupService,
               @Inject(EventBusService) private _eventBusService,
+              @Inject(AppConfig) private _config: AppConfig
   ) {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
@@ -91,7 +85,7 @@ export class QueryService {
         filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_METADATA_S', 'QR_METADATA_O', 'QR_TOPTAGS', 'QR_TOPCAPTIONS'].indexOf(msg.messageType) > -1)
       ).subscribe((msg: Message) => this.onApiMessage(msg));
     });
-    this._config.subscribe(config => {
+    this._config.configAsObservable.subscribe(config => {
       this._scoreFunction = config.get('query.scoreFunction');
       if (this._results) {
         this._results.setScoreFunction(this._scoreFunction);
@@ -101,21 +95,21 @@ export class QueryService {
   }
 
   /**
-   * Getter for running.
-   *
-   * @return {boolean}
-   */
-  get running(): boolean {
-    return this._running > 0;
-  }
-
-  /**
    * Getter for results.
    *
    * @return {ResultsContainer}
    */
   get results(): ResultsContainer {
     return this._results;
+  }
+
+  /**
+   * Getter for running.
+   *
+   * @return {boolean}
+   */
+  get running(): boolean {
+    return this._running > 0;
   }
 
   /**
@@ -144,7 +138,7 @@ export class QueryService {
     if (this._running > 0) {
       console.warn('There is already a query running');
     }
-    this._config.pipe(first()).subscribe(config => {
+    this._config.configAsObservable.pipe(first()).subscribe(config => {
       TemporalFusionFunction.queryContainerCount = containers.length;
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
       this._socket.next(query)
@@ -201,10 +195,11 @@ export class QueryService {
    * Note: More-Like-This queries can only be started if no query is currently running.
    *
    * @param segment The {SegmentScoreContainer} that should serve as example.
+   * @param mediaType mediatype based upon which mlt categories will be fetched from config
    * @param categories Optional list of category names that should be used for More-Like-This.
    * @returns {boolean} true if query was issued, false otherwise.
    */
-  public findMoreLikeThis(segment: SegmentScoreContainer, categories: string[] = []): boolean {
+  public findMoreLikeThis(segment: MediaSegmentDescriptor, mediaType: MediatypeEnum, categories: string[] = []): boolean {
     if (this._running > 0) {
       console.log('an mlt query is already running, cannot perform mlt');
       return false;
@@ -217,12 +212,8 @@ export class QueryService {
       console.log('segment undefined, cannot perform mlt');
       return false;
     }
-    if (!segment.objectScoreContainer) {
-      console.log(`object score container for segment ${segment.segmentId} undefined, cannot perform mlt`);
-      return false;
-    }
-    if (!segment.objectScoreContainer.mediatype) {
-      console.log(`no object mediatype available for segment ${segment.segmentId} undefined, cannot perform mlt`);
+    if (!mediaType) {
+      console.log(`no mediatype specified for segment ${segment.segmentId}, cannot perform mlt`);
       return false;
     }
 
@@ -233,12 +224,12 @@ export class QueryService {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
 
     /* Use categories from last query AND the default categories for MLT. */
-    this._config.pipe(first()).subscribe(config => {
+    this._config.configAsObservable.pipe(first()).subscribe(config => {
       if (!config) {
         console.log('config undefined, cannot perform mlt');
         return;
       }
-      const _cat = config.get<FeatureCategories[]>(`mlt.${segment.objectScoreContainer.mediatype}`);
+      const _cat = config.get<FeatureCategories[]>(`mlt.${mediaType}`);
       if (!_cat) {
         console.log('no mlt categories available. printing first config, then segment');
         console.log(config);
