@@ -40,9 +40,6 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   /** Local reference to the data source holding the query results.*/
   protected _dataSource: Observable<T> = EMPTY;
 
-  /** The number of items that should be displayed. */
-  protected _count: number = undefined;
-
   /**
    * Default constructor.
    *
@@ -61,7 +58,6 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
               protected _eventBusService: EventBusService,
               protected _router: Router,
               protected _snackBar: MatSnackBar) {
-    this._count = this.scrollIncrement();
   }
 
   get loading(): boolean {
@@ -71,6 +67,9 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   get dataSource(): Observable<T> {
     return this._dataSource;
   }
+
+  /** The number of items that should be displayed. */
+  protected _count: number = this.scrollIncrement();
 
   /**
    * Getter for count property (for limiting the result set)
@@ -138,6 +137,9 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     this._filterServiceSubscription.unsubscribe();
   }
 
+  /**
+   * The number of items to 'lazily load/unload' when scrolling.
+   */
   abstract scrollIncrement(): number;
 
   /**
@@ -234,52 +236,36 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * Increments the start value by the count value. Should be called by some kind of pagination control.
    */
   public incrementCount() {
-    if (this._updateScroll) {
-      console.debug(`ignoring increment() call because we will already be updating`);
-      return;
-    }
-    this._updateScroll = true;
-    setTimeout(() => {
-      if (!this._updateScroll) {
-        console.debug(`not scrolling down because another scheduled call has scrolled`);
-        return;
-      }
-      this._count += this.scrollIncrement();
-      console.debug(`incrementing count to ${this._count}`);
-      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
-      this._cdr.markForCheck();
+    /* Increments the count and marks view for redraw by Angular. */
+    this._count += this.scrollIncrement();
+    this._cdr.markForCheck();
+
+    /* Limits the frequency at which scroll events are logged. */
+    if (this._updateScroll === false) {
+      this._updateScroll = true;
       setTimeout(() => {
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._updateScroll = false;
       }, 250)
-    }, 10);
+    }
   }
 
   /**
    * Decrements the start value by the count value. Should be called by some kind of pagination control.
    */
   public decrementCount() {
-    if (this._updateScroll) {
-      console.debug(`ignoring decrement() call because we will already be updating`);
-      return;
-    }
-    this._updateScroll = true;
-    setTimeout(() => {
-      if (!this._updateScroll) {
-        console.debug(`not scrolling up because another scheduled call has scrolled`);
-        return;
-      }
-      if (this._count - this.scrollIncrement() >= this.scrollIncrement()) {
-        this._count -= this.scrollIncrement();
-      } else {
-        this._count = this.scrollIncrement();
-      }
-      console.debug(`decrementing count to ${this._count}`);
-      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
-      this._cdr.markForCheck();
+    /* Increments the count and marks view for redraw by Angular. */
+    this._count = Math.max(this._count - this.scrollIncrement(), this.scrollIncrement());
+    this._cdr.markForCheck();
+
+    /* Limits the frequency at which scroll events are logged. */
+    if (this._updateScroll === false) {
+      this._updateScroll = true;
       setTimeout(() => {
+        this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.SCROLL)));
         this._updateScroll = false;
       }, 250)
-    }, 10);
+    }
   }
 
   /**

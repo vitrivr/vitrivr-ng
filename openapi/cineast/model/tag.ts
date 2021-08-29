@@ -12,8 +12,18 @@
 
 
 export interface Tag { 
-    name?: string;
-    id?: string;
     description?: string;
+    name?: string;
+    priority?: Tag.PriorityEnum;
+    id?: string;
 }
+export namespace Tag {
+    export type PriorityEnum = 'REQUEST' | 'REQUIRE' | 'EXCLUDE';
+    export const PriorityEnum = {
+        REQUEST: 'REQUEST' as PriorityEnum,
+        REQUIRE: 'REQUIRE' as PriorityEnum,
+        EXCLUDE: 'EXCLUDE' as PriorityEnum
+    };
+}
+
 

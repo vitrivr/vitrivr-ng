@@ -10,23 +10,26 @@
     <ng-template mat-tab-label>
       <mat-icon [matBadge]="_badgeValue">settings</mat-icon>
     </ng-template>
-    <preferences></preferences>
+    <app-preferences></app-preferences>
   </mat-tab>
 
   <mat-tab label="Tags" matTooltip="Manage selections">
     <ng-template mat-tab-label>
       <mat-icon>album</mat-icon>
     </ng-template>
-    <selection-management></selection-management>
+    <app-selection-management></app-selection-management>
   </mat-tab>
 
   <!-- Careful: This should either stay at index 3 or you should change the interaction logging in the corresponding component.
   As of Angular 9, a mat-tab has no way of accessing its own index so we have to hardcode this in the settings.component.ts
   -->
+    <!--
+    NOTE: Since result set information is not yet fully supported, this is disabled
   <mat-tab #informationTab label="Information" matTooltip="Information about result set">
     <ng-template mat-tab-label>
       <mat-icon>info</mat-icon>
     </ng-template>
     <app-information #informationComponent></app-information>
   </mat-tab>
+  -->
 </mat-tab-group>

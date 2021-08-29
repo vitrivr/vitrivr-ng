@@ -23,7 +23,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
   constructor(@Inject(AppConfig) private _configService: AppConfig, private _snackbar: MatSnackBar) {
     super(null);
     this._configService.configAsObservable.pipe(
-      filter(c => c.endpoint_ws != null),
+      filter(c => c.cineastEndpointWs != null),
     ).subscribe(c => this.connect(c))
   }
 
@@ -44,18 +44,18 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
     /* Create observers for WebSocket status. */
     const openObserver = <NextObserver<Event>>{
       next: (ev: Event) => {
-        console.log(`WebSocket connected to Cineast (${this._config.endpoint_ws}).`);
+        console.log(`WebSocket connected to Cineast (${this._config.cineastEndpointWs}).`);
       }
     };
     const closeObserver = <NextObserver<CloseEvent>>{
       next: (ev: CloseEvent) => {
-        console.log(`WebSocket disconnected from Cineast (${this._config.endpoint_ws}, Code: ${ev.code}).`);
+        console.log(`WebSocket disconnected from Cineast (${this._config.cineastEndpointWs}, Code: ${ev.code}).`);
       }
     };
 
     /* Prepare config and create new WebSocket. */
     const config: WebSocketSubjectConfig<Message> = <WebSocketSubjectConfig<Message>>{
-      url: this._config.endpoint_ws,
+      url: this._config.cineastEndpointWs,
       openObserver: openObserver,
       closeObserver: closeObserver,
       serializer: (m: Message) => JSON.stringify(m, (key, value) => {
@@ -78,7 +78,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
   private connect(c: Config) {
 
     /* Check if connection has changed. */
-    if (this._config && this._config.endpoint_ws === c.endpoint_ws) {
+    if (this._config && this._config.cineastEndpointWs === c.cineastEndpointWs) {
       return false;
     }
 

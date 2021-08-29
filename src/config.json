@@ -7,17 +7,23 @@
     "host_objects": "http://localhost:4567/objects/:n"
   },
   "competition": {
-    "teamid": 9,
-    "toolid": 1,
-    "endpoint": "https://dmi-dres.dmi.unibas.ch:8443/",
+    "host": "dmi-dres.dmi.unibas.ch:443",
+    "tls": true,
     "log": false,
     "lsc": false,
-    "vbs": false,
-    "dres": false
+    "vbs": false
   },
   "mlt": {
-    "VIDEO": ["scenecaption", "localfeatures", "objectInstances"],
-    "IMAGE": ["scenecaption", "localfeatures", "objectInstances"]
+    "VIDEO": [
+      "scenecaption",
+      "localfeatures",
+      "objectInstances"
+    ],
+    "IMAGE": [
+      "scenecaption",
+      "localfeatures",
+      "objectInstances"
+    ]
   },
   "query": {
     "history": 0,
@@ -33,23 +39,57 @@
     },
     "text": {
       "categories": [
-        ["ocr", "Text on Screen"],
-        ["asr", "Audio"],
-        ["scenecaption", "Description"]
+        [
+          "ocr",
+          "Text on Screen"
+        ],
+        [
+          "asr",
+          "Audio"
+        ]
       ]
     },
     "boolean": [
-      ["Example Freetext", "TEXT", "features_daily.text"],
-      ["Example Dropdown", "OPTIONS", "features.option", "ONE", "TWO", "THREE"],
-      ["Example Range", "RANGE", "features.range", 5, 20],
-      ["Example Dynamic Options", "DYNAMICOPTIONS", "features.option", "features", "option"]
+      [
+        "Example Freetext",
+        "TEXT",
+        "features_daily.text"
+      ],
+      [
+        "Example Dropdown",
+        "OPTIONS",
+        "features.option",
+        "ONE",
+        "TWO",
+        "THREE"
+      ],
+      [
+        "Example Range",
+        "RANGE",
+        "features.range",
+        5,
+        20
+      ],
+      [
+        "Example Dynamic Options",
+        "DYNAMICOPTIONS",
+        "features.option",
+        "features",
+        "option"
+      ]
     ],
     "staged": true
   },
   "refinement": {
     "filters": [
-      ["dominantcolor.color", "CHECKBOX"],
-      ["technical.duration", "SLIDER"]
+      [
+        "dominantcolor.color",
+        "CHECKBOX"
+      ],
+      [
+        "technical.duration",
+        "SLIDER"
+      ]
     ]
   }
 }

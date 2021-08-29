@@ -10,15 +10,12 @@
          [alwaysCallback]="true"
          [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" class="list"
          infiniteScroll>
-        <ng-container
-                *ngIf="((((dataSource | async) | FilterPipe : (objectFilter|async)) | OrderByScorePipe) | LimitObjectsPipe : count) as pipeRes">
-            <div
-                    *ngFor="let mediaobject of pipeRes[0]; trackBy: trackByFunction; last as lastObject"
-                    class="object">
+        <ng-container *ngIf="((((dataSource | async) | FilterPipe : (objectFilter | async)) | OrderByScorePipe) | LimitObjectsPipe : count) as pipeRes">
+            <div *ngFor="let mediaobject of pipeRes[0]; trackBy: trackByFunction; last as lastObject" class="object">
                 <app-result-segment-preview-tile
-                        *ngFor="let segment of (mediaobject.segments | FilterPipe : (segmentFilter|async) | OrderBySegmentPipe | LimitPipe: pipeRes[1]: lastObject); trackBy: segmentTracking"
-                        [container]="this"
-                        [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
+                      *ngFor="let segment of (mediaobject.segments | FilterPipe : (segmentFilter|async) | OrderBySegmentPipe); trackBy: segmentTracking"
+                      [container]="this"
+                      [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
             </div>
         </ng-container>
     </div>

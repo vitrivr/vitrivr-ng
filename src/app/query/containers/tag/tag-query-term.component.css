@@ -29,3 +29,15 @@
 .red-icon {
   color: red;
 }
+
+.require-icon {
+    color: dodgerblue;
+}
+
+.request-icon {
+    color: limegreen;
+}
+
+.exclude-icon {
+    color: red;
+}

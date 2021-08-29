@@ -19,11 +19,12 @@ import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxr
 import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
 import {Config} from '../../config/config.model';
 import {FilterType} from '../../../../settings/refinement/filtertype.model';
-import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
 import {MediaObjectDescriptor, MediaObjectMetadataDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../../../openapi/cineast';
 import {AppConfig} from '../../../../app.config';
+import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
+import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
 
 export class ResultsContainer {
   /** An array that will contain the top 10 related tags to a result set **/
@@ -32,6 +33,10 @@ export class ResultsContainer {
   private _objectid_to_object_map: Map<string, MediaObjectScoreContainer> = new Map();
   /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
   private _segmentid_to_segment_map: Map<string, MediaSegmentScoreContainer> = new Map();
+
+  /** A Map that maps objectId's to their TemporalObjectSegments. */
+  private _objectid_to_temporal_object_map: Map<string, TemporalObjectSegments> = new Map();
+
   /** Internal data structure that contains all MediaObjectScoreContainers. */
   private _results_objects: MediaObjectScoreContainer[] = [];
   /** Internal data structure that contains all SegmentScoreContainers. */
@@ -40,6 +45,9 @@ export class ResultsContainer {
   private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
   /** A subject that can be used to publish changes to the results. */
   private _results_segments_subject: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
+
+  private _temporal_objects_subject: BehaviorSubject<TemporalObjectSegments[]> = new BehaviorSubject(Array.from(this._objectid_to_temporal_object_map.values()));
+
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
   private _rerank = 0;
   /** A counter for next() requests. So we don't have to loop over all objects and segments many times per second. */
@@ -62,6 +70,62 @@ export class ResultsContainer {
    */
   private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
+  /**
+   * Constructor for ResultsContainer.
+   *
+   * @param {string} queryId Unique ID of the query. Used to filter messages!
+   * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
+   */
+  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = new AverageFusionFunction()) {
+  }
+
+  /**
+   * Getter for the list of results.
+   *
+   * @returns {WeightedFeatureCategory[]}
+   */
+  get features(): WeightedFeatureCategory[] {
+    return this._features;
+  }
+
+  /**
+   * Getter for the list of mediatypes.
+   *
+   * @return {Map<MediaType, boolean>}
+   */
+  get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
+    return this._mediatypes;
+  }
+
+  /**
+   * Returns the number of objects contained in this ResultsContainer.
+   */
+  get objectCount(): number {
+    return this._results_objects.length;
+  }
+
+  /**
+   * Returns the number of segments contained in this ResultsContainer.
+   */
+  get segmentCount(): number {
+    return this._results_segments.length;
+  }
+
+  get mediaobjectsAsObservable(): Observable<MediaObjectScoreContainer[]> {
+    return this._results_objects_subject.asObservable()
+  }
+
+  get segmentsAsObservable(): Observable<MediaSegmentScoreContainer[]> {
+    return this._results_segments_subject.asObservable();
+  }
+
+  get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
+    return this._results_features_subject.asObservable();
+  }
+
+  get temporalObjectsAsObservable(): Observable<TemporalObjectSegments[]> {
+    return this._temporal_objects_subject.asObservable();
+  }
 
   /**
    * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
@@ -94,7 +158,6 @@ export class ResultsContainer {
   }
 
   // tslint:disable-next-line:member-ordering
-
   private static fillMap(map: Map<string, AbstractRefinementOption>, resultList: any, config?: Config) {
     if (config) {
       config.get<[string, string][]>('refinement.filters').forEach(el => {
@@ -143,72 +206,20 @@ export class ResultsContainer {
   }
 
   /**
-   * Constructor for ResultsContainer.
-   *
-   * @param {string} queryId Unique ID of the query. Used to filter messages!
-   * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
+   * Check if the results should be reranked. This is done in order to avoid updating the frontend too often.
    */
-  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
-    this._results_topTags_subject = new BehaviorSubject(this.topTagsArray);
-  }
-
-  /**
-   * Getter for the list of results.
-   *
-   * @returns {WeightedFeatureCategory[]}
-   */
-  get features(): WeightedFeatureCategory[] {
-    return this._features;
-  }
-
-  /**
-   * Getter for the list of mediatypes.
-   *
-   * @return {Map<MediaType, boolean>}
-   */
-  get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
-    return this._mediatypes;
-  }
-
-  /**
-   * Returns the number of objects contained in this ResultsContainer.
-   */
-  get objectCount(): number {
-    return this._results_objects.length;
-  }
-
-  /**
-   * Returns the number of segments contained in this ResultsContainer.
-   */
-  get segmentCount(): number {
-    return this._results_segments.length;
-  }
-
-  get mediaobjectsAsObservable(): Observable<MediaObjectScoreContainer[]> {
-    return this._results_objects_subject.asObservable()
-  }
-
-  get segmentsAsObservable(): Observable<MediaSegmentScoreContainer[]> {
-    return this._results_segments_subject.asObservable();
-  }
-
-  get featuresAsObservable(): Observable<WeightedFeatureCategory[]> {
-    return this._results_features_subject.asObservable();
-  }
-
-  get topTagsAsObservable(): Observable<String[]> {
-    return this._results_topTags_subject.asObservable();
-  }
-
   public checkUpdate() {
     if (this._rerank > 0) {
       // check upper limit to avoid call in avalanche of responses
+      // we only rerank if there have been less than 100 calls in the last window
       if (this._rerank < 100) {
         this.rerank();
       } else { // mark unranked changes for next round
         this._rerank = 1;
       }
-    } else if (this._next > 0) { // else if as rerank already calls next
+      return
+    }
+    if (this._next > 0) {
       // check upper limit to avoid call in avalanche of responses
       if (this._next < 100) {
         this.next();
@@ -218,7 +229,9 @@ export class ResultsContainer {
     }
   }
 
-  // force update if there are changes, e.g. on query end
+  /**
+   * force update if there are changes, e.g. on query end
+   */
   public doUpdate() {
     if (this._rerank > 0) {
       this.rerank();
@@ -229,9 +242,6 @@ export class ResultsContainer {
 
   public setScoreFunction(scoreFunction: string) {
     switch (scoreFunction.toUpperCase()) {
-      case 'TEMPORAL':
-        this.scoreFunction = TemporalFusionFunction.instance();
-        break;
       case 'AVERAGE':
         this.scoreFunction = new AverageFusionFunction();
         break;
@@ -284,7 +294,8 @@ export class ResultsContainer {
   /**
    * Re-ranks the objects and segments, i.e. calculates new scores, using the provided list of
    * results and weightPercentage function. If none are provided, the default ones define in the ResultsContainer
-   * are used.
+   * are used. Not necessary for the temporal results as no additional information is expected that would change the
+   * temporal ranking.
    *
    * @param {WeightedFeatureCategory[]} features
    * @param {FusionFunction} weightFunction
@@ -366,6 +377,7 @@ export class ResultsContainer {
         this._results_segments.push(ssc);
         this._segmentid_to_segment_map.set(segment.segmentId, ssc);
       }
+      this.updateTemporalSegments(ssc);
     }
     console.timeEnd(`Processing Segment Message (${this.queryId})`);
 
@@ -469,6 +481,58 @@ export class ResultsContainer {
     }*/
 
   /**
+   * Processes the TemporalQueryResult message. Stores the objectId and the corresponding TemporalObject.
+   *
+   * @param temp TemporalQueryResult message
+   * @return {boolean} True, if TemporalQueryResult was processed i.e. queryId corresponded with that of the message.
+   */
+  public processTemporalMessage(temp: TemporalQueryResult) {
+    if (temp.queryId !== this.queryId) {
+      console.warn(`similarity result query id ${temp.queryId} does not match query id ${this.queryId}`);
+      return false;
+    }
+    console.time(`Processing Temporal Message (${this.queryId})`);
+
+    for (const resultTemporalObject of temp.content) {
+      let mosc;
+      if (!this._objectid_to_temporal_object_map.has(resultTemporalObject.objectId)) {
+        mosc = new TemporalObjectSegments(
+          this._objectid_to_object_map.get(resultTemporalObject.objectId),
+          resultTemporalObject.segments.map(segment => this._segmentid_to_segment_map.get(segment)),
+          resultTemporalObject.score
+        )
+        this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
+      } else {
+        this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).score = resultTemporalObject.score;
+        resultTemporalObject.segments.map(segment => {
+          const tmpSegment = this._segmentid_to_segment_map.get(segment);
+          if (this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.indexOf(tmpSegment) === -1) {
+            this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.push(tmpSegment)
+          }
+        });
+      }
+    }
+
+    return true;
+  }
+
+  private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
+    let mosc;
+    if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
+      mosc = new TemporalObjectSegments(
+        this._objectid_to_object_map.get(segment.objectId),
+        [segment],
+        segment.score
+      )
+      this._objectid_to_temporal_object_map.set(segment.objectId, mosc)
+    } else {
+      if (this._objectid_to_temporal_object_map.get(segment.objectId).segments.indexOf(segment) === -1) {
+        this._objectid_to_temporal_object_map.get(segment.objectId).segments.push(segment)
+      }
+    }
+  }
+
+  /**
    * Completes the two subjects and invalidates them thereby.
    */
   public complete() {
@@ -476,6 +540,7 @@ export class ResultsContainer {
     this._results_segments_subject.complete();
     this._results_features_subject.complete();
     this._results_topTags_subject.complete();
+    this._temporal_objects_subject.complete();
   }
 
   /**
@@ -508,6 +573,10 @@ export class ResultsContainer {
         })
       });
     });
+    const temporalList = [];
+    Array.from(this._objectid_to_temporal_object_map.values()).forEach(obj => {
+      temporalList.push({objectId: obj.object.objectId, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
+    })
     return {
       queryId: this.queryId,
       objects: this._results_objects.map(obj => obj.serialize()),
@@ -526,7 +595,8 @@ export class ResultsContainer {
         });
         return metadata;
       })),
-      similarity: similarityList
+      similarity: similarityList,
+      temporal: temporalList
     };
   }
 
@@ -539,6 +609,8 @@ export class ResultsContainer {
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
     this._results_topTags_subject.next(this.topTagsArray);
+    // sort in descending order
+    this._temporal_objects_subject.next(Array.from(this._objectid_to_temporal_object_map.values()).sort((a, b) => b.score - a.score));
   }
 
   /**

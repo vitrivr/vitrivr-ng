@@ -107,7 +107,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
     this._vbs.submitSegment(this.segment);
   }
 
-
   /**
    * Returns true, if the submit (to VBS) button should be displayed for the given segment and false otherwise. This depends on the configuration and
    * the media type of the object.
@@ -163,6 +162,5 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
       api.seekTime(segment.startabs);
     }
   }
-
 
 }

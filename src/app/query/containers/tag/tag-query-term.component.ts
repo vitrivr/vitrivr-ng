@@ -7,6 +7,7 @@ import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Tag, TagService} from '../../../../../openapi/cineast';
+import PriorityEnum = Tag.PriorityEnum;
 
 import {ResultSetInfoService} from '../../../core/queries/result-set-info.service';
 
