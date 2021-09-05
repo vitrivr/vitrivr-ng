@@ -100,9 +100,6 @@ export class MiscService {
     public findAllElements(table: string, column: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<BooleanLookupResult>>;
     public findAllElements(table: string, column: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<BooleanLookupResult>>;
     public findAllElements(table: string, column: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
-        console.log('GOT CALED')
-        console.log(table)
-        console.log(`${this.configuration.basePath}/api/v1/find/boolean/range/all/in/${encodeURIComponent(String(table))}/${encodeURIComponent(String(column))}`)
         if (table === null || table === undefined) {
             throw new Error('Required parameter table was null or undefined when calling findAllElements.');
         }

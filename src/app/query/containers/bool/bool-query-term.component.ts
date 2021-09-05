@@ -10,7 +10,9 @@ import {MiscService} from '../../../../../openapi/cineast';
 import {QueryService} from '../../../core/queries/query.service';
 import {BooleanService} from '../../../core/queries/boolean.service';
 import {BooleanLookupQuery} from '../../../shared/model/messages/queries/boolean-lookupquery.model';
+import { Options } from '@angular-slider/ngx-slider';
 import {Subject} from 'rxjs/Subject';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-qt-bool',
@@ -35,6 +37,15 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
 
   boolLookupQueries: BooleanLookupQuery[] = [];
 
+
+  options: Options = {
+        floor: 0.1,
+        ceil: 1,
+      step: 0.1
+    };
+
+  extendedModel: boolean;
+
   public ngOnInit() {
     /* only add an empty term if there are none currently present*/
     if (this.boolTerm.terms.length !== 0) {
@@ -48,7 +59,7 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
       this._queryService.setBooleanAsFilter(false);
   }
   constructor(private _queryService: QueryService,
-              private _boolService: BooleanService,
+              public _boolService: BooleanService,
     _configService: AppConfig,
     private _resolver: ComponentFactoryResolver,
     _booleanService: MiscService,
@@ -72,7 +83,9 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
               const tableR: string = v[5];
               const columnR: string = v[6];
               _distinctLookupService.getAllElements(tableR, columnR).pipe(first()).subscribe( value => {
-                      next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, null, [v[3], v[4]], value));
+                  const attribute = new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, null, [v[3], v[4]], value);
+                  attribute.createData();
+                      next.push(attribute);
                       this.possibleAttributes.next(next);
               });
             break;
@@ -93,7 +106,8 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
       this.possibleAttributes.next(next);
     });
       this.boolAsFilter = this._queryService._booleanasfilter.getValue();
-      this._boolService.findBool([new BooleanLookupQuery('test_table', 'id', [], 'EQ', 0)] , 'B_ALL', 0);
+      this._boolService.findBool([new BooleanLookupQuery('him_table', 'id', [], 'EQ', 0)] , 'B_ALL', 0);
+      this._boolService.newModelObs.subscribe(next => this.extendedModel = next);
   }
 
   public addBoolTermComponent() {
@@ -102,5 +116,17 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
   public changeBoolToFilter() {
     this._queryService.setBooleanAsFilter(this.boolAsFilter);
   }
+
+
+    get weightValue(): number {
+        return this.boolTerm.weight;
+    }
+
+    set weightValue(value: number) {
+        this.boolTerm.setWeight(value);
+    }
+    public modelChange(value: boolean) {
+      this._boolService.setModel(value);
+    }
 }
 

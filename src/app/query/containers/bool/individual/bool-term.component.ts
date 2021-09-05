@@ -28,13 +28,13 @@ export class BoolTermComponent implements OnInit {
 
   /** Current BoolTerm */
   @Input() public term: BoolTerm;
+  /** If the new Model should be used */
+  @Input() public newModel: boolean;
 
   /** Currently selected operator */
   currentOperator: BoolOperator;
 
   private _value: any[] = [];
-
-  newModel =  false;
 
   public weights: any[] = ['Strict', 'Preferred'];
 
@@ -47,6 +47,7 @@ export class BoolTermComponent implements OnInit {
  private totalResults: number;
 
  private _extendedModel: string;
+ public data: any;
 
  constructor(private _boolService: BooleanService,
              private changeDet: ChangeDetectorRef) {
@@ -64,6 +65,8 @@ export class BoolTermComponent implements OnInit {
   set attribute(value: BoolAttribute) {
     this.currentAttributeObservable.next(value);
     this.currentOperator = value.operators[0];
+      this.data = this.currentAttributeObservable.getValue().data;
+      console.log(this.data)
     this._value = [];
     this.updateTerm();
   }
@@ -222,10 +225,6 @@ export class BoolTermComponent implements OnInit {
       this.updateRangeValue();
     }
     this.updateTerm();
-/*    this._boolService._nmbofitems.pipe(first()).subscribe( x => {
-        this.results = x;
-        this.changeDet.detectChanges()
-        });*/
       this._boolService._totalresults.subscribe(x => {this.totalResults = x;
           this.results = x;
           this.changeDet.detectChanges()
@@ -233,10 +232,10 @@ export class BoolTermComponent implements OnInit {
     this._boolService._nmbofitems.pipe(filter(x => x.has(this.boolComponentID))).subscribe( x => {
         this.results = x.get(this.boolComponentID);
         this.changeDet.detectChanges();
-        this.updateRelevant();
     });
     this.boolComponentID = this._boolService.getComponentID();
       this.extendedModel = 'Strict';
+      console.log(this.attribute.data)
   }
 
   isOption(): boolean {
@@ -247,22 +246,27 @@ export class BoolTermComponent implements OnInit {
       let exists = false;
       this.boolLookupQueries.forEach((q, index) => {
           if (q.componentID === this.boolComponentID) {
-              this.boolLookupQueries[index] = new BooleanLookupQuery('test_table', this.term.attribute.split('.')[1], this._value,
+              this.boolLookupQueries[index] = new BooleanLookupQuery(this.term.attribute.split('.')[0], this.term.attribute.split('.')[1], this._value,
                   BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID);
               exists = true;
           }
       });
       if (!exists) {
-          this.boolLookupQueries.push(new BooleanLookupQuery('test_table', 'key', this._value, BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID));
+          this.boolLookupQueries.push(new BooleanLookupQuery(this.term.attribute.split('.')[0], this.term.attribute.split('.')[1],
+              this._value, BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID));
       }
       this._boolService.findBool(this.boolLookupQueries, 'B_QUERY', this.boolComponentID);
+      console.log(this.attribute.data)
       }
   private updateRelevant(): void {
-      if (this.newModel && this._extendedModel !== 'Strict' && this.results < this._boolService.getthreshold()) {
+      if (this._extendedModel !== 'Strict') {
           this.term.relevant = false;
       } else {
           this.term.relevant = true;
       }
       this.boolTerm.update();
+  }
+  public createData() {
+    this.data = this.attribute.data;
   }
 }

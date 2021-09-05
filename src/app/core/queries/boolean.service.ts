@@ -66,6 +66,9 @@ export class BooleanService {
     /** Saves each BoolTerm Component ID in order to give unique IDs to each new component */
     private _threshold = 5;
 
+    private newModel: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    public newModelObs: Observable<boolean> = this.newModel.asObservable();
+
     constructor(@Inject(HistoryService) private _history,
                 @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
                 @Inject(AppConfig) private _config: AppConfig,
@@ -235,6 +238,9 @@ export class BooleanService {
         this._running -= 1;
         this._subject.next('ERROR' as QueryChange);
         console.log('QueryService received error: ' + message.message);
+    }
+    public setModel(value: boolean) {
+        this.newModel.next(value);
     }
 
 

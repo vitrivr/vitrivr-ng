@@ -474,7 +474,7 @@ export class ResultsContainer {
 
 
     if (sim.category === 'boolean') {
-      console.log('called add boolean')
+      console.log(sim);
       this.addboolelement(sim);
     }
 

@@ -23,7 +23,7 @@
                 {{operator.toString()}}
             </mat-option>
         </mat-select>
-        <app-bool-term-chart></app-bool-term-chart>
+        <!-- <app-bool-term-chart></app-bool-term-chart> -->
 
         <!-- Freetext Field for Numbers & Text -->
         <mat-form-field *ngIf="attributeIsText(currentAttrAsync)" class="options">
@@ -47,6 +47,7 @@
         <div *ngIf="currentAttrAsync.valueType.valueOf()==4" class="options">
             <ngx-slider [(highValue)]="maxValue" [(value)]="minValue"
                         [options]="currentAttrAsync.sliderOptions"></ngx-slider>
+            <app-bool-term-chart [data3]="currentAttrAsync.data"></app-bool-term-chart>
         </div>
 
         <!-- Traditional Slider
@@ -57,15 +58,14 @@
 
 
         <!-- Ceckbox to use new BooleanModel -->
-        <mat-checkbox  *ngIf="boolAsFilter" [(ngModel)]="newModel" (ngModelChange)="updateRelevant()"> Activate Extended Boolean Model </mat-checkbox>
+        <!--<mat-checkbox  *ngIf="boolAsFilter" [(ngModel)]="newModel" (ngModelChange)="updateRelevant()"> Activate Extended Boolean Model </mat-checkbox>-->
 
         <!-- Dropdown EXTENDEND BOOLEAN MODEL -->
-        <mat-select *ngIf="newModel" [(ngModel)]="extendedModel" class="options" required>
+        <mat-select *ngIf="_boolService.newModelObs | async" [(ngModel)]="extendedModel" class="options" required>
             <mat-option *ngFor="let weight of weights" [value]="weight">
                 {{weight}}
             </mat-option>
         </mat-select>
-
         <p>Query results {{results}} out of {{totalResults}}</p>
 
     </ng-container>

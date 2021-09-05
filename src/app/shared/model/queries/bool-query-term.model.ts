@@ -9,7 +9,7 @@ import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
 export class BoolQueryTerm extends AbstractQueryTerm {
 
   public readonly terms: BoolTerm[] = [];
-
+  public weight = 1;
 
   constructor() {
     super(QueryTerm.TypeEnum.BOOLEAN, ['boolean']);
@@ -22,11 +22,19 @@ export class BoolQueryTerm extends AbstractQueryTerm {
     this.terms.splice(this.terms.indexOf(term), 1);
     this.update();
   }
+    /**
+     * Sets the current ContainerWeight
+     */
+  public setWeight(weight: number) {
+    this.weight = weight;
+    this.update();
+  }
 
   /**
    * Updates serialization
    */
   update() {
-    this.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.terms.filter(term => term.relevant === true)));
+    // this.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.terms.filter(term => term.relevant === true)));
+      this.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this));
   }
 }

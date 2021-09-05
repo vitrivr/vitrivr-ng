@@ -1,4 +1,4 @@
-import {Component, NgModule, OnInit} from '@angular/core';
+import {Component, Input, NgModule, OnInit} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { multi } from './data';
@@ -10,8 +10,9 @@ import { multi } from './data';
 })
 export class BoolTermChartComponent implements OnInit{
 
+    @Input() public data3;
     multi: any[];
-    view: any[] = [300, 200];
+    view: any[] = [200, 200];
 
     // options
     legend = true;
@@ -19,10 +20,8 @@ export class BoolTermChartComponent implements OnInit{
     animations = true;
     xAxis = true;
     yAxis = true;
-    showYAxisLabel = true;
-    showXAxisLabel = true;
-    xAxisLabel = 'Year';
-    yAxisLabel = 'Population1';
+    showYAxisLabel = false;
+    showXAxisLabel = false;
     timeline = true;
 
     colorScheme = {
@@ -30,9 +29,12 @@ export class BoolTermChartComponent implements OnInit{
     };
 
     constructor() {
-        Object.assign(this, { multi });
+
     }
     ngOnInit(): void {
+        this.multi = [];
+        this.multi.push(this.data3);
+        console.log(this.data3);
 }
 
     onSelect(data): void {

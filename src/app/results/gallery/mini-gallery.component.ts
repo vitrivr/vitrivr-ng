@@ -26,6 +26,7 @@ export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<Me
 
   /** Name of this MiniGalleryComponent. */
   protected name = 'segment_gallery';
+  private results: string;
 
   constructor(_cdr: ChangeDetectorRef,
               _queryService: QueryService,
@@ -56,6 +57,22 @@ export class MiniGalleryComponent extends AbstractSegmentResultsViewComponent<Me
   protected subscribe(results: ResultsContainer) {
     if (results) {
       this._dataSource = results.segmentsAsObservable;
+      this.createResults();
     }
+  }
+  public createResults() {
+  let rows = [];
+  this._dataSource.subscribe(next => {
+    rows = [];
+    next.forEach(media => {const row = [media.segmentId.toString().substring(2, media.segmentId.toString().length - 2), media.score.toString()];
+    rows.push(row)});
+    console.log('GOOTCALLLLEDD');
+      const csvContent = 'data:text/csv;charset=utf-8,'
+          + rows.map(e => e.join(',')).join('\n');
+      this.results = encodeURI(csvContent);
+  });
+  }
+  public openURL() {
+    window.open(this.results);
   }
 }

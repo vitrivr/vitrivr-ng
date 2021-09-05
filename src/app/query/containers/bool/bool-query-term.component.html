@@ -1,6 +1,12 @@
 <div [style.display]="'flex'" [style.padding-left]="'10px'" [style.text-align]="'left'" [style.width]="'100%'"
      class="options">
 <mat-checkbox [style.text-align]="'left'" [(ngModel)]="boolAsFilter" (ngModelChange)="changeBoolToFilter()"> Use Boolean as Filter </mat-checkbox>
+
+    <mat-checkbox  [checked]="extendedModel" (change)="modelChange($event.checked)"> Activate Extended Boolean Model</mat-checkbox>
+
+        <p *ngIf="_boolService.newModelObs | async"> Container Weight</p>
+    <ngx-slider *ngIf="_boolService.newModelObs | async" [(value)]="weightValue"  [style.text-align]="'left'" [options]="options"></ngx-slider>
+
 </div>
 
 <app-qt-bool-component *ngFor="let term of boolTerm.terms" [boolTerm]="boolTerm" [term]="term"
