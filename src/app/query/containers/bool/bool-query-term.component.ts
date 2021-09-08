@@ -74,7 +74,13 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
           case ValueType.DATE.valueOf():
           case ValueType.NUMERIC.valueOf():
           case ValueType.TEXT.valueOf():
-            next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]]));
+              _distinctLookupService.getAllElements(feature.split('.')[0], feature.split('.')[1]).pipe(first()).subscribe( value => {
+                  const unique = [...new Set(value)];
+                  const attribute = new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, null, null, unique);
+                  next.push(attribute);
+                  this.possibleAttributes.next(next);
+              });
+            // next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]]));
             break;
           case ValueType.OPTIONS.valueOf():
             next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, v.slice(3, v.length), null));
@@ -105,16 +111,16 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
       });
       this.possibleAttributes.next(next);
     });
-      this.boolAsFilter = this._queryService._booleanasfilter.getValue();
       this._boolService.findBool([new BooleanLookupQuery('him_table', 'id', [], 'EQ', 0)] , 'B_ALL', 0);
       this._boolService.newModelObs.subscribe(next => this.extendedModel = next);
+      this._queryService._booleanasfilterObsv.subscribe(next => this.boolAsFilter = next);
   }
 
   public addBoolTermComponent() {
     this.boolTerm.terms.push(new BoolTerm(this.possibleAttributes.getValue()[0].featureName, this.possibleAttributes.getValue()[0].operators[0], null, true));
   }
-  public changeBoolToFilter() {
-    this._queryService.setBooleanAsFilter(this.boolAsFilter);
+  public changeBoolToFilter(value: boolean) {
+    this._queryService.setBooleanAsFilter(value);
   }
 
 

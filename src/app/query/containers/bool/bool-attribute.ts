@@ -1,5 +1,4 @@
 import {Options} from '@angular-slider/ngx-slider';
-import {any} from 'codelyzer/util/function';
 
 export enum BoolOperator {
   EQ = '=',
@@ -142,35 +141,21 @@ export class BoolAttribute {
     }
   }
 
-  public createData() {
-      console.log('gotc cascsacs')
-      console.log(this.possibleValues)
-    if (this.possibleValues) {
-        console.log('gotc cascsac2s')
-        const occurrences = this.possibleValues.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
-
-        console.log(occurrences);
-        const keys = [...occurrences.keys()];
-        const series = [];
-        keys.forEach(key => series.push({'name': key, 'value': occurrences.get(key)}));
-        const data = {'name': this.featureName.split('.')[1], 'series': series};
-        console.log(data);
-        this.data = data;
+    /**
+     * Creates the data that is used for the line graph in the range attribute
+     */
+    public createData() {
+        if ( typeof this.possibleValues !== 'undefined' && this.possibleValues.length > 0) {
+            const occurrences = this.possibleValues.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
+            let keys = [...occurrences.keys()];
+            keys = keys.slice(1);
+            keys.sort();
+            const series = [];
+            keys.forEach(key => series.push({'name': key, 'value': occurrences.get(key)}));
+            const data = {'name': this.featureName.split('.')[1], 'series': series};
+            this.data = data;
+        } else {
+            this.data = undefined;
+        }
     }
-    }
-}
-
-export class Data {
-  public name: string;
-  public series: Entry[];
-}
-
-export class Entry {
-  public name: string;
-  public value: number;
-
-  constructor(name: string, value: number) {
-    this.name = name;
-    this.value = value;
-  }
 }

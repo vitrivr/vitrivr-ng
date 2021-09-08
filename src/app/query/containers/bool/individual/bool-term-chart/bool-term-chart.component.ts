@@ -10,9 +10,9 @@ import { multi } from './data';
 })
 export class BoolTermChartComponent implements OnInit{
 
-    @Input() public data3;
+    @Input() public data;
     multi: any[];
-    view: any[] = [200, 200];
+    view: any[] = [210, 200];
 
     // options
     legend = true;
@@ -33,8 +33,8 @@ export class BoolTermChartComponent implements OnInit{
     }
     ngOnInit(): void {
         this.multi = [];
-        this.multi.push(this.data3);
-        console.log(this.data3);
+        this.multi.push(this.data);
+        console.log(this.data);
 }
 
     onSelect(data): void {

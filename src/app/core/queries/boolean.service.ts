@@ -43,9 +43,6 @@ export class BooleanService {
     /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
     private _socket: WebSocketSubject<Message>;
 
-    /** Rerank handler of the ResultsContainer. */
-    private _interval_map: Map<string, number> = new Map();
-
     /** Results of a query. May be empty. */
     private _results: ResultsContainer;
 
@@ -62,9 +59,6 @@ export class BooleanService {
 
     /** Saves each BoolTerm Component ID in order to give unique IDs to each new component */
     private _componentIDCounter = 0;
-
-    /** Saves each BoolTerm Component ID in order to give unique IDs to each new component */
-    private _threshold = 5;
 
     private newModel: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public newModelObs: Observable<boolean> = this.newModel.asObservable();
@@ -160,88 +154,15 @@ export class BooleanService {
         } else {
             this._nmbofitems.next(new Map([[res.componentID, res.numberofElements]]));
             console.log(new Map([[res.componentID, res.numberofElements]]));
-            switch (message.messageType) {
-
-                /*            case 'Q_BOOL':
-                                const qs = <QueryStart>message;
-                                console.time(`Query (${qs.queryId})`);
-                                /!*this.startNewFindAll(message);*!/
-                                break;*/
-                case 'QR_ERROR':
-                    console.timeEnd(`Query (${(<QueryError>message).queryId})`);
-                    this.errorOccurred(<QueryError>message);
-                    break;
-                case 'QR_END':
-                    console.timeEnd(`Query (${(<QueryError>message).queryId})`);
-                    this.finalizeQuery((<QueryError>message).queryId);
-                    break;
-            }
         }
     }
 
+    public setModel(value: boolean) {
+        this.newModel.next(value);
+    }
 
     public getComponentID(): number {
         this._componentIDCounter = this._componentIDCounter + 1;
         return this._componentIDCounter;
     }
-    public getthreshold(): number {
-        return this._threshold;
-    }
-
-    /**
-     * Updates the local state in response to a QR_START message. This method triggers an observable change in the QueryService class.
-     *
-     * @param queryId ID of the new query. Used to associate responses.
-     */
-/*
-    private startNewQuery(queryId: string) {
-        /!* Start the actual query. *!/
-        if (!this._results || (this._results && this._results.queryId !== queryId)) {
-            this._results = new ResultsContainer(queryId);
-            this._interval_map.set(queryId, window.setInterval(() => this._results.checkUpdate(), 2500));
-            if (this._scoreFunction) {
-                this._results.setScoreFunction(this._scoreFunction);
-            }
-        }
-        this._running += 1;
-        this._subject.next('STARTED' as QueryChange);
-    }
-*/
-
-    /**
-     * Finalizes a running RunningQueries and does some cleanup.
-     *
-     * This method triggers an observable change in the QueryService class.
-     */
-    private finalizeQuery(queryId: string) {
-        // be sure that updates are checked one last time
-        window.clearInterval(this._interval_map.get(queryId))
-        this._interval_map.delete(queryId)
-        this._results.doUpdate();
-        this._running -= 1;
-        this._subject.next('ENDED' as QueryChange);
-        if (this._results.segmentCount > 0) {
-            this._history.append(this._results);
-        }
-    }
-
-    /**
-     * Finalizes a running RunningQueries and does some cleanup after an error was reported by Cineast.
-     *
-     * This method triggers an observable change in the QueryService class.
-     */
-    private errorOccurred(message: QueryError) {
-        if (this._interval_map.has(message.queryId)) {
-            window.clearInterval(this._interval_map.get(message.queryId));
-            this._interval_map.delete(message.queryId);
-        }
-        this._running -= 1;
-        this._subject.next('ERROR' as QueryChange);
-        console.log('QueryService received error: ' + message.message);
-    }
-    public setModel(value: boolean) {
-        this.newModel.next(value);
-    }
-
-
 }

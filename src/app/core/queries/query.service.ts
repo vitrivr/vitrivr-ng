@@ -66,7 +66,9 @@ export class QueryService {
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
   /** Flag indicating whether Boolean query Items should act as a filter to a Result Set */
-  public _booleanasfilter = new BehaviorSubject(false);
+  public _booleanasfilter: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  /** Observable Flag indicating whether Boolean query Items should act as a filter to a Result Set, used in the Boolean Container to track Checkbox changes */
+  public _booleanasfilterObsv: Observable<boolean> = this._booleanasfilter.asObservable();
 
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,

@@ -35,10 +35,8 @@ export class BoolTermComponent implements OnInit {
   currentOperator: BoolOperator;
 
   private _value: any[] = [];
-
+    /** Container Weights of the extended Model */
   public weights: any[] = ['Strict', 'Preferred'];
-
- @Input() public boolAsFilter: boolean;
 
  boolComponentID: number;
 
@@ -66,7 +64,6 @@ export class BoolTermComponent implements OnInit {
     this.currentAttributeObservable.next(value);
     this.currentOperator = value.operators[0];
       this.data = this.currentAttributeObservable.getValue().data;
-      console.log(this.data)
     this._value = [];
     this.updateTerm();
   }
@@ -256,7 +253,6 @@ export class BoolTermComponent implements OnInit {
               this._value, BoolAttribute.getOperatorName(this.currentOperator), this.boolComponentID));
       }
       this._boolService.findBool(this.boolLookupQueries, 'B_QUERY', this.boolComponentID);
-      console.log(this.attribute.data)
       }
   private updateRelevant(): void {
       if (this._extendedModel !== 'Strict') {
@@ -265,8 +261,5 @@ export class BoolTermComponent implements OnInit {
           this.term.relevant = true;
       }
       this.boolTerm.update();
-  }
-  public createData() {
-    this.data = this.attribute.data;
   }
 }
