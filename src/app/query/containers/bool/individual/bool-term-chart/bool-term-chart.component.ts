@@ -1,8 +1,6 @@
 import {Component, Input, NgModule, OnInit} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { multi } from './data';
-
 @Component({
   selector: 'app-bool-term-chart',
   templateUrl: './bool-term-chart.component.html',

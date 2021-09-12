@@ -35,17 +35,18 @@ export class BoolTermComponent implements OnInit {
   currentOperator: BoolOperator;
 
   private _value: any[] = [];
-    /** Container Weights of the extended Model */
+  /** Container Weights of the extended Model */
   public weights: any[] = ['Strict', 'Preferred'];
-
- boolComponentID: number;
-
- private results: number;
-
- private totalResults: number;
-
- private _extendedModel: string;
- public data: any;
+  /** ComponentID to get results for number of elements returned for this BoolTerm  */
+  boolComponentID: number;
+  /** Number of results to be returned for the BoolTerm  */
+  private results: number;
+  /** Number of results for the whole BoolContainer */
+  private totalResults: number;
+  /** Term either Strict or Preferred */
+  private _extendedModel: string;
+  /** Data used for the Line Graph shown for Range Attributes */
+  public data: any;
 
  constructor(private _boolService: BooleanService,
              private changeDet: ChangeDetectorRef) {
@@ -63,7 +64,7 @@ export class BoolTermComponent implements OnInit {
   set attribute(value: BoolAttribute) {
     this.currentAttributeObservable.next(value);
     this.currentOperator = value.operators[0];
-      this.data = this.currentAttributeObservable.getValue().data;
+    this.data = this.currentAttributeObservable.getValue().data;
     this._value = [];
     this.updateTerm();
   }
@@ -222,23 +223,26 @@ export class BoolTermComponent implements OnInit {
       this.updateRangeValue();
     }
     this.updateTerm();
-      this._boolService._totalresults.subscribe(x => {this.totalResults = x;
-          this.results = x;
-          this.changeDet.detectChanges()
+    // Responsible for the getting the number of results to be returned for this bool Term
+    this.boolComponentID = this._boolService.getComponentID();
+    this._boolService._totalresults.subscribe(x => {this.totalResults = x;
+      this.results = x;
+      this.changeDet.detectChanges()
       });
     this._boolService._nmbofitems.pipe(filter(x => x.has(this.boolComponentID))).subscribe( x => {
-        this.results = x.get(this.boolComponentID);
-        this.changeDet.detectChanges();
+      this.results = x.get(this.boolComponentID);
+      this.changeDet.detectChanges();
     });
-    this.boolComponentID = this._boolService.getComponentID();
-      this.extendedModel = 'Strict';
-      console.log(this.attribute.data)
+    this.extendedModel = 'Strict';
   }
 
   isOption(): boolean {
     return this.attribute.valueType.valueOf() === 0 || this.attribute.valueType.valueOf() === 5;
   }
 
+    /**
+     * executed in order to get the number of results for  this BoolTerm
+      */
   public getResults(): void {
       let exists = false;
       this.boolLookupQueries.forEach((q, index) => {
@@ -254,6 +258,11 @@ export class BoolTermComponent implements OnInit {
       }
       this._boolService.findBool(this.boolLookupQueries, 'B_QUERY', this.boolComponentID);
       }
+
+    /**
+     * If the extended Model is activated every change in the Term Preference every change in Term Preference
+     * changes the query
+      */
   private updateRelevant(): void {
       if (this._extendedModel !== 'Strict') {
           this.term.relevant = false;

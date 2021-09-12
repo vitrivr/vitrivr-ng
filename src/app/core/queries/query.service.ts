@@ -135,7 +135,6 @@ export class QueryService {
     this._config.configAsObservable.pipe(first()).subscribe(config => {
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
       this._socket.next(query)
-        console.log(query);
     });
 
     /** Log Interaction */
@@ -194,18 +193,17 @@ export class QueryService {
    * @returns {boolean} true if query was issued, false otherwise.
    */
   public findTemporal(containers: QueryContainerInterface[], timeDistances: number[], maxLength: number): boolean {
-      if (!this._socket) {
-          console.warn('No socket available, not executing temporal query');
-          return false;
-      }
-      if (this._running > 0) {
-          console.warn('There is already a query running');
-      }
+    if (!this._socket) {
+      console.warn('No socket available, not executing temporal query');
+      return false;
+    }
+    if (this._running > 0) {
+      console.warn('There is already a query running');
+    }
     this._config.configAsObservable.pipe(first()).subscribe(config => {
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
         new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), timeDistances, maxLength);
       this._socket.next(query);
-        console.log(query);
     });
 
     /** Log Interaction */
@@ -508,6 +506,9 @@ export class QueryService {
     this._subject.next('ERROR' as QueryChange);
     console.log('QueryService received error: ' + message.message);
   }
+  /**
+   * Sets the flag if the Boolean Query Mode is applied as Filter or not
+   */
   public setBooleanAsFilter(value: boolean): void {
     this._booleanasfilter.next(value);
   }

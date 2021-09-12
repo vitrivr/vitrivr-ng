@@ -22,9 +22,9 @@ export class BoolQueryTerm extends AbstractQueryTerm {
     this.terms.splice(this.terms.indexOf(term), 1);
     this.update();
   }
-    /**
-     * Sets the current ContainerWeight
-     */
+  /**
+   * Sets the current ContainerWeight
+   */
   public setWeight(weight: number) {
     this.weight = weight;
     this.update();
@@ -34,7 +34,6 @@ export class BoolQueryTerm extends AbstractQueryTerm {
    * Updates serialization
    */
   update() {
-    // this.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this.terms.filter(term => term.relevant === true)));
       this.data = 'data:application/json;base64,' + Base64Util.strToBase64(JSON.stringify(this));
   }
 }

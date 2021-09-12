@@ -2,7 +2,7 @@ import {Message} from '../message.interface';
 import {MediaObjectMetadataDescriptor} from '../../../../../../../openapi/cineast';
 
 /**
- * Defines the general structure of a MetadataQueryResult.
+ * Defines the general structure of a BoolLookupQueryResult.
  */
 export interface BoolLookupMessage extends Message {
 

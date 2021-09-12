@@ -3,19 +3,17 @@
     "host": "default"
   },
   "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
-    "host_objects": "http://localhost:4567/objects/:n",
-    "suffix": {
-      "IMAGE": "jpg",
-      "VIDEO": "png"
-    }
+    "host_thumbnails": "http://localhost:4567/thumbnails/:o/:s:x",
+    "host_objects": "http://localhost:4567/objects/:n"
   },
   "competition": {
-    "host": "dmi-dres.dmi.unibas.ch:443",
-    "tls": true,
+    "teamid": 9,
+    "toolid": 1,
+    "endpoint": "https://dmi-dres.dmi.unibas.ch:8443/",
     "log": false,
     "lsc": false,
-    "vbs": false
+    "vbs": false,
+    "dres": false
   },
   "mlt": {
     "VIDEO": [
@@ -50,6 +48,10 @@
         [
           "asr",
           "Audio"
+        ],
+        [
+          "scenecaption",
+          "Description"
         ]
       ]
     },
@@ -60,39 +62,26 @@
         "features_daily.text"
       ],
       [
-        "Example TEXT",
-        "TEXT",
-        "test_table.domain"
-      ],
-      [
-        "Key Value",
+        "Example Dropdown",
         "OPTIONS",
-        "test_table.key",
-        1,
-        50,
-        4
-      ],
-      [
-        "Challenge Value",
-        "OPTIONS",
-        "test_table.value",
-        200
-      ],
-      [
-        "Example Dynamic",
-        "DYNAMICOPTIONS",
-        "test_table.key",
-        "test_table",
-        "key"
+        "features.option",
+        "ONE",
+        "TWO",
+        "THREE"
       ],
       [
         "Example Range",
         "RANGE",
-        "test_table.key",
-        1,
-        50,
-        "test_table",
-        "key"
+        "features.range",
+        5,
+        20
+      ],
+      [
+        "Example Dynamic Options",
+        "DYNAMICOPTIONS",
+        "features.option",
+        "features",
+        "option"
       ]
     ],
     "staged": true

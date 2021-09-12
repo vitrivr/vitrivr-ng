@@ -26,8 +26,6 @@ import {AppConfig} from '../../../../app.config';
 import {MediaObjectDescriptor} from '../../../../../../openapi/cineast/model/mediaObjectDescriptor';
 import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
 import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
-import {AnimationUtils} from 'three';
-import convertArray = AnimationUtils.convertArray;
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -71,10 +69,8 @@ export class ResultsContainer {
    */
   private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
-    /** List of all elements where the boolean properties are met ( hard Requirement*/
-    private _booleanelements = [] ;
-/*    /!**True if boolean used as hard requirement*!/
-    private _booleanasfilter = false;*/
+  /** List of all elements where the boolean properties are met (hard Requirement)*/
+  private _booleanelements = [] ;
 
   /**
    * Constructor for ResultsContainer.
@@ -240,8 +236,6 @@ export class ResultsContainer {
    */
   public doUpdate() {
     if (this._rerank > 0) {
-      console.log(this._results_objects);
-      console.log(this._results_segments);
       this.rerank();
     } else if (this._next > 0) { // else if as rerank already calls next
       this.next();
@@ -318,7 +312,9 @@ export class ResultsContainer {
       console.debug(`no weight function given for rerank(), using weight function inherent to the results container: ${this.scoreFunction.name()}`);
       weightFunction = this.scoreFunction;
     }
+
     console.time(`Rerank (${this.queryId})`);
+
 
     this._results_objects.forEach((mediaObject) => {
       mediaObject.update(features, weightFunction);
@@ -326,10 +322,10 @@ export class ResultsContainer {
         segment.update(features, weightFunction);
       });
     });
+    // if booleanasfilter is set to true, then all segIds and ObjIds not in the list are removed from the finals results
   if (this.booleanasfilter) {
 
     const temp_result_object = [];
-    console.log(this._results_objects);
     this._results_objects.forEach((mediaObject) => {
 
       this._booleanelements.forEach((segId) => {
@@ -346,7 +342,6 @@ export class ResultsContainer {
       }
     });
     this._results_segments = temp_seg_container;
-    console.log(this._results_objects)
   }
     /* Other methods calling rerank() depend on this next() call */
     this.next();
@@ -406,6 +401,7 @@ export class ResultsContainer {
       this.updateTemporalSegments(ssc);
     }
     console.timeEnd(`Processing Segment Message (${this.queryId})`);
+
     /* Re-rank on the UI side - this also invokes next(). */
     this._rerank += 1;
 
@@ -472,9 +468,8 @@ export class ResultsContainer {
       return false;
     }
 
-
+    // if the return is a boolean query then the element is added to the this._booleanelements array
     if (sim.category === 'boolean') {
-      console.log(sim);
       this.addboolelement(sim);
     }
 
@@ -489,12 +484,16 @@ export class ResultsContainer {
       }
     }
 
+
     /* Re-rank the results (calling this method also causes an invocation of next(). */
     this._rerank += 1;
     return true;
   }
 
-
+    /**
+     * For Boolean Queries. If a Boolean query is executed, then the return for the Boolean is saved in a seperate array.
+     * In the final step if Bool as Filter is activated all elements not in that array are removed from the results.
+     */
   public addboolelement(sim: SimilarityQueryResult) {
       for (const object of sim.content) {
           if (this._booleanelements.indexOf(object.key) === -1) {
@@ -650,7 +649,6 @@ export class ResultsContainer {
       mosc = new MediaObjectScoreContainer(objectId);
       this._objectid_to_object_map.set(objectId, mosc);
       this._results_objects.push(mosc);
-      console.log('push');
     }
 
     /* Optional: Update MediaObjectScoreContainer. */

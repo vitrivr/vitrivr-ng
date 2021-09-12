@@ -1,6 +1,7 @@
 <div [style.display]="'flex'" [style.padding-left]="'10px'" [style.text-align]="'left'" [style.width]="'100%'"
      class="options">
 <mat-checkbox [style.text-align]="'left'" [checked]="boolAsFilter" (change)="changeBoolToFilter($event.checked)"> Use Boolean as Filter </mat-checkbox>
+    <p *ngIf="_queryService._booleanasfilterObsv | async"></p>
 
     <mat-checkbox  [checked]="extendedModel" (change)="modelChange($event.checked)"> Activate Extended Boolean Model</mat-checkbox>
 

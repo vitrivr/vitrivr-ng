@@ -1,6 +1,6 @@
-import {Component, ComponentFactoryResolver, Injectable, Input, OnInit, OnDestroy} from '@angular/core';
+import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
-import {BoolAttribute, BoolOperator, ValueType} from './bool-attribute';
+import {BoolAttribute, ValueType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs';
 import {BoolTerm} from './individual/bool-term';
 import {DistinctElementLookupService} from '../../../core/lookup/distinct-element-lookup.service';
@@ -11,8 +11,6 @@ import {QueryService} from '../../../core/queries/query.service';
 import {BooleanService} from '../../../core/queries/boolean.service';
 import {BooleanLookupQuery} from '../../../shared/model/messages/queries/boolean-lookupquery.model';
 import { Options } from '@angular-slider/ngx-slider';
-import {Subject} from 'rxjs/Subject';
-import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-qt-bool',
@@ -20,7 +18,7 @@ import {Observable} from 'rxjs/Observable';
   styleUrls: ['bool-query-term.component.css']
 })
 @Injectable()
-export class BoolQueryTermComponent implements OnInit, OnDestroy {
+export class BoolQueryTermComponent implements OnInit {
 
   // TODO add logic to store multiple queries with a combination.
   //  1) the BoolQueryTerm should support it,
@@ -32,18 +30,18 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
   possibleAttributes: BehaviorSubject<BoolAttribute[]> = new BehaviorSubject(
     [new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT)]
   );
-
+  /** If set to true Boolean Query is applied as filter */
   boolAsFilter: boolean;
-
+  /** Contains the Queries that are used to get the number of results to be returned for each Bool Term*/
   boolLookupQueries: BooleanLookupQuery[] = [];
 
-
+  /** If extendedModel is true, then to container weight of the BoolContainer can be set */
   options: Options = {
         floor: 0.1,
         ceil: 1,
       step: 0.1
     };
-
+  /** If set to true Term Preferences to the single Terms are shown */
   extendedModel: boolean;
 
   public ngOnInit() {
@@ -53,12 +51,7 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
     }
     this.addBoolTermComponent();
   }
-
-    /** Resets the Booleanfilter to false */
-  public ngOnDestroy(): void {
-      this._queryService.setBooleanAsFilter(false);
-  }
-  constructor(private _queryService: QueryService,
+  constructor(public _queryService: QueryService,
               public _boolService: BooleanService,
     _configService: AppConfig,
     private _resolver: ComponentFactoryResolver,
@@ -111,7 +104,7 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
       });
       this.possibleAttributes.next(next);
     });
-      this._boolService.findBool([new BooleanLookupQuery('him_table', 'id', [], 'EQ', 0)] , 'B_ALL', 0);
+      this._boolService.findBool([new BooleanLookupQuery('cineast_segment', 'segmentid', [], 'EQ', 0)] , 'B_ALL', 0);
       this._boolService.newModelObs.subscribe(next => this.extendedModel = next);
       this._queryService._booleanasfilterObsv.subscribe(next => this.boolAsFilter = next);
   }
@@ -124,15 +117,16 @@ export class BoolQueryTermComponent implements OnInit, OnDestroy {
   }
 
 
-    get weightValue(): number {
-        return this.boolTerm.weight;
-    }
+  get weightValue(): number {
+      return this.boolTerm.weight;
+  }
 
-    set weightValue(value: number) {
-        this.boolTerm.setWeight(value);
-    }
-    public modelChange(value: boolean) {
+  set weightValue(value: number) {
+      this.boolTerm.setWeight(value);
+  }
+
+  public modelChange(value: boolean) {
       this._boolService.setModel(value);
-    }
+  }
 }
 

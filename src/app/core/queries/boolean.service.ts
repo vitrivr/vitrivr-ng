@@ -22,32 +22,16 @@ import {BoolOperator} from '../../query/containers/bool/bool-attribute';
 import {BooleanLookupQuery} from '../../shared/model/messages/queries/boolean-lookupquery.model';
 import {MiscService} from '../../../../openapi/cineast';
 
-/**
- *  Types of changes that can be emitted from the QueryService.
- *
- *  STARTED     - New query was started.
- *  ENDED       - Processing of the query has ended.
- *  UPDATED     - New information concerning the running query is available OR post-execution refinements were performed.
- *  FEATURE     - A new feature has become available.
- */
-export type QueryChange = 'STARTED' | 'ENDED' | 'ERROR' | 'UPDATED' | 'FEATURE' | 'CLEAR';
 
 /**
- * This service orchestrates similarity requests using the Cineast API (WebSocket). The service is responsible for
- * issuing findSimilar requests, processing incoming responses and ranking of the requests.
+ * This service orchestrates Boolean requests using the Cineast API (WebSocket). The service is responsible for
+ * issuing Boolean requests for the Boolean Query Mode, processing incoming responses and ranking of the requests.
  */
 @Injectable()
 export class BooleanService {
-    /** Subject that allows Observers to subscribe to changes emitted from the QueryService. */
-    private _subject: Subject<QueryChange> = new Subject();
+
     /** The WebSocketWrapper currently used by QueryService to process and issue queries. */
     private _socket: WebSocketSubject<Message>;
-
-    /** Results of a query. May be empty. */
-    private _results: ResultsContainer;
-
-    /** Flag indicating whether a query is currently being executed. */
-    private _running = 0;
 
     /** Number of elements returned for each Bool Term Component*/
     public _nmbofitems: Subject<Map<number, number>> = new Subject<Map<number, number>>();
@@ -59,7 +43,7 @@ export class BooleanService {
 
     /** Saves each BoolTerm Component ID in order to give unique IDs to each new component */
     private _componentIDCounter = 0;
-
+    /** Flag if newModel with the Term Preferences and ContainerWeights are to be used */
     private newModel: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     public newModelObs: Observable<boolean> = this.newModel.asObservable();
 
@@ -75,24 +59,7 @@ export class BooleanService {
             ).subscribe((msg: Message) => this.onApiMessage(msg));
         });
     }
-    /**
-     * Getter for running.
-     *
-     * @return {boolean}
-     */
-    get running(): boolean {
-        return this._running > 0;
-    }
 
-    /**
-     * Returns an Observable that allows an Observer to be notified about
-     * state changes in the QueryService (RunningQueries, Finished, Resultset updated).
-     *
-     * @returns {Observable<QueryChange>}
-     */
-    get observable(): Observable<QueryChange> {
-        return this._subject.asObservable();
-    }
 
     /**
      * Starts a new BooleanLookup query. Success is indicated by the return value.
@@ -107,43 +74,15 @@ export class BooleanService {
             console.warn('No socket available, not executing Boolean query');
             return false;
         }
-        if (this._running > 0) {
-            console.warn('There is already a query running');
-        }
+
         this._config.configAsObservable.pipe(first()).subscribe(config => {
             const query = new BooleanLookup( new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), queries, type, componentID);
-            console.log(query);
             this._socket.next(query)
         });
     }
-
-
     /**
-     * Clears the results and aborts the current query from being executed
-     *
-     * (Warning: The abort is not propagated to the Cineast API, which might still be running).
-     */
-    public clear() {
-        /* If query is still running, stop it. */
-        if (this._running) {
-            this._subject.next('ENDED' as QueryChange);
-            this._running = 0;
-        }
-
-        /* Complete the ResultsContainer and release it. */
-        if (this._results) {
-            this._results.complete();
-            this._results = null;
-        }
-
-        /* Publish Event. */
-        this._subject.next('CLEAR');
-    }
-
-    /**
-     * This is where the magic happens: Subscribes to messages from the underlying WebSocket and orchestrates the
-     * assembly of the individual pieces of QueryResults.
-     *
+     * This is where the magic happens: Subscribes to messages from the underlying WebSocket
+     * and saves the results in a MAP
      * @param message
      */
     private onApiMessage(message: Message): void {
@@ -153,7 +92,6 @@ export class BooleanService {
             this._totalresults.next(res.numberofElements);
         } else {
             this._nmbofitems.next(new Map([[res.componentID, res.numberofElements]]));
-            console.log(new Map([[res.componentID, res.numberofElements]]));
         }
     }
 

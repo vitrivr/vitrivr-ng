@@ -23,11 +23,10 @@
                 {{operator.toString()}}
             </mat-option>
         </mat-select>
-        <!-- <app-bool-term-chart></app-bool-term-chart> -->
 
         <!-- Freetext Field for Numbers & Text -->
         <mat-form-field *ngIf="attributeIsText(currentAttrAsync)" class="options">
-            <input [(ngModel)]="inputValue"  matInput placeholder="Search text">
+            <input [(ngModel)]="inputValue" matInput placeholder="Search text">
         </mat-form-field>
 
         <!-- Freetext Field for Numbers & Text with Autocomplete Function! -->

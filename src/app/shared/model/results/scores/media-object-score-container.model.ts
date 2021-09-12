@@ -177,6 +177,12 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
     return this._segmentScores.get(segment.segmentId);
   }
 
+  /**
+   * * Returns true if a MediaObjectScoreContainer has a segment in this._segments
+   *
+   * @param {string} segmentID.
+   * @return {boolean}
+   */
   public hasSegment(segId: string): boolean {
     let hasSeg = false;
     this._segments.forEach((segment) => {
