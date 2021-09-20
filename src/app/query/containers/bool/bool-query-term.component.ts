@@ -79,8 +79,8 @@ export class BoolQueryTermComponent implements OnInit {
             next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, v.slice(3, v.length), null));
             break;
           case ValueType.RANGE.valueOf():
-              const tableR: string = v[5];
-              const columnR: string = v[6];
+              const tableR: string = feature.split('.')[0];
+              const columnR: string = feature.split('.')[1];
               _distinctLookupService.getAllElements(tableR, columnR).pipe(first()).subscribe( value => {
                   const attribute = new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, null, [v[3], v[4]], value);
                   attribute.createData();
