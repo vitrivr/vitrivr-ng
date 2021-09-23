@@ -106,8 +106,7 @@ export class Config {
       text: {
         categories: []
       },
-      boolean: [],
-      staged: true
+      boolean: []
     },
     refinement: {
       filters: [
