@@ -1,0 +1,20 @@
+import {Pipe, PipeTransform} from '@angular/core';
+import {map} from 'rxjs/operators';
+import {Config} from '../../model/config/config.model';
+
+/**
+ * Fetches a specified value from the config
+ */
+@Pipe({
+  name: 'GetConfigVariablePipe'
+})
+export class GetConfigVariablePipe implements PipeTransform {
+
+  public transform<T>(c: Config, fun: ((value: Config) => any)): any {
+    if (!c) {
+      return null
+    }
+    console.log('getting value from function: ' + fun(c))
+    return fun(c)
+  }
+}
