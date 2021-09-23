@@ -32,7 +32,7 @@
     <div>
         <h5 class="mat-h5">Display only objects with tagged segment:</h5>
         <section class="checkbox-group">
-            <mat-checkbox (change)="onTagFilterChanged(tag,$event)" *ngFor="let tag of _selectionService.availableTags"
+            <mat-checkbox (change)="onTagFilterChanged(tag,$event)" *ngFor="let tag of _selectionService._available"
                           [checked]="filter.filterTags.has(tag)"
                           [name]="tag.name">{{tag.name}}</mat-checkbox>
         </section>

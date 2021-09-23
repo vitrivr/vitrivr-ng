@@ -2,12 +2,12 @@ import {Inject, Injectable} from '@angular/core';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import Dexie from 'dexie';
-import {fromPromise} from 'rxjs-compat/observable/fromPromise';
-import {first, flatMap, map} from 'rxjs/operators';
+import {first, map, mergeMap} from 'rxjs/operators';
 import {EMPTY, Observable} from 'rxjs';
 import {DatabaseService} from '../basics/database.service';
 import * as JSZip from 'jszip';
 import {AppConfig} from '../../app.config';
+import {fromPromise} from 'rxjs/internal-compatibility';
 
 /**
  * This service keeps a history of query results and persists them event across session. It allows the user to
@@ -126,14 +126,14 @@ export class HistoryService {
    */
   private ommitOldest() {
     fromPromise(this._historyTable.count()).pipe(
-      flatMap(c => {
+      mergeMap(c => {
         if (c > this._keep) {
           return fromPromise(this._historyTable.limit(c - this._keep).keys());
         } else {
           return EMPTY;
         }
       }),
-      flatMap((a, i) => {
+      mergeMap((a, i) => {
         return fromPromise(this._historyTable.bulkDelete(a));
       })
     ).subscribe();

@@ -5,13 +5,13 @@
 <div *ngIf="_mediaObject as obj" style="padding:10px;">
     <app-objectviewer #objectviewerComponent [mediaobject]="obj"></app-objectviewer>
 
-    <div *ngIf="_segments">
+    <div *ngIf="_mediaObject._segmentsObservable |async as segments">
 
         <mat-tab-group>
-            <mat-tab label="Segments ({{_segments.length}})">
+            <mat-tab label="Segments ({{segments.length}})">
                 <div fxLayout="row" fxLayoutGap="5px" fxLayoutWrap="wrap">
                     <div (dragstart)="onSegmentDrag($event, segment)"
-                         *ngFor="let segment of (_segments | orderBy:orderType)" class="tile"
+                         *ngFor="let segment of (segments | orderBy:orderType)" class="tile"
                          draggable="true" fxFlex="200px">
                         <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                             <p [style.margin]="'0'">{{segment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                 </div>
-                <button (click)="onLoadAllButtonClicked(_segments[0])" color="warn" mat-raised-button
+                <button (click)="onLoadAllButtonClicked(segments[0])" color="warn" mat-raised-button
                         matTooltip="Load all segments">
                     <mat-icon>all_inclusive</mat-icon>
                     Load all

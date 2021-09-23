@@ -27,7 +27,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
   private _segments: MediaSegmentScoreContainer[] = [];
 
-  private _segmentsObservable: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._segments)
+  _segmentsObservable: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._segments)
 
   /** Map containing the metadata that belongs to the object. Can be empty! */
   private _metadata: Map<string, string> = new Map();

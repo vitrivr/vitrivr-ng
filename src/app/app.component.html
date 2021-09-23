@@ -37,14 +37,6 @@
 
     <span class="spacer-xlarge"></span>
 
-    <a *ngIf="_config | GetConfigVariablePipe:evaluationActive" mat-icon-button matTooltip="Navigate to evaluation module"
-       routerLink="/evaluation"
-       routerLinkActive="active" skipLocationChange="true">
-        <mat-icon>assessment</mat-icon>
-    </a>
-
-    <span *ngIf="_config | GetConfigVariablePipe:evaluationActive" class="spacer-medium"></span>
-
     <button (click)="showHistory()" mat-icon-button matTooltip="Show query history.">
         <mat-icon>history</mat-icon>
     </button>

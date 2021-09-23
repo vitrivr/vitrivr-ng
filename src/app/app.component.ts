@@ -34,7 +34,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   public _active_view: View;
 
   competitionHost = ((c: Config) => c._config.competition.host);
-  evaluationActive = ((c: Config) => c._config.evaluation.active);
 
 
   /**

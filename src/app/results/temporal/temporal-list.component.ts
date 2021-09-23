@@ -15,6 +15,7 @@ import {ScoredPathObjectContainer} from './scored-path-object-container.model';
 import {ScoredPathSegment} from './scored-path-segment.model';
 import {AppConfig} from '../../app.config';
 import {Path} from './path.model';
+import {map} from 'rxjs/operators';
 
 @Component({
 
@@ -49,11 +50,11 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
    * Returns true for all objects that should be included
    */
   get objectFilter(): Observable<((v: ScoredPathObjectContainer) => boolean)[]> {
-    return this._filterService.objectFilters.map(filters =>
+    return this._filterService.objectFilters.pipe(map(filters =>
       filters.map(filter => function (scoredPathContainer: ScoredPathObjectContainer): boolean {
         return filter(scoredPathContainer.objectScoreContainer);
       })
-    );
+    ));
   }
 
   get pathSegmentFilter(): Observable<((v: ScoredPathSegment) => boolean)[]> {
@@ -78,7 +79,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
   protected subscribe(results: ResultsContainer) {
     if (results) {
       this.toggle = [];
-      this._dataSource = results.temporalObjectsAsObservable.map(objects => {
+      this._dataSource = results.temporalObjectsAsObservable.pipe(map(objects => {
         if (objects.length === 0) {
           return [];
         }
@@ -88,7 +89,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
         return objects.map(
           object => new ScoredPathObjectContainer(object.object, [new ScoredPath(new Path(new Map(object.segments.map(obj => [obj.start, obj]))), object.score)], object.score)
         );
-      });
+      }));
     }
   }
 

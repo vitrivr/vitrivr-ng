@@ -44,7 +44,6 @@ export class ObjectdetailsComponent implements OnInit {
   _mediaObject: MediaObjectScoreContainer;
   _showSubmitButton = false
   _loading = false
-  _segments: MediaSegmentScoreContainer[];
 
   private _lsc = false;
   /** Currently selected objectID */
@@ -225,7 +224,6 @@ export class ObjectdetailsComponent implements OnInit {
   private updateContainer() {
     this._mediaObject = this._container
     this._loading = (!this._mediaObject.name || this._mediaObject.segments.length === 0)
-    this._container.segmentsObservable.subscribe(el => this._segments = el)
   }
 
   public onSubmitPressed(segment: MediaSegmentScoreContainer) {

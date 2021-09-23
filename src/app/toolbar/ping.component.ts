@@ -14,7 +14,7 @@ import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
             </button>
             <mat-menu #appMenu="matMenu">
                 <button (click)="reconnectCineast()" mat-menu-item>Reconnect to Cineast</button>
-                <mat-divider *ngIf="_collabordinatorStatus"></mat-divider>
+                <mat-divider *ngIf="_collabordinator._online|async"></mat-divider>
                 <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect to Collabordinator</button>
             </mat-menu>
         </span>
@@ -24,7 +24,6 @@ import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
 export class PingComponent {
 
   _icon: string
-  _collabordinatorStatus: boolean
   _latency: number
 
   /**
@@ -50,7 +49,6 @@ export class PingComponent {
           this._icon = 'watch_later'
       }
     })
-    _collabordinator._online.subscribe(status => this._collabordinatorStatus = status)
     this._ping.asObservable().subscribe(s => this._latency = s.latency)
   }
 

@@ -12,7 +12,6 @@ import {CoreModule} from './core/core.module';
 import {SettingsModule} from './settings/settings.module';
 import {ObjectdetailsModule} from './objectdetails/objectdetails.module';
 import {AppRoutingModule} from './app-routing.module';
-import {EvaluationModule} from './evaluation/evaluation.module';
 import {MaterialModule} from './material.module';
 import {ResultsModule} from './results/results.module';
 import {MatBadgeModule} from '@angular/material/badge';
@@ -38,7 +37,6 @@ export function initializeConfig(appConfig: AppConfig) {
     FormsModule,
     AppRoutingModule,
     ResultsModule,
-    EvaluationModule,
     ObjectdetailsModule,
     SegmentdetailsModule,
     SettingsModule,

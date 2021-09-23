@@ -10,16 +10,13 @@ import {QueryService} from '../../core/queries/query.service';
 })
 export class SelectionManagementComponent {
 
-  _selection: Map<string, Set<Tag>>;
-
   /**
    * Constructor for SelectionManagementComponent
    *
    * @param _selectionService Reference to SelectionService (by injection).
    * @param _queryService Reference to QueryService (by injection).
    */
-  constructor(private _selectionService: SelectionService, private _queryService: QueryService) {
-    _selectionService.asObservable().subscribe(el => this._selection = el)
+  constructor(public _selectionService: SelectionService, private _queryService: QueryService) {
   }
 
   /**

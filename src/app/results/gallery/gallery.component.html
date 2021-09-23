@@ -1,7 +1,7 @@
-<p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
+<p *ngIf="!(_dataSource | async) && !_loading" class="background-prompt">No results available. Please start a
     search...</p>
 
-<p *ngIf="!(dataSource | async) && loading" class="background-prompt">
+<p *ngIf="!(_dataSource | async) && _loading" class="background-prompt">
     <mat-spinner></mat-spinner>
 </p>
 
@@ -11,7 +11,7 @@
     <div (dragstart)="onTileDrag($event, mediaobject.representativeSegment, mediaobject)"
          (mouseenter)="focus = mediaobject"
          (mouseleave)="focus = null"
-         *ngFor="let mediaobject of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count"
+         *ngFor="let mediaobject of (((_dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : _count"
          class="tile"
          draggable="true">
         <div [style.background]="backgroundForSegment(mediaobject.representativeSegment)" class="header" fxLayout
@@ -23,11 +23,11 @@
                 <div *ngIf="inFocus(mediaobject)" class="tags" fxLayout="row">
                     <button (click)="onHighlightButtonClicked(mediaobject.representativeSegment,tag)"
                             (contextmenu)="onHighlightButtonRightClicked($event,mediaobject.representativeSegment,tag)"
-                            *ngFor="let tag of selectionService.availableTags"
+                            *ngFor="let tag of _selectionService._available"
                             mat-icon-button
                             matTooltip="Toggle '{{tag.name}}' tag">
                         <mat-icon
-                                [style.color]="selectionService.hasTag(mediaobject.representativeSegment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">
+                                [style.color]="_selectionService.hasTag(mediaobject.representativeSegment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">
                             album
                         </mat-icon>
                     </button>

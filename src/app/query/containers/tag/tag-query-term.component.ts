@@ -143,7 +143,7 @@ export class FieldGroup {
       startWith(''),
       map((tag: string) => {
         if (tag.length >= 3) {
-          return this._tags.findTagsBy('matchingname', tag).pipe(first()).map(res => res.tags);
+          return this._tags.findTagsBy('matchingname', tag).pipe(first(), map(res => res.tags));
         } else {
           return EMPTY;
         }

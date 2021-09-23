@@ -252,6 +252,7 @@ export class FilterService {
       segmentFilters.push((seg) => {
         let andFilter = Boolean(true);
         let orFilter = Boolean(false);
+        let tagFilter = Boolean(false);
         // check whether the segment or the corresponding object has appropriate metadata
         this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
           if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer.metadata.get(mdKey))) {
@@ -267,7 +268,15 @@ export class FilterService {
           }
           andFilter = false;
         });
-        return this._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
+        if (this._filterTags.size === 0) {
+          tagFilter = true;
+        }
+        this._filterTags.forEach(tag => {
+          if (this._selectionService.hasTag(seg.segmentId, tag)) {
+            tagFilter = true;
+          }
+        });
+        return this._useOrForMetadataCategoriesFilter ? orFilter && tagFilter : andFilter && tagFilter;
       });
     }
 

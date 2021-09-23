@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
-import {first} from 'rxjs/operators';
 import {KeyboardService} from '../../core/basics/keyboard.service';
 import {QueryService} from '../../core/queries/query.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
@@ -13,7 +12,6 @@ import {InteractionEventType} from '../../shared/model/events/interaction-event-
 import {MatDialog} from '@angular/material/dialog';
 import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
 import {Observable} from 'rxjs';
-import {VgApiService} from '@videogular/ngx-videogular/core';
 import {AppConfig} from '../../app.config';
 
 /**
@@ -51,14 +49,14 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   /**
    * A flag whether this preview is in focus or not.
    */
-  private _focus = false;
+  _focus = false;
 
   constructor(readonly _keyboardService: KeyboardService,
               private _queryService: QueryService,
               private _eventBusService: EventBusService,
               private _vbs: VbsSubmissionService,
               private _dialog: MatDialog,
-              private _resolver: ResolverService,
+              public _resolver: ResolverService,
               private _configService: AppConfig) {
   }
 
@@ -75,13 +73,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   public get id(): string {
     return this.segment.segmentId;
-  }
-
-  /**
-   * Returns whether this segment's preview is in focus or not.
-   */
-  get inFocus(): boolean {
-    return this._focus;
   }
 
   /**
