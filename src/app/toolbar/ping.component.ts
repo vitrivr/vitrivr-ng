@@ -8,13 +8,13 @@ import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
 @Component({
   selector: 'app-api-status',
   template: `
-    <span>
+      <span>
             <button mat-button [matMenuTriggerFor]="appMenu">
-                 <mat-icon>{{icon | async}}</mat-icon>&nbsp;{{(latency | async) < 100000 ? '(' + (latency | async) + 'ms)' : "(&#x221e;)"}}
+                 <mat-icon>{{_icon}}</mat-icon>&nbsp;{{(_latency < 100000 ? '(' + _latency + 'ms)' : "(&#x221e;)")}}
             </button>
             <mat-menu #appMenu="matMenu">
                 <button (click)="reconnectCineast()" mat-menu-item>Reconnect to Cineast</button>
-                <mat-divider *ngIf="collabordinatorAvailable"></mat-divider>
+                <mat-divider *ngIf="_collabordinatorStatus"></mat-divider>
                 <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect to Collabordinator</button>
             </mat-menu>
         </span>
@@ -22,6 +22,11 @@ import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
 })
 
 export class PingComponent {
+
+  _icon: string
+  _collabordinatorStatus: boolean
+  _latency: number
+
   /**
    * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
    *
@@ -29,45 +34,24 @@ export class PingComponent {
    * @param _collabordinator CollabordinatorService reference.
    * @param _factory WebSocketFactoryService reference.
    */
-  constructor(private _ping: PingService, private _collabordinator: CollabordinatorService, private _factory: WebSocketFactoryService) {
-  }
-
-  /**
-   * Returns the icon name based on the current API status.
-   *
-   * @returns {any}
-   */
-  get icon(): Observable<string> {
-    return this._ping.asObservable().pipe(
-      map(s => {
-        switch (s.status) {
-          case 'DISCONNECTED':
-            return 'flash_off';
-          case 'ERROR':
-            return 'error';
-          case 'OK':
-            return 'check_circle';
-          default:
-            return 'watch_later'
-        }
-      })
-    )
-  }
-
-  /**
-   * Returns true, if the Collabordinator service is available and false otherwise.
-   */
-  get collabordinatorAvailable(): boolean {
-    return this._collabordinator.available();
-  }
-
-  /**
-   * Getter for latency.
-   *
-   * @returns {number}
-   */
-  get latency() {
-    return this._ping.asObservable().pipe(map(s => s.latency))
+  constructor(private _ping: PingService, public _collabordinator: CollabordinatorService, private _factory: WebSocketFactoryService) {
+    _ping.subscribe(s => {
+      switch (s.status) {
+        case 'DISCONNECTED':
+          this._icon = 'flash_off';
+          break;
+        case 'ERROR':
+          this._icon = 'error';
+          break;
+        case 'OK':
+          this._icon = 'check_circle';
+          break;
+        default:
+          this._icon = 'watch_later'
+      }
+    })
+    _collabordinator._online.subscribe(status => this._collabordinatorStatus = status)
+    this._ping.asObservable().subscribe(s => this._latency = s.latency)
   }
 
   /**
