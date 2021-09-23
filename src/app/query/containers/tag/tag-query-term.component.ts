@@ -20,9 +20,9 @@ export class TagQueryTermComponent implements OnInit {
   private tagTerm: TagQueryTerm;
 
   /** List of tag fields currently displayed. */
-  private readonly _field: FieldGroup;
+  readonly _field: FieldGroup;
   /** List of tag fields currently displayed. */
-  private _tags: Tag[] = [];
+  _tags: Tag[] = [];
 
   constructor(_tagService: TagService, private _matsnackbar: MatSnackBar) {
     this._field = new FieldGroup(_tagService);
@@ -32,14 +32,6 @@ export class TagQueryTermComponent implements OnInit {
     if (this.tagTerm.data) {
       this._tags = this.tagTerm.tags;
     }
-  }
-
-  get tags() {
-    return this._tags;
-  }
-
-  get field() {
-    return this._field;
   }
 
   /**
@@ -57,7 +49,7 @@ export class TagQueryTermComponent implements OnInit {
     if (!tagAlreadyInList) {
       this.addTag(event.option.value);
     } else {
-      this.field.formControl.setValue('');
+      this._field.formControl.setValue('');
       this._matsnackbar.open(`Tag ${event.option.value.name} (${event.option.value.id}) already added`, null, {
         duration: 2000,
       });
@@ -74,7 +66,7 @@ export class TagQueryTermComponent implements OnInit {
       tag.priority = PriorityEnum.REQUEST
     }
     this._tags.push(tag);
-    this.field.formControl.setValue('');
+    this._field.formControl.setValue('');
     this.tagTerm.tags = this._tags;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
