@@ -3,14 +3,8 @@
      draggable="true"
      id="{{id}}">
     <img (click)="onTileClicked($event)"
-         *ngIf="!(this._keyboardService.ctrlPressed | async) || !inFocus" draggable="false"
+         *ngIf="!(this._keyboardService.ctrlPressed|async) || !inFocus" draggable="false"
          src="{{this._resolver.pathToThumbnail(this.segment.objectScoreContainer, this.segment, 80, 120)}}"/>
-
-    <vg-player (onPlayerReady)="onPlayerReady($event, segment)" *ngIf="(playVideo(segment) | async) ">
-        <video #media [autoplay]="true" [vgMedia]="media" preload="auto"
-               src="{{container._resolver.pathToObject(segment.objectScoreContainer)}}">
-        </video>
-    </vg-player>
 
     <div *ngIf="inFocus" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
         <button (click)="container.onHighlightButtonClicked(segment,tag)"

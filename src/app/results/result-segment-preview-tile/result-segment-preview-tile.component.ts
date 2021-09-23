@@ -136,31 +136,4 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   ngOnInit() {
   }
 
-  /**
-   * Whether the preview should play the video or not.
-   * This **has** to be a lambda, as otherwise the scope would not be retained
-   * @param segment
-   */
-  playVideo = (segment: MediaSegmentScoreContainer) => {
-    return this._keyboardService.ctrlPressed.map(el => el && segment.objectScoreContainer.mediatype === 'VIDEO' && this.inFocus);
-  };
-
-  /**
-   * Event handler when the video player is ready and eventually will seek to the segment's temporal position
-   * @param api
-   * @param segment
-   */
-  public onPlayerReady(api: VgApiService, segment: MediaSegmentScoreContainer) {
-    api.getDefaultMedia().subscriptions.loadedData.pipe(first()).subscribe(() => this.seekToFocusPosition(api, segment));
-  }
-
-  /**
-   * Seeks to the position of the focus segment. If that position is undefined, this method has no effect.
-   */
-  public seekToFocusPosition(api: VgApiService, segment: MediaSegmentScoreContainer) {
-    if (segment) {
-      api.seekTime(segment.startabs);
-    }
-  }
-
 }
