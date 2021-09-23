@@ -26,8 +26,19 @@ export class QueryContainerComponent {
   /** Temporal Distance components to retrieve the temporal distance input provided by the user */
   @ViewChildren(TemporalDistanceComponent) temporalDistances: QueryList<TemporalDistanceComponent>;
 
-  /** A reference to the observable Config exposed by ConfigService. */
-  private readonly _config: Observable<Config>;
+  _config: Config
+
+  queryOptionsImage = ((c: Config) => c._config.query.options.image)
+  queryOptionsAudio = ((c: Config) => c._config.query.options.audio)
+  queryOptions3D = ((c: Config) => c._config.query.options.model3d)
+  queryOptionsMotion = ((c: Config) => c._config.query.options.motion)
+  queryOptionsText = ((c: Config) => c._config.query.options.text)
+  queryOptionsTag = ((c: Config) => c._config.query.options.tag)
+  queryOptionsSemantic = ((c: Config) => c._config.query.options.semantic)
+  queryOptionsBoolean = ((c: Config) => c._config.query.options.boolean)
+
+
+
 
   /**
    * Constructor; injects ConfigService
@@ -35,16 +46,7 @@ export class QueryContainerComponent {
    * @param {AppConfig} _configService
    */
   constructor(_configService: AppConfig) {
-    this._config = _configService.configAsObservable;
-  }
-
-  /**
-   * Getter for config.
-   *
-   * @return {Config}
-   */
-  get config(): Observable<Config> {
-    return this._config;
+    _configService.configAsObservable.subscribe(c => this._config = c)
   }
 
   /**
