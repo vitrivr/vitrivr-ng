@@ -9,7 +9,7 @@
 
     <span class="spacer-xlarge"></span>
 
-    <a *ngIf="!(config|async).get('competition.host')" mat-icon-button matTooltip="Gallery view" routerLink="/gallery"
+    <a *ngIf="!(_config | GetConfigVariablePipe:competitionHost)" mat-icon-button matTooltip="Gallery view" routerLink="/gallery"
        routerLinkActive="active" skipLocationChange="true">
         <mat-icon>grid_on</mat-icon>
     </a>
@@ -37,13 +37,13 @@
 
     <span class="spacer-xlarge"></span>
 
-    <a *ngIf="(config|async).get('evaluation.active')" mat-icon-button matTooltip="Navigate to evaluation module"
+    <a *ngIf="_config | GetConfigVariablePipe:evaluationActive" mat-icon-button matTooltip="Navigate to evaluation module"
        routerLink="/evaluation"
        routerLinkActive="active" skipLocationChange="true">
         <mat-icon>assessment</mat-icon>
     </a>
 
-    <span *ngIf="(config|async).get('evaluation.active')" class="spacer-medium"></span>
+    <span *ngIf="_config | GetConfigVariablePipe:evaluationActive" class="spacer-medium"></span>
 
     <button (click)="showHistory()" mat-icon-button matTooltip="Show query history.">
         <mat-icon>history</mat-icon>
@@ -62,7 +62,7 @@
 </mat-toolbar>
 
 <div>
-    <mat-progress-bar *ngIf="(loading|async)" [attr.color]="'accent'" mode="query"></mat-progress-bar>
+    <mat-progress-bar *ngIf="_loadBool" [attr.color]="'accent'" mode="query"></mat-progress-bar>
 </div>
 
 <mat-sidenav-container fullscreen style="margin-top:75px;">

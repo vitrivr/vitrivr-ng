@@ -1,5 +1,4 @@
 import {AfterContentInit, Component} from '@angular/core';
-import {Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
@@ -18,10 +17,6 @@ import {TemporalMode} from './temporal-mode-container.model';
   templateUrl: './preferences.component.html'
 })
 export class PreferencesComponent implements AfterContentInit {
-
-  /** The current configuration as observable. */
-  private _configObservable: Observable<Config>;
-
   _config: Config;
 
   /** Table for persisting result logs. */
@@ -53,7 +48,6 @@ export class PreferencesComponent implements AfterContentInit {
     private _submissionService: VbsSubmissionService,
     private _notificationService: NotificationService
   ) {
-    this._configObservable = this._configService.configAsObservable;
     this._configService.configAsObservable.subscribe(c => this._config = c)
     this._resultsLogTable = _db.db.table('log_results');
     this._interactionLogTable = _db.db.table('log_interaction');
@@ -62,15 +56,11 @@ export class PreferencesComponent implements AfterContentInit {
 
   public onModeChanged(mode: TemporalMode) {
     this.mode = mode;
-    this._configObservable.pipe(first()).subscribe(c => {
-      c.mode = mode
-    });
+    this._configService.config.mode = mode
   }
 
   public onMaxLengthSaveClicked() {
-    this._configObservable.pipe(first()).subscribe(c => {
-      c.maxLength = this.maxLength
-    });
+    this._configService.config.maxLength = this.maxLength
   }
 
   /**
