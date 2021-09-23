@@ -139,7 +139,7 @@ export class ObjectdetailsComponent implements OnInit {
             console.log(`no metadata available for ${objectId}`)
             return
           }
-          result.content.forEach(md => this._container.metadata.set(md.key, md.value))
+          result.content.forEach(md => this._container.metadata.set(`${md.domain}.${md.key}`, md.value))
         })
         return this._container;
       })
@@ -189,7 +189,7 @@ export class ObjectdetailsComponent implements OnInit {
     console.log(`looking up metadata for ${segment.segmentId}`)
     this._loading = true
     this._metaService.findSegMetaById(segment.segmentId).subscribe(res => {
-      res.content.forEach(md => segment.metadata.set(md.key, md.value))
+      res.content.forEach(md => segment.metadata.set(`${md.domain}.${md.key}`, md.value))
       this._loading = false
       this.showMetadata(segment)
     })
