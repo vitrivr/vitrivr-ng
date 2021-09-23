@@ -104,6 +104,7 @@ export class ObjectdetailsComponent implements OnInit {
           this.updateContainer();
           return
         }
+        this._loading = true
         /** If there are no results available, we need to load more detail information */
         /** load object information */
         this._objectService.findObjectsByAttribute('id', objectId).subscribe(result => {

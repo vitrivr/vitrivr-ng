@@ -1,32 +1,32 @@
-<div *ngIf="loading |async">
+<div *ngIf="_loading">
     <mat-progress-bar mode="buffer"></mat-progress-bar>
 </div>
 
-<div *ngIf="(mediaobject|async) as obj" style="padding:10px;">
-    <app-objectviewer #objectviewerComponent [mediaobject]="obj"></app-objectviewer>
+<div *ngIf="_mediaObject" style="padding:10px;">
+    <app-objectviewer #objectviewerComponent [mediaobject]="_mediaObject"></app-objectviewer>
 
-    <div *ngIf="(mediasegment |async) as segment">
+    <div *ngIf="_mediaSegment">
 
         <mat-tab-group>
-            <mat-tab label="Segment {{segment.segmentId}}">
+            <mat-tab label="Segment {{_mediaSegment.segmentId}}">
                 <div (dragstart)="onSegmentDrag($event)" class="tile" draggable="true" fxFlex="200px">
                     <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
-                        <p [style.margin]="'0'">{{segment.segmentId}}</p>
-                        <p *ngIf="segment.endabs > 0" [style.margin]="'0'">{{segment.startabs.toFixed(2)}}
-                            - {{segment.endabs.toFixed(2)}}</p>
+                        <p [style.margin]="'0'">{{_mediaSegment.segmentId}}</p>
+                        <p *ngIf="_mediaSegment.endabs > 0" [style.margin]="'0'">{{_mediaSegment.startabs.toFixed(2)}}
+                            - {{_mediaSegment.endabs.toFixed(2)}}</p>
                     </div>
 
                     <img class="tile-body" height="200px"
-                         src="{{_resolver.pathToThumbnail(obj,segment)}}"
+                         src="{{_resolver.pathToThumbnail(_mediaObject,_mediaSegment)}}"
                          width="200px">
 
                     <div class="tile-footer" fxLayout="row-reverse">
-                        <button (click)="onPlayClick(segment)"
-                                *ngIf="(mediaobject|async).mediatype == 'VIDEO' || (mediaobject|async).mediatype == 'AUDIO'"
+                        <button (click)="onPlayClick(_mediaSegment)"
+                                *ngIf="_mediaObject.mediatype == 'VIDEO' || _mediaObject.mediatype == 'AUDIO'"
                                 mat-icon-button matTooltip="Start playback">
                             <mat-icon>play_arrow</mat-icon>
                         </button>
-                        <button (click)="onMltClick(segment)" mat-icon-button matTooltip="More-like-this">
+                        <button (click)="onMltClick(_mediaSegment)" mat-icon-button matTooltip="More-like-this">
                             <mat-icon>youtube_searched_for</mat-icon>
                         </button>
                     </div>
@@ -34,24 +34,24 @@
 
             </mat-tab>
 
-            <mat-tab label="Segment Metadata ({{(_segMetadata|async).size}})">
-                <div *ngIf="(_segMetadata| async).size == 0" style="padding-top:10px">
-                    No segment metadata available for {{(mediasegment|async).segmentId}}
+            <mat-tab *ngIf="_segMetadata" label="Segment Metadata ({{_segMetadata.size}})">
+                <div *ngIf="_segMetadata.size == 0" style="padding-top:10px">
+                    No segment metadata available for {{_mediaSegment.segmentId}}
                 </div>
                 <mat-list>
-                    <mat-list-item *ngFor="let metadatum of (_segMetadata|async) | keyvalue">
+                    <mat-list-item *ngFor="let metadatum of _segMetadata | keyvalue">
                         <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
                         <p [innerHTML]="textWithLink(metadatum.value)" mat-line style="white-space: pre-wrap;"></p>
                     </mat-list-item>
                 </mat-list>
             </mat-tab>
 
-            <mat-tab label="Object Metadata ({{(_objMetadata | async).size}})">
-                <div *ngIf="(_objMetadata| async).size == 0" style="padding-top:10px">
-                    No object metadata available for {{(mediaobject|async).objectId}}
+            <mat-tab *ngIf="_objMetadata" label="Object Metadata ({{_objMetadata.size}})">
+                <div *ngIf="_objMetadata.size == 0" style="padding-top:10px">
+                    No object metadata available for {{_mediaObject.objectId}}
                 </div>
                 <mat-list>
-                    <mat-list-item *ngFor="let metadatum of ((_objMetadata |async) | keyvalue)">
+                    <mat-list-item *ngFor="let metadatum of (_objMetadata | keyvalue)">
                         <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
                         <p [innerHTML]="textWithLink(metadatum.value)" mat-line style="white-space: pre-wrap;"></p>
                     </mat-list-item>
