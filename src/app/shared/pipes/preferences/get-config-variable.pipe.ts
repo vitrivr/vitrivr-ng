@@ -14,7 +14,6 @@ export class GetConfigVariablePipe implements PipeTransform {
     if (!c) {
       return null
     }
-    console.log('getting value from function: ' + fun(c))
     return fun(c)
   }
 }
