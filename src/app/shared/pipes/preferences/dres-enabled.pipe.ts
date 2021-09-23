@@ -12,7 +12,6 @@ import {Config} from '../../model/config/config.model';
 export class DresEnabledPipe implements PipeTransform {
 
   public transform<T>(c: Config): boolean {
-    console.log('checking if dres is enabled')
     return !(c._config.competition.host === null || c._config.competition.host === '')
   }
 }
