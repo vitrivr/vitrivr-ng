@@ -50,7 +50,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<S
    * Returns true for all objects that should be included
    */
   get objectFilter(): Observable<((v: ScoredPathObjectContainer) => boolean)[]> {
-    return this._filterService.objectFilters.pipe(map(filters =>
+    return this._filterService._objectFilters.pipe(map(filters =>
       filters.map(filter => function (scoredPathContainer: ScoredPathObjectContainer): boolean {
         return filter(scoredPathContainer.objectScoreContainer);
       })

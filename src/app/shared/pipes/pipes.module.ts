@@ -14,13 +14,14 @@ import {LimitPathsPipe} from './containers/limit-paths.pipe';
 import {OrderByScoredPathSegmentPipe} from './containers/order-by-scored-path-segment.pipe';
 import {DresEnabledPipe} from './preferences/dres-enabled.pipe';
 import {GetConfigVariablePipe} from './preferences/get-config-variable.pipe';
+import {ObjectFilterTemporalPipe} from './util/object-filter-temporal.pipe';
 
 @NgModule({
   imports: [],
   // tslint:disable-next-line:max-line-length
-  declarations: [GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe, OrderByScoredPathSegmentPipe],
+  declarations: [ObjectFilterTemporalPipe, GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe, OrderByScoredPathSegmentPipe],
   // tslint:disable-next-line:max-line-length
-  exports: [GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe, OrderByScoredPathSegmentPipe]
+  exports: [ObjectFilterTemporalPipe, GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderObjectByBestPathScorePipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe, OrderByScoredPathSegmentPipe]
 })
 export class PipesModule {
 }

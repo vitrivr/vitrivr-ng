@@ -1,6 +1,4 @@
 import {Component} from '@angular/core';
-import {map} from 'rxjs/operators';
-import {Observable} from 'rxjs';
 import {PingService} from '../core/basics/ping.service';
 import {CollabordinatorService} from '../core/vbs/collabordinator.service';
 import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';

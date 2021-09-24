@@ -43,20 +43,6 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
   }
 
   /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   */
-  get objectFilter(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
-    return this._filterService.objectFilters;
-  }
-
-  /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   */
-  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
-    return this._filterService.segmentFilter;
-  }
-
-  /**
    * This is a helper method to facilitate updating the the list correct. It is necessary due to nesting in the template (two NgFor). To determine, whether to update the view,
    * angular only takes the outer observable into account. As long as this observable doesn't change, there is no update. Doe to the hierarchical nature of the data, it is -
    * however - entirely possible that the outer observable is not changed while segments are being added to the container.

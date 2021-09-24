@@ -56,7 +56,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    */
   protected constructor(protected _cdr: ChangeDetectorRef,
                         protected _queryService: QueryService,
-                        protected _filterService: FilterService,
+                        public _filterService: FilterService,
                         public _selectionService: SelectionService,
                         protected _eventBusService: EventBusService,
                         protected _router: Router,
@@ -98,7 +98,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
       filter(msg => ['STARTED', 'ENDED', 'ERROR', 'CLEAR'].indexOf(msg) > -1)
     ).subscribe((msg) => this.onQueryStateChange(msg));
     this._selectionServiceSubscription = this._selectionService.subscribe(s => this._cdr.markForCheck());
-    this._filterServiceSubscription = this._filterService.objectFilters.subscribe(s => {
+    this._filterServiceSubscription = this._filterService._objectFilters.subscribe(s => {
       this._cdr.markForCheck()
     });
     this.subscribe(this._queryService.results);

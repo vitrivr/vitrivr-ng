@@ -20,8 +20,9 @@ export class FilterService {
    */
   public _useOrForMetadataCategoriesFilter = false;
   _id: string;
+
   /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
-  private _segmentFilters: BehaviorSubject<((v: MediaSegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
+  _segmentFilters: BehaviorSubject<((v: MediaSegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
   /**
    * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects
@@ -58,7 +59,7 @@ export class FilterService {
   private _threshold = 0.0;
 
   /** An internal BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
-  private _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
+  _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
   constructor(private _selectionService: SelectionService) {
     Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._mediatypes.set(v, false));
@@ -111,13 +112,6 @@ export class FilterService {
   }
 
   /**
-   * Getter for BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers.
-   */
-  get objectFilters(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
-    return this._objectFilters.asObservable();
-  }
-
-  /**
    * Returns a copy of the list of MediaTypes that should be used for filtering.
    */
   get mediatypeKeys(): MediaObjectDescriptor.MediatypeEnum[] {
@@ -129,13 +123,6 @@ export class FilterService {
    */
   get dominantKeys(): ColorLabel[] {
     return Array.from(this._dominant.keys());
-  }
-
-  /**
-   * Getter for BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainer.
-   */
-  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
-    return this._segmentFilters.asObservable();
   }
 
   /**
