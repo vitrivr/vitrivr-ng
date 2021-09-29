@@ -14,7 +14,6 @@ import {ResolverService} from '../../core/basics/resolver.service';
 import {MatDialog} from '@angular/material/dialog';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {AppConfig} from '../../app.config';
-import {ScoredPathSegment} from '../temporal/scored-path-segment.model';
 
 @Component({
   selector: 'app-list',

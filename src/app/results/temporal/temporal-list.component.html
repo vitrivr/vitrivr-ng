@@ -11,7 +11,7 @@
          infiniteScroll>
       <!-- Filter paths by object filters, then limit for rendering efficiency -->
 
-        <ng-container *ngIf="(((_dataSource | async) | FilterPipe: (_filterService._objectFilters|async|)) | LimitPathsPipe : _count) as pipeRes">
+        <ng-container *ngIf="(((_dataSource | async) | FilterPipe: (_filterService._objectFilters | async | ObjectFilterTemporalPipe)) | LimitPathsPipe : _count) as pipeRes">
             <div *ngFor="let tempObject of pipeRes[0]; let i = index; trackBy: trackByFunction; last as lastObject">
         <span [hidden]="!getToggle(i)">
           <div class="container">
@@ -20,7 +20,7 @@
               <mat-icon inline=true style="font-size:1.5em;vertical-align: top">check_box</mat-icon>
             </button>
             <div class="objectPathContainer">
-              <app-result-segment-preview-tile *ngFor="let segment of (tempObject.segments | FilterPipe : (segmentFilter|async))"
+              <app-result-segment-preview-tile *ngFor="let segment of (tempObject.segments | FilterPipe : (_filterService._segmentFilters|async))"
                                                [container]="this"
                                                [score]="segment.score"
                                                [segment]="segment"

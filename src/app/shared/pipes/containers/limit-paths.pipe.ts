@@ -1,6 +1,4 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {MediaObjectScoreContainer} from '../../model/results/scores/media-object-score-container.model';
-import {ScoredPathObjectContainer} from '../../../results/temporal/scored-path-object-container.model';
 import {TemporalObjectSegments} from '../../model/misc/temporalObjectSegments';
 
 @Pipe({

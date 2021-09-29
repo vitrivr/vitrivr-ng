@@ -9,14 +9,9 @@ import {ResultsContainer} from '../../shared/model/results/scores/results-contai
 import {SelectionService} from '../../core/selection/selection.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
 import {FilterService} from '../../core/queries/filter.service';
-import {ScoredPath} from './scored-path.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
-import {ScoredPathObjectContainer} from './scored-path-object-container.model';
-import {ScoredPathSegment} from './scored-path-segment.model';
 import {AppConfig} from '../../app.config';
-import {Path} from './path.model';
 import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegments';
-import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {map} from 'rxjs/operators';
 
 @Component({
