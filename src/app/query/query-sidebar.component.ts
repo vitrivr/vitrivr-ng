@@ -47,7 +47,7 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
    */
   ngAfterViewInit() {
     this._config.subscribe(c => {
-      this.modeChange(c.mode)
+      this.modeChange(c._config.query.temporal_mode as TemporalMode)
     });
     this.queryContainers.changes.subscribe(_ =>
       this.modeChange(this.mode) // subsequent calls to modeChange will trigger an update to the mode of the component
@@ -70,7 +70,7 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
   public onSearchClicked() {
     this._config.subscribe(c => {
       this.maxLength = c.maxLength;
-      this.mode = c.mode;
+      this.mode = c._config.query.temporal_mode as TemporalMode;
     });
 
     let tempDist = []
