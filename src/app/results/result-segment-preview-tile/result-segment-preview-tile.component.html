@@ -3,28 +3,22 @@
      draggable="true"
      id="{{id}}">
     <img (click)="onTileClicked($event)"
-         *ngIf="!(this._keyboardService.ctrlPressed | async) || !inFocus" draggable="false"
-         src="{{container._resolver.pathToThumbnail(segment.objectScoreContainer, segment)}}"/>
+         *ngIf="!(this._keyboardService.ctrlPressed|async) || !_focus" draggable="false"
+         src="{{this._resolver.pathToThumbnail(this.segment.objectScoreContainer, this.segment, 80, 120)}}"/>
 
-    <vg-player (onPlayerReady)="onPlayerReady($event, segment)" *ngIf="(playVideo(segment) | async) ">
-        <video #media [autoplay]="true" [vgMedia]="media" preload="auto"
-               src="{{container._resolver.pathToObject(segment.objectScoreContainer)}}">
-        </video>
-    </vg-player>
-
-    <div *ngIf="inFocus" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
+    <div *ngIf="_focus" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
         <button (click)="container.onHighlightButtonClicked(segment,tag)"
                 (contextmenu)="container.onHighlightButtonRightClicked($event, segment,tag)"
-                *ngFor="let tag of container.selectionService.availableTags" mat-icon-button
+                *ngFor="let tag of container._selectionService._available" mat-icon-button
                 matTooltip="Toggle '{{tag.name}}' tag">
             <mat-icon
-                    [style.color]="container.selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">
+                    [style.color]="container._selectionService.hasTag(segment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">
                 album
             </mat-icon>
         </button>
     </div>
 
-    <div *ngIf="inFocus" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
+    <div *ngIf="_focus" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
         <button (click)="onSubmitButtonClicked()" *ngIf="(showVbsSubmitButton() | async)"
                 mat-icon-button matTooltip="Submit segment to VBS">
             <mat-icon>send</mat-icon>

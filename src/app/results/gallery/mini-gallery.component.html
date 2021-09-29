@@ -1,7 +1,7 @@
-<p *ngIf="!(dataSource | async) && !loading" class="background-prompt">No results available. Please start a
+<p *ngIf="!(_dataSource| async) && !_loading" class="background-prompt">No results available. Please start a
     search...</p>
 
-<p *ngIf="!(dataSource | async) && loading" class="background-prompt">
+<p *ngIf="!(_dataSource| async) && _loading" class="background-prompt">
     <mat-spinner></mat-spinner>
 </p>
 
@@ -9,6 +9,6 @@
      [infiniteScrollDistance]="1" [infiniteScrollUpDistance]="2" [alwaysCallback]="true" class="mini-gallery"
      infiniteScroll>
     <app-result-segment-preview-tile
-            *ngFor="let segment of (((dataSource | async) | OrderByScorePipe | FilterPipe : (filters|async))) | LimitPipe : count; trackBy: segmentTracking"
+            *ngFor="let segment of (((_dataSource | async) | OrderByScorePipe | FilterPipe : (_filterService._segmentFilters|async))) | LimitPipe : _count; trackBy: segmentTracking"
             [container]="this" [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
 </div>

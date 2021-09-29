@@ -1,15 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="space-evenly center">
-    <mat-form-field style="font-size:14px;" fxFlex="60">
-        <!-- <mat-label>Temporal Distance</mat-label>-->
-        <mat-select [(value)]="qualifier">
-            <mat-option [value]="'LESS'">max</mat-option>
-            <mat-option [value]="'LESS_OR_EQUAL'">at most</mat-option>
-            <mat-option [value]="'GREATER_OR_EQUAL'">at least</mat-option>
-            <mat-option [value]="'GREATER'">min</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field style="font-size:14px;" fxFlex="30">
-        <input matInput type="number" value="30" [(ngModel)]="time" style="text-align: right">
-        <span matSuffix>sec.</span>
-    </mat-form-field>
+  <mat-form-field style="font-size:14px;">
+    <input matInput type="number" value="30" [(ngModel)]="time" style="text-align: right">
+    <span matSuffix>sec.</span>
+  </mat-form-field>
 </div>

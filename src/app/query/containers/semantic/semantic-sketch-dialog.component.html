@@ -34,18 +34,18 @@
                 <input [formControl]="formCtrl" [matAutocomplete]="auto" aria-label="Select a concept" matInput
                        placeholder="Select a concept">
                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
-                    <mat-option *ngFor="let category of (categories | async)" [value]="category.name">
+                    <mat-option *ngFor="let category of (_filteredCategories | async)" [value]="category.name">
                         <span [style.color]="category.color"><strong>{{category.name}}</strong></span>
                     </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
             <ul class="picker">
                 <li (click)="onItemSelected(category)"
-                    *ngFor="let category of (categories | async)"
+                    *ngFor="let category of (_filteredCategories | async)"
                     [class.item]="true"
                     [class.selected]="category==selected"
-                    [style.background-color]="(inUse(category) | async) ? category.color : '#000000'"
-                    [style.color]="(inUse(category) | async) ? '#000000' : '#FFFFFF'" matTooltip="{{category.name}}">
+                    [style.background-color]="(_usedSet.has(category)) ? category.color : '#000000'"
+                    [style.color]="(_usedSet.has(category)) ? '#000000' : '#FFFFFF'" matTooltip="{{category.name}}">
                     {{category.name}}
                 </li>
             </ul>

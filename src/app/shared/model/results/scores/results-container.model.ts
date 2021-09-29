@@ -8,18 +8,11 @@ import {FeatureCategories} from '../feature-categories.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
 import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
-import 'rxjs-compat/add/operator/map';
-import 'rxjs-compat/add/operator/merge';
-import 'rxjs-compat/add/operator/concat';
-import 'rxjs-compat/add/operator/zip';
-import 'rxjs-compat/add/operator/filter';
-import 'rxjs-compat/add/operator/combineLatest';
 import {AbstractRefinementOption} from '../../../../settings/refinement/refinementoption.model';
 import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxrefinement.model';
 import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
 import {Config} from '../../config/config.model';
 import {FilterType} from '../../../../settings/refinement/filtertype.model';
-import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
 import {MediaObjectMetadataDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../../../openapi/cineast';
@@ -27,6 +20,8 @@ import {AppConfig} from '../../../../app.config';
 import {MediaObjectDescriptor} from '../../../../../../openapi/cineast/model/mediaObjectDescriptor';
 import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
 import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
+import {combineLatest} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -76,7 +71,7 @@ export class ResultsContainer {
    * @param {string} queryId Unique ID of the query. Used to filter messages!
    * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
    */
-  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
+  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = new AverageFusionFunction()) {
   }
 
   /**
@@ -157,7 +152,7 @@ export class ResultsContainer {
     return container;
   }
 
-  // tslint:disable-next-line:member-ordering
+  // tslint:disable-next-line:member-ordering no-shadowed-variable
   private static fillMap(map: Map<string, AbstractRefinementOption>, resultList: any, config?: Config) {
     if (config) {
       config.get<[string, string][]>('refinement.filters').forEach(el => {
@@ -242,9 +237,6 @@ export class ResultsContainer {
 
   public setScoreFunction(scoreFunction: string) {
     switch (scoreFunction.toUpperCase()) {
-      case 'TEMPORAL':
-        this.scoreFunction = TemporalFusionFunction.instance();
-        break;
       case 'AVERAGE':
         this.scoreFunction = new AverageFusionFunction();
         break;
@@ -268,13 +260,13 @@ export class ResultsContainer {
    * @return a map of all metadata keys with all possible values
    */
   public metadataAsObservable(_configService: AppConfig): Observable<Map<string, AbstractRefinementOption>> {
-
-    return this.segmentsAsObservable.combineLatest(_configService.configAsObservable, function (resultList, config) {
-      const map: Map<string, AbstractRefinementOption> = new Map();
-      return ResultsContainer.fillMap(map, resultList, config)
-    }).combineLatest(this._results_objects_subject, function (map, objects) {
-      return ResultsContainer.fillMap(map, objects)
-    })
+    return combineLatest([this.segmentsAsObservable, _configService.configAsObservable, this._results_objects_subject]).pipe(
+      map(([resultList, config, objects]) => {
+          const valueMap: Map<string, AbstractRefinementOption> = new Map();
+          ResultsContainer.fillMap(valueMap, resultList, config)
+          return ResultsContainer.fillMap(valueMap, objects)
+        }
+      ));
   }
 
   /**

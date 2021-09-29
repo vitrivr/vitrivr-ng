@@ -12,12 +12,12 @@ import {CoreModule} from './core/core.module';
 import {SettingsModule} from './settings/settings.module';
 import {ObjectdetailsModule} from './objectdetails/objectdetails.module';
 import {AppRoutingModule} from './app-routing.module';
-import {EvaluationModule} from './evaluation/evaluation.module';
 import {MaterialModule} from './material.module';
 import {ResultsModule} from './results/results.module';
 import {MatBadgeModule} from '@angular/material/badge';
 import {AppConfig} from './app.config';
 import {SegmentdetailsModule} from './segmentdetails/segmentdetails.module';
+import {PipesModule} from './shared/pipes/pipes.module';
 
 /**
  * Method used to laod the application config
@@ -37,12 +37,12 @@ export function initializeConfig(appConfig: AppConfig) {
     FormsModule,
     AppRoutingModule,
     ResultsModule,
-    EvaluationModule,
     ObjectdetailsModule,
     SegmentdetailsModule,
     SettingsModule,
     QuerySidebarModule,
-    MatBadgeModule
+    MatBadgeModule,
+    PipesModule
   ],
   declarations: [AppComponent, PingComponent],
   providers: [AppConfig, {provide: APP_INITIALIZER, useFactory: initializeConfig, deps: [AppConfig], multi: true}],

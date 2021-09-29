@@ -16,7 +16,7 @@
         </button>
         <mat-divider></mat-divider>
         <span *ngIf="isTimeDistance">
-            <app-temporal-distanceV2></app-temporal-distanceV2>
+            <app-temporal-distance></app-temporal-distance>
             <mat-divider></mat-divider>
         </span>
 
@@ -26,7 +26,7 @@
     <div>
         <div fxLayout="row inline" fxLayoutGap="15px" fxLayoutAlign="space-around center"
              style="width:100%;padding-right:20px">
-            <button (click)="onToggleButtonClicked('IMAGE')" *ngIf="(config|async).get('query.options.image')"
+            <button (click)="onToggleButtonClicked('IMAGE')" *ngIf="_config|GetConfigVariablePipe:queryOptionsImage"
                     class="icon-button" matTooltip="Toggle image query term">
                 <mat-icon
                         [attr.class]="containerModel.hasTerm('IMAGE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -34,7 +34,7 @@
                 </mat-icon>
             </button>
 
-            <button (click)="onToggleButtonClicked('AUDIO')" *ngIf="(config|async).get('query.options.audio')"
+            <button (click)="onToggleButtonClicked('AUDIO')" *ngIf="_config|GetConfigVariablePipe:queryOptionsAudio"
                     class="icon-button" matTooltip="Toggle audio query term">
                 <mat-icon
                         [attr.class]="containerModel.hasTerm('AUDIO') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -43,7 +43,7 @@
             </button>
 
             <button (click)="onToggleButtonClicked('MODEL3D')"
-                    *ngIf="(config|async).get('query.options.model3d')"
+                    *ngIf="_config|GetConfigVariablePipe:queryOptions3D"
                     class="icon-button" matTooltip="Toggle 3D query term">
                 <mat-icon
                         [attr.class]="containerModel.hasTerm('MODEL3D') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -51,7 +51,7 @@
                 </mat-icon>
             </button>
 
-            <button (click)="onToggleButtonClicked('MOTION')" *ngIf="(config|async).get('query.options.motion')"
+            <button (click)="onToggleButtonClicked('MOTION')" *ngIf="_config|GetConfigVariablePipe:queryOptionsMotion"
                     class="icon-button" matTooltip="Toggle motion query term">
                 <mat-icon
                         [attr.class]="containerModel.hasTerm('MOTION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -59,7 +59,7 @@
                 </mat-icon>
             </button>
 
-            <button (click)="onToggleButtonClicked('TEXT')" *ngIf="(config|async).get('query.options.text')"
+            <button (click)="onToggleButtonClicked('TEXT')" *ngIf="_config|GetConfigVariablePipe:queryOptionsText"
                     class="icon-button" matTooltip="Toggle text query term">
                 <mat-icon
                         [attr.class]="containerModel.hasTerm('TEXT') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -67,7 +67,7 @@
                 </mat-icon>
             </button>
 
-            <button (click)="onToggleButtonClicked('TAG')" *ngIf="(config|async).get('query.options.tag')"
+            <button (click)="onToggleButtonClicked('TAG')" *ngIf="_config|GetConfigVariablePipe:queryOptionsTag"
                     class="icon-button" matTooltip="Toggle tag query term">
                 <mat-icon
                         [attr.class]="containerModel.hasTerm('TAG') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -76,7 +76,7 @@
             </button>
 
             <button (click)="onToggleButtonClicked('SEMANTIC')"
-                    *ngIf="(config|async).get('query.options.semantic')"
+                    *ngIf="_config|GetConfigVariablePipe:queryOptionsSemantic"
                     class="icon-button" matTooltip="Toggle semantic sketch query term">
                 <mat-icon
                         [attr.class]="containerModel.hasTerm('SEMANTIC') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
@@ -85,7 +85,7 @@
             </button>
 
             <button (click)="onToggleButtonClicked('BOOLEAN')"
-                    *ngIf="(config|async).get('query.options.boolean')"
+                    *ngIf="_config|GetConfigVariablePipe:queryOptionsBoolean"
                     class="icon-button" matTooltip="Toggle boolean query term">
                 <mat-icon
                         [attr.class]="containerModel.hasTerm('BOOLEAN') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">

@@ -4,7 +4,7 @@ import {Pipe, PipeTransform} from '@angular/core';
   name: 'sortStringSet'
 })
 export class SetStringSortPipe implements PipeTransform {
-  transform(set: Set<string>, args: string): Array<string> {
+  transform(set: Set<string>): Array<string> {
     if (set === undefined || set === null) {
       return new Array<string>();
     }

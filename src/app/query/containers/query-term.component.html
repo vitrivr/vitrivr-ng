@@ -1,7 +1,7 @@
 <!-- where everything lives. This layout would maybe be prettier if the buttons were on the left -->
 <div>
     <!-- div for the up / down buttons -->
-    <div *ngIf="!firstStage && stagedQEnabled()">
+    <div *ngIf="!firstStage">
         <button style="width:48px;" (click)="onPushUpClicked()" mat-icon-button color="primary"
                 matTooltip="Use as an earlier filter">
             <mat-icon>search</mat-icon>
@@ -21,7 +21,7 @@
         <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
     </div>
 
-    <div *ngIf="stagedQEnabled()">
+    <div>
         <button (click)="onPushDownClicked()" mat-icon-button color="primary" aria-label="Use as a later filter">
             <mat-icon>search</mat-icon>
             <mat-icon>keyboard_arrow_down</mat-icon>

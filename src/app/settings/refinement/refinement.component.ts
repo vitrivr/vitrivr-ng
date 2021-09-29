@@ -43,10 +43,10 @@ export class RefinementComponent implements OnInit, OnDestroy {
   private filtersEnabled: Map<string, boolean> = new Map<string, boolean>();
 
   /** An observable for the current results. */
-  private _features: Observable<WeightedFeatureCategory[]> = EMPTY;
+  _features: Observable<WeightedFeatureCategory[]> = EMPTY;
 
   /** An observable for all possible metadatavalues */
-  private _metadata: Observable<Map<string, AbstractRefinementOption>>;
+  _metadata: Observable<Map<string, AbstractRefinementOption>>;
 
   private _timer;
 
@@ -58,19 +58,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
               private _configService: AppConfig,
               public _selectionService: SelectionService,
               private _cdr: ChangeDetectorRef) {
-  }
-
-  /**
-   * Getter for refinement array.
-   *
-   * @return {WeightedFeatureCategory[]}
-   */
-  get features(): Observable<WeightedFeatureCategory[]> {
-    return this._features;
-  }
-
-  get metadata(): Observable<Map<string, AbstractRefinementOption>> {
-    return this._metadata
   }
 
   get filter(): FilterService {

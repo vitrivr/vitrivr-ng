@@ -21,7 +21,6 @@ import {HistoryContainer} from '../../shared/model/internal/history-container.mo
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
-import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {BoolQueryTerm} from '../../shared/model/queries/bool-query-term.model';
@@ -31,7 +30,7 @@ import {InteractionEvent} from '../../shared/model/events/interaction-event.mode
 import {EventBusService} from '../basics/event-bus.service';
 import {AppConfig} from '../../app.config';
 import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult} from '../../../../openapi/cineast';
-import {TemporalQueryV2} from '../../shared/model/messages/queries/temporal-queryV2.model';
+import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
 
@@ -196,7 +195,7 @@ export class QueryService {
       console.warn('There is already a query running');
     }
     this._config.configAsObservable.pipe(first()).subscribe(config => {
-      const query = new TemporalQueryV2(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
+      const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
         new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), timeDistances, maxLength);
       this._socket.next(query)
     });

@@ -104,7 +104,7 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
    *
    */
   get filters(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
-    return this._filterService.objectFilters;
+    return this._filterService._objectFilters;
   }
 
   /**

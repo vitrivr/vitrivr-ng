@@ -34,8 +34,4 @@ export class QueryTermComponent {
   onPushDownClicked() {
     this.stageChange.emit(StageChangeEvent.LATER_STAGE);
   }
-
-  stagedQEnabled() {
-    return this._config.config.get<Boolean>('query.staged');
-  }
 }

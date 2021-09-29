@@ -32,13 +32,16 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   protected abstract name;
 
   /** Indicator whether the progress bar should be visible. */
-  private _loading = false;
+  _loading = false;
 
   /** Indicator whether or not we should scroll*/
   private _updateScroll = false;
 
   /** Local reference to the data source holding the query results.*/
-  protected _dataSource: Observable<T> = EMPTY;
+  _dataSource: Observable<T> = EMPTY;
+
+  /** The number of items that should be displayed. */
+  _count: number = this.scrollIncrement();
 
   /**
    * Default constructor.
@@ -52,34 +55,12 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * @param _snackBar The MatSnackBar component used to display the SnackBar.
    */
   protected constructor(protected _cdr: ChangeDetectorRef,
-              protected _queryService: QueryService,
-              protected _filterService: FilterService,
-              protected _selectionService: SelectionService,
-              protected _eventBusService: EventBusService,
-              protected _router: Router,
-              protected _snackBar: MatSnackBar) {
-  }
-
-  get loading(): boolean {
-    return this._loading;
-  }
-
-  get dataSource(): Observable<T> {
-    return this._dataSource;
-  }
-
-  /** The number of items that should be displayed. */
-  protected _count: number = this.scrollIncrement();
-
-  /**
-   * Getter for count property (for limiting the result set)
-   */
-  get count(): number {
-    return this._count;
-  }
-
-  get selectionService(): SelectionService {
-    return this._selectionService;
+                        protected _queryService: QueryService,
+                        public _filterService: FilterService,
+                        public _selectionService: SelectionService,
+                        protected _eventBusService: EventBusService,
+                        protected _router: Router,
+                        protected _snackBar: MatSnackBar) {
   }
 
   /**
@@ -117,7 +98,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
       filter(msg => ['STARTED', 'ENDED', 'ERROR', 'CLEAR'].indexOf(msg) > -1)
     ).subscribe((msg) => this.onQueryStateChange(msg));
     this._selectionServiceSubscription = this._selectionService.subscribe(s => this._cdr.markForCheck());
-    this._filterServiceSubscription = this._filterService.objectFilters.subscribe(s => {
+    this._filterServiceSubscription = this._filterService._objectFilters.subscribe(s => {
       this._cdr.markForCheck()
     });
     this.subscribe(this._queryService.results);
@@ -291,9 +272,5 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     this._cdr.markForCheck();
   }
 
-  /**
-   *
-   * @param {ResultsContainer} results
-   */
   protected abstract subscribe(results: ResultsContainer);
 }

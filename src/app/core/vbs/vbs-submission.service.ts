@@ -140,7 +140,7 @@ export class VbsSubmissionService {
     this._submissionLogTable.add([segment.segmentId, time])
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
-    this._selection.add(this._selection.availableTags[0], segment.segmentId);
+    this._selection.add(this._selection._available[0], segment.segmentId);
   }
 
   /**

@@ -38,11 +38,13 @@ export class ObjectdetailsComponent implements OnInit {
   @ViewChild('segmentFeaturesComponent')
   segmentFeatures: SegmentFeaturesComponent;
 
-
-  /** Container */
+  /** Current object */
   private _container: MediaObjectScoreContainer;
-  /** The observable that provides the MediaObjectMetadata for the active object. */
-  private _mediaObjectObservable: BehaviorSubject<MediaObjectScoreContainer> = new BehaviorSubject(undefined);
+  /** what will actually be rendered*/
+  _mediaObject: MediaObjectScoreContainer;
+  _showSubmitButton = false
+  _loading = false
+
   private _lsc = false;
   /** Currently selected objectID */
   private objectIdObservable: Observable<string>;
@@ -51,7 +53,7 @@ export class ObjectdetailsComponent implements OnInit {
               private _snackBar: MatSnackBar,
               private _metadataLookup: MetadataService,
               private _query: QueryService,
-              private  _eventBusService: EventBusService,
+              private _eventBusService: EventBusService,
               public _resolver: ResolverService,
               private _historyService: PreviousRouteService,
               private _tagService: TagService,
@@ -69,23 +71,14 @@ export class ObjectdetailsComponent implements OnInit {
         this.orderType = OrderType.SCORE;
       }
     });
+    _vbs.isOn.subscribe(res => this._showSubmitButton = res);
+
 
     /** Generate observables required to create the view. */
     this.objectIdObservable = _route.params.pipe(
       map(p => p['objectId']),
       filter(p => p != null),
     );
-  }
-
-  get mediaobject(): Observable<MediaObjectScoreContainer> {
-    return this._mediaObjectObservable.pipe(filter(el => el !== undefined));
-  }
-
-  /**
-   * Whether we are currently loading information about segments / the object
-   */
-  get loading(): Observable<boolean> {
-    return this.mediaobject.map(obj => !obj.name || obj.segments.length === 0)
   }
 
   ngOnInit() {
@@ -110,7 +103,9 @@ export class ObjectdetailsComponent implements OnInit {
           this.updateContainer();
           return
         }
+        this._loading = true
         /** If there are no results available, we need to load more detail information */
+        /** load object information */
         this._objectService.findObjectsByAttribute('id', objectId).subscribe(result => {
           let message: string = null;
           if (result.content.length === 0) {
@@ -130,12 +125,21 @@ export class ObjectdetailsComponent implements OnInit {
           this._container.contentURL = object.contentURL;
           this.updateContainer()
         })
+        /** load segment information */
         this._segmentService.findSegmentByObjectId(objectId).subscribe(result => {
           if (!this._container.objectId) {
             this._container.objectId = result.content[0].objectId
           }
           this._container.segments = result.content.map(seg => new MediaSegmentScoreContainer(seg, this._container))
           this.updateContainer()
+        })
+        /** load metadata */
+        this._metaService.findMetaById(objectId).subscribe(result => {
+          if (!result.content || result.content.length === 0) {
+            console.log(`no metadata available for ${objectId}`)
+            return
+          }
+          result.content.forEach(md => this._container.metadata.set(`${md.domain}.${md.key}`, md.value))
         })
         return this._container;
       })
@@ -178,6 +182,20 @@ export class ObjectdetailsComponent implements OnInit {
   }
 
   public onInformationButtonClicked(segment: MediaSegmentScoreContainer) {
+    if (segment.metadata.size > 0) {
+      this.showMetadata(segment)
+      return
+    }
+    console.log(`looking up metadata for ${segment.segmentId}`)
+    this._loading = true
+    this._metaService.findSegMetaById(segment.segmentId).subscribe(res => {
+      res.content.forEach(md => segment.metadata.set(`${md.domain}.${md.key}`, md.value))
+      this._loading = false
+      this.showMetadata(segment)
+    })
+  }
+
+  public showMetadata(segment: MediaSegmentScoreContainer) {
     this._snackBar.openFromComponent(MetadataDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
 
     /* Emit an EXAMINE event on the bus. */
@@ -204,18 +222,8 @@ export class ObjectdetailsComponent implements OnInit {
    * Trigger an update for the media object observable. Should be called after changes.
    */
   private updateContainer() {
-    this._mediaObjectObservable.next(this._container)
-  }
-
-
-  /**
-   * Returns true, if the submit (to VBS) button should be displayed and false otherwise. This depends on the configuration and
-   * the media type of the object.
-   *
-   * @return {Observable<boolean>}
-   */
-  get showVbsSubmitButton(): Observable<boolean> {
-    return this._vbs.isOn;
+    this._mediaObject = this._container
+    this._loading = (!this._mediaObject.name || this._mediaObject.segments.length === 0)
   }
 
   public onSubmitPressed(segment: MediaSegmentScoreContainer) {

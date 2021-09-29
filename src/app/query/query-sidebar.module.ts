@@ -5,10 +5,9 @@ import {SketchModule} from '../shared/components/sketch/sketch.module';
 import {MaterialModule} from '../material.module';
 import {QuerySidebarComponent} from './query-sidebar.component';
 import {QueryContainerModule} from './containers/query-container.module';
-import {TemporalDistanceModule} from './temporal-distance/temporal-distance.module';
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, SketchModule, QueryContainerModule, TemporalDistanceModule],
+  imports: [MaterialModule, BrowserModule, FormsModule, SketchModule, QueryContainerModule],
   declarations: [QuerySidebarComponent],
   exports: [QuerySidebarComponent]
 })

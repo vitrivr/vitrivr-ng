@@ -17,6 +17,7 @@ import {AppConfig} from '../../app.config';
 import {Path} from './path.model';
 import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegments';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {map} from 'rxjs/operators';
 
 @Component({
 
@@ -51,11 +52,11 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<T
    * Returns true for all objects that should be included
    */
   get objectFilter(): Observable<((v: TemporalObjectSegments) => boolean)[]> {
-    return this._filterService.objectFilters.map(filters =>
+    return this._filterService._objectFilters.pipe(map(filters =>
       filters.map(filter => function (obj: TemporalObjectSegments): boolean {
         return filter(obj.object);
       })
-    );
+    ));
   }
 
   scrollIncrement(): number {
@@ -71,19 +72,12 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<T
   }
 
   /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   */
-  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
-    return this._filterService.segmentFilter;
-  }
-
-  /**
    * Subscribes to the data exposed by the ResultsContainer.
    */
   protected subscribe(results: ResultsContainer) {
     if (results) {
       this.toggle = [];
-      this._dataSource = results.temporalObjectsAsObservable.map(objects => {
+      this._dataSource = results.temporalObjectsAsObservable.pipe(map(objects => {
         if (objects.length === 0) {
           return [];
         }
@@ -91,7 +85,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<T
           this.toggle.push(true);
         }
         return objects;
-      });
+      }));
     }
   }
 

@@ -1,8 +1,8 @@
 <h3>Query refinement</h3>
 
-<div *ngIf="(features | async)">
+<div *ngIf="(_features | async) as features">
     <h3 class="mat-h3">Weights</h3>
-    <div *ngFor="let feature of features | async" [style.color]="feature.displayColor" class="slider-group">
+    <div *ngFor="let feature of features" [style.color]="feature.displayColor" class="slider-group">
         <span class="label constrained">{{feature.name}}</span>
         <mat-slider (change)="onValueChanged(feature, $event)" [max]="100" [min]="0"
                     value="{{feature.weightPercentage}}"></mat-slider>
@@ -32,7 +32,7 @@
     <div>
         <h5 class="mat-h5">Display only objects with tagged segment:</h5>
         <section class="checkbox-group">
-            <mat-checkbox (change)="onTagFilterChanged(tag,$event)" *ngFor="let tag of _selectionService.availableTags"
+            <mat-checkbox (change)="onTagFilterChanged(tag,$event)" *ngFor="let tag of _selectionService._available"
                           [checked]="filter.filterTags.has(tag)"
                           [name]="tag.name">{{tag.name}}</mat-checkbox>
         </section>
@@ -58,7 +58,7 @@
 
     <h3 class="mat-h3" style="margin-top: 10px;">Metadata Filters</h3>
 
-    <div *ngFor="let entry of (metadata | async) | keyvalue">
+    <div *ngFor="let entry of (_metadata |async) | keyvalue">
         <!-- Toggle to enable / disable filter category -->
         <mat-slide-toggle (change)="onFilterCategoryToggle(entry.key, $event)"
                           [checked]="mdShowFilterCategory(entry.key)">{{entry.key}}</mat-slide-toggle>
@@ -95,6 +95,6 @@
     </div>
 </div>
 
-<div *ngIf="!(features | async)">
+<div *ngIf="!(_features | async)">
     <p class="text-muted">No results available. Execute a query first and/or wait for incoming results.</p>
 </div>

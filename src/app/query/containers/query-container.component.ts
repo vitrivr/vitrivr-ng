@@ -2,7 +2,7 @@ import {Component, Input, QueryList, ViewChildren} from '@angular/core';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
 import {Config} from '../../shared/model/config/config.model';
 import {Observable} from 'rxjs';
-import {TemporalDistanceV2Component} from '../temporal-distanceV2/temporal-distanceV2.component';
+import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.component';
 import {AppConfig} from '../../app.config';
 import {QueryTerm} from '../../../../openapi/cineast';
 import {TemporalMode} from '../../settings/preferences/temporal-mode-container.model';
@@ -24,10 +24,21 @@ export class QueryContainerComponent {
   @Input() mode: TemporalMode;
 
   /** Temporal Distance components to retrieve the temporal distance input provided by the user */
-  @ViewChildren(TemporalDistanceV2Component) temporalDistances: QueryList<TemporalDistanceV2Component>;
+  @ViewChildren(TemporalDistanceComponent) temporalDistances: QueryList<TemporalDistanceComponent>;
 
-  /** A reference to the observable Config exposed by ConfigService. */
-  private readonly _config: Observable<Config>;
+  _config: Config
+
+  queryOptionsImage = ((c: Config) => c._config.query.options.image)
+  queryOptionsAudio = ((c: Config) => c._config.query.options.audio)
+  queryOptions3D = ((c: Config) => c._config.query.options.model3d)
+  queryOptionsMotion = ((c: Config) => c._config.query.options.motion)
+  queryOptionsText = ((c: Config) => c._config.query.options.text)
+  queryOptionsTag = ((c: Config) => c._config.query.options.tag)
+  queryOptionsSemantic = ((c: Config) => c._config.query.options.semantic)
+  queryOptionsBoolean = ((c: Config) => c._config.query.options.boolean)
+
+
+
 
   /**
    * Constructor; injects ConfigService
@@ -35,16 +46,7 @@ export class QueryContainerComponent {
    * @param {AppConfig} _configService
    */
   constructor(_configService: AppConfig) {
-    this._config = _configService.configAsObservable;
-  }
-
-  /**
-   * Getter for config.
-   *
-   * @return {Config}
-   */
-  get config(): Observable<Config> {
-    return this._config;
+    _configService.configAsObservable.subscribe(c => this._config = c)
   }
 
   /**

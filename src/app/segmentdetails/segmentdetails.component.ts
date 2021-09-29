@@ -5,7 +5,7 @@ import {ResolverService} from '../core/basics/resolver.service';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
 import {MediaObjectDragContainer} from '../shared/model/internal/media-object-drag-container.model';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {HtmlUtil} from '../shared/util/html.util';
 import {filter, map} from 'rxjs/operators';
 import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
@@ -32,11 +32,11 @@ export class SegmentdetailsComponent implements AfterViewInit {
   @ViewChild('segmentFeaturesComponent')
   segmentFeatures: SegmentFeaturesComponent;
 
-  /** The observable that provides the MediaObjectMetadata for the active object. */
-  private _mediaObjectObservable: BehaviorSubject<MediaObjectDescriptor> = new BehaviorSubject(undefined);
-  private _mediaSegmentObservable: BehaviorSubject<MediaSegmentDescriptor> = new BehaviorSubject(undefined);
-  _objMetadata: BehaviorSubject<Map<string, string>> = new BehaviorSubject<Map<string, string>>(new Map())
-  _segMetadata: BehaviorSubject<Map<string, string>> = new BehaviorSubject<Map<string, string>>(new Map())
+  _mediaObject: MediaObjectDescriptor;
+  _mediaSegment: MediaSegmentDescriptor;
+  _objMetadata: Map<string, string>;
+  _segMetadata: Map<string, string>;
+  _loading = true
 
   /** Currently selected objectID */
   private segmentIdObservable: Observable<string>;
@@ -45,7 +45,7 @@ export class SegmentdetailsComponent implements AfterViewInit {
               private _snackBar: MatSnackBar,
               private _metadataLookup: MetadataService,
               private _query: QueryService,
-              private  _eventBusService: EventBusService,
+              private _eventBusService: EventBusService,
               public _resolver: ResolverService,
               private _historyService: PreviousRouteService,
               private _objectService: ObjectService,
@@ -58,21 +58,15 @@ export class SegmentdetailsComponent implements AfterViewInit {
     );
   }
 
-  get mediaobject(): Observable<MediaObjectDescriptor> {
-    return this._mediaObjectObservable.pipe(filter(el => el !== undefined));
-  }
-
-  get mediasegment(): Observable<MediaSegmentDescriptor> {
-    return this._mediaSegmentObservable.pipe(filter(el => el !== undefined));
-  }
-
   /**
    * Whether we are currently loading information about segments / the object
    */
-  get loading(): Observable<boolean> {
-    return this.mediaobject.combineLatest(this.mediasegment, (obj, seg) => {
-      return !obj.name || !seg.objectId
-    })
+  private updateLoading() {
+    if (!this._mediaObject || !this._mediaSegment) {
+      this._loading = true
+      return
+    }
+    this._loading = !this._mediaObject.name || !this._mediaSegment.objectId
   }
 
   ngAfterViewInit() {
@@ -92,7 +86,20 @@ export class SegmentdetailsComponent implements AfterViewInit {
             this._historyService.goToRoot();
           }
 
-          this._mediaSegmentObservable.next(segment)
+          this._mediaSegment = segment
+
+          /** Perform Metadata lookup for segment*/
+          this._metadataLookup.findSegMetaById(segment.segmentId).subscribe(res => {
+            if (res.content) {
+              const md = new Map();
+              res.content.forEach(metadata => {
+                md.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+              })
+              this._segMetadata = md
+              this.updateLoading()
+            }
+          })
+          /** Retrieve feature information */
           this.segmentFeatures.onLoadFeaturesButtonClicked(segment)
           /** Retrieve all object information for segment */
           this._objectService.findObjectsByAttribute('id', segment.objectId).subscribe(objResult => {
@@ -107,40 +114,25 @@ export class SegmentdetailsComponent implements AfterViewInit {
               this._snackBar.open(message, '', <MatSnackBarConfig>{duration: 5000});
               this._historyService.goToRoot();
             }
-            const object = objResult.content[0]
-            this._mediaObjectObservable.next(object)
+            this._mediaObject = objResult.content[0]
+
+            /** fetch object metadata */
+            this._metadataLookup.findSegMetaById(this._mediaObject.objectId).subscribe(res => {
+              if (res.content) {
+                const md = new Map();
+                res.content.forEach(metadata => {
+                  md.set(`${metadata.domain}.${metadata.key}`, metadata.value)
+                })
+                this._objMetadata = md
+                this.updateLoading()
+              }
+            })
           })
           /** End of object retrieval */
         })
         /** End of segment retrieval */
       })
     ).subscribe();
-
-    /** Perform Metadata lookup */
-    this.mediasegment.subscribe(seg => {
-      this._metadataLookup.findSegMetaById(seg.segmentId).subscribe(res => {
-        if (res.content) {
-          const md = new Map();
-          res.content.forEach(metadata => {
-            md.set(`${metadata.domain}.${metadata.key}`, metadata.value)
-          })
-          this._segMetadata.next(md);
-        }
-      })
-    })
-
-    /** Perform object metadata lookup */
-    this.mediaobject.subscribe(obj => {
-      this._metadataLookup.findSegMetaById(obj.objectId).subscribe(res => {
-        if (res.content) {
-          const md = new Map();
-          res.content.forEach(metadata => {
-            md.set(`${metadata.domain}.${metadata.key}`, metadata.value)
-          })
-          this._objMetadata.next(md);
-        }
-      })
-    })
   }
 
   /**
@@ -150,8 +142,8 @@ export class SegmentdetailsComponent implements AfterViewInit {
    * @param event Drag event
    */
   public onSegmentDrag(event) {
-    event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, new MediaSegmentDragContainer(this._mediaObjectObservable.getValue(), this._mediaSegmentObservable.getValue()).toJSON());
-    event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromDescriptor(this._mediaObjectObservable.getValue()).toJSON());
+    event.dataTransfer.setData(MediaSegmentDragContainer.FORMAT, new MediaSegmentDragContainer(this._mediaObject, this._mediaSegment).toJSON());
+    event.dataTransfer.setData(MediaObjectDragContainer.FORMAT, MediaObjectDragContainer.fromDescriptor(this._mediaObject).toJSON());
   }
 
   /**
@@ -174,7 +166,7 @@ export class SegmentdetailsComponent implements AfterViewInit {
    * @param segment SegmentScoreContainer that is being clicked.
    */
   public onMltClick(segment: MediaSegmentDescriptor) {
-    this._query.findMoreLikeThis(segment, this._mediaObjectObservable.getValue().mediatype);
+    this._query.findMoreLikeThis(segment, this._mediaObject.mediatype);
   }
 
   public onInformationButtonClicked(segment: MediaSegmentDescriptor) {

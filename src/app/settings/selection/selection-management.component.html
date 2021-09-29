@@ -1,10 +1,10 @@
 <h3>Highlighted items</h3>
 
-<div *ngIf="(selection | async).size == 0">
+<div *ngIf="(_selectionService |async).size == 0">
     <p class="text-muted">No items highlighted!</p>
 </div>
 
-<div *ngIf="(selection | async).size > 0">
+<div *ngIf="(_selectionService |async).size > 0">
     <mat-list>
         <mat-list-item fxLayout="row" fxLayoutAlign="center">
             <button (click)="onClearSelectionClicked()" color="warn" mat-raised-button
@@ -13,7 +13,7 @@
             </button>
         </mat-list-item>
 
-        <mat-list-item *ngFor="let current of (selection | async).entries()">
+        <mat-list-item *ngFor="let current of (_selectionService |async).entries()">
             <button (click)="onSegmentClicked(current[0])" mat-flat-button>{{current[0]}}</button>
             <button (click)="onTagButtonClicked(current[0],tag[0])" *ngFor="let tag of current[1].entries()"
                     mat-icon-button>

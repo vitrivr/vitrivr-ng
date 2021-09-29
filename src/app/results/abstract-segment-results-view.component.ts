@@ -36,14 +36,6 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
 
 
   /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   */
-  get filters(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
-    return this._filterService.segmentFilter;
-  }
-
-
-  /**
    * Subscribes to the data exposed by the ResultsContainer.
    *
    * @return {Observable<MediaObjectScoreContainer>}
