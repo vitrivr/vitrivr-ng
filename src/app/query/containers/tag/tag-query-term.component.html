@@ -16,7 +16,7 @@
             {{tag.name}}&nbsp;<small>({{tag.id}})</small>
             <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
             <button mat-icon-button [matMenuTriggerFor]="menu">
-                <mat-icon *ngIf="tagHasPriority(tag)==false">menu</mat-icon>
+                <mat-icon *ngIf="tag.priority == null">menu</mat-icon>
                 <mat-icon *ngIf="tag.priority == 'REQUIRE'" class="require-icon">warning_amber</mat-icon>
                 <mat-icon *ngIf="tag.priority == 'REQUEST'" class="request-icon">check_circle_outline</mat-icon>
                 <mat-icon *ngIf="tag.priority == 'EXCLUDE'" class="exclude-icon">not_interested</mat-icon>

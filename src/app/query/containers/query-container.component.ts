@@ -37,14 +37,6 @@ export class QueryContainerComponent {
   queryOptionsSemantic = ((c: Config) => c._config.query.options.semantic)
   queryOptionsBoolean = ((c: Config) => c._config.query.options.boolean)
 
-
-
-
-  /**
-   * Constructor; injects ConfigService
-   *
-   * @param {AppConfig} _configService
-   */
   constructor(_configService: AppConfig) {
     _configService.configAsObservable.subscribe(c => this._config = c)
   }
@@ -110,10 +102,5 @@ export class QueryContainerComponent {
   /** Change the temporal mode to the one selected */
   public changeMode(mode: TemporalMode) {
     this.mode = mode;
-  }
-
-  /** Tests whether or not to display distance to previous container */
-  get isTimeDistance(): boolean {
-    return this.mode === 'TEMPORAL_DISTANCE' && this.isNotFirst;
   }
 }

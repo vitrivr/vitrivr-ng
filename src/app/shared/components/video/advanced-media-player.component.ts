@@ -41,29 +41,10 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
   private _api: VgApiService;
 
   /** The internal VgAPI reference used to interact with the media player. */
-  private readonly _track: BehaviorSubject<TextTrack>;
+  readonly _track: BehaviorSubject<TextTrack>;
 
-  constructor(public readonly _resolver: ResolverService, private readonly _vbs: VbsSubmissionService, private _cdRef: ChangeDetectorRef, private _eventBusService: EventBusService) {
+  constructor(public readonly _resolver: ResolverService, readonly _vbs: VbsSubmissionService, private _cdRef: ChangeDetectorRef, private _eventBusService: EventBusService) {
     this._track = new BehaviorSubject<TextTrack>(null)
-  }
-
-  /**
-   * Getter for the track object.
-   *
-   * @return {TextTrack}
-   */
-  get track(): Observable<TextTrack> {
-    return this._track;
-  }
-
-  /**
-   * Returns true, if the submit (to VBS) button should be displayed and false otherwise. This depends on the configuration and
-   * the media type of the object.
-   *
-   * @return {Observable<boolean>}
-   */
-  get showVbsSubmitButton(): Observable<boolean> {
-    return this._vbs.isOn;
   }
 
   /**

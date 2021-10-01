@@ -43,7 +43,7 @@
                     </div>
 
                     <img class="tile-body" height="200px"
-                         src="{{_resolver.pathToThumbnail(_mediaObject,_mediaSegment)}}"
+                         src="{{_mediaObject| ThumbnailPathPipe: _mediaSegment}}"
                          width="200px">
 
                     <div class="tile-footer" fxLayout="row-reverse">
@@ -67,7 +67,7 @@
                 <mat-list>
                     <mat-list-item *ngFor="let metadatum of _segMetadata | keyvalue">
                         <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
-                        <p [innerHTML]="textWithLink(metadatum.value)" mat-line style="white-space: pre-wrap;"></p>
+                        <p [innerHTML]="metadatum.value | TextWithLinkPipe" mat-line style="white-space: pre-wrap;"></p>
                     </mat-list-item>
                 </mat-list>
             </mat-tab>
@@ -79,7 +79,7 @@
                 <mat-list>
                     <mat-list-item *ngFor="let metadatum of (_objMetadata | keyvalue)">
                         <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
-                        <p [innerHTML]="textWithLink(metadatum.value)" mat-line style="white-space: pre-wrap;"></p>
+                        <p [innerHTML]="metadatum.value | TextWithLinkPipe" mat-line style="white-space: pre-wrap;"></p>
                     </mat-list-item>
                 </mat-list>
             </mat-tab>

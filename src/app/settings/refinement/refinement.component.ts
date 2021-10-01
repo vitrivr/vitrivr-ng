@@ -53,15 +53,11 @@ export class RefinementComponent implements OnInit, OnDestroy {
   private _idFilterValue: string;
 
   constructor(private _queryService: QueryService,
-              private _filterService: FilterService,
+              public _filterService: FilterService,
               private _eventBusService: EventBusService,
               private _configService: AppConfig,
               public _selectionService: SelectionService,
               private _cdr: ChangeDetectorRef) {
-  }
-
-  get filter(): FilterService {
-    return this._filterService;
   }
 
   /**
@@ -208,14 +204,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
-  public mdCatOperatorChecked(): boolean {
-    return this._filterService._useOrForMetadataCategoriesFilter
-  }
-
-  public get idFilterValue(): string {
-    return this._idFilterValue
-  }
-
   public set idFilterValue(id: string) {
     this._idFilterValue = id
     this._filterService._id = id;
@@ -327,3 +315,5 @@ export class RefinementComponent implements OnInit, OnDestroy {
   }
 
 }
+
+

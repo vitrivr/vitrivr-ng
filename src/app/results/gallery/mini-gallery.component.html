@@ -10,5 +10,5 @@
      infiniteScroll>
     <app-result-segment-preview-tile
             *ngFor="let segment of (((_dataSource | async) | OrderByScorePipe | FilterPipe : (_filterService._segmentFilters|async))) | LimitPipe : _count; trackBy: segmentTracking"
-            [container]="this" [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
+            [container]="this" [score]="segment._score" [segment]="segment"></app-result-segment-preview-tile>
 </div>

@@ -13,9 +13,9 @@
         <ng-container *ngIf="((((_dataSource | async) | FilterPipe : (_filterService._objectFilters | async)) | OrderByScorePipe) | LimitObjectsPipe : _count) as pipeRes">
             <div *ngFor="let mediaobject of pipeRes[0]; trackBy: trackByFunction; last as lastObject" class="object">
                 <app-result-segment-preview-tile
-                      *ngFor="let segment of (mediaobject.segments | FilterPipe : (_filterService._segmentFilters|async) | OrderBySegmentPipe); trackBy: segmentTracking"
+                      *ngFor="let segment of (mediaobject._segments | FilterPipe : (_filterService._segmentFilters|async) | OrderBySegmentPipe); trackBy: segmentTracking"
                       [container]="this"
-                      [score]="segment.score" [segment]="segment"></app-result-segment-preview-tile>
+                      [score]="segment._score" [segment]="segment"></app-result-segment-preview-tile>
             </div>
         </ng-container>
     </div>

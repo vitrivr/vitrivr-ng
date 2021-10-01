@@ -22,7 +22,7 @@
             <div class="objectPathContainer">
               <app-result-segment-preview-tile *ngFor="let segment of (tempObject.segments | FilterPipe : (_filterService._segmentFilters|async))"
                                                [container]="this"
-                                               [score]="segment.score"
+                                               [score]="segment._score"
                                                [segment]="segment"
                                                [temporalObject]="tempObject"
                                                class=""></app-result-segment-preview-tile>

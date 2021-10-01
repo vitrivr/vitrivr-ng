@@ -26,7 +26,7 @@ import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegm
   styleUrls: ['./result-segment-preview-tile.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ResultSegmentPreviewTileComponent implements OnInit {
+export class ResultSegmentPreviewTileComponent {
 
   @Input() mltEnabled = true;
 
@@ -60,7 +60,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   constructor(readonly _keyboardService: KeyboardService,
               private _queryService: QueryService,
               private _eventBusService: EventBusService,
-              private _vbs: VbsSubmissionService,
+              public _vbs: VbsSubmissionService,
               private _dialog: MatDialog,
               public _resolver: ResolverService,
               private _configService: AppConfig) {
@@ -105,16 +105,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   }
 
   /**
-   * Returns true, if the submit (to VBS) button should be displayed for the given segment and false otherwise. This depends on the configuration and
-   * the media type of the object.
-   *
-   * @return {boolean} True if submit button should be displayed, false otherwise.
-   */
-  public showVbsSubmitButton(): Observable<boolean> {
-    return this._vbs.isOn;
-  }
-
-  /**
    * Invoked whenever a user clicks the actual tile; opens the QuickViewerComponent in a dialog.
    */
   public onTileClicked(event: MouseEvent) {
@@ -128,8 +118,5 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
       context.set('i:mediasegment', this.segment.segmentId);
       this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
-  }
-
-  ngOnInit() {
   }
 }

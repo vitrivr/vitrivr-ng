@@ -7,8 +7,7 @@ import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-drag-container.model';
 import {MediaObjectDragContainer} from '../shared/model/internal/media-object-drag-container.model';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {HtmlUtil} from '../shared/util/html.util';
+import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {ContextKey, InteractionEventComponent} from '../shared/model/events/interaction-event-component.model';
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
@@ -139,7 +138,7 @@ export class ObjectdetailsComponent implements OnInit {
             console.log(`no metadata available for ${objectId}`)
             return
           }
-          result.content.forEach(md => this._container.metadata.set(`${md.domain}.${md.key}`, md.value))
+          result.content.forEach(md => this._container._metadata.set(`${md.domain}.${md.key}`, md.value))
         })
         return this._container;
       })
@@ -202,16 +201,6 @@ export class ObjectdetailsComponent implements OnInit {
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
-  }
-
-  /**
-   * Replaces all links in the provided text by links.
-   *
-   * @param {string} str String that should be replaced.
-   * @return {string} Modified string.
-   */
-  public textWithLink(str: string): string {
-    return HtmlUtil.replaceUrlByLink(str, '_blank');
   }
 
   public onLoadAllButtonClicked(segment: MediaSegmentScoreContainer) {

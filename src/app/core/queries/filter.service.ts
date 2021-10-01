@@ -206,7 +206,7 @@ export class FilterService {
         let tagFilter = Boolean(false);
         this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
           // check if either one of the underlying segments or the object itself has appropriate metadata
-          if (obj.segments.findIndex(seg => mdAllowedValuesSet.has(seg.metadata.get(mdKey))) >= 0 || mdAllowedValuesSet.has(obj.metadata.get(mdKey))) {
+          if (obj.segments.findIndex(seg => mdAllowedValuesSet.has(seg.metadata.get(mdKey))) >= 0 || mdAllowedValuesSet.has(obj._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
@@ -219,7 +219,7 @@ export class FilterService {
             return;
           }
           // check if the object metadata fulfills the range condition
-          if (checkRange(range, obj.metadata.get(mdKey))) {
+          if (checkRange(range, obj._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
@@ -242,14 +242,14 @@ export class FilterService {
         let tagFilter = Boolean(false);
         // check whether the segment or the corresponding object has appropriate metadata
         this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
-          if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer.metadata.get(mdKey))) {
+          if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
           andFilter = false;
         });
         this._filterRangeMetadata.forEach((range, mdKey) => {
-          if (checkRange(range, seg.metadata.get(mdKey)) || checkRange(range, seg.objectScoreContainer.metadata.get(mdKey))) {
+          if (checkRange(range, seg.metadata.get(mdKey)) || checkRange(range, seg.objectScoreContainer._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }

@@ -10,17 +10,17 @@
         <div [style.max-height]="'400px'">
             <video #videoplayer *ngIf="mediaobject.mediatype == 'VIDEO'"
                    [style.width]="'400px'" controls
-                   src="{{_resolver.pathToObject(mediaobject)}}"></video>
+                   src="{{mediaobject|ObjectPathPipe}}"></video>
             <audio #audioplayer *ngIf="mediaobject.mediatype == 'AUDIO'"
                    [style.width]="'400px'" controls
-                   src="{{_resolver.pathToObject(mediaobject)}}"
+                   src="{{mediaobject|ObjectPathPipe}}"
                    width="400"></audio>
             <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'"
-                 src="{{_resolver.pathToObject(this.mediaobject)}}"
+                 src="{{mediaobject|ObjectPathPipe}}"
                  style="max-height: 400px"/>
             <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'"
                             [height]="200" [interaction]="true" [width]="200"
-                            src="{{_resolver.pathToObject(mediaobject)}}"></app-m3d-loader>
+                            src="{{mediaobject|ObjectPathPipe}}"></app-m3d-loader>
         </div>
 
     </div>
@@ -33,7 +33,7 @@
             <dd>{{mediaobject.name}}</dd>
             <dt>Path</dt>
             <dd><a download
-                   href="{{_resolver.pathToObject(mediaobject)}}">{{(mediaobject).path}}</a>
+                   href="{{mediaobject|ObjectPathPipe}}">{{(mediaobject).path}}</a>
             </dd>
             <dt>Mediatype</dt>
             <dd>{{mediaobject.mediatype}}</dd>

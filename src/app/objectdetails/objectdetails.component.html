@@ -14,13 +14,13 @@
                          *ngFor="let segment of (segments | orderBy:orderType)" class="tile"
                          draggable="true" fxFlex="200px">
                         <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
-                            <p [style.margin]="'0'">{{segment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
+                            <p [style.margin]="'0'">{{segment.segmentId}} ({{segment._score | ScorePercentagePipe}}&#37;)</p>
                             <p *ngIf="segment.endabs > 0" [style.margin]="'0'">{{segment.startabs.toFixed(2)}}
                                 - {{segment.endabs.toFixed(2)}}</p>
                         </div>
 
                         <img class="tile-body" height="200px"
-                             src="{{_resolver.pathToThumbnail(segment.objectScoreContainer,segment, 200, null)}}"
+                             src="{{this.segment._objectScoreContainer| ThumbnailPathPipe: this.segment:200: null}}"
                              width="200px">
 
                         <div class="tile-footer" fxLayout="row-reverse">
@@ -57,14 +57,14 @@
             </mat-tab>
 
 
-            <mat-tab label="Object Metadata ({{obj.metadata.size}})">
-                <div *ngIf="obj.metadata.size == 0" style="padding-top:10px">
+            <mat-tab label="Object Metadata ({{obj._metadata.size}})">
+                <div *ngIf="obj._metadata.size == 0" style="padding-top:10px">
                     No object metadata available for {{obj.objectId}}
                 </div>
                 <mat-list>
-                    <mat-list-item *ngFor="let metadatum of obj.metadata | keyvalue">
+                    <mat-list-item *ngFor="let metadatum of obj._metadata | keyvalue">
                         <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
-                        <p [innerHTML]="textWithLink(metadatum.value)" mat-line style="white-space: pre-wrap;"></p>
+                        <p [innerHTML]="metadatum.value | TextWithLinkPipe" mat-line style="white-space: pre-wrap;"></p>
                     </mat-list-item>
                 </mat-list>
             </mat-tab>

@@ -14,7 +14,7 @@
     </div>
 
     <!-- If the current attribute is set, populate operator & value fields -->
-    <ng-container *ngIf="(currentAttribute | async) as currentAttrAsync" class="options">
+    <ng-container *ngIf="(currentAttributeObservable | async) as currentAttrAsync" class="options">
 
         <!-- Operator dropdown-->
         <mat-select [(ngModel)]="operatorValue" class="options" required>
@@ -25,12 +25,12 @@
         </mat-select>
 
         <!-- Freetext Field for Numbers & Text -->
-        <mat-form-field *ngIf="attributeIsText(currentAttrAsync)" class="options">
+        <mat-form-field *ngIf="currentAttrAsync.valueType.valueOf() === 2 || currentAttrAsync.valueType.valueOf() === 3" class="options">
             <input [(ngModel)]="inputValue" matInput placeholder="Search text">
         </mat-form-field>
 
         <!-- Dropdown for Options -->
-        <mat-select *ngIf="isOption()" [(ngModel)]="inputValue" class="options" required>
+        <mat-select *ngIf="currentAttrAsync.valueType.valueOf() === 0 || currentAttrAsync.valueType.valueOf() === 5;" [(ngModel)]="inputValue" class="options" required>
             <mat-option *ngFor="let option of currentAttrAsync.options" [value]="option">
                 {{option}}
             </mat-option>

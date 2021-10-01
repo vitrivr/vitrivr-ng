@@ -44,6 +44,22 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   /** The number of items that should be displayed. */
   _count: number = this.scrollIncrement();
 
+  public static staticBackgroundForScore(score: number, segment: MediaSegmentScoreContainer, tags: Tag[], temporalObject?: TemporalObjectSegments): string {
+    const _score = temporalObject === undefined ? score : temporalObject.score
+    if (tags.length === 0) {
+      const v = Math.round(255.0 - (_score * 255.0));
+      return ColorUtil.rgbToHex(v, 255, v);
+    } else if (tags.length === 1) {
+      return tags[0].colorForRelevance(_score);
+    } else {
+      const width = 100.0 / tags.length;
+      return 'repeating-linear-gradient(90deg,' +
+        tags.map((t, i) =>
+          t.colorForRelevance(_score) + ' ' + i * width + '%,' + t.colorForRelevance(_score) + ' ' + (i + 1) * width + '%'
+        ).join(',') + ')';
+    }
+  }
+
   /**
    * Default constructor.
    *
@@ -76,22 +92,9 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   }
 
   public backgroundForScore(score: number, segment: MediaSegmentScoreContainer, temporalObject?: TemporalObjectSegments): string {
-    const _score = temporalObject === undefined ? score : temporalObject.score
     const tags: Tag[] = this._selectionService.getTags(segment.segmentId);
-    if (tags.length === 0) {
-      const v = Math.round(255.0 - (_score * 255.0));
-      return ColorUtil.rgbToHex(v, 255, v);
-    } else if (tags.length === 1) {
-      return tags[0].colorForRelevance(_score);
-    } else {
-      const width = 100.0 / tags.length;
-      return 'repeating-linear-gradient(90deg,' +
-        tags.map((t, i) =>
-          t.colorForRelevance(_score) + ' ' + i * width + '%,' + t.colorForRelevance(_score) + ' ' + (i + 1) * width + '%'
-        ).join(',') + ')';
-    }
+    return AbstractResultsViewComponent.staticBackgroundForScore(score, segment, tags, temporalObject)
   }
-
   /**
    * Lifecycle Hook (onInit): Subscribes to the QueryService and the SelectionService
    */

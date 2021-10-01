@@ -6,15 +6,9 @@ import {Component, OnInit} from '@angular/core';
   templateUrl: './temporal-distance.component.html',
   styleUrls: ['./temporal-distance.component.css']
 })
-export class TemporalDistanceComponent implements OnInit {
+export class TemporalDistanceComponent {
 
   time = 10; // seconds
-
-  constructor() {
-  }
-
-  ngOnInit() {
-  }
 
   public getTemporalDistanceFromUser(): number {
     return this.time;

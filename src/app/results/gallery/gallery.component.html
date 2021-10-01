@@ -27,7 +27,7 @@
                             mat-icon-button
                             matTooltip="Toggle '{{tag.name}}' tag">
                         <mat-icon
-                                [style.color]="_selectionService.hasTag(mediaobject.representativeSegment.segmentId,tag) ? tag.colorForRelevance(1.0) : ''">
+                                [style.color]="_selectionService.hasTag(mediaobject.representativeSegment.segmentId,tag) ? (tag | ColorForRelevancePipe:1.0 ): ''">
                             album
                         </mat-icon>
                     </button>
@@ -35,14 +35,14 @@
             </div>
 
             <div class="score">
-                <p>{{mediaobject.scorePercentage}}&#37;</p>
+                <p>{{mediaobject._score | ScorePercentagePipe}}&#37;</p>
                 <p>
                     <mat-icon>filter_none</mat-icon>&nbsp;{{mediaobject.numberOfSegments}}</p>
             </div>
         </div>
 
         <img (click)="onDetailsButtonClicked(mediaobject.representativeSegment)" class="body"
-             draggable="false" src="{{_resolver.pathToThumbnail(mediaobject,mediaobject.representativeSegment)}}"/>
+             draggable="false" src="{{mediaobject| ThumbnailPathPipe: mediaobject.representativeSegment}}"/>
 
         <div *ngIf="inFocus(mediaobject)" [style.background]="backgroundForSegment(mediaobject.representativeSegment)"
              class="footer"

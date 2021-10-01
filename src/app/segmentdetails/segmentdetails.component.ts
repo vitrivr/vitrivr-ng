@@ -189,14 +189,4 @@ export class SegmentdetailsComponent implements AfterViewInit {
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
   }
-
-  /**
-   * Replaces all links in the provided text by links.
-   *
-   * @param {string} str String that should be replaced.
-   * @return {string} Modified string.
-   */
-  public textWithLink(str: string): string {
-    return HtmlUtil.replaceUrlByLink(str, '_blank');
-  }
 }

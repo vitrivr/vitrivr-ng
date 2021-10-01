@@ -15,8 +15,8 @@
     <div>
         <h5 class="mat-h5">Display only objects of type:</h5>
         <section class="checkbox-group">
-            <mat-checkbox (change)="onTypeFilterChanged(type,$event)" *ngFor="let type of filter.mediatypeKeys"
-                          [checked]="filter.mediatypes.get(type)"
+            <mat-checkbox (change)="onTypeFilterChanged(type,$event)" *ngFor="let type of _filterService.mediatypeKeys"
+                          [checked]="_filterService.mediatypes.get(type)"
                           [name]="type">{{type}}</mat-checkbox>
         </section>
     </div>
@@ -24,16 +24,16 @@
     <div>
         <h5 class="mat-h5">Display only objects with score above:</h5>
         <span class="label constrained">Threshold</span>
-        <mat-slider (change)="onThresholdValueChanges($event)" [(value)]="filter.threshold" [max]="1.0" [min]="0"
+        <mat-slider (change)="onThresholdValueChanges($event)" [(value)]="_filterService.threshold" [max]="1.0" [min]="0"
                     [step]="0.01"></mat-slider>
-        <span class="label constrained">{{filter.threshold * 100}}%</span>
+        <span class="label constrained">{{_filterService.threshold * 100}}%</span>
     </div>
     <br/>
     <div>
         <h5 class="mat-h5">Display only objects with tagged segment:</h5>
         <section class="checkbox-group">
             <mat-checkbox (change)="onTagFilterChanged(tag,$event)" *ngFor="let tag of _selectionService._available"
-                          [checked]="filter.filterTags.has(tag)"
+                          [checked]="_filterService.filterTags.has(tag)"
                           [name]="tag.name">{{tag.name}}</mat-checkbox>
         </section>
     </div>
@@ -47,7 +47,7 @@
 
     <h3 class="mat-h3">Metadata Filter Configuration</h3>
 
-    <mat-slide-toggle (change)="onMdCatOperatorChange($event)" [checked]="mdCatOperatorChecked()">Use OR for multiple
+    <mat-slide-toggle (change)="onMdCatOperatorChange($event)" [checked]="_filterService._useOrForMetadataCategoriesFilter">Use OR for multiple
         categories
     </mat-slide-toggle>
 

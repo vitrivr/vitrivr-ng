@@ -307,7 +307,7 @@ export class VbsSubmissionService {
    */
   private convertToAppropriateRepresentation(segment: MediaSegmentScoreContainer, time?: number): [string, number?] {
     if (this._vbs) {
-      let fps = Number.parseFloat(segment.objectScoreContainer.metadataForKey('technical.fps'));
+      let fps = Number.parseFloat(segment.objectScoreContainer._metadata.get('technical.fps'));
       if (Number.isNaN(fps) || !Number.isFinite(fps)) {
         fps = VideoUtil.bestEffortFPS(segment);
       }
