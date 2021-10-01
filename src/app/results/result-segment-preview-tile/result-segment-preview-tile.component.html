@@ -1,5 +1,5 @@
 <div (dragstart)="container.onTileDrag($event, segment, segment.objectScoreContainer)" (mouseenter)="focus = true"
-     (mouseleave)="focus = false" [style.background]="container.backgroundForScore(score,segment)" class="segment"
+     (mouseleave)="focus = false" [style.background]="container.backgroundForScore(score,segment,temporalObject)" class="segment"
      draggable="true"
      id="{{id}}">
     <img (click)="onTileClicked($event)"
@@ -28,7 +28,7 @@
             <mat-icon>remove_red_eye</mat-icon>
         </button>
 
-        <button (click)="container.onInformationButtonClicked(segment)" mat-icon-button
+        <button (click)="container.onInformationButtonClicked(segment, temporalObject)" mat-icon-button
                 matTooltip="Feature information">
             <mat-icon>help</mat-icon>
         </button>

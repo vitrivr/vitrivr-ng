@@ -474,6 +474,7 @@ export class ResultsContainer {
 
     for (const resultTemporalObject of temp.content) {
       let mosc;
+      // if there is no temporal object for a given objectid, create it
       if (!this._objectid_to_temporal_object_map.has(resultTemporalObject.objectId)) {
         mosc = new TemporalObjectSegments(
           this._objectid_to_object_map.get(resultTemporalObject.objectId),
@@ -482,19 +483,26 @@ export class ResultsContainer {
         )
         this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
       } else {
-        this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).score = resultTemporalObject.score;
+        // if there is already a temporal object for a given objectid, update it
+        const _tempobj = this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId)
+        // only update score if it is better
+        _tempobj.score = _tempobj.score < resultTemporalObject.score ? resultTemporalObject.score : _tempobj.score
         resultTemporalObject.segments.forEach(segment => {
           const tmpSegment = this._segmentid_to_segment_map.get(segment);
           if (!tmpSegment) {
-            console.log(`cannot add undefined segment! ${segment}`)
-            return
+            console.warn(`cannot add undefined segment! ${segment}`)
+            return false
           }
-          if (this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.indexOf(tmpSegment) === -1) {
-            this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.push(tmpSegment)
+          if (_tempobj.segments.indexOf(tmpSegment) === -1) {
+            _tempobj.segments.push(tmpSegment)
           }
         });
       }
     }
+
+    this._next += 1;
+
+    console.timeEnd(`Processing Temporal Message (${this.queryId})`);
 
     return true;
   }

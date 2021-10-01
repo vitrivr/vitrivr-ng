@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, OnDestroy, OnInit, Directive } from '@angular/core';
+import {ChangeDetectorRef, OnDestroy, OnInit, Directive} from '@angular/core';
 import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
 import {QueryChange, QueryService} from '../core/queries/query.service';
 import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
@@ -18,6 +18,7 @@ import {MediaSegmentDragContainer} from '../shared/model/internal/media-segment-
 import {Router} from '@angular/router';
 import {filter} from 'rxjs/operators';
 import {FilterService} from '../core/queries/filter.service';
+import {TemporalObjectSegments} from '../shared/model/misc/temporalObjectSegments';
 
 @Directive()
 // tslint:disable-next-line:directive-class-suffix
@@ -74,18 +75,19 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     return this.backgroundForScore(score, segment);
   }
 
-  public backgroundForScore(score: number, segment: MediaSegmentScoreContainer): string {
+  public backgroundForScore(score: number, segment: MediaSegmentScoreContainer, temporalObject?: TemporalObjectSegments): string {
+    const _score = temporalObject === undefined ? score : temporalObject.score
     const tags: Tag[] = this._selectionService.getTags(segment.segmentId);
     if (tags.length === 0) {
-      const v = Math.round(255.0 - (score * 255.0));
+      const v = Math.round(255.0 - (_score * 255.0));
       return ColorUtil.rgbToHex(v, 255, v);
     } else if (tags.length === 1) {
-      return tags[0].colorForRelevance(score);
+      return tags[0].colorForRelevance(_score);
     } else {
       const width = 100.0 / tags.length;
       return 'repeating-linear-gradient(90deg,' +
         tags.map((t, i) =>
-          t.colorForRelevance(score) + ' ' + i * width + '%,' + t.colorForRelevance(score) + ' ' + (i + 1) * width + '%'
+          t.colorForRelevance(_score) + ' ' + i * width + '%,' + t.colorForRelevance(_score) + ' ' + (i + 1) * width + '%'
         ).join(',') + ')';
     }
   }
@@ -150,15 +152,21 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    * Invoked whenever a user clicks the Information button. Displays a SnackBar with the scores per feature category.
    *
    * @param {MediaSegmentScoreContainer} segment SegmentScoreContainer for which to display information.
+   * @param temporalObject if the segment belongs to a temporal container, this can be added here
    */
-  public onInformationButtonClicked(segment: MediaSegmentScoreContainer) {
-    this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: segment, duration: 2500});
+  public onInformationButtonClicked(segment: MediaSegmentScoreContainer, temporalObject?: TemporalObjectSegments) {
+    if (temporalObject) {
+      this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: [segment, temporalObject], duration: 5000});
+    } else {
+      this._snackBar.openFromComponent(FeatureDetailsComponent, <MatSnackBarConfig>{data: [segment, temporalObject], duration: 2500});
+    }
 
     /* Emit an EXAMINE event on the bus. */
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
   }
+
 
   /**
    * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.

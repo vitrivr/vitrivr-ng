@@ -33,6 +33,10 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
 
   constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService, private _configService: AppConfig) {
     this._config = this._configService.configAsObservable;
+    this._config.subscribe(c => {
+      this.maxLength = c.maxLength;
+      this.mode = c._config.query.temporal_mode as TemporalMode;
+    });
   }
 
   /**
@@ -68,11 +72,6 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
    * context changes are only part of competition logging and not part of the message sent to cineast
    */
   public onSearchClicked() {
-    this._config.subscribe(c => {
-      this.maxLength = c.maxLength;
-      this.mode = c._config.query.temporal_mode as TemporalMode;
-    });
-
     let tempDist = []
     if (this.queryContainers && this.queryContainers.length >= 2 && this.mode === 'TEMPORAL_DISTANCE') {
       tempDist = this.getTemporalDistances();

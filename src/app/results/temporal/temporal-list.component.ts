@@ -4,7 +4,6 @@ import {ResolverService} from '../../core/basics/resolver.service';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {Observable} from 'rxjs';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {SelectionService} from '../../core/selection/selection.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
@@ -15,7 +14,6 @@ import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegm
 import {map} from 'rxjs/operators';
 
 @Component({
-
   selector: 'app-temporal-list',
   templateUrl: 'temporal-list.component.html',
   styleUrls: ['temporal-list.component.css'],
@@ -40,18 +38,6 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<T
               _dialog: MatDialog) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog);
     this._count = this.scrollIncrement() * 5;
-  }
-
-  /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   * Returns true for all objects that should be included
-   */
-  get objectFilter(): Observable<((v: TemporalObjectSegments) => boolean)[]> {
-    return this._filterService._objectFilters.pipe(map(filters =>
-      filters.map(filter => function (obj: TemporalObjectSegments): boolean {
-        return filter(obj.object);
-      })
-    ));
   }
 
   scrollIncrement(): number {
@@ -92,7 +78,7 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<T
    * This function created a unique identifier per ScoredPathObjectContainer which takes the number of segments into account.
    *
    * @param index
-   * @param {ScoredPathObjectContainer} item
+   * @param {TemporalObjectSegments} item
    */
   public trackByFunction(index, item: TemporalObjectSegments) {
     return item.object.objectId + '_' + item.segments.length;

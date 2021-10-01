@@ -56,6 +56,7 @@ export class PreferencesComponent implements AfterContentInit {
 
   public onModeChanged(mode: TemporalMode) {
     this._configService.config._config.query.temporal_mode = mode
+    this._configService.publishChanges()
   }
 
   public onMaxLengthSaveClicked() {
