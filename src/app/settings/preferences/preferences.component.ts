@@ -32,12 +32,12 @@ export class PreferencesComponent implements AfterContentInit {
   _dresStatusBadgeValue: string;
 
   maxLength = 600;
-  mode: TemporalMode = 'TEMPORAL_DISTANCE'
 
   cineast = ((c: Config) => c.cineastEndpointWs);
   dresAddress = ((c: Config) => c._config.competition.host)
   hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails)
   hostObjects = ((c: Config) => c._config.resources.host_objects)
+  mode = ((c: Config) => c._config.query.temporal_mode)
 
   /**
    * Constructor for PreferencesComponent
@@ -55,8 +55,8 @@ export class PreferencesComponent implements AfterContentInit {
   }
 
   public onModeChanged(mode: TemporalMode) {
-    this.mode = mode;
-    this._configService.config.mode = mode
+    this._configService.config._config.query.temporal_mode = mode
+    this._configService.publishChanges()
   }
 
   public onMaxLengthSaveClicked() {
@@ -68,7 +68,7 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onResetButtonClicked() {
     this._configService.load();
-    this.mode = 'TEMPORAL_DISTANCE';
+    // this._configService.config._config.query.temporal_mode = 'TEMPORAL_DISTANCE';
   }
 
   /**

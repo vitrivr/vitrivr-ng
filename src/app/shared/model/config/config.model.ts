@@ -2,9 +2,6 @@ import {Tag} from '../../../core/selection/tag.model';
 import {FeatureCategories} from '../results/feature-categories.model';
 import {QuerySettings} from './query-settings.model';
 import * as DEEPMERGE from 'deepmerge';
-import {AppConfig} from '../../../app.config';
-import {TemporalMode} from '../../../settings/preferences/temporal-mode-container.model';
-
 
 export class Config {
   /** Context of the Cineast API. */
@@ -20,8 +17,6 @@ export class Config {
   public static SNACKBAR_DURATION = 2500;
 
   public maxLength = 600;
-
-  public mode: TemporalMode = 'TEMPORAL_DISTANCE';
 
   _config = {
     api: {
@@ -102,7 +97,8 @@ export class Config {
       text: {
         categories: []
       },
-      boolean: []
+      boolean: [],
+      temporal_mode: 'TEMPORAL_DISTANCE'
     },
     refinement: {
       filters: [
