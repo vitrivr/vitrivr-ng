@@ -2,10 +2,36 @@
     <mat-progress-bar mode="buffer"></mat-progress-bar>
 </div>
 
-<div *ngIf="_mediaObject" style="padding:10px;">
-    <app-objectviewer #objectviewerComponent [mediaobject]="_mediaObject"></app-objectviewer>
+<div *ngIf="_mediaSegment" [style.display]="'inline-flex'">
+    <button (click)="onBackClick()" mat-icon-button matTooltip="Go back...">
+        <mat-icon>keyboard_backspace</mat-icon>
+    </button>
+    <h2 [style.margin-top]="'5px'">&nbsp;Media segment: {{_mediaSegment.segmentId}}</h2>
+</div>
 
+
+<div *ngIf="_mediaObject" style="padding:10px;">
+    <h3>Object Details</h3>
+    <app-objectviewer #objectviewerComponent [mediaobject]="_mediaObject" [displayHeader]="false"></app-objectviewer>
+    <h3>Segment Details</h3>
     <div *ngIf="_mediaSegment">
+
+        <div *ngIf="_mediaSegment.segmentId">
+            <dl>
+                <dt>SegmentID</dt>
+                <dd>{{_mediaSegment.segmentId}}</dd>
+                <dt>Sequencenumber</dt>
+                <dd>{{_mediaSegment.sequenceNumber}}</dd>
+                <dt>Start</dt>
+                <dd>{{_mediaSegment.start}}</dd>
+                <dt>Start (Abs)</dt>
+                <dd>{{_mediaSegment.startabs}}</dd>
+                <dt>End</dt>
+                <dd>{{_mediaSegment.end}}</dd>
+                <dt>End (Abs)</dt>
+                <dd>{{_mediaSegment.endabs}}</dd>
+            </dl>
+        </div>
 
         <mat-tab-group>
             <mat-tab label="Segment {{_mediaSegment.segmentId}}">

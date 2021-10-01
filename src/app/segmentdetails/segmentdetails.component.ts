@@ -59,6 +59,18 @@ export class SegmentdetailsComponent implements AfterViewInit {
   }
 
   /**
+   * Triggered whenever someone clicks the 'Back' button. Returns to the last page,
+   * i.e. usually the gallery.
+   */
+  public onBackClick() {
+    if (this._historyService.getPreviousRoute()) {
+      this._historyService.goToPrevious();
+      return
+    }
+    this._historyService.goToRoot();
+  }
+
+  /**
    * Whether we are currently loading information about segments / the object
    */
   private updateLoading() {

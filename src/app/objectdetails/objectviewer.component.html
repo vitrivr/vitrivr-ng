@@ -1,4 +1,4 @@
-<div [style.display]="'inline-flex'">
+<div *ngIf="displayHeader" [style.display]="'inline-flex'">
     <button (click)="onBackClick()" mat-icon-button matTooltip="Go back...">
         <mat-icon>keyboard_backspace</mat-icon>
     </button>
