@@ -2,10 +2,9 @@ import {Observable} from 'rxjs';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
-import {catchError, filter} from 'rxjs/operators';
+import {catchError, filter, map} from 'rxjs/operators';
 import {InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {QueryEvent, QueryEventLog, QueryResult, QueryResultLog} from '../../../../openapi/dres';
-import {map} from 'rxjs/internal/operators/map';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegments';
 

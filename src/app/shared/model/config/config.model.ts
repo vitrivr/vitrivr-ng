@@ -2,9 +2,6 @@ import {Tag} from '../../../core/selection/tag.model';
 import {FeatureCategories} from '../results/feature-categories.model';
 import {QuerySettings} from './query-settings.model';
 import * as DEEPMERGE from 'deepmerge';
-import {AppConfig} from '../../../app.config';
-import {TemporalMode} from '../../../settings/preferences/temporal-mode-container.model';
-
 
 export class Config {
   /** Context of the Cineast API. */
@@ -20,8 +17,6 @@ export class Config {
   public static SNACKBAR_DURATION = 2500;
 
   public maxLength = 600;
-
-  public mode: TemporalMode = 'TEMPORAL_DISTANCE';
 
   _config = {
     api: {
@@ -42,10 +37,6 @@ export class Config {
         'IMAGE': 'png',
         'VIDEO': 'png'
       } /** Per-mediatype suffix definition for thumbnails. */
-    },
-    evaluation: {
-      active: false,
-      templates: [] /* URLs */
     },
     competition: {
       /* Toggles VBS mode; determines type of information that is submitted. */
@@ -107,7 +98,7 @@ export class Config {
         categories: []
       },
       boolean: [],
-      staged: true
+      temporal_mode: 'TEMPORAL_DISTANCE'
     },
     refinement: {
       filters: [
@@ -127,8 +118,8 @@ export class Config {
     if (typeof object === 'string') {
       object = JSON.parse(object);
     }
-    if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
-      return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
+    if (object['api'] || object['resources'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
+      return new Config(object['api'], object['resources'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
     } else {
       return null;
     }
@@ -140,23 +131,19 @@ export class Config {
    *
    * @param api Optional Cineast API configuration as, e.g. loaded from a file.
    * @param resources Optional resources configuration as, e.g. loaded from a file.
-   * @param evaluation Optional evaluation configuration as, e.g. loaded from a file.
    * @param query Optional query configuration, e.g. loaded from a file.
    * @param competition Optional competition configuration as, e.g. loaded from a file.
    * @param tags Optional tag configurations as, e.g. loaded from a file.
    * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
    * @param refinement Optional refinement configuration
    */
-  constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
+  constructor(api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
     const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
     if (api) {
       this._config.api = DEEPMERGE(this._config.api, api, {arrayMerge: overwriteMerge});
     }
     if (resources) {
       this._config.resources = DEEPMERGE(this._config.resources, resources, {arrayMerge: overwriteMerge});
-    }
-    if (evaluation) {
-      this._config.evaluation = DEEPMERGE(this._config.evaluation, evaluation, {arrayMerge: overwriteMerge});
     }
     if (query) {
       this._config.query = DEEPMERGE(this._config.query, query, {arrayMerge: overwriteMerge});

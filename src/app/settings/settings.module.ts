@@ -8,7 +8,7 @@ import {SettingsComponent} from './settings.component';
 import {SelectionManagementComponent} from './selection/selection-management.component';
 import {PreferencesComponent} from './preferences/preferences.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {ContainerPipesModule} from '../shared/pipes/containers/container-pipes.module';
+import {PipesModule} from '../shared/pipes/pipes.module';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import {MatBadgeModule} from '@angular/material/badge';
 import { InformationComponent } from './information/information.component';
@@ -16,7 +16,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {GoogleChartsModule} from 'angular-google-charts';
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, NgxSliderModule, ContainerPipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule, GoogleChartsModule],
+  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, NgxSliderModule, PipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule, ],
   declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent, InformationComponent],
   exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent]
 })

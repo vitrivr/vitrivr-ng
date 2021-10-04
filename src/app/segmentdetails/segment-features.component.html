@@ -9,7 +9,7 @@
             <div *ngIf="_tags">
                 <h4 mat-line *ngIf="_tags.length>0"><strong>Tags</strong></h4>
                 <mat-grid-list cols="5" rowHeight="3:1">
-                    <mat-grid-tile class="smallerFont" *ngFor="let tag of sortAlphabetically(_tags)">
+                    <mat-grid-tile class="smallerFont" *ngFor="let tag of (_tags | SortTagsPipe)">
                         <div>
                             {{tag.name}}
                             <br>

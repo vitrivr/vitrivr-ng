@@ -12,7 +12,7 @@ import {AppConfig} from '../../app.config';
 @Injectable()
 export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
   /** List of available Tag objects. */
-  private readonly _available: Tag[] = [];
+  readonly _available: Tag[] = [];
 
   /** A map of selected items identified by a string and the associated Tag objects. */
   private readonly _selections: Map<string, Set<Tag>> = new Map();
@@ -32,15 +32,6 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
 
     /* Register listener for Collabordinator. */
     _collabordinator.subscribe(msg => this.synchronize(msg));
-  }
-
-  /**
-   * Returns all the available (registered) tags.
-   *
-   * @return {Tag[]}
-   */
-  get availableTags(): Tag[] {
-    return Array.from(this._available.values());
   }
 
   /**

@@ -8,12 +8,6 @@ import {FeatureCategories} from '../feature-categories.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
 import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
-import 'rxjs-compat/add/operator/map';
-import 'rxjs-compat/add/operator/merge';
-import 'rxjs-compat/add/operator/concat';
-import 'rxjs-compat/add/operator/zip';
-import 'rxjs-compat/add/operator/filter';
-import 'rxjs-compat/add/operator/combineLatest';
 import {AbstractRefinementOption} from '../../../../settings/refinement/refinementoption.model';
 import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxrefinement.model';
 import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
@@ -25,6 +19,8 @@ import {MediaObjectDescriptor, MediaObjectMetadataDescriptor, MediaObjectQueryRe
 import {AppConfig} from '../../../../app.config';
 import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
 import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
+import {combineLatest} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 export class ResultsContainer {
   /** An array that will contain the top 10 related tags to a result set **/
@@ -157,7 +153,7 @@ export class ResultsContainer {
     return container;
   }
 
-  // tslint:disable-next-line:member-ordering
+  // tslint:disable-next-line:member-ordering no-shadowed-variable
   private static fillMap(map: Map<string, AbstractRefinementOption>, resultList: any, config?: Config) {
     if (config) {
       config.get<[string, string][]>('refinement.filters').forEach(el => {
@@ -176,7 +172,7 @@ export class ResultsContainer {
       });
     }
     resultList.forEach(res => {
-      res.metadata.forEach(((mdValue, mdKey) => {
+      res._metadata.forEach(((mdValue, mdKey) => {
         if (!map.has(mdKey)) {
           return
         }
@@ -265,13 +261,13 @@ export class ResultsContainer {
    * @return a map of all metadata keys with all possible values
    */
   public metadataAsObservable(_configService: AppConfig): Observable<Map<string, AbstractRefinementOption>> {
-
-    return this.segmentsAsObservable.combineLatest(_configService.configAsObservable, function (resultList, config) {
-      const map: Map<string, AbstractRefinementOption> = new Map();
-      return ResultsContainer.fillMap(map, resultList, config)
-    }).combineLatest(this._results_objects_subject, function (map, objects) {
-      return ResultsContainer.fillMap(map, objects)
-    })
+    return combineLatest([this.segmentsAsObservable, _configService.configAsObservable, this._results_objects_subject]).pipe(
+      map(([resultList, config, objects]) => {
+          const valueMap: Map<string, AbstractRefinementOption> = new Map();
+          ResultsContainer.fillMap(valueMap, resultList, config)
+          return ResultsContainer.fillMap(valueMap, objects)
+        }
+      ));
   }
 
   /**
@@ -426,7 +422,7 @@ export class ResultsContainer {
     for (const metadata of met.content) {
       const mosc = this._objectid_to_object_map.get(metadata.objectId);
       if (mosc) {
-        mosc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
+        mosc._metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
     console.timeEnd(`Processing Object Metadata Message (${this.queryId})`);
@@ -495,6 +491,7 @@ export class ResultsContainer {
 
     for (const resultTemporalObject of temp.content) {
       let mosc;
+      // if there is no temporal object for a given objectid, create it
       if (!this._objectid_to_temporal_object_map.has(resultTemporalObject.objectId)) {
         mosc = new TemporalObjectSegments(
           this._objectid_to_object_map.get(resultTemporalObject.objectId),
@@ -503,21 +500,36 @@ export class ResultsContainer {
         )
         this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
       } else {
-        this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).score = resultTemporalObject.score;
-        resultTemporalObject.segments.map(segment => {
+        // if there is already a temporal object for a given objectid, update it
+        const _tempobj = this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId)
+        // only update score if it is better
+        _tempobj.score = _tempobj.score < resultTemporalObject.score ? resultTemporalObject.score : _tempobj.score
+        resultTemporalObject.segments.forEach(segment => {
           const tmpSegment = this._segmentid_to_segment_map.get(segment);
-          if (this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.indexOf(tmpSegment) === -1) {
-            this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId).segments.push(tmpSegment)
+          if (!tmpSegment) {
+            console.warn(`cannot add undefined segment! ${segment}`)
+            return false
+          }
+          if (_tempobj.segments.indexOf(tmpSegment) === -1) {
+            _tempobj.segments.push(tmpSegment)
           }
         });
       }
     }
+
+    this._next += 1;
+
+    console.timeEnd(`Processing Temporal Message (${this.queryId})`);
 
     return true;
   }
 
   private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
     let mosc;
+    if (!segment) {
+      console.error('received undefined segment, exiting')
+      return
+    }
     if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
       mosc = new TemporalObjectSegments(
         this._objectid_to_object_map.get(segment.objectId),
@@ -583,7 +595,7 @@ export class ResultsContainer {
       segments: this._results_segments.map(seg => seg.serialize()),
       objectMetadata: this.flatten(this._results_objects.map(obj => {
         const metadata: MediaObjectMetadataDescriptor[] = [];
-        obj.metadata.forEach((v, k) => {
+        obj._metadata.forEach((v, k) => {
           metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;

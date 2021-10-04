@@ -30,10 +30,6 @@ export class BoolTermComponent implements OnInit {
 
   private _value: any[] = [];
 
-  get currentAttribute(): Observable<BoolAttribute> {
-    return this.currentAttributeObservable;
-  }
-
   get attribute(): BoolAttribute {
     return this.currentAttributeObservable.getValue();
   }
@@ -123,11 +119,6 @@ export class BoolTermComponent implements OnInit {
     this.boolTerm.update();
   }
 
-
-  attributeIsText(attr: BoolAttribute) {
-    return attr.valueType.valueOf() === 2 || attr.valueType.valueOf() === 3;
-  }
-
   /**
    * Be aware that you should not use the setters in this method, because they will call an update() which will destroy cached term-information
    */
@@ -176,9 +167,5 @@ export class BoolTermComponent implements OnInit {
       this.updateRangeValue();
     }
     this.updateTerm();
-  }
-
-  isOption(): boolean {
-    return this.attribute.valueType.valueOf() === 0 || this.attribute.valueType.valueOf() === 5;
   }
 }

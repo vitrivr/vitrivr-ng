@@ -54,8 +54,4 @@ export class QueryStageComponent {
   public isLastStage() {
     return this.qsList.indexOf(this.queryStage) === this.qsList.length - 1;
   }
-
-  sqEnabled(): boolean {
-    return this._configService.config.get<boolean>('query.staged')
-  }
 }

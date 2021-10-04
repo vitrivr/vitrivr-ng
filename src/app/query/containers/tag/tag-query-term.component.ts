@@ -31,14 +31,14 @@ export class TagQueryTermComponent implements OnInit {
   @Input()
   private tagTerm: TagQueryTerm;
   /** List of tag fields currently displayed. */
-  private readonly _field: FieldGroup;
+  readonly _field: FieldGroup;
 
   constructor(_tagService: TagService, private _matsnackbar: MatSnackBar, private _resultSetInfoService: ResultSetInfoService) {
     this._field = new FieldGroup(_tagService);
   }
 
   /** List of tag fields currently displayed. */
-  private _tags: Tag[] = [];
+  _tags: Tag[] = [];
 
   get tags() {
     return this._tags;
@@ -77,7 +77,7 @@ export class TagQueryTermComponent implements OnInit {
     if (!tagAlreadyInList) {
       this.addTag(event.option.value);
     } else {
-      this.field.formControl.setValue('');
+      this._field.formControl.setValue('');
       this._matsnackbar.open(`Tag ${event.option.value.name} (${event.option.value.id}) already added`, null, {
         duration: 2000,
       });
@@ -97,7 +97,7 @@ export class TagQueryTermComponent implements OnInit {
     }
      */
     this._tags.push(tag);
-    this.field.formControl.setValue('');
+    this._field.formControl.setValue('');
     this.tagTerm.tags = this._tags;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
@@ -183,7 +183,7 @@ export class FieldGroup {
       startWith(''),
       map((tag: string) => {
         if (tag.length >= 3) {
-          return this._tags.findTagsBy('matchingname', tag).pipe(first()).map(res => res.tags);
+          return this._tags.findTagsBy('matchingname', tag).pipe(first(), map(res => res.tags));
         } else {
           return EMPTY;
         }

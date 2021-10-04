@@ -24,14 +24,17 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('settingsComponent')
   private settingsComponent: SettingsComponent
 
-  /** Observable that returns the most recent application configuration. */
-  private readonly _config: Observable<Config>;
+  _config: Config;
 
   /** Observable that return the loading state of the QueryService. */
   private readonly _loading: Observable<boolean>;
+  _loadBool = false
 
   /** Variable to safe currently selected view */
   public _active_view: View;
+
+  competitionHost = ((c: Config) => c._config.competition.host);
+
 
   /**
    * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
@@ -42,23 +45,19 @@ export class AppComponent implements OnInit, AfterViewInit {
               private _distinctLookupService: DistinctElementLookupService,
               private _notificationService: NotificationService
   ) {
+    _queryService.observable.subscribe(msg => {
+      if (['STARTED', 'ENDED', 'ERROR'].indexOf(msg) > -1) {
+        this._loadBool = _queryService.running
+      }
+    })
     this._loading = _queryService.observable.pipe(
       filter(msg => ['STARTED', 'ENDED', 'ERROR'].indexOf(msg) > -1),
       map(() => {
         return _queryService.running;
       })
     );
-    this._config = _configService.configAsObservable;
+    _configService.configAsObservable.subscribe(c => this._config = c)
     this._active_view = View.GALLERY;
-  }
-
-  /**
-   * Getter for the observable config attribute.
-   *
-   * @return {Observable<Config>}
-   */
-  get config(): Observable<Config> {
-    return this._config;
   }
 
   /**

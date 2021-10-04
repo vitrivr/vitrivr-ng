@@ -43,38 +43,21 @@ export class RefinementComponent implements OnInit, OnDestroy {
   private filtersEnabled: Map<string, boolean> = new Map<string, boolean>();
 
   /** An observable for the current results. */
-  private _features: Observable<WeightedFeatureCategory[]> = EMPTY;
+  _features: Observable<WeightedFeatureCategory[]> = EMPTY;
 
   /** An observable for all possible metadatavalues */
-  private _metadata: Observable<Map<string, AbstractRefinementOption>>;
+  _metadata: Observable<Map<string, AbstractRefinementOption>>;
 
   private _timer;
 
   private _idFilterValue: string;
 
   constructor(private _queryService: QueryService,
-              private _filterService: FilterService,
+              public _filterService: FilterService,
               private _eventBusService: EventBusService,
               private _configService: AppConfig,
               public _selectionService: SelectionService,
               private _cdr: ChangeDetectorRef) {
-  }
-
-  /**
-   * Getter for refinement array.
-   *
-   * @return {WeightedFeatureCategory[]}
-   */
-  get features(): Observable<WeightedFeatureCategory[]> {
-    return this._features;
-  }
-
-  get metadata(): Observable<Map<string, AbstractRefinementOption>> {
-    return this._metadata
-  }
-
-  get filter(): FilterService {
-    return this._filterService;
   }
 
   /**
@@ -221,14 +204,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.FILTER)));
   }
 
-  public mdCatOperatorChecked(): boolean {
-    return this._filterService._useOrForMetadataCategoriesFilter
-  }
-
-  public get idFilterValue(): string {
-    return this._idFilterValue
-  }
-
   public set idFilterValue(id: string) {
     this._idFilterValue = id
     this._filterService._id = id;
@@ -340,3 +315,5 @@ export class RefinementComponent implements OnInit, OnDestroy {
   }
 
 }
+
+

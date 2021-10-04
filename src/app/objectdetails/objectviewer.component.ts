@@ -24,6 +24,8 @@ export class ObjectviewerComponent {
 
   @Input() mediaobject: MediaObjectDescriptor;
 
+  @Input() displayHeader = true
+
   constructor(
     private _eventBusService: EventBusService,
     public _resolver: ResolverService,

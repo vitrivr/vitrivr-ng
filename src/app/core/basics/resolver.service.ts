@@ -24,16 +24,10 @@ enum Token {
 @Injectable()
 export class ResolverService {
   /** A map containing the definition of file-suffices for thumbnails per mediatype */
-  private suffices: Map<MediaObjectDescriptor.MediatypeEnum, string> = new Map();
-
-  /** Host string used when resolving URL's to thumbnails. */
-  private host_thumbnails: string;
-
-  /** Host string used when resolving URL's to objects. */
-  private host_objects: string;
+  public static suffices: Map<MediaObjectDescriptor.MediatypeEnum, string> = new Map();
 
   /** The RegEx pattern used for replacement. */
-  private _regex = new RegExp('(' + [
+  public static readonly _regex = new RegExp('(' + [
     Token.OBJECT_ID,
     Token.OBJECT_NAME,
     Token.OBJECT_PATH,
@@ -44,7 +38,13 @@ export class ResolverService {
     Token.SUFFIX
   ].join('|') + ')', 'g');
 
-  private static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
+  /** Host string used when resolving URL's to thumbnails. */
+  private host_thumbnails: string;
+
+  /** Host string used when resolving URL's to objects. */
+  private host_objects: string;
+
+  public static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
     switch (mediatype) {
       case MediaObjectDescriptor.MediatypeEnum.AUDIO:
         return 'a_';
@@ -62,88 +62,6 @@ export class ResolverService {
   }
 
   /**
-   * Default constructor; Initializes the map of suffixes per media-type based on
-   * the configuration.
-   *
-   * @param _configService ConfigService reference; injected.
-   */
-  constructor(_configService: AppConfig) {
-    _configService.configAsObservable.subscribe((config) => {
-      this.host_thumbnails = config.get('resources.host_thumbnails');
-      this.host_objects = config.get('resources.host_objects');
-      const default_suffix: string = config.get('resources.suffix_default');
-      const suffices = config.get('resources.suffix');
-      for (const type of Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key])) {
-        const suffix: string = suffices[type];
-        if (typeof suffix === 'string') {
-          this.suffices.set(type, (suffix.charAt(0) === '.' ? '' : '.') + suffix);
-        } else {
-          this.suffices.set(type, (default_suffix.charAt(0) === '.' ? '' : '.') + default_suffix);
-        }
-      }
-    });
-  }
-
-  /**
-   * Resolves and returns the absolute path / URL to a MediaObject.
-   *
-   * @param object The MediaObject for which to return the path.
-   */
-  public pathToObject(object: MediaObjectDescriptor) {
-    const iiifUrl = this.iiifUrlToObject(object)
-    if (iiifUrl) {
-      return iiifUrl
-    }
-    const rep = {};
-    rep[Token.OBJECT_ID] = object.objectId;
-    rep[Token.OBJECT_NAME] = object.name;
-    rep[Token.OBJECT_PATH] = object.path;
-    rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
-    rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
-    rep[Token.SUFFIX] = this.suffices.get(object.mediatype);
-    return this.host_objects.replace(this._regex, (match) => rep[match] || match);
-  }
-
-  /**
-   * Resolves and returns the absolute path / URL to the thumbnail of a given combination of MediaSegment and MediaObject.
-   * If an IIIF resource URL is available then it is returned instead of the absolute path.
-   *
-   * @param {object} object The MediaObject for which to return the path / URL
-   * @param {segment} segment The MediaSegment for which to return the path / URL
-   * @param height Optional height parameter to control the height parameter in the IIIF Image API URL
-   * @param width Optional width parameter to control the width parameter in the IIIF Image API URL
-   * @return {string}
-   */
-  public pathToThumbnail(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor, height?: number, width?: number) {
-    const iiifUrl = this.iiifUrlToObject(object, false, height, width);
-    if (iiifUrl) {
-      return iiifUrl
-    }
-    const rep = {};
-    rep[Token.OBJECT_ID] = object.objectId;
-    rep[Token.OBJECT_NAME] = object.name;
-    rep[Token.OBJECT_PATH] = object.path;
-    rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
-    rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
-    rep[Token.SUFFIX] = this.suffices.get(object.mediatype);
-    rep[Token.SEGMENT_ID] = segment.segmentId;
-    return this.host_thumbnails.replace(this._regex, (match) => rep[match] || match);
-  }
-
-  public pathToSegment(segment: MediaSegmentScoreContainer) {
-    const rep = {};
-    rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
-    rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;
-    rep[Token.OBJECT_PATH] = segment.objectScoreContainer.path;
-    rep[Token.OBJECT_TYPE_LOWER] = segment.objectScoreContainer.mediatype.toLowerCase();
-    rep[Token.OBJECT_TYPE_UPPER] = segment.objectScoreContainer.mediatype;
-    rep[Token.SUFFIX] = this.suffices.get(segment.objectScoreContainer.mediatype);
-    rep[Token.SEGMENT_ID] = segment.segmentId;
-    rep[Token.SEGMENT_ID_NO_PREFIX] = segment.segmentId.replace(ResolverService.prefixForMediatype(segment.objectScoreContainer.mediatype), '');
-    return this.host_objects.replace(this._regex, (match) => rep[match] || match);
-  }
-
-  /**
    * Resolves and returns the IIIF Resource URL to a MediaObject.
    *
    * @param object The MediaObject for which to return the URL.
@@ -151,7 +69,7 @@ export class ResolverService {
    * @param height Optional height parameter to control the dimensions of the image
    * @param width Optional width parameter to control the dimensions of the image
    */
-  public iiifUrlToObject(object: MediaObjectDescriptor, rawPath?: boolean,  height?: number, width?: number): string {
+  public static iiifUrlToObject(object: MediaObjectDescriptor, rawPath?: boolean, height?: number, width?: number): string {
     // @ts-ignore
     const metadata = object._metadata
     if (!metadata) {
@@ -176,5 +94,87 @@ export class ResolverService {
       return baseUrl
     }
     return null
+  }
+
+  /**
+   * Default constructor; Initializes the map of suffixes per media-type based on
+   * the configuration.
+   *
+   * @param _configService ConfigService reference; injected.
+   */
+  constructor(_configService: AppConfig) {
+    _configService.configAsObservable.subscribe((config) => {
+      this.host_thumbnails = config.get('resources.host_thumbnails');
+      this.host_objects = config.get('resources.host_objects');
+      const default_suffix: string = config.get('resources.suffix_default');
+      const suffices = config.get('resources.suffix');
+      for (const type of Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key])) {
+        const suffix: string = suffices[type];
+        if (typeof suffix === 'string') {
+          ResolverService.suffices.set(type, (suffix.charAt(0) === '.' ? '' : '.') + suffix);
+        } else {
+          ResolverService.suffices.set(type, (default_suffix.charAt(0) === '.' ? '' : '.') + default_suffix);
+        }
+      }
+    });
+  }
+
+  /**
+   * Resolves and returns the absolute path / URL to a MediaObject.
+   *
+   * @param object The MediaObject for which to return the path.
+   */
+  public pathToObject(object: MediaObjectDescriptor) {
+    const iiifUrl = ResolverService.iiifUrlToObject(object)
+    if (iiifUrl) {
+      return iiifUrl
+    }
+    const rep = {};
+    rep[Token.OBJECT_ID] = object.objectId;
+    rep[Token.OBJECT_NAME] = object.name;
+    rep[Token.OBJECT_PATH] = object.path;
+    rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
+    rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
+    rep[Token.SUFFIX] = ResolverService.suffices.get(object.mediatype);
+    return this.host_objects.replace(ResolverService._regex, (match) => rep[match] || match);
+  }
+
+  /**
+   * Resolves and returns the absolute path / URL to the thumbnail of a given combination of MediaSegment and MediaObject.
+   * If an IIIF resource URL is available then it is returned instead of the absolute path.
+   *
+   * @param {object} object The MediaObject for which to return the path / URL
+   * @param {segment} segment The MediaSegment for which to return the path / URL
+   * @param height Optional height parameter to control the height parameter in the IIIF Image API URL
+   * @param width Optional width parameter to control the width parameter in the IIIF Image API URL
+   * @return {string}
+   */
+  public pathToThumbnail(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor, height?: number, width?: number) {
+    const iiifUrl = ResolverService.iiifUrlToObject(object, false, height, width);
+    if (iiifUrl) {
+      return iiifUrl
+    }
+    const rep = {};
+    rep[Token.OBJECT_ID] = object.objectId;
+    rep[Token.OBJECT_NAME] = object.name;
+    rep[Token.OBJECT_PATH] = object.path;
+    rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
+    rep[Token.OBJECT_TYPE_UPPER] = object.mediatype;
+    rep[Token.SUFFIX] = ResolverService.suffices.get(object.mediatype);
+    rep[Token.SEGMENT_ID] = segment.segmentId;
+    return this.host_thumbnails.replace(ResolverService._regex, (match) => rep[match] || match);
+  }
+
+  public pathToSegment(segment: MediaSegmentScoreContainer) {
+    const rep = {};
+    rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
+    rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;
+    rep[Token.OBJECT_PATH] = segment.objectScoreContainer.path;
+    rep[Token.OBJECT_TYPE_LOWER] = segment.objectScoreContainer.mediatype.toLowerCase();
+    rep[Token.OBJECT_TYPE_UPPER] = segment.objectScoreContainer.mediatype;
+    rep[Token.SUFFIX] = ResolverService.suffices.get(segment.objectScoreContainer.mediatype);
+    rep[Token.SEGMENT_ID] = segment.segmentId;
+    rep[Token.SEGMENT_ID_NO_PREFIX] = segment.segmentId.replace(ResolverService.prefixForMediatype(segment.objectScoreContainer.mediatype), '');
+    return this.host_objects.replace(ResolverService._regex, (match) => rep[match] || match);
   }
 }

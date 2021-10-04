@@ -12,12 +12,12 @@ import {CoreModule} from './core/core.module';
 import {SettingsModule} from './settings/settings.module';
 import {ObjectdetailsModule} from './objectdetails/objectdetails.module';
 import {AppRoutingModule} from './app-routing.module';
-import {EvaluationModule} from './evaluation/evaluation.module';
 import {MaterialModule} from './material.module';
 import {ResultsModule} from './results/results.module';
 import {MatBadgeModule} from '@angular/material/badge';
 import {AppConfig} from './app.config';
 import {SegmentdetailsModule} from './segmentdetails/segmentdetails.module';
+import {PipesModule} from './shared/pipes/pipes.module';
 import { GoogleChartsModule } from 'angular-google-charts';
 
 /**
@@ -38,12 +38,12 @@ export function initializeConfig(appConfig: AppConfig) {
     FormsModule,
     AppRoutingModule,
     ResultsModule,
-    EvaluationModule,
     ObjectdetailsModule,
     SegmentdetailsModule,
     SettingsModule,
     QuerySidebarModule,
     MatBadgeModule,
+    PipesModule,
     GoogleChartsModule.forRoot({ version: '49' })
   ],
   declarations: [AppComponent, PingComponent],

@@ -4,7 +4,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {AppRoutingModule} from '../../app-routing.module';
 import {MaterialModule} from '../../material.module';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {ContainerPipesModule} from '../../shared/pipes/containers/container-pipes.module';
+import {PipesModule} from '../../shared/pipes/pipes.module';
 import {VbsModule} from '../../core/vbs/vbs.module';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {TemporalListComponent} from './temporal-list.component';
@@ -12,7 +12,7 @@ import {ResultSegmentPreviewTileModule} from '../result-segment-preview-tile/res
 import {VgCoreModule} from '@videogular/ngx-videogular/core';
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, ContainerPipesModule, VbsModule, InfiniteScrollModule, VgCoreModule, ResultSegmentPreviewTileModule],
+  imports: [MaterialModule, BrowserModule, FormsModule, AppRoutingModule, FlexLayoutModule, PipesModule, VbsModule, InfiniteScrollModule, VgCoreModule, ResultSegmentPreviewTileModule],
   declarations: [TemporalListComponent],
   exports: [TemporalListComponent]
 })

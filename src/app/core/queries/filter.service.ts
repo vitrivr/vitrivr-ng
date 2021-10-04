@@ -20,8 +20,9 @@ export class FilterService {
    */
   public _useOrForMetadataCategoriesFilter = false;
   _id: string;
+
   /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
-  private _segmentFilters: BehaviorSubject<((v: MediaSegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
+  _segmentFilters: BehaviorSubject<((v: MediaSegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
   /**
    * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects
@@ -58,7 +59,7 @@ export class FilterService {
   private _threshold = 0.0;
 
   /** An internal BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
-  private _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
+  _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
   constructor(private _selectionService: SelectionService) {
     Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._mediatypes.set(v, false));
@@ -111,13 +112,6 @@ export class FilterService {
   }
 
   /**
-   * Getter for BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers.
-   */
-  get objectFilters(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
-    return this._objectFilters.asObservable();
-  }
-
-  /**
    * Returns a copy of the list of MediaTypes that should be used for filtering.
    */
   get mediatypeKeys(): MediaObjectDescriptor.MediatypeEnum[] {
@@ -129,13 +123,6 @@ export class FilterService {
    */
   get dominantKeys(): ColorLabel[] {
     return Array.from(this._dominant.keys());
-  }
-
-  /**
-   * Getter for BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainer.
-   */
-  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
-    return this._segmentFilters.asObservable();
   }
 
   /**
@@ -219,7 +206,7 @@ export class FilterService {
         let tagFilter = Boolean(false);
         this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
           // check if either one of the underlying segments or the object itself has appropriate metadata
-          if (obj.segments.findIndex(seg => mdAllowedValuesSet.has(seg.metadata.get(mdKey))) >= 0 || mdAllowedValuesSet.has(obj.metadata.get(mdKey))) {
+          if (obj.segments.findIndex(seg => mdAllowedValuesSet.has(seg.metadata.get(mdKey))) >= 0 || mdAllowedValuesSet.has(obj._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
@@ -232,7 +219,7 @@ export class FilterService {
             return;
           }
           // check if the object metadata fulfills the range condition
-          if (checkRange(range, obj.metadata.get(mdKey))) {
+          if (checkRange(range, obj._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
@@ -252,22 +239,31 @@ export class FilterService {
       segmentFilters.push((seg) => {
         let andFilter = Boolean(true);
         let orFilter = Boolean(false);
+        let tagFilter = Boolean(false);
         // check whether the segment or the corresponding object has appropriate metadata
         this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
-          if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer.metadata.get(mdKey))) {
+          if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
           andFilter = false;
         });
         this._filterRangeMetadata.forEach((range, mdKey) => {
-          if (checkRange(range, seg.metadata.get(mdKey)) || checkRange(range, seg.objectScoreContainer.metadata.get(mdKey))) {
+          if (checkRange(range, seg.metadata.get(mdKey)) || checkRange(range, seg.objectScoreContainer._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
           andFilter = false;
         });
-        return this._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
+        if (this._filterTags.size === 0) {
+          tagFilter = true;
+        }
+        this._filterTags.forEach(tag => {
+          if (this._selectionService.hasTag(seg.segmentId, tag)) {
+            tagFilter = true;
+          }
+        });
+        return this._useOrForMetadataCategoriesFilter ? orFilter && tagFilter : andFilter && tagFilter;
       });
     }
 

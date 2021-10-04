@@ -17,6 +17,8 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
   /** The Vitrivr NG configuration as observable */
   private _webSocket: WebSocketSubject<CollabordinatorMessage>;
 
+  public readonly _online: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+
   /** The current instance of the loaded Config. */
   private _config: Config;
 
@@ -86,21 +88,19 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
     }
     this._webSocket = webSocket<CollabordinatorMessage>(this._config.get<string>('competition.collabordinator'));
     this._webSocket.subscribe(
-      v => this.next(v),
+      v => {
+        this.next(v)
+        this._online.next(true)
+      },
       e => {
         console.log('Error occurred while communicating with Collabordinator web service');
+        this._online.next(false)
       },
       () => {
         console.log('Connection to Collabordinator web service was closed.');
+        this._online.next(false)
       }
     );
     return true;
-  }
-
-  /**
-   * Returns true if the Collabordinator service is available and false otherwise.
-   */
-  public available(): boolean {
-    return this._webSocket != null;
   }
 }
