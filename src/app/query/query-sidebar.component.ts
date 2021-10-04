@@ -110,12 +110,12 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
     }
 
     /** F1 will trigger a search. */
-    if (event.keyCode == 112) {
+    if (event.keyCode === 112) {
       this.onSearchClicked();
     }
 
     /** F2 will reset the search. */
-    if (event.keyCode == 113) {
+    if (event.keyCode === 113) {
       this.onClearAllClicked();
     }
   }

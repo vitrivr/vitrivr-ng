@@ -8,15 +8,15 @@ import {CaptionWithCount} from '../../shared/model/misc/caption-with-count.model
 })
 export class ResultSetInfoService {
   topTagsArray: Tag[];
-  private topTagsSource = new BehaviorSubject(this.topTagsArray);
+  private topTagsSource = new BehaviorSubject([]);
   currentTopTagsArray = this.topTagsSource.asObservable();
 
   topCaptionsArray: CaptionWithCount[];
-  private captionSource = new BehaviorSubject(this.topCaptionsArray);
+  private captionSource = new BehaviorSubject([]);
   currentCaption = this.captionSource.asObservable();
 
   newTagForQuery: Tag;
-  private newTagForQuerySource = new BehaviorSubject(this.newTagForQuery);
+  private newTagForQuerySource = new BehaviorSubject(null);
   currentNewTagForQuery = this.newTagForQuerySource.asObservable();
 
   constructor() {

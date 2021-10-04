@@ -26,6 +26,7 @@
     ]
   },
   "query": {
+    "enableTagPrioritisation": false,
     "history": 0,
     "options": {
       "image": true,

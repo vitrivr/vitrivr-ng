@@ -3,7 +3,7 @@ import {MediaObjectScoreContainer} from './media-object-score-container.model';
 import {MediaSegmentScoreContainer} from './segment-score-container.model';
 import {WeightedFeatureCategory} from '../weighted-feature-category.model';
 import {SimilarityQueryResult} from '../../messages/interfaces/responses/query-result-similarty.interface';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {FeatureCategories} from '../feature-categories.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
@@ -19,7 +19,6 @@ import {MediaObjectDescriptor, MediaObjectMetadataDescriptor, MediaObjectQueryRe
 import {AppConfig} from '../../../../app.config';
 import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
 import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
-import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 export class ResultsContainer {
@@ -51,29 +50,23 @@ export class ResultsContainer {
   /** A subject that can be used to publish changes to the results. */
   private _results_topTags_subject: BehaviorSubject<String[]>;
 
-  /** List of all the results that were returned and hence are known to the results container. */
-  private _features: WeightedFeatureCategory[] = [];
-
-  /** A subject that can be used to publish changes to the results. */
-  private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
-
-  /**
-   * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
-   * results have been returned yet OR that no query is running.
-   *
-   * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
-   * be filtered).
-   */
-  private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
-
   /**
    * Constructor for ResultsContainer.
    *
    * @param {string} queryId Unique ID of the query. Used to filter messages!
    * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
    */
-  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = new AverageFusionFunction()) {
+  constructor(
+    public readonly queryId: string,
+    private scoreFunction: FusionFunction = new AverageFusionFunction(),
+  ) {
   }
+
+  /** List of all the results that were returned and hence are known to the results container. */
+  private _features: WeightedFeatureCategory[] = [];
+
+  /** A subject that can be used to publish changes to the results. */
+  private _results_features_subject: BehaviorSubject<WeightedFeatureCategory[]> = new BehaviorSubject(this._features);
 
   /**
    * Getter for the list of results.
@@ -83,6 +76,15 @@ export class ResultsContainer {
   get features(): WeightedFeatureCategory[] {
     return this._features;
   }
+
+  /**
+   * Map of all MediaTypes that have been returned by the current query. Empty map indicates, that no
+   * results have been returned yet OR that no query is running.
+   *
+   * Boolean indicates whether the query type is active (i.e. should be returned) or inactive (i.e. should
+   * be filtered).
+   */
+  private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
   /**
    * Getter for the list of mediatypes.
@@ -524,26 +526,6 @@ export class ResultsContainer {
     return true;
   }
 
-  private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
-    let mosc;
-    if (!segment) {
-      console.error('received undefined segment, exiting')
-      return
-    }
-    if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
-      mosc = new TemporalObjectSegments(
-        this._objectid_to_object_map.get(segment.objectId),
-        [segment],
-        segment.score
-      )
-      this._objectid_to_temporal_object_map.set(segment.objectId, mosc)
-    } else {
-      if (this._objectid_to_temporal_object_map.get(segment.objectId).segments.indexOf(segment) === -1) {
-        this._objectid_to_temporal_object_map.get(segment.objectId).segments.push(segment)
-      }
-    }
-  }
-
   /**
    * Completes the two subjects and invalidates them thereby.
    */
@@ -612,6 +594,26 @@ export class ResultsContainer {
     };
   }
 
+  private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
+    let mosc;
+    if (!segment) {
+      console.error('received undefined segment, exiting')
+      return
+    }
+    if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
+      mosc = new TemporalObjectSegments(
+        this._objectid_to_object_map.get(segment.objectId),
+        [segment],
+        segment.score
+      )
+      this._objectid_to_temporal_object_map.set(segment.objectId, mosc)
+    } else {
+      if (this._objectid_to_temporal_object_map.get(segment.objectId).segments.indexOf(segment) === -1) {
+        this._objectid_to_temporal_object_map.get(segment.objectId).segments.push(segment)
+      }
+    }
+  }
+
   /**
    * Publishes the next rounds of changes by pushing the filtered array to the respective subjects.
    */
@@ -620,7 +622,9 @@ export class ResultsContainer {
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
-    this._results_topTags_subject.next(this.topTagsArray);
+    if (Config.config.get('query.enableTagPrioritisation')) {
+      this._results_topTags_subject.next(this.topTagsArray);
+    }
     // sort in descending order
     this._temporal_objects_subject.next(Array.from(this._objectid_to_temporal_object_map.values()).sort((a, b) => b.score - a.score));
   }

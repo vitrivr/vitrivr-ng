@@ -16,6 +16,9 @@ export class Config {
   /** Default display duration for Snackbar messages. */
   public static SNACKBAR_DURATION = 2500;
 
+  /** Reference to the current config */
+  public static config: Config;
+
   public maxLength = 600;
 
   _config = {
@@ -98,7 +101,8 @@ export class Config {
         categories: []
       },
       boolean: [],
-      temporal_mode: 'TEMPORAL_DISTANCE'
+      temporal_mode: 'TEMPORAL_DISTANCE',
+      enableTagPrioritisation: false
     },
     refinement: {
       filters: [
@@ -119,7 +123,9 @@ export class Config {
       object = JSON.parse(object);
     }
     if (object['api'] || object['resources'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
-      return new Config(object['api'], object['resources'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
+      const config = new Config(object['api'], object['resources'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
+      Config.config = config;
+      return config;
     } else {
       return null;
     }
@@ -165,6 +171,7 @@ export class Config {
     }
     this._config.resources.host_objects = this._config.resources.host_objects.replace('/default/', '/' + window.location.hostname + '/');
     this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace('/default/', '/' + window.location.hostname + '/');
+    Config.config = this;
   }
 
   /**

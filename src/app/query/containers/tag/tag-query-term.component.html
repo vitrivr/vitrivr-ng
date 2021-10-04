@@ -16,22 +16,22 @@
                   id="{{tag.id}}">
             {{tag.name}}&nbsp;<small>({{tag.id}})</small>
             <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
-            <button mat-icon-button [matMenuTriggerFor]="menu">
+            <button *ngIf="config.config.get('query.enableTagPrioritisation')" mat-icon-button [matMenuTriggerFor]="menu">
                 <mat-icon *ngIf="tag.priority == null">menu</mat-icon>
                 <mat-icon *ngIf="tag.priority == 'REQUIRE'" class="require-icon">warning_amber</mat-icon>
                 <mat-icon *ngIf="tag.priority == 'REQUEST'" class="request-icon">check_circle_outline</mat-icon>
                 <mat-icon *ngIf="tag.priority == 'EXCLUDE'" class="exclude-icon">not_interested</mat-icon>
             </button>
-            <mat-menu #menu="matMenu" [overlapTrigger]="false">
-            <span>
+            <mat-menu *ngIf="config.config.get('query.enableTagPrioritisation')" #menu="matMenu" [overlapTrigger]="false">
+            <span *ngIf="config.config.get('query.enableTagPrioritisation')">
                 <mat-button-toggle-group>
-                    <mat-button-toggle (change)="onPriorityChange('REQUIRE', tag)" value="REQUIRE" class="require-icon">
+                    <mat-button-toggle (change)="onPreferenceChange(Preference.MUST, tag)" value="must" class="require-icon">
                         <mat-icon>warning_amber</mat-icon>
                     </mat-button-toggle>
-                    <mat-button-toggle (change)="onPriorityChange('REQUEST', tag)" value="REQUEST" class="request-icon">
+                    <mat-button-toggle (change)="onPreferenceChange(Preference.COULD, tag)" value="could" class="request-icon">
                         <mat-icon>check_circle_outline</mat-icon>
                     </mat-button-toggle>
-                    <mat-button-toggle (change)="onPriorityChange('EXCLUDE', tag)" value="EXCLUDE" class="exclude-icon">
+                    <mat-button-toggle (change)="onPreferenceChange(Preference.NOT, tag)" value="not" class="exclude-icon">
                         <mat-icon>not_interested</mat-icon>
                     </mat-button-toggle>
                 </mat-button-toggle-group>

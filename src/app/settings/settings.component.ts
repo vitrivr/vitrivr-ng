@@ -7,6 +7,7 @@ import {InteractionEventComponent} from '../shared/model/events/interaction-even
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {NotificationUtil} from '../shared/util/notification.util';
 import {NotificationService} from '../core/basics/notification.service';
+import {AppConfig} from '../app.config';
 
 @Component({
 
@@ -28,7 +29,10 @@ export class SettingsComponent implements AfterContentInit {
 
   _badgeValue: string = NotificationUtil.getNotificationSymbol()
 
-  constructor(private _eventBusService: EventBusService, private _notificationService: NotificationService) {
+  constructor(
+    private _eventBusService: EventBusService,
+    private _notificationService: NotificationService,
+    public config: AppConfig) {
 
   }
 

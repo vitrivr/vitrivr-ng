@@ -7,9 +7,10 @@ import {debounceTime, first, map, mergeAll, startWith} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Tag, TagService} from '../../../../../openapi/cineast';
-import PriorityEnum = Tag.PriorityEnum;
 
 import {ResultSetInfoService} from '../../../core/queries/result-set-info.service';
+import {Config} from '../../../shared/model/config/config.model';
+import {AppConfig} from '../../../app.config';
 
 
 @Injectable({
@@ -27,18 +28,23 @@ export class TagQueryTermComponent implements OnInit {
    * make enum available in html https://stackoverflow.com/questions/44045311/cannot-approach-typescript-enum-within-html
    */
   Preference = Preference;
+  /** List of tag fields currently displayed. */
+  readonly _field: FieldGroup;
   /** The TagQueryTerm object associated with this TagQueryTermComponent. That object holds all the query settings. */
   @Input()
   private tagTerm: TagQueryTerm;
-  /** List of tag fields currently displayed. */
-  readonly _field: FieldGroup;
-
-  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar, private _resultSetInfoService: ResultSetInfoService) {
-    this._field = new FieldGroup(_tagService);
-  }
 
   /** List of tag fields currently displayed. */
   _tags: Tag[] = [];
+
+  constructor(
+    _tagService: TagService,
+    private _matsnackbar: MatSnackBar,
+    private _resultSetInfoService: ResultSetInfoService,
+    public config: AppConfig
+  ) {
+    this._field = new FieldGroup(_tagService);
+  }
 
   get tags() {
     return this._tags;
@@ -111,10 +117,10 @@ export class TagQueryTermComponent implements OnInit {
    */
   public addTags(tags: Tag[]) {
     tags.forEach(tag => {
-      /*
-      NOTE: Uncommented since tag preferences are not yet OpenApi supported.
-      tag.preference = Preference.COULD;
-       */
+      if (Config.config.get('query.enableTagPriorisation')) {
+        // NOTE: Uncommented since tag preferences are not yet OpenApi supported.
+        // tag.preference = Preference.COULD;
+      }
       this.addTag(tag);
     })
   }
@@ -138,11 +144,10 @@ export class TagQueryTermComponent implements OnInit {
   /**
    * Stores values for preference set for a tag in a Map<String, String>
    */
-
-  /*
-  public onPreferenceChange(preference: Preference, tag): void
-  NOTE: Uncommented since tag preferences are not yet OpenApi supported.
-    tag.preference = preference;
+  public onPreferenceChange(preference: Preference, tag): void {
+    if (Config.config.get('query.enableTagPrioritisation')) {
+      tag.preference = preference;
+    }
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
     })));
@@ -152,7 +157,6 @@ export class TagQueryTermComponent implements OnInit {
   ifPreferenceExists(tag): boolean {
     return tag.preference != null;
   }
-   */
 
 
   private sortTagsByPreference(): void {
@@ -177,6 +181,9 @@ export class FieldGroup {
 
   public currentlyDisplayedTags: Array<Tag> = new Array<Tag>();
 
+  /** The currently selected tag. */
+  private _selection: Tag;
+
   constructor(private _tags: TagService) {
     this.filteredTags = this.formControl.valueChanges.pipe(
       debounceTime(250),
@@ -195,9 +202,6 @@ export class FieldGroup {
       value.forEach(t => this.currentlyDisplayedTags.push(t))
     });
   }
-
-  /** The currently selected tag. */
-  private _selection: Tag;
 
   get selection(): Tag {
     return this._selection;
