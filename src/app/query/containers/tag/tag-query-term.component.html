@@ -1,41 +1,41 @@
 <div [style.padding-left]="'10px'" [style.text-align]="'left'">
-    <mat-form-field class="textinput">
-        <input [formControl]="_field.formControl" [matAutocomplete]="auto" aria-label="Enter a tag"
-               matInput
-               placeholder="Enter a tag">
-        <mat-autocomplete [panelWidth]="450" #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
-            <mat-option *ngFor="let tag of _field.filteredTags | async" [value]="tag">
-                <small>{{tag.name}}: {{tag.description}}</small>
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
-    <mat-chip-list>
-        <mat-chip class="dropdown" (removed)="removeTag(tag)" *ngFor="let tag of _tags" [removable]="true"
-                  [selectable]="true"
-                  id="{{tag.id}}">
-            {{tag.name}}&nbsp;<small>({{tag.id}})</small>
-            <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
-            <button mat-icon-button [matMenuTriggerFor]="menu">
-                <mat-icon *ngIf="tag.priority == null">menu</mat-icon>
-                <mat-icon *ngIf="tag.priority == 'REQUIRE'" class="require-icon">warning_amber</mat-icon>
-                <mat-icon *ngIf="tag.priority == 'REQUEST'" class="request-icon">check_circle_outline</mat-icon>
-                <mat-icon *ngIf="tag.priority == 'EXCLUDE'" class="exclude-icon">not_interested</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu" [overlapTrigger]="false">
-            <span>
-                <mat-button-toggle-group>
-                    <mat-button-toggle (change)="onPriorityChange('REQUIRE', tag)" value="REQUIRE" class="require-icon">
+  <mat-form-field class="textinput">
+    <input [formControl]="_field.formControl" [matAutocomplete]="auto" aria-label="Enter a tag"
+           matInput
+           placeholder="Enter a tag">
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)" [panelWidth]="450">
+      <mat-option *ngFor="let tag of _field.filteredTags | async" [value]="tag">
+        <small>{{tag.name}}: {{tag.description}}</small>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  <mat-chip-list>
+    <mat-chip (removed)="removeTag(tag)" *ngFor="let tag of _tags" [removable]="true" [selectable]="true"
+              class="dropdown"
+              id="{{tag.id}}">
+      {{tag.name}}&nbsp;<small>({{tag.id}})</small>
+      <mat-icon matChipRemove matTooltip="Remove tag from list">cancel</mat-icon>
+      <span *ngIf="config.config.get('query.enableTagPrioritisation')">
+        <button [matMenuTriggerFor]="menu" mat-icon-button>
+          <mat-icon *ngIf="tag.priority == null">menu</mat-icon>
+          <mat-icon *ngIf="tag.priority == 'REQUIRE'" class="require-icon">warning_amber</mat-icon>
+          <mat-icon *ngIf="tag.priority == 'REQUEST'" class="request-icon">check_circle_outline</mat-icon>
+          <mat-icon *ngIf="tag.priority == 'EXCLUDE'" class="exclude-icon">not_interested</mat-icon>
+        </button>
+      <mat-menu #menu="matMenu" [overlapTrigger]="false">
+                <mat-button-toggle-group mat-menu-item>
+                    <mat-button-toggle (change)="onPriorityChange('REQUIRE', tag)" class="require-icon" value="REQUIRE">
                         <mat-icon>warning_amber</mat-icon>
                     </mat-button-toggle>
-                    <mat-button-toggle (change)="onPriorityChange('REQUEST', tag)" value="REQUEST" class="request-icon">
+                    <mat-button-toggle (change)="onPriorityChange('REQUEST', tag)" class="request-icon" value="REQUEST">
                         <mat-icon>check_circle_outline</mat-icon>
                     </mat-button-toggle>
-                    <mat-button-toggle (change)="onPriorityChange('EXCLUDE', tag)" value="EXCLUDE" class="exclude-icon">
+                    <mat-button-toggle (change)="onPriorityChange('EXCLUDE', tag)" class="exclude-icon" value="EXCLUDE">
                         <mat-icon>not_interested</mat-icon>
                     </mat-button-toggle>
                 </mat-button-toggle-group>
-            </span>
-            </mat-menu>
-        </mat-chip>
-    </mat-chip-list>
+      </mat-menu>
+        </span>
+    </mat-chip>
+  </mat-chip-list>
 </div>
