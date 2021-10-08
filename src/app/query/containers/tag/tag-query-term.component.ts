@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
@@ -7,6 +7,8 @@ import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Tag, TagService} from '../../../../../openapi/cineast';
 import PriorityEnum = Tag.PriorityEnum;
+import {AppConfig} from '../../../app.config';
+import {MatMenu} from '@angular/material/menu';
 
 @Component({
   selector: 'app-qt-tag',
@@ -24,7 +26,9 @@ export class TagQueryTermComponent implements OnInit {
   /** List of tag fields currently displayed. */
   _tags: Tag[] = [];
 
-  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar) {
+  @ViewChild(MatMenu, {static: true}) menu: MatMenu;
+
+  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar, public config: AppConfig) {
     this._field = new FieldGroup(_tagService);
   }
 
