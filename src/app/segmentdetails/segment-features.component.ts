@@ -37,7 +37,7 @@ export class SegmentFeaturesComponent {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.LOAD_FEATURES, context)));
 
     // get the tags associated with a segmentid
-    this._metaService.findTagsById(segment.segmentId).subscribe(tagIds =>
+    this._metaService.findTagInformationById(segment.segmentId).subscribe(tagIds =>
       // needed to receive remaining information for a tag object, since cineast only sends its id
       this._tagService.findTagsById({ids: tagIds.tagIDs}).subscribe(res => {
         this._tags = res.tags;

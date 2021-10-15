@@ -3,6 +3,7 @@ import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
 import { ClientRunInfoService } from './api/clientRunInfo.service';
+import { DownloadService } from './api/download.service';
 import { LogService } from './api/log.service';
 import { StatusService } from './api/status.service';
 import { SubmissionService } from './api/submission.service';

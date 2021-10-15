@@ -3,6 +3,7 @@ README.md
 api.module.ts
 api\api.ts
 api\clientRunInfo.service.ts
+api\download.service.ts
 api\log.service.ts
 api\status.service.ts
 api\submission.service.ts

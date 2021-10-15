@@ -17,8 +17,6 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { ClientRunInfoList } from '../model/models';
-import { ClientTaskInfo } from '../model/models';
 import { ErrorStatus } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -29,7 +27,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class ClientRunInfoService {
+export class DownloadService {
 
     protected basePath = 'http://localhost';
     public defaultHeaders = new HttpHeaders();
@@ -87,27 +85,17 @@ export class ClientRunInfoService {
     }
 
     /**
-     * Returns an overview of the currently active task for a run
-     * @param runId 
-     * @param session Session Token
+     * Provides a JSON download of the entire competition description structure.
+     * @param competitionId Competition ID
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApiV1ClientRunInfoCurrenttaskWithRunid(runId: string, session: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ClientTaskInfo>;
-    public getApiV1ClientRunInfoCurrenttaskWithRunid(runId: string, session: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ClientTaskInfo>>;
-    public getApiV1ClientRunInfoCurrenttaskWithRunid(runId: string, session: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ClientTaskInfo>>;
-    public getApiV1ClientRunInfoCurrenttaskWithRunid(runId: string, session: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
-        if (runId === null || runId === undefined) {
-            throw new Error('Required parameter runId was null or undefined when calling getApiV1ClientRunInfoCurrenttaskWithRunid.');
-        }
-        if (session === null || session === undefined) {
-            throw new Error('Required parameter session was null or undefined when calling getApiV1ClientRunInfoCurrenttaskWithRunid.');
-        }
-
-        let queryParameters = new HttpParams({encoder: this.encoder});
-        if (session !== undefined && session !== null) {
-          queryParameters = this.addToHttpParams(queryParameters,
-            <any>session, 'session');
+    public getApiV1DownloadCompetitionWithCompetitionid(competitionId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<string>;
+    public getApiV1DownloadCompetitionWithCompetitionid(competitionId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<string>>;
+    public getApiV1DownloadCompetitionWithCompetitionid(competitionId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<string>>;
+    public getApiV1DownloadCompetitionWithCompetitionid(competitionId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (competitionId === null || competitionId === undefined) {
+            throw new Error('Required parameter competitionId was null or undefined when calling getApiV1DownloadCompetitionWithCompetitionid.');
         }
 
         let headers = this.defaultHeaders;
@@ -130,9 +118,8 @@ export class ClientRunInfoService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<ClientTaskInfo>(`${this.configuration.basePath}/api/v1/client/run/info/currentTask/${encodeURIComponent(String(runId))}`,
+        return this.httpClient.get<string>(`${this.configuration.basePath}/api/v1/download/competition/${encodeURIComponent(String(competitionId))}`,
             {
-                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
@@ -143,23 +130,17 @@ export class ClientRunInfoService {
     }
 
     /**
-     * Lists an overview of all competition runs visible to the current client
-     * @param session Session Token
+     * Provides a JSON download of the entire competition run structure.
+     * @param runId Competition run ID
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApiV1ClientRunInfoList(session: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ClientRunInfoList>;
-    public getApiV1ClientRunInfoList(session: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ClientRunInfoList>>;
-    public getApiV1ClientRunInfoList(session: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ClientRunInfoList>>;
-    public getApiV1ClientRunInfoList(session: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
-        if (session === null || session === undefined) {
-            throw new Error('Required parameter session was null or undefined when calling getApiV1ClientRunInfoList.');
-        }
-
-        let queryParameters = new HttpParams({encoder: this.encoder});
-        if (session !== undefined && session !== null) {
-          queryParameters = this.addToHttpParams(queryParameters,
-            <any>session, 'session');
+    public getApiV1DownloadRunWithRunid(runId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<string>;
+    public getApiV1DownloadRunWithRunid(runId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<string>>;
+    public getApiV1DownloadRunWithRunid(runId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<string>>;
+    public getApiV1DownloadRunWithRunid(runId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (runId === null || runId === undefined) {
+            throw new Error('Required parameter runId was null or undefined when calling getApiV1DownloadRunWithRunid.');
         }
 
         let headers = this.defaultHeaders;
@@ -182,9 +163,54 @@ export class ClientRunInfoService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<ClientRunInfoList>(`${this.configuration.basePath}/api/v1/client/run/info/list`,
+        return this.httpClient.get<string>(`${this.configuration.basePath}/api/v1/download/run/${encodeURIComponent(String(runId))}`,
             {
-                params: queryParameters,
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Provides a CSV download with the scores for a given competition run.
+     * @param runId Competition run ID
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getApiV1DownloadRunWithRunidScores(runId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/csv' | 'application/json'}): Observable<string>;
+    public getApiV1DownloadRunWithRunidScores(runId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/csv' | 'application/json'}): Observable<HttpResponse<string>>;
+    public getApiV1DownloadRunWithRunidScores(runId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/csv' | 'application/json'}): Observable<HttpEvent<string>>;
+    public getApiV1DownloadRunWithRunidScores(runId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/csv' | 'application/json'}): Observable<any> {
+        if (runId === null || runId === undefined) {
+            throw new Error('Required parameter runId was null or undefined when calling getApiV1DownloadRunWithRunidScores.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/csv',
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<string>(`${this.configuration.basePath}/api/v1/download/run/${encodeURIComponent(String(runId))}/scores`,
+            {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

@@ -11,7 +11,7 @@
  */
 
 
-export interface MediaObjectDescriptor {
+export interface MediaObjectDescriptor { 
     objectId?: string;
     name?: string;
     path?: string;
