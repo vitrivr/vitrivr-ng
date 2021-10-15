@@ -78,7 +78,8 @@
         "option"
       ]
     ],
-    "staged": true
+    "staged": true,
+    "enableTagPrioritisation": true
   },
   "refinement": {
     "filters": [

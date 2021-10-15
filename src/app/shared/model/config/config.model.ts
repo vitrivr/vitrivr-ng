@@ -98,7 +98,8 @@ export class Config {
         categories: []
       },
       boolean: [],
-      temporal_mode: 'TEMPORAL_DISTANCE'
+      temporal_mode: 'TEMPORAL_DISTANCE',
+      enableTagPrioritisation: false
     },
     refinement: {
       filters: [
