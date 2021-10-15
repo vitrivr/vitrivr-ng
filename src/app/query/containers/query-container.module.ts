@@ -12,8 +12,9 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {TagQueryTermModule} from './tag/tag-query-term.module';
 import {SemanticQueryTermModule} from './semantic/semantic-query-term.module';
 import {BoolQueryTermModule} from './bool/bool-query-term.module';
-import {TemporalDistanceModule} from '../temporal-distance/temporal-distance.module';
 import {QueryStageModule} from './query-stage.module';
+import {TemporalDistanceModule} from '../temporal-distance/temporal-distance.module';
+import {PipesModule} from '../../shared/pipes/pipes.module';
 
 @NgModule({
   imports: [
@@ -29,8 +30,9 @@ import {QueryStageModule} from './query-stage.module';
     TagQueryTermModule,
     SemanticQueryTermModule,
     BoolQueryTermModule,
+    QueryStageModule,
     TemporalDistanceModule,
-    QueryStageModule
+    PipesModule
   ],
   declarations: [QueryContainerComponent],
   exports: [QueryContainerComponent]

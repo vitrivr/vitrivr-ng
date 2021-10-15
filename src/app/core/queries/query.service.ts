@@ -20,10 +20,7 @@ import {HistoryService} from './history.service';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import {WebSocketSubject} from 'rxjs/webSocket';
 import {SegmentQuery} from '../../shared/model/messages/queries/segment-query.model';
-import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import {TemporalFusionFunction} from '../../shared/model/results/fusion/temporal-fusion-function.model';
 import {StagedSimilarityQuery} from '../../shared/model/messages/queries/staged-similarity-query.model';
-import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {BoolQueryTerm} from '../../shared/model/queries/bool-query-term.model';
@@ -33,7 +30,9 @@ import {InteractionEvent} from '../../shared/model/events/interaction-event.mode
 import {EventBusService} from '../basics/event-bus.service';
 import {AppConfig} from '../../app.config';
 import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult} from '../../../../openapi/cineast';
+import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
+import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -72,7 +71,7 @@ export class QueryService {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
       this._socket.pipe(
-        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
+        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_TEMPORAL', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
       ).subscribe((msg: Message) => this.onApiMessage(msg));
     });
     this._config.configAsObservable.subscribe(config => {
@@ -128,8 +127,76 @@ export class QueryService {
       console.warn('There is already a query running');
     }
     this._config.configAsObservable.pipe(first()).subscribe(config => {
-      TemporalFusionFunction.queryContainerCount = containers.length;
       const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
+      this._socket.next(query)
+    });
+
+    /** Log Interaction */
+    const _components: InteractionEventComponent[] = []
+    containers.forEach(container => {
+      _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_CONTAINER))
+      container.stages.forEach(s => {
+        _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_STAGE))
+        s.terms.forEach(t => {
+          const context: Map<ContextKey, any> = new Map();
+          context.set('q:categories', t.categories);
+          context.set('q:value', 'null')
+          switch (t.type) {
+            case 'IMAGE':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context));
+              return;
+            case 'AUDIO':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
+              return;
+            case 'MOTION':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context));
+              return;
+            case 'MODEL3D':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
+              return;
+            case 'SEMANTIC':
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context));
+              return;
+            case 'TEXT':
+              context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
+              return;
+            case 'BOOLEAN':
+              context.set('q:value', (t as BoolQueryTerm).terms)
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_BOOLEAN, context));
+              return;
+            case 'TAG':
+              context.set('q:value', (t as TagQueryTerm).tags);
+              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_TAG, context));
+              return;
+          }
+        })
+      })
+    });
+    this._eventBusService.publish(new InteractionEvent(..._components))
+  }
+
+  /**
+   * Starts a new temporal query. Success is indicated by the return value.
+   *
+   * Note: Temporal queries can only be started if no query is currently running.
+   *
+   * @param containers The list of QueryContainers used to create the query.
+   * @param timeDistances The list of time distances between the containers
+   * @param maxLength The maximal length of the temporal sequences
+   * @returns {boolean} true if query was issued, false otherwise.
+   */
+  public findTemporal(containers: QueryContainerInterface[], timeDistances: number[], maxLength: number): boolean {
+    if (!this._socket) {
+      console.warn('No socket available, not executing temporal query');
+      return false;
+    }
+    if (this._running > 0) {
+      console.warn('There is already a query running');
+    }
+    this._config.configAsObservable.pipe(first()).subscribe(config => {
+      const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
+        new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), timeDistances, maxLength);
       this._socket.next(query)
     });
 
@@ -226,8 +293,8 @@ export class QueryService {
         return;
       }
       _cat
-        .filter(c => categories.indexOf(c) === -1)
-        .forEach(c => categories.push(c));
+      .filter(c => categories.indexOf(c) === -1)
+      .forEach(c => categories.push(c));
       if (categories.length > 0) {
         this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
       }
@@ -352,6 +419,12 @@ export class QueryService {
       case 'QR_SIMILARITY':
         const sim = <SimilarityQueryResult>message;
         if (this._results && this._results.processSimilarityMessage(sim)) {
+          this._subject.next('UPDATED');
+        }
+        break;
+      case 'QR_TEMPORAL':
+        const temp = <TemporalQueryResult>message;
+        if (this._results && this._results.processTemporalMessage(temp)) {
           this._subject.next('UPDATED');
         }
         break;

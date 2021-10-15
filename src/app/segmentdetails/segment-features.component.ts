@@ -24,15 +24,6 @@ export class SegmentFeaturesComponent {
   constructor(private _eventBusService: EventBusService, private _metaService: MetadataService, private _tagService: TagService) {
   }
 
-  public sortAlphabetically(tagsArray: Tag[]): Tag[] {
-    tagsArray.sort(function (a, b) {
-      const textA = a.name.toLowerCase();
-      const textB = b.name.toLowerCase();
-      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-    });
-    return tagsArray;
-  }
-
   public onLoadFeaturesButtonClicked(segment: MediaSegmentDescriptor) {
     this._tags = [];
     this._captions = [];
@@ -46,7 +37,7 @@ export class SegmentFeaturesComponent {
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.LOAD_FEATURES, context)));
 
     // get the tags associated with a segmentid
-    this._metaService.findTagsById(segment.segmentId).subscribe(tagIds =>
+    this._metaService.findTagInformationById(segment.segmentId).subscribe(tagIds =>
       // needed to receive remaining information for a tag object, since cineast only sends its id
       this._tagService.findTagsById({ids: tagIds.tagIDs}).subscribe(res => {
         this._tags = res.tags;

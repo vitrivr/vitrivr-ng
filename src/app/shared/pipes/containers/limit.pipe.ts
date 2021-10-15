@@ -12,17 +12,13 @@ export class LimitPipe implements PipeTransform {
    * @param apply whether to actually apply this pipe. Used because we haven't figured a better way to combine *ngIf and pipes
    */
   public transform<T>(array: Array<T>, count: number, apply: boolean = true): Array<T> {
-    if (!array || array.length === 0) {
-      return [];
-    }
-    if (!count) {
-      console.debug(`returning empty array since count is ${count}`);
+    if (!array || array.length === 0 || count === 0) {
       return [];
     }
     if (!apply) {
       return array;
     }
-    console.debug(`limiting to ${count} elements because apply is ${apply}`);
+    console.debug(`Limiting to ${count} segments.`);
     return array.slice(0, count);
   }
 }

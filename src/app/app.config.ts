@@ -33,6 +33,10 @@ export class AppConfig {
     return AppConfig.settings;
   }
 
+  public publishChanges() {
+    AppConfig.settingsSubject.next(AppConfig.settings)
+  }
+
   /**
    * Returns the current configuration as observable. Can be used to monitor changes.
    */

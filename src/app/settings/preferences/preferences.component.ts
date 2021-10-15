@@ -1,17 +1,15 @@
 import {AfterContentInit, Component} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
 import {Config} from '../../shared/model/config/config.model';
-import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
-import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
 import Dexie from 'dexie';
-import {VbsInteractionLog} from '../../core/vbs/vbs-interaction-log.model';
+import {DresTypeConverter} from '../../core/vbs/dres-type-converter.util';
 import {fromPromise} from 'rxjs/internal-compatibility';
 import * as JSZip from 'jszip';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
+import {TemporalMode} from './temporal-mode-container.model';
 
 @Component({
 
@@ -19,9 +17,7 @@ import {AppConfig} from '../../app.config';
   templateUrl: './preferences.component.html'
 })
 export class PreferencesComponent implements AfterContentInit {
-
-  /** The current configuration as observable. */
-  private _config: Observable<Config>;
+  _config: Config;
 
   /** Table for persisting result logs. */
   private _resultsLogTable: Dexie.Table<any, number>;
@@ -30,10 +26,18 @@ export class PreferencesComponent implements AfterContentInit {
   private _submissionLogTable: Dexie.Table<any, number>;
 
   /** Table for persisting interaction logs. */
-  private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
+  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
 
-  private _dresStatus: BehaviorSubject<string> = new BehaviorSubject<string>('')
+  _dresStatus = ''
   _dresStatusBadgeValue: string;
+
+  maxLength = 600;
+
+  cineast = ((c: Config) => c.cineastEndpointWs);
+  dresAddress = ((c: Config) => c._config.competition.host)
+  hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails)
+  hostObjects = ((c: Config) => c._config.resources.host_objects)
+  mode = ((c: Config) => c._config.query.temporal_mode)
 
   /**
    * Constructor for PreferencesComponent
@@ -44,61 +48,19 @@ export class PreferencesComponent implements AfterContentInit {
     private _submissionService: VbsSubmissionService,
     private _notificationService: NotificationService
   ) {
-    this._config = this._configService.configAsObservable;
+    this._configService.configAsObservable.subscribe(c => this._config = c)
     this._resultsLogTable = _db.db.table('log_results');
     this._interactionLogTable = _db.db.table('log_interaction');
     this._submissionLogTable = _db.db.table('log_submission');
   }
 
-  /**
-   * Getter for Cineast endpoint
-   *
-   * @return {Observable<string>}
-   */
-  get cineastEndpoint(): Observable<string> {
-    return this._config.pipe(map(c => c.endpoint_ws));
+  public onModeChanged(mode: TemporalMode) {
+    this._configService.config._config.query.temporal_mode = mode
+    this._configService.publishChanges()
   }
 
-  get dresEnabled(): Observable<boolean> {
-    return this._config.pipe(map(c => c._config.competition.dres))
-  }
-
-  get dresAddress(): Observable<string> {
-    return this._config.pipe(map(c => c._config.competition.endpoint))
-  }
-
-  get dresStatus(): Observable<string> {
-    return this._dresStatus.asObservable()
-  }
-
-  /**
-   * Getter for thumbnail host.
-   *
-   * @return {Observable<string>}
-   */
-  get hostThumbnails(): Observable<string> {
-    return this._config.pipe(map(c => c.get<string>('resources.host_thumbnails')));
-  }
-
-  /**
-   * Getter for media object host
-   *
-   * @return {Observable<string>}
-   */
-  get hostObjects(): Observable<string> {
-    return this._config.pipe(map(c => c.get<string>('resources.host_objects')));
-  }
-
-  /**
-   * Getter for whether or not the inexact-hint in the current QueryConfig is active.
-   *
-   * @return {Observable<boolean>}
-   */
-  get useInexactIndex(): Observable<boolean> {
-    return this._config.pipe(
-      map(c => c.get<Hint[]>('query.config.hints')),
-      map(h => h.indexOf('inexact') > -1 && h.indexOf('exact') === -1)
-    );
+  public onMaxLengthSaveClicked() {
+    this._configService.config.maxLength = this.maxLength
   }
 
   /**
@@ -106,6 +68,7 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onResetButtonClicked() {
     this._configService.load();
+    // this._configService.config._config.query.temporal_mode = 'TEMPORAL_DISTANCE';
   }
 
   /**
@@ -216,35 +179,18 @@ export class PreferencesComponent implements AfterContentInit {
     this._resultsLogTable.clear().then(() => console.log('Results logs cleared.'))
   }
 
-
-  /**
-   * Triggered whenever the user changes the value of the UseInexactIndex setting.
-   *
-   * @param {MatSlideToggleChange} e The associated change event.
-   */
-  public onUseInexactIndexChanged(e: MatSlideToggleChange) {
-    this._config.pipe(first()).subscribe(c => {
-      const hints = c.get<Hint[]>('query.config.hints').filter(h => ['inexact', 'exact'].indexOf(h) === -1);
-      if (e.checked === true) {
-        hints.push('inexact');
-      } else {
-        hints.push('exact');
-      }
-      c.set('query.config.hints', hints);
-    });
-  }
-
   ngAfterContentInit(): void {
-    this._submissionService.statusObservable().subscribe(status => {
-      if (status) {
-        if (status.username) {
-          this._dresStatus.next(`${status.username} as ${status.role}: ${status.sessionId}`)
+    this._submissionService.statusObservable.subscribe(status => {
+        if (status) {
+          this._dresStatus = `${status.sessionId}`
           return;
         }
-        this._dresStatus.next('not logged in')
+        this._dresStatus = 'not logged in'
         return
-      }
-    })
+      },
+      error => {
+        this._dresStatus = 'not logged in'
+      })
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }

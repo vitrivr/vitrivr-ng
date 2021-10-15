@@ -30,11 +30,21 @@ having the OpenApi serving enabled (config option `"enableLiveDoc": "true"` )
 
 This is an alias for the full-fledged command:
 
-`openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=9.1.12`
+`openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=11.0.7`
 
 The assumption for this snippet is, that the Cineast is running on localhost using port 4567. Adjust according to your needs.
 
 This will break `ng serve` as it will generate imports for a `Set` class which does not exist. Simply remove all such imports which cause errors, the code will work fine.
+
+### DRES Bindings
+
+Since Vitrivr NG might be used in a competition context, we rely on
+[DRES](https://github.com/dres-dev/DRES).
+
+To update (and / or initially fetch) the DRES client library,
+use this command:
+
+`npm run gen-dres-client`
 
 ## Further help
 

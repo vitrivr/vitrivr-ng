@@ -38,6 +38,8 @@ model\ping.ts
 model\queryComponent.ts
 model\queryConfig.ts
 model\queryTerm.ts
+model\selectResult.ts
+model\selectSpecification.ts
 model\sessionState.ts
 model\similarityQuery.ts
 model\similarityQueryResult.ts

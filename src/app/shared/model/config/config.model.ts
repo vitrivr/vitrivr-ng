@@ -3,7 +3,6 @@ import {FeatureCategories} from '../results/feature-categories.model';
 import {QuerySettings} from './query-settings.model';
 import * as DEEPMERGE from 'deepmerge';
 
-
 export class Config {
   /** Context of the Cineast API. */
   public static readonly CONTEXT = 'api';
@@ -16,6 +15,8 @@ export class Config {
 
   /** Default display duration for Snackbar messages. */
   public static SNACKBAR_DURATION = 2500;
+
+  public maxLength = 600;
 
   _config = {
     api: {
@@ -37,38 +38,27 @@ export class Config {
         'VIDEO': 'png'
       } /** Per-mediatype suffix definition for thumbnails. */
     },
-    evaluation: {
-      active: false,
-      templates: [] /* URLs */
-    },
     competition: {
-      /* The team number within the competition contest. */
-      teamid: null,
+      /* Toggles VBS mode; determines type of information that is submitted. */
+      vbs: false,
 
-      /* The tool number within the competition context (each instance should have its own ID). */
-      toolid: null,
+      /* Toggles LSC mode; determines type of information that is submitted. */
+      lsc: false,
 
-      /* If DRES is used */
-      dres: false,
+      /* Host of the DRES endpoint (fqn + port, no protocol). */
+      host: null,
 
-      /* The sessionId. Each participant has its own sessionId, it is displayed in the user profile of the participant of DRES */
-      sessionid: null,
+      /* Flag indicating whether or not TLS should be used to communicate with DRES. */
+      tls: false,
 
-      /* URL to the competition endpoint. */
-      endpoint: null,
-
-      /* Whether or not logging (interaction & results) should be enabled. */
+      /* Flag indicating whether or not logging (interaction & results) should be enabled. */
       log: false,
 
       /* The timer interval at which logs are submitted to the competition server. */
       loginterval: 5000,
 
       /* URL to the Collabordinator endpoint. */
-      collabordinator: null,
-
-      lsc: false,
-
-      competition: false
+      collabordinator: null
     },
     tags: [
       new Tag('Red', 0),
@@ -108,7 +98,8 @@ export class Config {
         categories: []
       },
       boolean: [],
-      staged: false
+      temporal_mode: 'TEMPORAL_DISTANCE',
+      enableTagPrioritisation: false
     },
     refinement: {
       filters: [
@@ -128,8 +119,8 @@ export class Config {
     if (typeof object === 'string') {
       object = JSON.parse(object);
     }
-    if (object['api'] || object['resources'] || object['evaluation'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
-      return new Config(object['api'], object['resources'], object['evaluation'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
+    if (object['api'] || object['resources'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
+      return new Config(object['api'], object['resources'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
     } else {
       return null;
     }
@@ -141,23 +132,19 @@ export class Config {
    *
    * @param api Optional Cineast API configuration as, e.g. loaded from a file.
    * @param resources Optional resources configuration as, e.g. loaded from a file.
-   * @param evaluation Optional evaluation configuration as, e.g. loaded from a file.
    * @param query Optional query configuration, e.g. loaded from a file.
    * @param competition Optional competition configuration as, e.g. loaded from a file.
    * @param tags Optional tag configurations as, e.g. loaded from a file.
    * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
    * @param refinement Optional refinement configuration
    */
-  constructor(api?: any, resources?: any, evaluation?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
+  constructor(api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
     const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
     if (api) {
       this._config.api = DEEPMERGE(this._config.api, api, {arrayMerge: overwriteMerge});
     }
     if (resources) {
       this._config.resources = DEEPMERGE(this._config.resources, resources, {arrayMerge: overwriteMerge});
-    }
-    if (evaluation) {
-      this._config.evaluation = DEEPMERGE(this._config.evaluation, evaluation, {arrayMerge: overwriteMerge});
     }
     if (query) {
       this._config.query = DEEPMERGE(this._config.query, query, {arrayMerge: overwriteMerge});
@@ -184,22 +171,10 @@ export class Config {
   /**
    * Returns URL to WebSocket endpoint for Vitrivr NG.
    */
-  get endpoint_ws(): string {
+  get cineastEndpointWs(): string {
     const scheme = this._config.api.ws_secure ? 'wss://' : 'ws://';
     if (this._config.api.host && this._config.api.port) {
       return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/websocket';
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Full URL to HTTP/RESTful endpoint for Vitrivr NG.
-   */
-  get endpoint_http(): string {
-    const scheme = this._config.api.http_secure ? 'https://' : 'http://';
-    if (this._config.api.host && this._config.api.port) {
-      return scheme + this._config.api.host + ':' + this._config.api.port + '/' + Config.CONTEXT + '/' + Config.VERSION + '/';
     } else {
       return null;
     }
@@ -210,10 +185,22 @@ export class Config {
    * Fully qualified with the schema (if secured, this is HTTPS, otherwise HTTP)
    * the host and the port.
    */
-  get endpointRest(): string {
+  get cineastEndpointRest(): string {
     const scheme = this._config.api.http_secure ? 'https://' : 'http://';
     if (this._config.api.host && this._config.api.port) {
       return scheme + this._config.api.host + ':' + this._config.api.port;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Full URL to HTTP/HTTPs RESTful endpoint for DRES.
+   */
+  get dresEndpointRest() {
+    const scheme = this._config.competition.tls ? 'https://' : 'http://';
+    if (this._config.competition.host) {
+      return `${scheme}${this._config.competition.host}`
     } else {
       return null;
     }

@@ -1,12 +1,12 @@
 <vg-player (onPlayerReady)="onPlayerReady($event)" [style.display]="'block'" [style.width]="width + 'px'">
 
     <video #media *ngIf="mediaobject.mediatype == 'VIDEO'" [autoplay]="auto" [vgMedia]="media" id="videoplayer"
-           preload="auto" src="{{_resolver.pathToObject(mediaobject)}}" style="object-fit: contain;"
+           preload="auto" src="{{mediaobject| ObjectPathPipe}}" style="object-fit: contain;"
            [style.width]="width + 'px'">
     </video>
 
     <audio #media *ngIf="mediaobject.mediatype == 'AUDIO'" [autoplay]="auto" [vgMedia]="media" id="audioplayer"
-           preload="auto" src="{{_resolver.pathToObject(mediaobject)}}">
+           preload="auto" src="{{mediaobject| ObjectPathPipe}}">
     </audio>
 
     <vg-controls [style.display]="'block'" [style.height]="'100px'" [style.position]="'relative'">
@@ -16,8 +16,8 @@
             <vg-scrub-bar>
                 <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
                 <vg-scrub-bar-buffering-time></vg-scrub-bar-buffering-time>
-                <vg-scrub-bar-cue-points *ngIf="(track|async)"
-                                         [vgCuePoints]="(track|async).cues"></vg-scrub-bar-cue-points>
+                <vg-scrub-bar-cue-points *ngIf="(_track|async)"
+                                         [vgCuePoints]="(_track|async).cues"></vg-scrub-bar-cue-points>
             </vg-scrub-bar>
 
             <vg-time-display vgFormat="mm:ss" vgProperty="total"></vg-time-display>
@@ -41,7 +41,7 @@
 
             <div class="spacer-flex"></div>
 
-            <mat-icon (click)="onSubmitPressed()" *ngIf="(showVbsSubmitButton|async)"
+            <mat-icon (click)="onSubmitPressed()" *ngIf="(_vbs | CompetitionEnabledPipe |async)"
                       class="player-button" matTooltip="Submit current position to VBS API.">send
             </mat-icon>
             <vg-mute></vg-mute>

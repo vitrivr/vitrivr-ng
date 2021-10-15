@@ -25,12 +25,12 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   private _cache: Map<string, Array<[WeightedFeatureCategory, StringDoublePair, number]>> = new Map();
 
   /** List of SegmentScoreContainer that belong to this MediaObjectScoreContainer. */
-  private _segments: MediaSegmentScoreContainer[] = [];
+  _segments: MediaSegmentScoreContainer[] = [];
 
-  private _segmentsObservable: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._segments)
+  _segmentsObservable: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._segments)
 
   /** Map containing the metadata that belongs to the object. Can be empty! */
-  private _metadata: Map<string, string> = new Map();
+  _metadata: Map<string, string> = new Map();
 
   public constructor(public objectId: string) {
     super();
@@ -47,15 +47,6 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
 
   get segmentsObservable(): Observable<MediaSegmentScoreContainer[]> {
     return this._segmentsObservable.asObservable();
-  }
-
-  /**
-   * Returns the map of metadata.
-   *
-   * @return {Map<string, string>}
-   */
-  get metadata() {
-    return this._metadata;
   }
 
   /**
@@ -135,15 +126,6 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    */
   public update(features: WeightedFeatureCategory[], func: FusionFunction) {
     this._score = func.scoreForObject(features, this);
-  }
-
-  /**
-   * Returns a metadata entry for the given key.
-   *
-   * @param key Key for the metadata entry to lookup.
-   */
-  public metadataForKey(key: string) {
-    return this._metadata.get(key);
   }
 
   /**

@@ -1,0 +1,49 @@
+name: Add artifact in assets on release
+on:
+  release:
+    tags:
+      - 'v*.*.*'
+    types: [published]
+jobs:
+  dev:
+    runs-on: ubuntu-latest
+    steps:
+      # check out the repo
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      # get the tag name
+      - name: Tag name
+        run: echo running on tag ${GITHUB_REF##*/}
+      # install node 14.x
+      - name: Use node 14.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      # install node modules 
+      - name: Install Node Modules
+        run: npm i
+      # install angular
+      - name: Install angular
+        run: npm install --global @angular/cli@11
+      # run build command
+      - name: Build
+        run: ng build --prod
+      # run tests with coverage
+      # - name: Test
+      #   run: ng test --watch=false --code-coverage --source-map true
+      # set environment variable RELEASE_VERSION i.e. tag name
+      - name: Set environment variable
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      # Zip the contents of dist folder
+      - name: Archive build
+        uses: papeloto/action-zip@v1
+        with:
+          files: dist/
+          dest: vitrivr-ng-${{ env.RELEASE_VERSION }}.zip
+      # Add the zip to release assets
+      - name: Add artifact to release assets
+        if: success()
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'vitrivr-ng-${{ env.RELEASE_VERSION }}.zip'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

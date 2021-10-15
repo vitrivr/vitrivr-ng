@@ -1,25 +1,17 @@
 import {Component, OnInit} from '@angular/core';
-import {TemporalDistance, TemporalQualifier} from './temporal-distance.model';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'app-temporal-distance',
   templateUrl: './temporal-distance.component.html',
   styleUrls: ['./temporal-distance.component.css']
 })
-export class TemporalDistanceComponent implements OnInit {
+export class TemporalDistanceComponent {
 
-  qualifier: TemporalQualifier = 'LESS';
+  time = 10; // seconds
 
-  time = 30; // seconds
-
-  constructor() {
-  }
-
-  ngOnInit() {
-  }
-
-  public getTemporalDistanceFromUser(): TemporalDistance {
-    return new TemporalDistance(this.time, this.qualifier);
+  public getTemporalDistanceFromUser(): number {
+    return this.time;
   }
 
 }

@@ -1,3 +1,22 @@
 .textinput {
     width: 90%;
 }
+
+.container {
+    display: flex; /* or inline-flex */
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.require-icon {
+    color: dodgerblue;
+}
+
+.request-icon {
+    color: limegreen;
+}
+
+.exclude-icon {
+    color: red;
+}

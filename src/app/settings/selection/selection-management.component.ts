@@ -1,19 +1,14 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {SelectionService} from '../../core/selection/selection.service';
-import {Observable} from 'rxjs';
 import {Tag} from '../../core/selection/tag.model';
 import {QueryService} from '../../core/queries/query.service';
 
 @Component({
-
   selector: 'app-selection-management',
   templateUrl: './selection-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectionManagementComponent {
-
-  /** */
-  private readonly _observable: Observable<Map<string, Set<Tag>>>;
 
   /**
    * Constructor for SelectionManagementComponent
@@ -21,17 +16,7 @@ export class SelectionManagementComponent {
    * @param _selectionService Reference to SelectionService (by injection).
    * @param _queryService Reference to QueryService (by injection).
    */
-  constructor(private _selectionService: SelectionService, private _queryService: QueryService) {
-    this._observable = _selectionService.asObservable();
-  }
-
-  /**
-   * Getter for the observable.
-   *
-   * @return {Observable<Map<string, Set<Tag>>>}
-   */
-  get selection(): Observable<Map<string, Set<Tag>>> {
-    return this._observable;
+  constructor(public _selectionService: SelectionService, private _queryService: QueryService) {
   }
 
   /**

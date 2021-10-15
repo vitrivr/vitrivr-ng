@@ -24,8 +24,10 @@ export class ObjectviewerComponent {
 
   @Input() mediaobject: MediaObjectDescriptor;
 
+  @Input() displayHeader = true
+
   constructor(
-    private  _eventBusService: EventBusService,
+    private _eventBusService: EventBusService,
     public _resolver: ResolverService,
     private _historyService: PreviousRouteService,
   ) {
@@ -58,4 +60,5 @@ export class ObjectviewerComponent {
     context.set('i:starttime', segment.startabs);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.PLAY, context)))
   }
+
 }

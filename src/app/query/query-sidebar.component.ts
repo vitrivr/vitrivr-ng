@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, HostListener, OnInit, QueryList, ViewChildren, AfterViewInit} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {QueryContainerInterface} from '../shared/model/queries/interfaces/query-container.interface';
 import {StagedQueryContainer} from '../shared/model/queries/staged-query-container.model';
@@ -8,21 +8,35 @@ import {InteractionEventType} from '../shared/model/events/interaction-event-typ
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {FilterService} from '../core/queries/filter.service';
 import {QueryContainerComponent} from './containers/query-container.component';
-import {TemporalFusionFunction} from '../shared/model/results/fusion/temporal-fusion-function.model';
+import {TemporalMode} from '../settings/preferences/temporal-mode-container.model';
+import {Observable} from 'rxjs';
+import {Config} from '../shared/model/config/config.model';
+import {AppConfig} from '../app.config';
 
 
 @Component({
   selector: 'app-query-sidebar',
   templateUrl: 'query-sidebar.component.html'
 })
-export class QuerySidebarComponent implements OnInit {
+export class QuerySidebarComponent implements OnInit, AfterViewInit {
+
+  private _config: Observable<Config>;
+
   /** StagedQueryContainer's held by the current instance of ResearchComponent. */
   public readonly containers: QueryContainerInterface[] = [];
+
   @ViewChildren(QueryContainerComponent) queryContainers: QueryList<QueryContainerComponent>;
   /** A timestamp used to store the timestamp of the last Enter-hit by the user. Required for shortcut detection. */
   private _lastEnter = 0;
+  public mode: TemporalMode = 'TEMPORAL_DISTANCE';
+  public maxLength = 600;
 
-  constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService) {
+  constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService, private _configService: AppConfig) {
+    this._config = this._configService.configAsObservable;
+    this._config.subscribe(c => {
+      this.maxLength = c.maxLength;
+      this.mode = c._config.query.temporal_mode as TemporalMode;
+    });
   }
 
   /**
@@ -33,6 +47,18 @@ export class QuerySidebarComponent implements OnInit {
   }
 
   /**
+   * Subscribe the query containers to the mode change possible by the temporal mode component
+   */
+  ngAfterViewInit() {
+    this._config.subscribe(c => {
+      this.modeChange(c._config.query.temporal_mode as TemporalMode)
+    });
+    this.queryContainers.changes.subscribe(_ =>
+      this.modeChange(this.mode) // subsequent calls to modeChange will trigger an update to the mode of the component
+    );
+  }
+
+  /**
    * Adds a new StagedQueryContainer to the list of QueryContainers.
    */
   public addQueryTermContainer() {
@@ -40,20 +66,18 @@ export class QuerySidebarComponent implements OnInit {
   }
 
   /**
-   * Triggers the similarity onSearchClicked by packing all configured QueryContainers into a single
-   * SimilarityQuery message, and submitting that message to the QueryService.
+   * Triggers the temporal onSearchClicked by packing all configured QueryContainers into a single
+   * TemporalQuery message, and submitting that message to the QueryService.
    *
    * context changes are only part of competition logging and not part of the message sent to cineast
    */
   public onSearchClicked() {
-    if (this.queryContainers && this.queryContainers.length >= 2) {
-      const tempDist = this.getTemporalDistance();
-      if (tempDist) {
-        TemporalFusionFunction.instance().setTemporalDistance(tempDist);
-      }
+    let tempDist = []
+    if (this.queryContainers && this.queryContainers.length >= 2 && this.mode === 'TEMPORAL_DISTANCE') {
+      tempDist = this.getTemporalDistances();
     }
 
-    this._queryService.findSimilar(this.containers);
+    this._queryService.findTemporal(this.containers, tempDist, this.maxLength);
   }
 
   /**
@@ -96,19 +120,31 @@ export class QuerySidebarComponent implements OnInit {
     }
   }
 
-  /**
-   * To traverse the dom tree with @viewchildren, all the children need the annotation (i.e. decorator)
-   */
-  private getTemporalDistance() {
-    if (this.queryContainers && this.queryContainers.length >= 2) {
-      const second = this.queryContainers.toArray()[1] as QueryContainerComponent;
-      if (second.temporalDistances && second.temporalDistances.length >= 1) {
-        const temporalDistanceComponent = second.temporalDistances.first;
-        if (temporalDistanceComponent) {
-          return temporalDistanceComponent.getTemporalDistanceFromUser();
+  /* Traverse all elements and retrieve the time distances */
+  private getTemporalDistances(): number[] {
+    if (this.containers.length > 1 && this.mode) {
+      const timeDistances = [this.containers.length - 1];
+      let i = 0;
+      this.queryContainers.forEach((container) => {
+        if (i > 0) {
+          timeDistances[i - 1] = container.temporalDistances.first.getTemporalDistanceFromUser();
         }
-      }
+        i += 1;
+      });
+      return timeDistances
+    } else {
+      return [];
     }
-    return null;
+  }
+
+  /**
+   * Change the mode and update all query containers with the new mode
+   * @param mode New temporal mode
+   */
+  public modeChange(mode: TemporalMode) {
+    this.mode = mode;
+    this.queryContainers.forEach((container) => {
+      container.changeMode(mode);
+    })
   }
 }

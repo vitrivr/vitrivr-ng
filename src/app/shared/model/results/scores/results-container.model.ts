@@ -8,23 +8,20 @@ import {FeatureCategories} from '../feature-categories.model';
 import {SegmentMetadataQueryResult} from '../../messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../messages/interfaces/responses/query-result-object-metadata.interface';
 import {MediaSegmentMetadata} from '../../media/media-segment-metadata.model';
-import 'rxjs-compat/add/operator/map';
-import 'rxjs-compat/add/operator/merge';
-import 'rxjs-compat/add/operator/concat';
-import 'rxjs-compat/add/operator/zip';
-import 'rxjs-compat/add/operator/filter';
-import 'rxjs-compat/add/operator/combineLatest';
 import {AbstractRefinementOption} from '../../../../settings/refinement/refinementoption.model';
 import {CheckboxRefinementModel} from '../../../../settings/refinement/checkboxrefinement.model';
 import {SliderRefinementModel} from '../../../../settings/refinement/sliderrefinement.model';
 import {Config} from '../../config/config.model';
 import {FilterType} from '../../../../settings/refinement/filtertype.model';
-import {TemporalFusionFunction} from '../fusion/temporal-fusion-function.model';
 import {AverageFusionFunction} from '../fusion/average-fusion-function.model';
 import {MaxpoolFusionFunction} from '../fusion/maxpool-fusion-function.model';
 import {MediaObjectMetadataDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../../../openapi/cineast';
 import {AppConfig} from '../../../../app.config';
 import {MediaObjectDescriptor} from '../../../../../../openapi/cineast/model/mediaObjectDescriptor';
+import {TemporalQueryResult} from '../../messages/interfaces/responses/query-result-temporal.interface';
+import {TemporalObjectSegments} from '../../misc/temporalObjectSegments';
+import {combineLatest} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 export class ResultsContainer {
   /** A Map that maps objectId's to their MediaObjectScoreContainer. This is where the results of a query are assembled. */
@@ -32,6 +29,9 @@ export class ResultsContainer {
 
   /** A Map that maps segmentId's to objectId's. This is a cache-structure! */
   private _segmentid_to_segment_map: Map<string, MediaSegmentScoreContainer> = new Map();
+
+  /** A Map that maps objectId's to their TemporalObjectSegments. */
+  private _objectid_to_temporal_object_map: Map<string, TemporalObjectSegments> = new Map();
 
   /** Internal data structure that contains all MediaObjectScoreContainers. */
   private _results_objects: MediaObjectScoreContainer[] = [];
@@ -42,6 +42,8 @@ export class ResultsContainer {
   private _results_objects_subject: BehaviorSubject<MediaObjectScoreContainer[]> = new BehaviorSubject(this._results_objects);
   /** A subject that can be used to publish changes to the results. */
   private _results_segments_subject: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._results_segments);
+
+  private _temporal_objects_subject: BehaviorSubject<TemporalObjectSegments[]> = new BehaviorSubject(Array.from(this._objectid_to_temporal_object_map.values()));
 
   /** A counter for rerank() requests. So we don't have to loop over all objects and segments many times per second. */
   private _rerank = 0;
@@ -69,7 +71,7 @@ export class ResultsContainer {
    * @param {string} queryId Unique ID of the query. Used to filter messages!
    * @param {FusionFunction} scoreFunction Function that should be used to calculate the scores.
    */
-  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = TemporalFusionFunction.instance()) {
+  constructor(public readonly queryId: string, private scoreFunction: FusionFunction = new AverageFusionFunction()) {
   }
 
   /**
@@ -116,6 +118,10 @@ export class ResultsContainer {
     return this._results_features_subject.asObservable();
   }
 
+  get temporalObjectsAsObservable(): Observable<TemporalObjectSegments[]> {
+    return this._temporal_objects_subject.asObservable();
+  }
+
   /**
    * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
    * ResultsContainer#serialize().
@@ -146,7 +152,7 @@ export class ResultsContainer {
     return container;
   }
 
-  // tslint:disable-next-line:member-ordering
+  // tslint:disable-next-line:member-ordering no-shadowed-variable
   private static fillMap(map: Map<string, AbstractRefinementOption>, resultList: any, config?: Config) {
     if (config) {
       config.get<[string, string][]>('refinement.filters').forEach(el => {
@@ -165,7 +171,7 @@ export class ResultsContainer {
       });
     }
     resultList.forEach(res => {
-      res.metadata.forEach(((mdValue, mdKey) => {
+      res._metadata.forEach(((mdValue, mdKey) => {
         if (!map.has(mdKey)) {
           return
         }
@@ -194,15 +200,21 @@ export class ResultsContainer {
     return map;
   }
 
+  /**
+   * Check if the results should be reranked. This is done in order to avoid updating the frontend too often.
+   */
   public checkUpdate() {
     if (this._rerank > 0) {
       // check upper limit to avoid call in avalanche of responses
+      // we only rerank if there have been less than 100 calls in the last window
       if (this._rerank < 100) {
         this.rerank();
       } else { // mark unranked changes for next round
         this._rerank = 1;
       }
-    } else if (this._next > 0) { // else if as rerank already calls next
+      return
+    }
+    if (this._next > 0) {
       // check upper limit to avoid call in avalanche of responses
       if (this._next < 100) {
         this.next();
@@ -212,7 +224,9 @@ export class ResultsContainer {
     }
   }
 
-  // force update if there are changes, e.g. on query end
+  /**
+   * force update if there are changes, e.g. on query end
+   */
   public doUpdate() {
     if (this._rerank > 0) {
       this.rerank();
@@ -223,9 +237,6 @@ export class ResultsContainer {
 
   public setScoreFunction(scoreFunction: string) {
     switch (scoreFunction.toUpperCase()) {
-      case 'TEMPORAL':
-        this.scoreFunction = TemporalFusionFunction.instance();
-        break;
       case 'AVERAGE':
         this.scoreFunction = new AverageFusionFunction();
         break;
@@ -249,13 +260,13 @@ export class ResultsContainer {
    * @return a map of all metadata keys with all possible values
    */
   public metadataAsObservable(_configService: AppConfig): Observable<Map<string, AbstractRefinementOption>> {
-
-    return this.segmentsAsObservable.combineLatest(_configService.configAsObservable, function (resultList, config) {
-      const map: Map<string, AbstractRefinementOption> = new Map();
-      return ResultsContainer.fillMap(map, resultList, config)
-    }).combineLatest(this._results_objects_subject, function (map, objects) {
-      return ResultsContainer.fillMap(map, objects)
-    })
+    return combineLatest([this.segmentsAsObservable, _configService.configAsObservable, this._results_objects_subject]).pipe(
+      map(([resultList, config, objects]) => {
+          const valueMap: Map<string, AbstractRefinementOption> = new Map();
+          ResultsContainer.fillMap(valueMap, resultList, config)
+          return ResultsContainer.fillMap(valueMap, objects)
+        }
+      ));
   }
 
   /**
@@ -278,7 +289,8 @@ export class ResultsContainer {
   /**
    * Re-ranks the objects and segments, i.e. calculates new scores, using the provided list of
    * results and weightPercentage function. If none are provided, the default ones define in the ResultsContainer
-   * are used.
+   * are used. Not necessary for the temporal results as no additional information is expected that would change the
+   * temporal ranking.
    *
    * @param {WeightedFeatureCategory[]} features
    * @param {FusionFunction} weightFunction
@@ -360,6 +372,7 @@ export class ResultsContainer {
         this._results_segments.push(ssc);
         this._segmentid_to_segment_map.set(segment.segmentId, ssc);
       }
+      this.updateTemporalSegments(ssc);
     }
     console.timeEnd(`Processing Segment Message (${this.queryId})`);
 
@@ -408,7 +421,7 @@ export class ResultsContainer {
     for (const metadata of met.content) {
       const mosc = this._objectid_to_object_map.get(metadata.objectId);
       if (mosc) {
-        mosc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
+        mosc._metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
     console.timeEnd(`Processing Object Metadata Message (${this.queryId})`);
@@ -447,12 +460,81 @@ export class ResultsContainer {
   }
 
   /**
+   * Processes the TemporalQueryResult message. Stores the objectId and the corresponding TemporalObject.
+   *
+   * @param temp TemporalQueryResult message
+   * @return {boolean} True, if TemporalQueryResult was processed i.e. queryId corresponded with that of the message.
+   */
+  public processTemporalMessage(temp: TemporalQueryResult) {
+    if (temp.queryId !== this.queryId) {
+      console.warn(`similarity result query id ${temp.queryId} does not match query id ${this.queryId}`);
+      return false;
+    }
+    console.time(`Processing Temporal Message (${this.queryId})`);
+
+    for (const resultTemporalObject of temp.content) {
+      let mosc;
+      // if there is no temporal object for a given objectid, create it
+      if (!this._objectid_to_temporal_object_map.has(resultTemporalObject.objectId)) {
+        mosc = new TemporalObjectSegments(
+          this._objectid_to_object_map.get(resultTemporalObject.objectId),
+          resultTemporalObject.segments.map(segment => this._segmentid_to_segment_map.get(segment)),
+          resultTemporalObject.score
+        )
+        this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
+      } else {
+        // if there is already a temporal object for a given objectid, update it
+        const _tempobj = this._objectid_to_temporal_object_map.get(resultTemporalObject.objectId)
+        // only update score if it is better
+        _tempobj.score = _tempobj.score < resultTemporalObject.score ? resultTemporalObject.score : _tempobj.score
+        resultTemporalObject.segments.forEach(segment => {
+          const tmpSegment = this._segmentid_to_segment_map.get(segment);
+          if (!tmpSegment) {
+            console.warn(`cannot add undefined segment! ${segment}`)
+            return false
+          }
+          if (_tempobj.segments.indexOf(tmpSegment) === -1) {
+            _tempobj.segments.push(tmpSegment)
+          }
+        });
+      }
+    }
+
+    this._next += 1;
+
+    console.timeEnd(`Processing Temporal Message (${this.queryId})`);
+
+    return true;
+  }
+
+  private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
+    let mosc;
+    if (!segment) {
+      console.error('received undefined segment, exiting')
+      return
+    }
+    if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
+      mosc = new TemporalObjectSegments(
+        this._objectid_to_object_map.get(segment.objectId),
+        [segment],
+        segment.score
+      )
+      this._objectid_to_temporal_object_map.set(segment.objectId, mosc)
+    } else {
+      if (this._objectid_to_temporal_object_map.get(segment.objectId).segments.indexOf(segment) === -1) {
+        this._objectid_to_temporal_object_map.get(segment.objectId).segments.push(segment)
+      }
+    }
+  }
+
+  /**
    * Completes the two subjects and invalidates them thereby.
    */
   public complete() {
     this._results_objects_subject.complete();
     this._results_segments_subject.complete();
     this._results_features_subject.complete();
+    this._temporal_objects_subject.complete();
   }
 
   /**
@@ -485,13 +567,17 @@ export class ResultsContainer {
         })
       });
     });
+    const temporalList = [];
+    Array.from(this._objectid_to_temporal_object_map.values()).forEach(obj => {
+      temporalList.push({objectId: obj.object.objectId, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
+    })
     return {
       queryId: this.queryId,
       objects: this._results_objects.map(obj => obj.serialize()),
       segments: this._results_segments.map(seg => seg.serialize()),
       objectMetadata: this.flatten(this._results_objects.map(obj => {
         const metadata: MediaObjectMetadataDescriptor[] = [];
-        obj.metadata.forEach((v, k) => {
+        obj._metadata.forEach((v, k) => {
           metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
@@ -503,7 +589,8 @@ export class ResultsContainer {
         });
         return metadata;
       })),
-      similarity: similarityList
+      similarity: similarityList,
+      temporal: temporalList
     };
   }
 
@@ -515,6 +602,8 @@ export class ResultsContainer {
     this._results_segments_subject.next(this._results_segments.filter(v => v.objectScoreContainer.show)); /* Filter segments that are not ready. */
     this._results_objects_subject.next(this._results_objects.filter(v => v.show));
     this._results_features_subject.next(this._features);
+    // sort in descending order
+    this._temporal_objects_subject.next(Array.from(this._objectid_to_temporal_object_map.values()).sort((a, b) => b.score - a.score));
   }
 
   /**

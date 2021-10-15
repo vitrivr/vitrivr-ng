@@ -9,9 +9,10 @@ import {AdvancedMediaPlayerModule} from '../shared/components/video/advanced-vid
 import {SegmentdetailsComponent} from './segmentdetails.component';
 import {SegmentfeaturesModule} from './segmentfeatures.module';
 import {ObjectdetailsModule} from '../objectdetails/objectdetails.module';
+import {PipesModule} from '../shared/pipes/pipes.module';
 
 @NgModule({
-  imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, AdvancedMediaPlayerModule, SegmentfeaturesModule, ObjectdetailsModule],
+  imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, AdvancedMediaPlayerModule, SegmentfeaturesModule, ObjectdetailsModule, PipesModule],
   declarations: [SegmentdetailsComponent],
   exports: [SegmentdetailsComponent],
 })

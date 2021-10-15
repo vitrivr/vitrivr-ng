@@ -1,34 +1,29 @@
 import {Injectable} from '@angular/core';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {VideoUtil} from '../../shared/util/video.util';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {BehaviorSubject, combineLatest, Observable, of, Subject, Subscription} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {combineLatest, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
 import {EventBusService} from '../basics/event-bus.service';
-import {VbsInteractionLog} from './vbs-interaction-log.model';
-import {bufferTime, catchError, debounceTime, filter, flatMap, map, tap} from 'rxjs/operators';
+import {DresTypeConverter} from './dres-type-converter.util';
+import {bufferTime, catchError, debounceTime, filter, map, mergeMap, tap} from 'rxjs/operators';
 import {SelectionService} from '../selection/selection.service';
 import {QueryService} from '../queries/query.service';
-import {VbsInteraction} from '../../shared/model/vbs/interfaces/vbs-interaction.model';
-import {VbsResultsLog} from './vbs-results-log.model';
 import {DatabaseService} from '../basics/database.service';
 import Dexie from 'dexie';
-import {LscUtil} from '../../shared/model/lsc/lsc.util';
-import {LscSubmission} from '../../shared/model/lsc/interfaces/lsc-submission.model';
 import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
+import {LogService, QueryEventLog, QueryResultLog, SessionId, StatusService, SubmissionService, SuccessfulSubmissionsStatus, SuccessStatus, UserService} from '../../../../openapi/dres';
+ import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
- * the VBS mode is active, it listens to events emmited on the EventBus and maps them to VbsActions
+ * the VBS mode is active, it listens to events emitted on the EventBus and maps them to VbsActions
  */
 @Injectable()
 export class VbsSubmissionService {
-  /** The observable used to react to changes to the Vitrivr NG configuration. */
-  private _config: Observable<[string, string, number, boolean, number]>;
-
   /** The subject used to submit segments to the VBS service. */
   private _submitSubject = new Subject<[MediaSegmentScoreContainer, number]>();
 
@@ -37,6 +32,10 @@ export class VbsSubmissionService {
 
   /** Reference to the subscription that is used to submit updates to the results list. */
   private _resultsSubscription: Subscription;
+
+  /** Reference to the subscription for temporal scoring objects that is used to submit updates to the results list. */
+  private _temporalResultsSubscription: Subscription;
+
 
   /** Reference to the subscription that is used to submit interaction logs on a regular basis to the VBS server. */
   private _interactionlogSubscription: Subscription;
@@ -51,48 +50,53 @@ export class VbsSubmissionService {
   private _submissionLogTable: Dexie.Table<any, number>;
 
   /** Table for persisting interaction logs. */
-  private _interactionLogTable: Dexie.Table<VbsInteractionLog, number>;
+  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
 
-
+  /** Internal flag used to determine if VBS competition is running. */
   private _vbs = false;
-  private _dres = false;
-  private _sessionId = undefined;
-  private _lsc = false;
-  private readonly _status: BehaviorSubject<UserDetails> = new BehaviorSubject(undefined)
 
-  constructor(_config: AppConfig,
+  /** Internal flag used to determine if LSC competition is running. */
+  private _lsc = false;
+
+  /** SessionID retrieved from DRES endpoint, automatically connected via second tab. Does not support private mode */
+  private _sessionId = undefined;
+
+  /** Observable used to query the DRES status.*/
+  private readonly _status: Observable<SessionId>
+
+  /** Observable used to query the DRES user */
+  private readonly _user: Observable<UserDetails>
+
+  constructor(private _config: AppConfig,
               private _eventbus: EventBusService,
               private _queryService: QueryService,
               private _selection: SelectionService,
               private _metadata: MetadataService,
               private _http: HttpClient,
               private _snackBar: MatSnackBar,
+              private _dresSubmit: SubmissionService,
+              private _dresLog: LogService,
+              private _dresUser: UserService,
               _db: DatabaseService) {
 
-    _config.configAsObservable.subscribe(config => {
-      this._lsc = config.get<boolean>('competition.lsc');
-      this._vbs = config.get<boolean>('competition.vbs');
-      this._dres = config.get<boolean>('competition.dres');
-      this._sessionId = config.get<string>('competition.sessionid') // technically, with withCredentials not needed anymore
-    });
-
-    /* Configuration */
-    this._config = _config.configAsObservable.pipe(
-      filter(c => c.get<string>('competition.endpoint') != null),
-      map(c => <[string, string, number, boolean, number]>[c.get<string>('competition.endpoint').endsWith('/') ? c.get<string>('competition.endpoint').slice(0, -1) : c.get<string>('competition.endpoint'), c.get<string>('competition.teamid'), c.get<number>('competition.toolid'), c.get<boolean>('competition.log'), c.get<number>('competition.loginterval')])
-    );
-
     /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
-    this._configSubscription = this._config.subscribe(([endpoint, team, tool, log, loginterval]) => {
-      if (endpoint && team) {
+    this._configSubscription = _config.configAsObservable.subscribe(config => {
+      if (config?.dresEndpointRest) {
         this._resultsLogTable = _db.db.table('log_results');
         this._interactionLogTable = _db.db.table('log_interaction');
         this._submissionLogTable = _db.db.table('log_submission');
-        this.reset(endpoint, team, tool, log, loginterval)
+        this.reset(config)
       } else {
         this.cleanup()
       }
     });
+    this._status = this._dresUser.getApiV1UserSession()
+    this._status.subscribe(status => {
+        this._sessionId = status.sessionId;
+      },
+      error => {
+        console.error('failed to connect to DRES', error)
+      })
   }
 
   /**
@@ -101,7 +105,7 @@ export class VbsSubmissionService {
    * @return {boolean}
    */
   get isOn(): Observable<boolean> {
-    return this._config.pipe(map(([endpoint, team]) => endpoint != null && team != null));
+    return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.host')));
   }
 
   /**
@@ -116,7 +120,7 @@ export class VbsSubmissionService {
   }
 
   /**
-   * Submits the provided SegmentScoreContainer and to the VBS endpoint. Uses the segment's start timestamp as timepoint.
+   * Submits the provided SegmentScoreContainer to the VBS endpoint. Uses the segment's start timestamp as timepoint.
    *
    * @param {MediaSegmentScoreContainer} segment Segment which should be submitted. It is used to access the ID of the media object and to calculate the best-effort frame number.
    */
@@ -133,119 +137,121 @@ export class VbsSubmissionService {
    * @param time The video timestamp to submit.
    */
   public submit(segment: MediaSegmentScoreContainer, time: number) {
+    this._submissionLogTable.add([segment.segmentId, time])
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
-    this._selection.add(this._selection.availableTags[0], segment.segmentId);
+    this._selection.add(this._selection._available[0], segment.segmentId);
   }
 
   /**
    * Resets the VBSSubmissionService, re-initiating all subscriptions.
    */
-  public reset(endpoint: string, team: string, tool: number = 1, log: boolean = false, loginterval: number = 5000) {
+  public reset(config: Config) {
+    /* Update local flags. */
+    this._lsc = config.get<boolean>('competition.lsc');
+    this._vbs = config.get<boolean>('competition.vbs');
+
     /* Run cleanup. */
     this.cleanup();
 
-    this.checkConnection(endpoint)
-
     /* Setup interaction log subscription, which runs in a regular interval. */
-    if (log === true) {
-      this._interactionlogSubscription = VbsInteractionLog.mapEventStream(this._eventbus.observable()).pipe(
-        bufferTime(loginterval),
-        map((events: VbsInteraction[], index: number) => {
+    if (config.get('competition.log') === true) {
+      this._interactionlogSubscription = DresTypeConverter.mapEventStream(this._eventbus.observable()).pipe(
+        bufferTime(config.get('competition.loginterval')),
+        map((events: QueryEventLog[], index: number) => {
           if (events && events.length > 0) {
-            const iseq = new VbsInteractionLog(team, tool);
-            iseq.events.push(...events);
-            return iseq
+            const composite = <QueryEventLog>{timestamp: Date.now(), events: []}
+            for (const e of events) {
+              composite.events.push(...e.events)
+            }
+            return composite
           } else {
             return null
           }
         }),
         filter(submission => submission != null),
-        flatMap((submission: VbsInteractionLog) => {
-          /* Prepare log submission. */
-          const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          let params = new HttpParams().set('team', submission.teamId).set('member', String(submission.memberId));
-          let url = String(`${endpoint}/log`);
-          if (this._dres) { // DRES has different endpoints
-            url += '/query';
-            params = new HttpParams();
-          }
-          const observable = this._http.post(url, JSON.stringify(submission), {
-            responseType: 'text',
-            params: params,
-            headers: headers,
-            withCredentials: this._dres // Only use withCredentials with DRES
-          });
+        mergeMap((submission: QueryEventLog) => {
+          this._interactionLogTable.add(submission);
 
-          /* Do some logging and catch HTTP errors. */
-          return observable.pipe(
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return EMPTY
+          }
+
+          /* Submit Log entry to DRES. */
+          console.log(`Submitting interaction log to DRES.`);
+          return this._dresLog.postApiV1LogQuery(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting interaction log to VBS server.`);
-              this._interactionLogTable.add(submission);
+              console.log(`Successfully submitted interaction log to DRES.`);
             }),
             catchError((err) => {
-              this._interactionLogTable.add(submission);
-              return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err}).`)
             })
           );
         })
       ).subscribe();
 
       /* Setup results subscription, which is triggered upon change to the result set. */
-
       const resultSubscription = this._queryService.observable.pipe(
         filter(f => f === 'ENDED'),
-        flatMap(f => this._queryService.results.segmentsAsObservable),
+        mergeMap(f => this._queryService.results.segmentsAsObservable),
         debounceTime(1000)
       ); /* IMPORTANT: Limits the number of submissions to one per second. */
 
-      const queryInfo = new BehaviorSubject(null);
-      const querySubscription = this._eventbus.observable().pipe(
-        filter(event => event != null),
-        filter(event => event.components.filter(component => component.context.has('q:categories')).length > 0),
-        tap(event => queryInfo.next(event))
-      ).subscribe();
+      /* Setup results subscription, which is triggered upon change to the result set. */
+      const temporalResultsSubscription = this._queryService.observable.pipe(
+        filter(f => f === 'ENDED'),
+        mergeMap(f => this._queryService.results.temporalObjectsAsObservable),
+        debounceTime(1000)
+      ); /* IMPORTANT: Limits the number of submissions to one per second. */
 
-      this._resultsSubscription = combineLatest([resultSubscription, this._eventbus.currentView()]).pipe(
-        map(([results, context]) => {
-          if (this._vbs) {
-            return VbsResultsLog.mapSegmentScoreContainer(team, tool, context, results, queryInfo.getValue())
-          }
-          if (this._lsc) {
-            return LscUtil.mapSegmentScoreContainer(team, tool, context, results, queryInfo.getValue())
-          }
-          console.log(`no competition chosen, not logging`);
-          return null;
-        }),
+
+      this._resultsSubscription = combineLatest([resultSubscription, this._eventbus.currentView(), this._eventbus.lastQuery()]).pipe(
+        filter(([results, context, queryInfo]) => context !== TemporalListComponent.COMPONENT_NAME),
+        map(([results, context, queryInfo]) => DresTypeConverter.mapSegmentScoreContainer(context, results, queryInfo)),
         filter(submission => submission != null),
-        flatMap((submission: VbsResultsLog | LscSubmission) => {
-          /* Prepare log submission. */
-          const headers = new HttpHeaders().append('Content-Type', 'application/json');
-          let params = new HttpParams().set('member', String(submission.memberId));
-          let url = String(`${endpoint}/log`);
-          if (this._vbs) {
-            params.set('team', (submission as VbsResultsLog).teamId)
-          }
-          if (this._dres) { // DRES has different endpoints
-            url += '/result';
-            params = new HttpParams();
-          }
-          this._resultsLogTable.add(submission);
+        mergeMap((submission: QueryResultLog) => {
+          this._resultsLogTable.add(submission)
 
-          const observable = this._http.post(url, JSON.stringify(submission), {
-            responseType: 'json',
-            params: params,
-            headers: headers,
-            withCredentials: this._dres // Only use withCredentials with DRES
-          });
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return EMPTY
+          }
 
           /* Do some logging and catch HTTP errors. */
-          return observable.pipe(
+          console.log(`Submitting result log to DRES...`);
+          return this._dresLog.postApiV1LogResult(this._sessionId, submission).pipe(
             tap(o => {
-              console.log(`Submitting result log to VBS server.`);
+              console.log(`Successfully submitted result log to DRES!`);
             }),
             catchError((err) => {
-              return of(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
+            })
+          );
+        })
+      ).subscribe();
+
+      /* Heavily duplicated code from above */
+      this._temporalResultsSubscription = combineLatest([temporalResultsSubscription, this._eventbus.currentView(), this._eventbus.lastQuery()]).pipe(
+        filter(([results, context, queryInfo]) => context === TemporalListComponent.COMPONENT_NAME),
+        map(([results, context, queryInfo]) => DresTypeConverter.mapTemporalScoreContainer(context, results, queryInfo)),
+        filter(submission => submission != null),
+        mergeMap((submission: QueryResultLog) => {
+          this._resultsLogTable.add(submission)
+
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return EMPTY
+          }
+
+          /* Do some logging and catch HTTP errors. */
+          console.log(`Submitting temporal result log to DRES...`);
+          return this._dresLog.postApiV1LogResult(this._sessionId, submission).pipe(
+            tap(o => {
+              console.log(`Successfully submitted result log to DRES!`);
+            }),
+            catchError((err) => {
+              return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
             })
           );
         })
@@ -254,109 +260,63 @@ export class VbsSubmissionService {
 
     /* Setup submission subscription, which is triggered manually. */
     this._submitSubscription = this._submitSubject.pipe(
-      map(([segment, time]): [MediaSegmentScoreContainer, number] => {
-        if (this._vbs || this._dres) {
-          let fps = Number.parseFloat(segment.objectScoreContainer.metadataForKey('technical.fps'));
-          if (Number.isNaN(fps) || !Number.isFinite(fps)) {
-            fps = VideoUtil.bestEffortFPS(segment);
-          }
-          return [segment, VbsSubmissionService.timeToFrame(time, fps)]
-        }
-        if (this._lsc) {
-          return [segment, time];
-        }
-        return [segment, time];
-      }),
-      flatMap(([segment, frame]) => {
-        /* Prepare VBS submission. */
-        let id: string;
-        let params: HttpParams
-        if (this._lsc) {
-          id = segment.segmentId.replace('is_', '');
-          params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('image', id);
-        }
-        if (this._vbs) {
-          id = parseInt(segment.objectId.replace('v_', ''), 10).toString();
-          params = new HttpParams().set('team', String(team)).set('member', String(tool)).set('video', id).set('frame', String(frame));
-        }
-        if (this._dres) {
-          // DRES requires an 'item' field: zero-padded, 5 digit video id, the session id of the participant and the frame number
-          // id = this._lsc ? segment.segmentId.replace('is_', '') : segment.objectId.replace('v_', '');
-          // params = new HttpParams().set('session', this._sessionId).set('item', String(id)).set('frame', String(frame));
-          params = new HttpParams().set('item', String(id)).set('frame', String(frame));
-        }
-
-        params = params.set('client_timestamp', String(Date.now()))
-        this._submissionLogTable.add(params)
-
-        const observable = this._http.get(String(`${endpoint}/submit`), {responseType: 'text', params: params, withCredentials: this._dres});
-
-        /* Do some logging and catch HTTP errors. */
-        return observable.pipe(
-          tap(o => console.log(`Submitted element to server; id: ${id} @frame ${frame}`), err => console.log(`Failed to submit segment to VBS due to a HTTP error (${err.status}).`)),
-          catchError(err => of(err.error))
-        );
-      }),
-      map((msg: string) => {
-          console.log(msg);
-          if (this._dres) {
-            try {
-              const res = JSON.parse(msg);
-              msg = res.description;
-              if (msg.indexOf('incorrect') > -1) {
-                return [msg, 'snackbar-error']
-              }
-              if (res.status === false) {
-                return [msg, 'snackbar-warning']
-              }
-              if (res.status === true) {
-                return [msg, 'snackbar-success']
-              }
-            } catch (e) {
-              console.error(e)
-              /* We have to catch invalid json responses. */
-              return [msg, 'snackbar-error'];
+      map(([segment, time]): [string, number?] => this.convertToAppropriateRepresentation(segment, time)),
+      mergeMap(([segment, frame]) => {
+        /* Submit, do some logging and catch HTTP errors. */
+        return this._dresSubmit.getApiV1Submit(null, segment, frame).pipe(
+          tap((status: SuccessfulSubmissionsStatus) => {
+            switch (status.submission) {
+              case 'CORRECT':
+                this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-success'});
+                break;
+              case 'WRONG':
+                this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-warning'});
+                break;
+              default:
+                this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION});
+                break;
             }
-          }
-          console.warn(`Careful - you are not using DRES but still submitting results`)
-          if (msg.indexOf('Correct') > -1) {
-            return [msg, 'snackbar-success'];
-          } else if (msg.indexOf('Wrong') > -1) {
-            return [msg, 'snackbar-error'];
-          } else {
-            return [msg, 'snackbar-warning'];
-          }
-        }
-      )
-    ).subscribe(([msg, clazz]) => {
-      this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION, panelClass: clazz});
-    });
-  }
-
-  public checkConnection(endpoint: string) {
-    if (this._dres) {
-      this._http.get(String(`${endpoint}/api/user`), {responseType: 'text', withCredentials: this._dres}).pipe(
-        tap(msg => {
-            this._status.next(JSON.parse(msg))
-          }, // noop
-          err => {
-            const msg = `You are not logged in to DRES at ${endpoint}`
-            console.debug(`api/user request to DRES endpoint at ${endpoint} failed, you are not logged in`)
-            this._snackBar.open(msg, null, {duration: Config.SNACKBAR_DURATION * 2, panelClass: 'snackbar-error'});
-            this._status.next(new UserDetails(undefined, undefined, undefined, undefined))
           }),
-        catchError(err => {
-          console.log(err)
-          return of(undefined)
-        })
-      ).subscribe();
-    } else {
-      console.debug(`dres flag not set in config, not checking connection to competition server`)
-    }
+          catchError(err => {
+            if (err.error) {
+              this._snackBar.open(`Submissions error: ${err.error.description}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
+            } else {
+              this._snackBar.open(`Submissions error: ${err.message}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
+            }
+            return of(null)
+          })
+        )
+      })
+    ).subscribe();
   }
 
-  public statusObservable(): Observable<UserDetails> {
-    return this._status.asObservable()
+  /**
+   *
+   */
+  get statusObservable(): Observable<SessionId> {
+    return this._status
+  }
+
+  /**
+   * Converts the given {MediaSegmentScoreContainer} and an optional timestamp to the exact form required by the respective
+   * competition. DO YOUR CONVERSION and PRE-PROCESSING HERE please :-)
+   *
+   * @param segment The {MediaSegmentScoreContainer} to convert.
+   * @param time The timepoint to convert.
+   * @return Tuple of ID and optional frame number.
+   */
+  private convertToAppropriateRepresentation(segment: MediaSegmentScoreContainer, time?: number): [string, number?] {
+    if (this._vbs) {
+      let fps = Number.parseFloat(segment.objectScoreContainer._metadata.get('technical.fps'));
+      if (Number.isNaN(fps) || !Number.isFinite(fps)) {
+        fps = VideoUtil.bestEffortFPS(segment);
+      }
+      return [segment.objectId.replace('v_', ''), VbsSubmissionService.timeToFrame(time, fps)]
+    }
+    if (this._lsc) {
+      return [segment.segmentId.replace('is_', ''), time];
+    }
+    return [segment.segmentId, time];
   }
 
   /**

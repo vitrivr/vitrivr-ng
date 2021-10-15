@@ -13,6 +13,7 @@ export type MessageType =
   | 'QR_END'
   | 'QR_ERROR'
   | 'QR_SIMILARITY'
+  | 'QR_TEMPORAL'
   | 'QR_OBJECT'
   | 'QR_SEGMENT'
   | 'QR_METADATA_O'
