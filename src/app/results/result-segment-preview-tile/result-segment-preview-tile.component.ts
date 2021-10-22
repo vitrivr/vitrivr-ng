@@ -90,7 +90,7 @@ export class ResultSegmentPreviewTileComponent {
 
   /**
    * Invokes when a user right clicks the 'Find neighbouring segments' button. Loads neighbouring segments with
-   * a count of 500.
+   * a high count.
    */
   public onNeighborsButtonRightClicked(event: Event) {
     this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.config.get<number>('query.config.neighboringSegmentLookupAllCount'));
