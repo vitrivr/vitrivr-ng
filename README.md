@@ -1,4 +1,7 @@
 # Vitrivr NG
+[![vitrivr - vitrivr-ng](https://img.shields.io/static/v1?label=vitrivr&message=vitrivr-ng&color=blue&logo=github)](https://github.com/vitrivr/vitrivr-ng)
+[![GitHub release](https://img.shields.io/github/release/vitrivr/vitrivr-ng?include_prereleases=&sort=semver&color=2ea44f)](https://github.com/vitrivr/vitrivr-ng/releases/)
+[![License](https://img.shields.io/badge/License-MIT-blueviolet)](#license)
 
 [![Build Status](https://travis-ci.org/vitrivr/vitrivr-ng.svg?branch=master)](https://travis-ci.org/vitrivr/vitrivr-ng)
 
