@@ -9,13 +9,13 @@
 
 
     <!-- move container up for temporal context -->
-    <div *ngIf="inList | QcNotFirstPipe:containerModel" class="temporal-modifiers">
+    <div *ngIf="isNotFirst" class="temporal-modifiers">
         <button (click)="moveQueryContainerUp()" class="icon-button" matTooltip="Temporally earlier...">
             <mat-icon>access_time</mat-icon>
             <mat-icon>keyboard_arrow_up</mat-icon>
         </button>
         <mat-divider></mat-divider>
-        <span *ngIf="this.mode === 'TEMPORAL_DISTANCE' && (inList | QcNotFirstPipe:containerModel)">
+        <span *ngIf="this.mode === 'TEMPORAL_DISTANCE' && isNotFirst">
             <app-temporal-distance></app-temporal-distance>
             <mat-divider></mat-divider>
         </span>
@@ -102,7 +102,7 @@
                          [qsList]="containerModel.stages"></app-query-stage>
     </div>
     <!-- button to shift temporal context downward -->
-    <div style="display: inline-flex;justify-content: center;align-items: center;width:100%" *ngIf="(inList | QcNotLastPipe : containerModel)">
+    <div style="display: inline-flex;justify-content: center;align-items: center;width:100%" *ngIf="isNotLast">
         <mat-divider></mat-divider>
         <button (click)="moveQueryContainerDown()" class="icon-button" matTooltip="Temporally later...">
             <mat-icon>access_time</mat-icon>

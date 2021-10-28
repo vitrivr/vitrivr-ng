@@ -11,7 +11,6 @@ import {InteractionEvent} from '../../shared/model/events/interaction-event.mode
 import {InteractionEventType} from '../../shared/model/events/interaction-event-type.model';
 import {MatDialog} from '@angular/material/dialog';
 import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
-import {Observable} from 'rxjs';
 import {AppConfig} from '../../app.config';
 import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegments';
 

@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, QueryList, ViewChildren, AfterViewInit} from '@angular/core';
+import {Component, HostListener, OnInit, QueryList, ViewChildren, AfterViewInit, EventEmitter} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {QueryContainerInterface} from '../shared/model/queries/interfaces/query-container.interface';
 import {StagedQueryContainer} from '../shared/model/queries/staged-query-container.model';
@@ -30,6 +30,9 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
   private _lastEnter = 0;
   public mode: TemporalMode = 'TEMPORAL_DISTANCE';
   public maxLength = 600;
+
+  /** central eventemitter for changes to the list order*/
+  listReOrder = new EventEmitter();
 
   constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService, private _configService: AppConfig) {
     this._config = this._configService.configAsObservable;
@@ -63,6 +66,7 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
    */
   public addQueryTermContainer() {
     this.containers.push(new StagedQueryContainer());
+    this.listReOrder.emit()
   }
 
   /**
