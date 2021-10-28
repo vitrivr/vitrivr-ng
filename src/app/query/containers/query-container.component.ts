@@ -1,7 +1,6 @@
 import {Component, Input, QueryList, ViewChildren} from '@angular/core';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
 import {Config} from '../../shared/model/config/config.model';
-import {Observable} from 'rxjs';
 import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.component';
 import {AppConfig} from '../../app.config';
 import {QueryTerm} from '../../../../openapi/cineast';
@@ -13,6 +12,9 @@ import {TemporalMode} from '../../settings/preferences/temporal-mode-container.m
   styleUrls: ['./query-container.component.css']
 })
 
+/**
+ * A QueryContainerComponent contains a single QueryContainerInterface, which is transformed to a StagedSimilarityQuery when making a search request to Cineast.
+ */
 export class QueryContainerComponent {
   /** The StagedQueryContainer this QueryContainerComponent is associated to. */
   @Input() containerModel: QueryContainerInterface;
