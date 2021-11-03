@@ -85,6 +85,7 @@ export class Config {
         motion: false,
         text: false,
         tag: true,
+        map: false,
         semantic: false,
         boolean: true
       },

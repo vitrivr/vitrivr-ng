@@ -75,6 +75,14 @@
                 </mat-icon>
             </button>
 
+            <button (click)="onToggleButtonClicked('LOCATION')" *ngIf="_config | GetConfigVariablePipe:queryOptionsMap"
+                    class="icon-button" matTooltip="Toggle map query term">
+                <mat-icon
+                    [attr.class]="containerModel.hasTerm('LOCATION') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+                    map
+                </mat-icon>
+            </button>
+
             <button (click)="onToggleButtonClicked('SEMANTIC')"
                     *ngIf="_config|GetConfigVariablePipe:queryOptionsSemantic"
                     class="icon-button" matTooltip="Toggle semantic sketch query term">

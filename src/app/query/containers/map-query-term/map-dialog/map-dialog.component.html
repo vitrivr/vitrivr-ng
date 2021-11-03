@@ -1,0 +1,18 @@
+
+<mat-dialog-content style="height: 100%;">
+  <mat-toolbar color="primary">
+    <h3>Spatial Query Term</h3>
+    <span class="spacer-flex">
+    </span>
+    <button (click)="close()" mat-icon-button>
+      <mat-icon matTooltip="Close window and save.">close</mat-icon>
+    </button>
+  </mat-toolbar>
+  <div class="map-container">
+    <div class="map-frame">
+      <div id="mainmap">
+        <!-- leaflet loads map into here -->
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
