@@ -37,7 +37,7 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
   constructor(private _queryService: QueryService, private _filterService: FilterService, private _eventBus: EventBusService, private _configService: AppConfig) {
     this._config = this._configService.configAsObservable;
     this._config.subscribe(c => {
-      this.maxLength = c.maxLength;
+      this.maxLength = c._config.query.temporal_max_length;
       this.mode = c._config.query.temporal_mode as TemporalMode;
     });
   }
