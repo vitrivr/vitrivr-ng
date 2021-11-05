@@ -90,7 +90,7 @@ export class MapQueryTermComponent implements AfterViewInit, OnInit, OnDestroy {
 
     this.minimap.invalidateSize(false);
 
-    if(this.locationTerm && this.locationTerm.location){
+    if (this.locationTerm && this.locationTerm.location) {
       this.setMarkerIfNeeded();
     }
     console.log(`fin`)
@@ -107,7 +107,7 @@ export class MapQueryTermComponent implements AfterViewInit, OnInit, OnDestroy {
     this.setMarkerIfNeeded();
   }
 
-  private setMarkerIfNeeded(){
+  private setMarkerIfNeeded() {
     const marker = new L.Marker(new LatLng(this.locationTerm.location.latitude, this.locationTerm.location.longitude));
     marker.addTo(this.minimap);
   }

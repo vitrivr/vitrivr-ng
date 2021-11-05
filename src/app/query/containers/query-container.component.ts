@@ -48,12 +48,6 @@ export class QueryContainerComponent implements AfterContentInit {
     _configService.configAsObservable.subscribe(c => this._config = c)
   }
 
-
-  private updateFirstLast() {
-    this.isNotFirst = this.index > 0;
-    this.isNotLast = this.index > -1 && this.index < this.inList.length - 1;
-  }
-
   private get index(): number {
     return this.inList.indexOf(this.containerModel);
   }
@@ -111,6 +105,11 @@ export class QueryContainerComponent implements AfterContentInit {
   ngAfterContentInit(): void {
     this.listReOrder.subscribe(e => this.updateFirstLast())
     this.updateFirstLast()
+  }
+
+  private updateFirstLast() {
+    this.isNotFirst = this.index > 0;
+    this.isNotLast = this.index > -1 && this.index < this.inList.length - 1;
   }
 
 }
