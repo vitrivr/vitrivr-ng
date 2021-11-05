@@ -519,6 +519,10 @@ export class ResultsContainer {
     if (to) {
       if (to.segments.indexOf(segment) === -1) {
         const idx = to.segments.findIndex(seg => seg.sequenceNumber > segment.sequenceNumber)
+        if (idx === -1) {
+          to.segments.push(segment)
+          return;
+        }
         to.segments.splice(idx, 0, segment)
       }
     }
