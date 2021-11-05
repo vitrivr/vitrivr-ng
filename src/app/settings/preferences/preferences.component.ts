@@ -48,7 +48,10 @@ export class PreferencesComponent implements AfterContentInit {
     private _submissionService: VbsSubmissionService,
     private _notificationService: NotificationService
   ) {
-    this._configService.configAsObservable.subscribe(c => this._config = c)
+    this._configService.configAsObservable.subscribe(c => {
+      this._config = c
+      this.maxLength = c._config.query.temporal_max_length
+    })
     this._resultsLogTable = _db.db.table('log_results');
     this._interactionLogTable = _db.db.table('log_interaction');
     this._submissionLogTable = _db.db.table('log_submission');
@@ -60,7 +63,8 @@ export class PreferencesComponent implements AfterContentInit {
   }
 
   public onMaxLengthSaveClicked() {
-    this._configService.config.maxLength = this.maxLength
+    this._configService.config._config.query.temporal_max_length = this.maxLength
+    this._configService.publishChanges()
   }
 
   /**

@@ -507,22 +507,23 @@ export class ResultsContainer {
     return true;
   }
 
+  /**
+   * Should only be used to add segments for neighboring segment queries
+   */
   private updateTemporalSegments(segment: MediaSegmentScoreContainer) {
-    let mosc;
     if (!segment) {
       console.error('received undefined segment, exiting')
       return
     }
-    if (!this._objectid_to_temporal_object_map.has(segment.objectId)) {
-      mosc = new TemporalObjectSegments(
-        this._objectid_to_object_map.get(segment.objectId),
-        [segment],
-        segment.score
-      )
-      this._objectid_to_temporal_object_map.set(segment.objectId, mosc)
-    } else {
-      if (this._objectid_to_temporal_object_map.get(segment.objectId).segments.indexOf(segment) === -1) {
-        this._objectid_to_temporal_object_map.get(segment.objectId).segments.push(segment)
+    const to = this._objectid_to_temporal_object_map.get(segment.objectId)
+    if (to) {
+      if (to.segments.indexOf(segment) === -1) {
+        const idx = to.segments.findIndex(seg => seg.sequenceNumber > segment.sequenceNumber)
+        if (idx === -1) {
+          to.segments.push(segment)
+          return;
+        }
+        to.segments.splice(idx, 0, segment)
       }
     }
   }

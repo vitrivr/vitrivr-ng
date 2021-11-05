@@ -16,8 +16,6 @@ export class Config {
   /** Default display duration for Snackbar messages. */
   public static SNACKBAR_DURATION = 2500;
 
-  public maxLength = 600;
-
   _config = {
     api: {
       host: window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
@@ -100,7 +98,8 @@ export class Config {
       },
       boolean: [],
       temporal_mode: 'TEMPORAL_DISTANCE',
-      enableTagPrioritisation: false
+      enableTagPrioritisation: false,
+      temporal_max_length: 600
     },
     refinement: {
       filters: [
