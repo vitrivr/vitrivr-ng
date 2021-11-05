@@ -24,6 +24,8 @@
               "src/evaluation.json"
             ],
             "styles": [
+              "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/leaflet-geosearch/dist/geosearch.css",
               "src/vitrivr-theme.scss"
             ],
             "scripts": []

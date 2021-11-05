@@ -229,7 +229,7 @@ export class MetadataService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<MediaObjectMetadataQueryResult>(`${this.configuration.basePath}/api/v1/find/metadata/in/${encodeURIComponent(String(domain))}/by/id/${encodeURIComponent(String(domain))}`,
+        return this.httpClient.get<MediaObjectMetadataQueryResult>(`${this.configuration.basePath}/api/v1/find/metadata/in/${encodeURIComponent(String(domain))}/by/id/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

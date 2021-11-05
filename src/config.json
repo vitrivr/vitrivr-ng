@@ -35,7 +35,8 @@
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": true
+      "boolean": true,
+      "map": true
     },
     "text": {
       "categories": [
