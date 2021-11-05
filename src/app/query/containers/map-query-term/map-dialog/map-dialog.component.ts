@@ -36,6 +36,8 @@ export class MapDialogComponent implements AfterViewInit {
         this.location = {latitude: m.getLatLng().lat, longitude: m.getLatLng().lng};
       }
     })
+    this.map.off();
+    this.map.remove();
     this._dialogRef.close(this.location);
   }
 

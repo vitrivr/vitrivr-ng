@@ -21,7 +21,12 @@
               "src/assets",
               "src/favicon.ico",
               "src/config.json",
-              "src/evaluation.json"
+              "src/evaluation.json",
+              {
+                "glob": "**/*",
+                "input": "node_modules/leaflet/dist/images/",
+                "output": "./assets"
+              }
             ],
             "styles": [
               "node_modules/leaflet/dist/leaflet.css",
