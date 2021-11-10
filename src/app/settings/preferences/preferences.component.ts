@@ -1,4 +1,4 @@
-import {AfterContentInit, Component} from '@angular/core';
+import {AfterContentInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {Config} from '../../shared/model/config/config.model';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
@@ -12,9 +12,9 @@ import {AppConfig} from '../../app.config';
 import {TemporalMode} from './temporal-mode-container.model';
 
 @Component({
-
   selector: 'app-preferences',
-  templateUrl: './preferences.component.html'
+  templateUrl: './preferences.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreferencesComponent implements AfterContentInit {
   _config: Config;
@@ -34,10 +34,11 @@ export class PreferencesComponent implements AfterContentInit {
   maxLength = 600;
 
   cineast = ((c: Config) => c.cineastEndpointWs);
-  dresAddress = ((c: Config) => c._config.competition.host)
-  hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails)
-  hostObjects = ((c: Config) => c._config.resources.host_objects)
-  mode = ((c: Config) => c._config.query.temporal_mode)
+  dresAddress = ((c: Config) => c._config.competition.host);
+  hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails);
+  hostObjects = ((c: Config) => c._config.resources.host_objects);
+  mode = ((c: Config) => c._config.query.temporal_mode);
+  defaultContainerDist =  ((c: Config) => c._config.query.default_temporal_distance);
 
   /**
    * Constructor for PreferencesComponent
@@ -72,7 +73,6 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onResetButtonClicked() {
     this._configService.load();
-    // this._configService.config._config.query.temporal_mode = 'TEMPORAL_DISTANCE';
   }
 
   /**

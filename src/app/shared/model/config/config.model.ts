@@ -99,7 +99,8 @@ export class Config {
       boolean: [],
       temporal_mode: 'TEMPORAL_DISTANCE',
       enableTagPrioritisation: false,
-      temporal_max_length: 600
+      temporal_max_length: 600,
+      default_temporal_distance: 10
     },
     refinement: {
       filters: [

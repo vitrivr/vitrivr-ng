@@ -115,6 +115,7 @@ export class FilterService {
    * Returns a copy of the list of MediaTypes that should be used for filtering.
    */
   get mediatypeKeys(): MediaObjectDescriptor.MediatypeEnum[] {
+    console.trace('mediatype keys')
     return Array.from(this._mediatypes.keys());
   }
 

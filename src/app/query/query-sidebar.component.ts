@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, QueryList, ViewChildren, AfterViewInit, EventEmitter} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, HostListener, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {QueryContainerInterface} from '../shared/model/queries/interfaces/query-container.interface';
 import {StagedQueryContainer} from '../shared/model/queries/staged-query-container.model';
@@ -16,7 +16,8 @@ import {AppConfig} from '../app.config';
 
 @Component({
   selector: 'app-query-sidebar',
-  templateUrl: 'query-sidebar.component.html'
+  templateUrl: 'query-sidebar.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class QuerySidebarComponent implements OnInit, AfterViewInit {
 

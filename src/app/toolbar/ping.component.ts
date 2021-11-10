@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {PingService} from '../core/basics/ping.service';
 import {CollabordinatorService} from '../core/vbs/collabordinator.service';
 import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
@@ -16,10 +16,11 @@ import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
                 <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect to Collabordinator</button>
             </mat-menu>
         </span>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class PingComponent {
+export class PingComponent implements OnInit{
 
   _icon: string
   _latency: number
@@ -31,23 +32,7 @@ export class PingComponent {
    * @param _collabordinator CollabordinatorService reference.
    * @param _factory WebSocketFactoryService reference.
    */
-  constructor(private _ping: PingService, public _collabordinator: CollabordinatorService, private _factory: WebSocketFactoryService) {
-    _ping.subscribe(s => {
-      switch (s.status) {
-        case 'DISCONNECTED':
-          this._icon = 'flash_off';
-          break;
-        case 'ERROR':
-          this._icon = 'error';
-          break;
-        case 'OK':
-          this._icon = 'check_circle';
-          break;
-        default:
-          this._icon = 'watch_later'
-      }
-    })
-    this._ping.asObservable().subscribe(s => this._latency = s.latency)
+  constructor(private _ping: PingService, public _collabordinator: CollabordinatorService, private _factory: WebSocketFactoryService, private ref: ChangeDetectorRef) {
   }
 
   /**
@@ -62,5 +47,28 @@ export class PingComponent {
    */
   public reconnectCollabordinator() {
     this._collabordinator.connect();
+  }
+
+  ngOnInit(): void {
+    this._ping.subscribe(s => {
+      switch (s.status) {
+        case 'DISCONNECTED':
+          this._icon = 'flash_off';
+          break;
+        case 'ERROR':
+          this._icon = 'error';
+          break;
+        case 'OK':
+          this._icon = 'check_circle';
+          break;
+        default:
+          this._icon = 'watch_later'
+      }
+      this.ref.detectChanges()
+    })
+    this._ping.asObservable().subscribe(s => {
+      this._latency = s.latency
+      this.ref.detectChanges()
+    })
   }
 }
