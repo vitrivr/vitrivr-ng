@@ -1,11 +1,11 @@
 <vg-player (onPlayerReady)="onPlayerReady($event)" [style.display]="'block'" [style.width]="width + 'px'">
 
-    <video #media *ngIf="mediaobject.mediatype == 'VIDEO'" [autoplay]="auto" [vgMedia]="media" id="videoplayer"
+    <video #media *ngIf="mediaobject.mediatype === 'VIDEO'" [autoplay]="auto" [vgMedia]="media" id="videoplayer"
            preload="auto" src="{{mediaobject| ObjectPathPipe}}" style="object-fit: contain;"
            [style.width]="width + 'px'">
     </video>
 
-    <audio #media *ngIf="mediaobject.mediatype == 'AUDIO'" [autoplay]="auto" [vgMedia]="media" id="audioplayer"
+    <audio #media *ngIf="mediaobject.mediatype === 'AUDIO'" [autoplay]="auto" [vgMedia]="media" id="audioplayer"
            preload="auto" src="{{mediaobject| ObjectPathPipe}}">
     </audio>
 

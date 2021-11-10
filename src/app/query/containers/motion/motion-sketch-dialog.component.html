@@ -1,14 +1,14 @@
 <mat-dialog-content>
     <mat-toolbar color="primary">
         <button (click)="onToggleFrontClicked()"
-                [attr.class]="type == 'FOREGROUND' ? 'highlighted mat-icon-button' : 'mat-icon-button'"
+                [attr.class]="type === 'FOREGROUND' ? 'highlighted mat-icon-button' : 'mat-icon-button'"
                 mat-icon-button
                 matTooltip="Foreground motion">
             <mat-icon>flip_to_front</mat-icon>
         </button>
 
         <button (click)="onToggleBackClicked()"
-                [attr.class]="type == 'BACKGROUND' ? 'highlighted mat-icon-button' : 'mat-icon-button'"
+                [attr.class]="type === 'BACKGROUND' ? 'highlighted mat-icon-button' : 'mat-icon-button'"
                 mat-icon-button
                 matTooltip="Background motion">
             <mat-icon>flip_to_back</mat-icon>

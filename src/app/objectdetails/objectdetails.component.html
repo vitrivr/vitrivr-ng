@@ -29,7 +29,7 @@
                                 <mat-icon>send</mat-icon>
                             </button>
                             <button (click)="onPlayClick(segment)"
-                                    *ngIf="obj.mediatype == 'VIDEO' || obj.mediatype == 'AUDIO'"
+                                    *ngIf="obj.mediatype === 'VIDEO' || obj.mediatype === 'AUDIO'"
                                     mat-icon-button matTooltip="Start playback">
                                 <mat-icon>play_arrow</mat-icon>
                             </button>

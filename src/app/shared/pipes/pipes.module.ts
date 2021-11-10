@@ -29,9 +29,9 @@ import {ModelHasTermPipe} from './util/model-has-term.pipe';
 
 @NgModule({
   imports: [],
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   declarations: [ModelHasTermPipe, QueryStageLast, QueryStageIndexPipe, BackgroundScorePipe, ScorePercentagePipe, SortTagsPipe, TextWithLinkPipe, ColorForRelevancePipe, CompetitionEnabledPipe, SegmentPathPipe, IiifResourceUrlPipe, ObjectPathPipe, ThumbnailPathPipe, ObjectFilterTemporalPipe, GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe],
-  // tslint:disable-next-line:max-line-length
+  // eslint-disable-next-line max-len
   exports: [ModelHasTermPipe, QueryStageLast, QueryStageIndexPipe, BackgroundScorePipe, ScorePercentagePipe, SortTagsPipe, TextWithLinkPipe, ColorForRelevancePipe, CompetitionEnabledPipe, SegmentPathPipe, IiifResourceUrlPipe, ObjectPathPipe, ThumbnailPathPipe, ObjectFilterTemporalPipe, GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe]
 })
 export class PipesModule {

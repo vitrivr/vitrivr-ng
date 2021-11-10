@@ -3,7 +3,7 @@ import {ConfigService} from '../../core/basics/config.service';
 import {AppConfig} from '../../app.config';
 
 @Component({
-  // tslint:disable-next-line:component-selector
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'app-temporal-distance',
   templateUrl: './temporal-distance.component.html',
   styleUrls: ['./temporal-distance.component.css']

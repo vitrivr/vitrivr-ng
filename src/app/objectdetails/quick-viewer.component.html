@@ -1,13 +1,13 @@
 <h1 class="title" matDialogTitle>{{mediaobject.objectId}} ({{mediaobject.name}})</h1>
 <p><strong>Segment:</strong> {{_segment.segmentId}}</p>
 <div class="content" mat-dialog-content>
-    <app-advanced-media-player *ngIf="mediaobject.mediatype == 'VIDEO' || mediaobject.mediatype == 'AUDIO'"
+    <app-advanced-media-player *ngIf="mediaobject.mediatype === 'VIDEO' || mediaobject.mediatype === 'AUDIO'"
                                [auto]="true" [focus]="_segment" [mediaobject]="mediaobject"
                                [width]="600"></app-advanced-media-player>
     <div *ngIf="mediaobject|IiifResourceUrlPipe" id="openseadragon"></div>
-    <img #imageviewer *ngIf="!(mediaobject|IiifResourceUrlPipe) && mediaobject.mediatype == 'IMAGE' || mediaobject.mediatype == 'IMAGE_SEQUENCE'"
-         src="{{mediaobject.mediatype == 'IMAGE' ? (mediaobject |ObjectPathPipe) : _segment|SegmentPathPipe}}"
+    <img #imageviewer *ngIf="!(mediaobject|IiifResourceUrlPipe) && mediaobject.mediatype === 'IMAGE' || mediaobject.mediatype === 'IMAGE_SEQUENCE'"
+         src="{{mediaobject.mediatype === 'IMAGE' ? (mediaobject |ObjectPathPipe) : _segment|SegmentPathPipe}}"
          style="max-width:100%; height:auto;"/>
-    <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'" [height]="400" [interaction]="true"
+    <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype === 'MODEL3D'" [height]="400" [interaction]="true"
                     [width]="400" src="{{mediaobject|ObjectPathPipe}}"></app-m3d-loader>
 </div>

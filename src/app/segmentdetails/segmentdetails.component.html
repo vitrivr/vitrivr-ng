@@ -48,7 +48,7 @@
 
                     <div class="tile-footer" fxLayout="row-reverse">
                         <button (click)="onPlayClick(_mediaSegment)"
-                                *ngIf="_mediaObject.mediatype == 'VIDEO' || _mediaObject.mediatype == 'AUDIO'"
+                                *ngIf="_mediaObject.mediatype === 'VIDEO' || _mediaObject.mediatype === 'AUDIO'"
                                 mat-icon-button matTooltip="Start playback">
                             <mat-icon>play_arrow</mat-icon>
                         </button>
