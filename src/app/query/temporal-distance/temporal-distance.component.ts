@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {ConfigService} from '../../core/basics/config.service';
+import {AppConfig} from '../../app.config';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -9,6 +11,10 @@ import {Component, OnInit} from '@angular/core';
 export class TemporalDistanceComponent {
 
   time = 10; // seconds
+
+  constructor(private _configService: AppConfig) {
+    _configService.configAsObservable.subscribe(c => this.time = c._config.query.default_temporal_distance)
+  }
 
   public getTemporalDistanceFromUser(): number {
     return this.time;

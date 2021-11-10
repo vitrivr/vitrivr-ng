@@ -14,6 +14,8 @@ import {LocationQueryTerm} from './location-query-term.model';
 
 export class StagedQueryContainer implements QueryContainerInterface {
 
+  static i = 0
+
   /**
    * List of all stages within this staged query. If you do not wish to use staged querying, simply put all queryterms within one stage.
    */

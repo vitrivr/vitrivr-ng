@@ -17,21 +17,21 @@
     <span class="spacer-medium"></span>
 
     <a mat-icon-button matTooltip="Mini-gallery view" routerLink="/mini-gallery" routerLinkActive="active"
-       skipLocationChange="true" (click)="setActiveView(0)" [color]="!isView(0) ? '' : 'accent'">
+       skipLocationChange="true" (click)="setActiveView(0)" [color]="_active_view === 0 ? 'accent' : ''">
         <mat-icon>view_comfy</mat-icon>
     </a>
 
     <span class="spacer-medium"></span>
 
     <a mat-icon-button matTooltip="List view" routerLink="/list" routerLinkActive="active" skipLocationChange="true"
-       (click)="setActiveView(1)" [color]="!isView(1) ? '' : 'accent'">
+       (click)="setActiveView(1)" [color]="_active_view === 1 ? 'accent' : ''">
         <mat-icon>list</mat-icon>
     </a>
 
     <span class="spacer-medium"></span>
 
     <a mat-icon-button matTooltip="Temporal Scoring view" routerLink="/temporal-list" routerLinkActive="active"
-       skipLocationChange="true" (click)="setActiveView(2)" [color]="!isView(2) ? '' : 'accent'">
+       skipLocationChange="true" (click)="setActiveView(2)" [color]="_active_view === 2 ? 'accent' : ''">
         <mat-icon>filter_list</mat-icon>
     </a>
 
@@ -66,8 +66,8 @@
         <router-outlet></router-outlet>
     </mat-sidenav-content>
 
-    <mat-sidenav (openedChange)="settingsComponent.toggled($event)" #settingssidenav class="right" mode="side"
+    <mat-sidenav #settingssidenav class="right" mode="side"
                  position="end">
-        <app-settings #settingsComponent></app-settings>
+        <app-settings></app-settings>
     </mat-sidenav>
 </mat-sidenav-container>

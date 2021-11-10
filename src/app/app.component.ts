@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
 import {QueryService} from './core/queries/query.service';
 import {Config} from './shared/model/config/config.model';
 import {Observable} from 'rxjs';
@@ -18,16 +18,16 @@ enum View { GALLERY, LIST, TEMPORAL}
   selector: 'app-vitrivr',
   templateUrl: 'app.component.html',
   styleUrls: ['./app.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit, AfterViewInit {
   settingsbadge = '';
-  @ViewChild('settingsComponent')
-  private settingsComponent: SettingsComponent
 
   _config: Config;
 
   /** Observable that return the loading state of the QueryService. */
   private readonly _loading: Observable<boolean>;
+
   _loadBool = false
 
   /** Variable to safe currently selected view */
@@ -58,15 +58,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     );
     _configService.configAsObservable.subscribe(c => this._config = c)
     this._active_view = View.GALLERY;
-  }
-
-  /**
-   * Getter for the observable loading attribute.
-   *
-   * @return {Observable<boolean>}
-   */
-  get loading(): Observable<boolean> {
-    return this._loading;
   }
 
   ngOnInit(): void {
@@ -105,10 +96,5 @@ export class AppComponent implements OnInit, AfterViewInit {
   /** Change the active view to the given one */
   public setActiveView(view: View) {
     this._active_view = view;
-  }
-
-  /** Check if a given view is active */
-  public isView(view: View) {
-    return this._active_view === view;
   }
 }
