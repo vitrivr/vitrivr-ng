@@ -14,7 +14,7 @@
     "tls": true
   },
   "mlt": {
-    "IMAGE": ["objectInstances"]
+    "IMAGE": ["visualtextcoembedding"]
   },
   "query": {
     "temporal_mode": "TEMPORAL_DISTANCE",
