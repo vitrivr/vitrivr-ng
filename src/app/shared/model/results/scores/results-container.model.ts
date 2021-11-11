@@ -126,7 +126,7 @@ export class ResultsContainer {
    * Deserializes a plain JavaScript object into a ResultsContainer. Only works with JavaScript objects that have been generated using
    * ResultsContainer#serialize().
    */
-  // tslint:disable-next-line:member-ordering
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   public static deserialize(data: any): ResultsContainer {
     const container = new ResultsContainer(data['queryId']);
     container.processObjectMessage(<MediaObjectQueryResult>{queryId: container.queryId, content: <MediaObjectDescriptor[]>data['objects']});
@@ -152,7 +152,7 @@ export class ResultsContainer {
     return container;
   }
 
-  // tslint:disable-next-line:member-ordering no-shadowed-variable
+  // eslint-disable-next-line @typescript-eslint/member-ordering, @typescript-eslint/no-shadow
   private static fillMap(map: Map<string, AbstractRefinementOption>, resultList: any, config?: Config) {
     if (config) {
       config.get<[string, string][]>('refinement.filters').forEach(el => {

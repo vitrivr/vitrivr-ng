@@ -1,25 +1,23 @@
 {
   "api": {
-    "host" : "default"
+    "host": "default"
   },
   "resources": {
-    "host_thumbnails" : "http://10.34.58.87/lsc21/lsc21-thumbnails/:o/:s.jpg",
-    "host_objects": "http://10.34.58.87/lsc21/lsc21-image/:n/:S.jpg"
+    "host_thumbnails": "http://localhost:4567/thumbnails/:o/:s:x",
+    "host_objects": "http://localhost:4567/objects/:n"
   },
   "competition": {
-    "host": "vbs.itec.aau.at:9443",
+    "host": "dmi-dres.dmi.unibas.ch:443",
+    "tls": true,
     "log": false,
-    "lsc": true,
-    "vbs": false,
-    "tls": true
+    "lsc": false,
+    "vbs": false
   },
   "mlt": {
-    "IMAGE": ["objectInstances"]
+    "VIDEO": ["visualtextcoembedding"],
+    "IMAGE": ["visualtextcoembedding"]
   },
   "query": {
-    "temporal_mode": "TEMPORAL_DISTANCE",
-    "temporal_max_length": 86400,
-    "default_temporal_distance": 1800,
     "history": 0,
     "options": {
       "image": true,
@@ -29,39 +27,54 @@
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": true
+      "boolean": true,
+      "map": true
     },
     "text": {
       "categories": [
-        ["ocr", "Text on Screen"],
-	["visualtextcoembedding", "Text Co-Embedding"]
+        ["visualtextcoembedding", "Text Co-Embedding"]
       ]
     },
     "boolean": [
-      ["Hour", "RANGE", "features_table_lsc20meta.p_hour", 0, 23],
-      ["Day of Week", "OPTIONS", "features_table_lsc20meta.p_day_of_week", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
-      ["Location Semantic", "DYNAMICOPTIONS", "features_table_lsc20meta.semantic_name", "features_table_lsc20meta", "semantic_name"],
-      ["Year", "DYNAMICOPTIONS", "features_table_lsc20meta.p_year", "features_table_lsc20meta", "p_year"],
-      ["Month", "DYNAMICOPTIONS", "features_table_lsc20meta.p_month", "features_table_lsc20meta","p_month"],
-      ["Activity Type (Transport)", "DYNAMICOPTIONS", "features_table_lsc20meta.activity_type", "features_table_lsc20meta","activity_type"],
-      ["Timezone", "DYNAMICOPTIONS", "features_table_lsc20meta.timezone", "features_table_lsc20meta", "timezone"],
-      ["[Segment Id]", "TEXT", "features_table_lsc20meta.id"],
-      ["(Minute Id)", "TEXT", "features_table_lsc20meta.minute_id"],
-      ["(Elevation)", "NUMERIC", "features_table_lsc20meta.elevation"],
-      ["(Speed)", "NUMERIC", "features_table_lsc20meta.speed"],
-      ["(Heart)", "NUMERIC", "features_table_lsc20meta.heart"],
-      ["(Calories)", "TEXT", "features_table_lsc20meta.calories"]
+      [
+        "Example Freetext",
+        "TEXT",
+        "table_name.text"
+      ],
+      [
+        "Example Dropdown",
+        "OPTIONS",
+        "table_name.option",
+        "ONE",
+        "TWO",
+        "THREE"
+      ],
+      [
+        "Example Range",
+        "RANGE",
+        "table_name.range",
+        5,
+        20
+      ],
+      [
+        "Example Dynamic Options",
+        "DYNAMICOPTIONS",
+        "table_name.option",
+        "table_name",
+        "option"
+      ]
     ]
   },
   "refinement": {
     "filters": [
-      ["LSCMETA.semantic_name", "CHECKBOX"],
-      ["LSCMETA.timezone", "CHECKBOX"],
-      ["LSCMETA.p_day_of_week", "CHECKBOX"],
-      ["LSCMETA.p_hour", "SLIDER"],
-      ["LSCMETA.p_month", "CHECKBOX"],
-      ["LSCMETA.p_year", "CHECKBOX"]
+      [
+        "dominantcolor.color",
+        "CHECKBOX"
+      ],
+      [
+        "technical.duration",
+        "SLIDER"
+      ]
     ]
   }
 }
-

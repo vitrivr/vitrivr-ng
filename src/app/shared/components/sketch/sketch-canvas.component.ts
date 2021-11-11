@@ -94,7 +94,7 @@ export class SketchCanvasComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
-    // tslint:disable-next-line:no-unused-expression
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     event.target.innerWidth;
   }
 

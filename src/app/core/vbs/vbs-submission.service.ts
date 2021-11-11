@@ -114,7 +114,7 @@ export class VbsSubmissionService {
    * @param {number} timestamp Timestamp within the video.
    * @param {number} fps The FPS of the video.
    */
-  // tslint:disable-next-line:member-ordering
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   private static timeToFrame(timestamp: number, fps: number) {
     return Math.floor(timestamp * fps);
   }

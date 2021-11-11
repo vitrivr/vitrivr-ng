@@ -46,7 +46,7 @@ export class Model3DFileLoader {
             child.updateMatrix();
             if (child.geometry instanceof BufferGeometry) {
               const partial = child.geometry;
-              geometry.merge(partial);
+              geometry.merge(partial, 0);
             }
           }
         });

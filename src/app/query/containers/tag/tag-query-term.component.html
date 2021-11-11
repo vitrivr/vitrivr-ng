@@ -18,9 +18,9 @@
       <span *ngIf="config.config.get('query.enableTagPrioritisation')">
         <button [matMenuTriggerFor]="menu" mat-icon-button>
           <mat-icon *ngIf="tag.priority == null">menu</mat-icon>
-          <mat-icon *ngIf="tag.priority == 'REQUIRE'" class="require-icon">warning_amber</mat-icon>
-          <mat-icon *ngIf="tag.priority == 'REQUEST'" class="request-icon">check_circle_outline</mat-icon>
-          <mat-icon *ngIf="tag.priority == 'EXCLUDE'" class="exclude-icon">not_interested</mat-icon>
+          <mat-icon *ngIf="tag.priority === 'REQUIRE'" class="require-icon">warning_amber</mat-icon>
+          <mat-icon *ngIf="tag.priority === 'REQUEST'" class="request-icon">check_circle_outline</mat-icon>
+          <mat-icon *ngIf="tag.priority === 'EXCLUDE'" class="exclude-icon">not_interested</mat-icon>
         </button>
       <mat-menu #menu="matMenu" [overlapTrigger]="false">
                 <mat-button-toggle-group mat-menu-item>

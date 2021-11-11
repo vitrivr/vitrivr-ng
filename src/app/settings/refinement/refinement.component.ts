@@ -240,7 +240,6 @@ export class RefinementComponent implements OnInit, OnDestroy {
   }
 
   sliderObject(value: AbstractRefinementOption): SliderRefinementModel {
-    console.log('casting slider')
     return (value as SliderRefinementModel)
   }
 
