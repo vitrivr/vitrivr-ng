@@ -10,4 +10,8 @@
          style="max-width:100%; height:auto;"/>
     <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype === 'MODEL3D'" [height]="400" [interaction]="true"
                     [width]="400" src="{{mediaobject|ObjectPathPipe}}"></app-m3d-loader>
+
+    <button color="primary" mat-flat-button *ngIf="(_vbs |CompetitionEnabledPipe | async)" (click)="onSubmitPressed()">
+        <mat-icon>send</mat-icon>
+    </button>
 </div>
