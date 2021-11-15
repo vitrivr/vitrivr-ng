@@ -12,10 +12,10 @@
 
 
 export interface Tag { 
+    description?: string;
     name?: string;
     priority?: Tag.PriorityEnum;
     id?: string;
-    description?: string;
 }
 export namespace Tag {
     export type PriorityEnum = 'REQUEST' | 'REQUIRE' | 'EXCLUDE';

@@ -30,7 +30,7 @@ import { Configuration }                                     from '../configurat
 })
 export class ObjectService {
 
-    protected basePath = 'http://localhost:4567';
+    protected basePath = 'http://localhost';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
     public encoder: HttpParameterCodec;
