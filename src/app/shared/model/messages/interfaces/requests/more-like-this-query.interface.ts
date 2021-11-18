@@ -1,4 +1,5 @@
 import {Query} from './query-query.interface';
+import {MetadataAccessSpecification} from '../../queries/metadata-access-specification.model';
 
 /**
  * Basic interfaces of a MoreLikeThisQueryMessage. Upon reception, Cineast will execute a More-Like-This query.
@@ -9,4 +10,7 @@ export interface MoreLikeThisQueryMessage extends Query {
 
   /** List of the query categories that should be used for the query. Must not be null but may be empty! */
   categories: string[];
+
+  metadataAccessSpec: MetadataAccessSpecification[];
+
 }
