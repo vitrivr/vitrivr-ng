@@ -2,6 +2,8 @@ import {Tag} from '../../../core/selection/tag.model';
 import {FeatureCategories} from '../results/feature-categories.model';
 import {QuerySettings} from './query-settings.model';
 import * as DEEPMERGE from 'deepmerge';
+import {MetadataAccessSpecification} from '../messages/queries/metadata-access-specification.model';
+import {MetadataType} from '../messages/queries/metadata-type.model';
 
 export class Config {
   /** Context of the Cineast API. */
@@ -87,6 +89,14 @@ export class Config {
         semantic: false,
         boolean: true
       },
+      metadata: {
+        object: [
+          ['*', '*']
+        ],
+        segment: [
+          ['*', '*']
+        ]
+      },
       config: {
         queryId: null,
         hints: ['exact'],
@@ -99,7 +109,8 @@ export class Config {
       boolean: [],
       temporal_mode: 'TEMPORAL_DISTANCE',
       enableTagPrioritisation: false,
-      temporal_max_length: 600
+      temporal_max_length: 600,
+      default_temporal_distance: 10
     },
     refinement: {
       filters: [
@@ -204,6 +215,13 @@ export class Config {
     } else {
       return null;
     }
+  }
+
+  get metadataAccessSpec(): MetadataAccessSpecification[] {
+    let spec: MetadataAccessSpecification[] = []
+    this._config.query.metadata.object.forEach(el => spec.push(new MetadataAccessSpecification(MetadataType.OBJECT, el[0], el[1])))
+    this._config.query.metadata.segment.forEach(el => spec.push(new MetadataAccessSpecification(MetadataType.SEGMENT, el[0], el[1])))
+    return spec;
   }
 
   /**

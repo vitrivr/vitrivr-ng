@@ -28,11 +28,19 @@ export class LocationQueryTerm extends AbstractQueryTerm {
   }
 
   public getLocation() {
-    const _data = JSON.parse(this.data);
-    if (_data) {
-      return {latitude: _data[0], longitude: _data[1]} as Location;
-    } else {
-      return null;
+    try {
+      if(this.data.length === 0){
+        return null; // Obviously nothing to parse
+      }
+      const _data = JSON.parse(this.data);
+      if (_data) {
+        return {latitude: _data[0], longitude: _data[1]} as Location;
+      } else {
+        return null;
+      }
+
+    } catch (e) {
+      return null; // don't care if there is nothing to
     }
   }
 

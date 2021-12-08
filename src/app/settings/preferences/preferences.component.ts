@@ -1,20 +1,20 @@
-import {AfterContentInit, Component} from '@angular/core';
+import {AfterContentInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {Config} from '../../shared/model/config/config.model';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
 import Dexie from 'dexie';
 import {DresTypeConverter} from '../../core/vbs/dres-type-converter.util';
-import {fromPromise} from 'rxjs/internal-compatibility';
 import * as JSZip from 'jszip';
 import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
 import {TemporalMode} from './temporal-mode-container.model';
+import { from } from 'rxjs';
 
 @Component({
-
   selector: 'app-preferences',
-  templateUrl: './preferences.component.html'
+  templateUrl: './preferences.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreferencesComponent implements AfterContentInit {
   _config: Config;
@@ -34,10 +34,11 @@ export class PreferencesComponent implements AfterContentInit {
   maxLength = 600;
 
   cineast = ((c: Config) => c.cineastEndpointWs);
-  dresAddress = ((c: Config) => c._config.competition.host)
-  hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails)
-  hostObjects = ((c: Config) => c._config.resources.host_objects)
-  mode = ((c: Config) => c._config.query.temporal_mode)
+  dresAddress = ((c: Config) => c._config.competition.host);
+  hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails);
+  hostObjects = ((c: Config) => c._config.resources.host_objects);
+  mode = ((c: Config) => c._config.query.temporal_mode);
+  defaultContainerDist =  ((c: Config) => c._config.query.default_temporal_distance);
 
   /**
    * Constructor for PreferencesComponent
@@ -72,7 +73,6 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onResetButtonClicked() {
     this._configService.load();
-    // this._configService.config._config.query.temporal_mode = 'TEMPORAL_DISTANCE';
   }
 
   /**
@@ -80,7 +80,7 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onDownloadInteractionLog() {
     const data = [];
-    fromPromise(this._interactionLogTable.orderBy('id').each((o, c) => {
+    from(this._interactionLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
       .pipe(
@@ -111,7 +111,7 @@ export class PreferencesComponent implements AfterContentInit {
    */
   public onDownloadResultsLog() {
     const data = [];
-    fromPromise(this._resultsLogTable.orderBy('id').each((o, c) => {
+    from(this._resultsLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
       .pipe(
@@ -139,7 +139,7 @@ export class PreferencesComponent implements AfterContentInit {
 
   public onDownloadSubmissionLog() {
     const data = [];
-    fromPromise(this._submissionLogTable.orderBy('id').each((o, c) => {
+    from(this._submissionLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
       .pipe(

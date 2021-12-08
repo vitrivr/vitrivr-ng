@@ -17,13 +17,14 @@ export interface QueryTerm {
     categories?: Array<string>;
 }
 export namespace QueryTerm {
-    export type TypeEnum = 'IMAGE' | 'AUDIO' | 'MOTION' | 'MODEL3D' | 'LOCATION' | 'TIME' | 'TEXT' | 'TAG' | 'SEMANTIC' | 'ID' | 'BOOLEAN';
+    export type TypeEnum = 'IMAGE' | 'AUDIO' | 'MOTION' | 'MODEL3D' | 'LOCATION' | 'PARAMETERISED_LOCATION' | 'TIME' | 'TEXT' | 'TAG' | 'SEMANTIC' | 'ID' | 'BOOLEAN';
     export const TypeEnum = {
         IMAGE: 'IMAGE' as TypeEnum,
         AUDIO: 'AUDIO' as TypeEnum,
         MOTION: 'MOTION' as TypeEnum,
         MODEL3D: 'MODEL3D' as TypeEnum,
         LOCATION: 'LOCATION' as TypeEnum,
+        PARAMETERISEDLOCATION: 'PARAMETERISED_LOCATION' as TypeEnum,
         TIME: 'TIME' as TypeEnum,
         TEXT: 'TEXT' as TypeEnum,
         TAG: 'TAG' as TypeEnum,

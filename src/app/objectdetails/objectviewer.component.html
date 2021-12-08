@@ -8,17 +8,17 @@
 <div [style.display]="'flex'" [style.justify-content]="'flex-start'">
     <div>
         <div [style.max-height]="'400px'">
-            <video #videoplayer *ngIf="mediaobject.mediatype == 'VIDEO'"
+            <video #videoplayer *ngIf="mediaobject.mediatype === 'VIDEO'"
                    [style.width]="'400px'" controls
                    src="{{mediaobject|ObjectPathPipe}}"></video>
-            <audio #audioplayer *ngIf="mediaobject.mediatype == 'AUDIO'"
+            <audio #audioplayer *ngIf="mediaobject.mediatype === 'AUDIO'"
                    [style.width]="'400px'" controls
                    src="{{mediaobject|ObjectPathPipe}}"
                    width="400"></audio>
-            <img #imageviewer *ngIf="mediaobject.mediatype == 'IMAGE'"
+            <img #imageviewer *ngIf="mediaobject.mediatype === 'IMAGE'"
                  src="{{mediaobject|ObjectPathPipe}}"
                  style="max-height: 400px"/>
-            <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype == 'MODEL3D'"
+            <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype === 'MODEL3D'"
                             [height]="200" [interaction]="true" [width]="200"
                             src="{{mediaobject|ObjectPathPipe}}"></app-m3d-loader>
         </div>

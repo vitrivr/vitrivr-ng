@@ -39,6 +39,9 @@
         </button>
     </mat-list-item>
 
+    <h2 mat-subheader>Temporal Query Defaults</h2>
+    <mat-list-item>Default container distance: {{_config|GetConfigVariablePipe:defaultContainerDist}}</mat-list-item>
+
     <h2 mat-subheader>Reset settings</h2>
     <mat-list-item fxLayout="row" fxLayoutAlign="center">
         <button (click)="onResetButtonClicked()" color="warn" mat-raised-button

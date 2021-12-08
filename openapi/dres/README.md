@@ -57,6 +57,7 @@ In your Angular project:
 import { ApiModule } from '@dres-client-openapi/api';
 import { HttpClientModule } from '@angular/common/http';
 
+
 @NgModule({
     imports: [
         ApiModule,
@@ -92,31 +93,6 @@ export class AppModule {}
 ```
 
 ```
-// configuring providers with an authentication service that manages your access tokens
-import { ApiModule, Configuration } from '@dres-client-openapi/api';
-
-@NgModule({
-    imports: [ ApiModule ],
-    declarations: [ AppComponent ],
-    providers: [
-      {
-        provide: Configuration,
-        useFactory: (authService: AuthService) => new Configuration(
-          {
-            basePath: environment.apiUrl,
-            accessToken: authService.getAccessToken.bind(authService)
-          }
-        ),
-        deps: [AuthService],
-        multi: false
-      }
-    ],
-    bootstrap: [ AppComponent ]
-})
-export class AppModule {}
-```
-
-```
 import { DefaultApi } from '@dres-client-openapi/api';
 
 export class AppComponent {
@@ -135,6 +111,7 @@ in order to avoid naming conflicts:
 import { ApiModule } from 'my-api-path';
 import { ApiModule as OtherApiModule } from 'my-other-api-path';
 import { HttpClientModule } from '@angular/common/http';
+
 
 @NgModule({
   imports: [

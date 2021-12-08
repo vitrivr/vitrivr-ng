@@ -98,7 +98,7 @@ export class TrackingSketchCanvasComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   public onResize(event: any) {
-    // tslint:disable-next-line:no-unused-expression
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     event.target.innerWidth;
   }
 

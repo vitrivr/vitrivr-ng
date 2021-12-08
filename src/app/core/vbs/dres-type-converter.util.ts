@@ -150,53 +150,6 @@ export class DresTypeConverter {
       results: list.map((s, i) => <QueryResult>{item: s.objectId, segment: s.sequenceNumber, score: s.score, rank: i}),
       events: event.components.map(e => DresTypeConverter.mapAtomicEvent(e, event.timestamp)).filter(e => e != null)
     }
-
-    /* TODO: What happens with all the category stuff?*/
-    /* event.components.forEach(component => {
-      if (component.type === InteractionEventType.NEW_QUERY_CONTAINER) {
-        results.values.push('NEW_QUERY_CONTAINER')
-        return;
-      }
-      if (component.type === InteractionEventType.NEW_QUERY_STAGE) {
-        results.values.push('NEW_QUERY_STAGE')
-        return;
-      }
-      (component.context.get('q:categories') as string[]).forEach(c => {
-        const category = VbsResultsLog.featureCategoryToVbsCategory(c);
-        const type = VbsResultsLog.featureCategoryToVbsType(c);
-        if (category != null && results.usedCategories.indexOf(category) === -1) {
-          results.usedCategories.push(category)
-        }
-        if (type != null && results.usedTypes.indexOf(type) === -1) {
-          results.usedTypes.push(type)
-        }
-      })
-      results.values.push(JSON.stringify(component.context.get('q:categories')))
-      results.values.push(JSON.stringify(component.context.get('q:value')))
-    })
-    results.sortType.push(context);
-    list.forEach((segmentScoreContainer, index) => {
-      results.results.push(<VbsResult>{
-        video: segmentScoreContainer.objectId,
-        shot: segmentScoreContainer.sequenceNumber,
-        score: segmentScoreContainer.score,
-        rank: index
-      });
-      segmentScoreContainer.scores.forEach((categoryScoreMap, containerId) => {
-        categoryScoreMap.forEach((score, feature) => {
-          const category = this.featureCategoryToVbsCategory(feature.name);
-          const type = this.featureCategoryToVbsType(feature.name);
-          if (category != null && results.usedCategories.indexOf(category) === -1) {
-            results.usedCategories.push(category)
-          }
-          if (type != null && results.usedTypes.indexOf(type) === -1) {
-            results.usedTypes.push(type)
-          }
-        });
-      })
-    });
-
-    return results*/
   }
 
   /**

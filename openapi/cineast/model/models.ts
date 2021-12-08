@@ -5,6 +5,8 @@ export * from './distinctElementsResult';
 export * from './extractionContainerMessage';
 export * from './extractionItemContainer';
 export * from './featuresAllCategoriesQueryResult';
+export * from './featuresByCategoryQueryResult';
+export * from './featuresByEntityQueryResult';
 export * from './featuresTextCategoryQueryResult';
 export * from './idList';
 export * from './mediaObjectDescriptor';

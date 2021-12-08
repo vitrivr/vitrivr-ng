@@ -14,16 +14,8 @@
     "vbs": false
   },
   "mlt": {
-    "VIDEO": [
-      "scenecaption",
-      "localfeatures",
-      "objectInstances"
-    ],
-    "IMAGE": [
-      "scenecaption",
-      "localfeatures",
-      "objectInstances"
-    ]
+    "VIDEO": ["visualtextcoembedding"],
+    "IMAGE": ["visualtextcoembedding"]
   },
   "query": {
     "history": 0,
@@ -40,26 +32,19 @@
     },
     "text": {
       "categories": [
-        [
-          "ocr",
-          "Text on Screen"
-        ],
-        [
-          "asr",
-          "Audio"
-        ]
+        ["visualtextcoembedding", "Text Co-Embedding"]
       ]
     },
     "boolean": [
       [
         "Example Freetext",
         "TEXT",
-        "features_daily.text"
+        "table_name.text"
       ],
       [
         "Example Dropdown",
         "OPTIONS",
-        "features.option",
+        "table_name.option",
         "ONE",
         "TWO",
         "THREE"
@@ -67,20 +52,18 @@
       [
         "Example Range",
         "RANGE",
-        "features.range",
+        "table_name.range",
         5,
         20
       ],
       [
         "Example Dynamic Options",
         "DYNAMICOPTIONS",
-        "features.option",
-        "features",
+        "table_name.option",
+        "table_name",
         "option"
       ]
-    ],
-    "staged": true,
-    "enableTagPrioritisation": true
+    ]
   },
   "refinement": {
     "filters": [

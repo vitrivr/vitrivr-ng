@@ -72,6 +72,7 @@ export class AdvancedMediaPlayerComponent implements AfterViewChecked {
    * https://github.com/videogular/videogular2/issues/720
    */
   ngAfterViewChecked() {
+    console.log('detecting changes')
     this._cdRef.detectChanges();
   }
 

@@ -2,6 +2,7 @@
 README.md
 api.module.ts
 api\api.ts
+api\default.service.ts
 api\metadata.service.ts
 api\misc.service.ts
 api\object.service.ts
@@ -21,6 +22,8 @@ model\distinctElementsResult.ts
 model\extractionContainerMessage.ts
 model\extractionItemContainer.ts
 model\featuresAllCategoriesQueryResult.ts
+model\featuresByCategoryQueryResult.ts
+model\featuresByEntityQueryResult.ts
 model\featuresTextCategoryQueryResult.ts
 model\idList.ts
 model\mediaObjectDescriptor.ts

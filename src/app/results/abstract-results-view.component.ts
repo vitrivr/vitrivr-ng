@@ -21,7 +21,7 @@ import {FilterService} from '../core/queries/filter.service';
 import {TemporalObjectSegments} from '../shared/model/misc/temporalObjectSegments';
 
 @Directive()
-// tslint:disable-next-line:directive-class-suffix
+// eslint-disable-next-line @angular-eslint/directive-class-suffix
 export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestroy {
   /** Local reference to the subscription to the QueryService. */
   protected _queryServiceSubscription;

@@ -1,4 +1,4 @@
-import {AfterContentInit, ChangeDetectorRef, Component, EventEmitter, Input, QueryList, ViewChildren} from '@angular/core';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, QueryList, ViewChildren} from '@angular/core';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
 import {Config} from '../../shared/model/config/config.model';
 import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.component';
@@ -9,7 +9,8 @@ import {TemporalMode} from '../../settings/preferences/temporal-mode-container.m
 @Component({
   selector: 'app-query-container',
   templateUrl: 'query-container.component.html',
-  styleUrls: ['./query-container.component.css']
+  styleUrls: ['./query-container.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 /**
@@ -32,6 +33,9 @@ export class QueryContainerComponent implements AfterContentInit {
 
   _config: Config
 
+  /** Used to re-run rendering when components get added or deleted*/
+  trigger = false
+
   queryOptionsImage = ((c: Config) => c._config.query.options.image)
   queryOptionsAudio = ((c: Config) => c._config.query.options.audio)
   queryOptions3D = ((c: Config) => c._config.query.options.model3d)
@@ -48,12 +52,6 @@ export class QueryContainerComponent implements AfterContentInit {
     _configService.configAsObservable.subscribe(c => this._config = c)
   }
 
-
-  private updateFirstLast() {
-    this.isNotFirst = this.index > 0;
-    this.isNotLast = this.index > -1 && this.index < this.inList.length - 1;
-  }
-
   private get index(): number {
     return this.inList.indexOf(this.containerModel);
   }
@@ -68,6 +66,11 @@ export class QueryContainerComponent implements AfterContentInit {
       this.inList.splice(index, 1)
     }
     this.listReOrder.emit()
+    this.triggerRedraw()
+  }
+
+  private triggerRedraw() {
+    this.trigger = !this.trigger
   }
 
   public onToggleButtonClicked(type: QueryTerm.TypeEnum) {
@@ -76,12 +79,13 @@ export class QueryContainerComponent implements AfterContentInit {
     } else {
       this.containerModel.addTerm(type);
     }
+    this.triggerRedraw()
   }
 
   /**
    * Handler to move this query container one up (in the list of query containers)
    */
-  public moveQueryContainerUp() {
+  public onMoveQueryContainerUpButtonClicked() {
     if (this.isNotFirst) {
       const index = this.index;
       const container = this.inList[index - 1];
@@ -90,9 +94,10 @@ export class QueryContainerComponent implements AfterContentInit {
       this.listReOrder.emit()
       this.updateFirstLast()
     }
+    this.ref.detectChanges();
   }
 
-  public moveQueryContainerDown() {
+  public onMoveQueryContainerDownButtonClicked() {
     if (this.isNotLast) {
       const index = this.index;
       const container = this.inList[index + 1];
@@ -101,6 +106,7 @@ export class QueryContainerComponent implements AfterContentInit {
       this.listReOrder.emit()
       this.updateFirstLast()
     }
+    this.ref.detectChanges();
   }
 
   /** Change the temporal mode to the one selected */
@@ -109,8 +115,16 @@ export class QueryContainerComponent implements AfterContentInit {
   }
 
   ngAfterContentInit(): void {
-    this.listReOrder.subscribe(e => this.updateFirstLast())
+    this.listReOrder.subscribe(e => {
+      this.updateFirstLast()
+      this.ref.markForCheck()
+    })
     this.updateFirstLast()
+  }
+
+  private updateFirstLast() {
+    this.isNotFirst = this.index > 0;
+    this.isNotLast = this.index > -1 && this.index < this.inList.length - 1;
   }
 
 }

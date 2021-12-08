@@ -5,6 +5,7 @@ import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment
 import {ResolverService} from '../core/basics/resolver.service';
 import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
 import * as openseadragon from 'openseadragon';
+import {ConfigService} from '../core/basics/config.service';
 
 @Component({
 

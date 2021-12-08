@@ -1,11 +1,9 @@
-import {WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/observable/dom/WebSocketSubject';
-import {NextObserver} from 'rxjs/src/Observer';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, NextObserver} from 'rxjs';
 import {Message} from '../../shared/model/messages/interfaces/message.interface';
 import {Inject, Injectable} from '@angular/core';
 import {filter} from 'rxjs/operators';
 import {Config} from '../../shared/model/config/config.model';
-import {webSocket} from 'rxjs/webSocket';
+import {webSocket, WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/webSocket';
 import {AppConfig} from '../../app.config';
 import {MatSnackBar} from '@angular/material/snack-bar';
 

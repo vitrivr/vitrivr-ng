@@ -65,7 +65,6 @@ export class AudioRecorderComponent implements OnInit, OnDestroy {
    * to the onStreamAvailable() method.
    */
   public ngOnInit() {
-    navigator.getUserMedia = (navigator.getUserMedia || navigator.mediaDevices.getUserMedia);
     navigator.mediaDevices.getUserMedia({audio: true, video: false})
       .then(
         (stream: MediaStream) => this.onStreamAvailable(stream),
