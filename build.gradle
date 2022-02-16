@@ -1,9 +1,10 @@
 plugins {
-  id "com.github.node-gradle.node" version "3.0.1"
+  id "com.github.node-gradle.node" version "3.2.1"
 }
 
 node {
   download = true
+  version = "17.5.0"
 }
 
 task buildAngularApp(type: NpxTask) {

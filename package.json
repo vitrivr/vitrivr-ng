@@ -44,7 +44,7 @@
     "leaflet-geosearch": "3.6.0",
     "ngx-color-picker": "11.0.0",
     "ngx-infinite-scroll": "10.0.1",
-    "node": "^17.1.0",
+    "node": "^17.4.0",
     "npm": "^8.1.2",
     "openseadragon": "^2.4.2",
     "rxjs": "7.4.0",
