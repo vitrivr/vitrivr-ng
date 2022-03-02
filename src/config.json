@@ -3,25 +3,21 @@
     "host": "default"
   },
   "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:o/:s:x",
-    "host_objects": "http://localhost:4567/objects/:n"
+    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
+    "host_objects": "http://localhost:4567/object/o"
   },
   "competition": {
-    "host": "dmi-dres.dmi.unibas.ch:443",
+    "host": "vbs2.itec.aau.at:9443",
     "tls": true,
-    "log": false,
+    "log": true,
     "lsc": false,
     "vbs": false
   },
   "mlt": {
     "VIDEO": [
-      "scenecaption",
-      "localfeatures",
       "objectInstances"
     ],
     "IMAGE": [
-      "scenecaption",
-      "localfeatures",
       "objectInstances"
     ]
   },
@@ -35,7 +31,8 @@
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": true
+      "boolean": false,
+      "pose": true
     },
     "text": {
       "categories": [
@@ -46,38 +43,13 @@
         [
           "asr",
           "Audio"
+        ],
+        [
+          "visualtextcoembedding",
+          "Text Embedding"
         ]
       ]
     },
-    "boolean": [
-      [
-        "Example Freetext",
-        "TEXT",
-        "features_daily.text"
-      ],
-      [
-        "Example Dropdown",
-        "OPTIONS",
-        "features.option",
-        "ONE",
-        "TWO",
-        "THREE"
-      ],
-      [
-        "Example Range",
-        "RANGE",
-        "features.range",
-        5,
-        20
-      ],
-      [
-        "Example Dynamic Options",
-        "DYNAMICOPTIONS",
-        "features.option",
-        "features",
-        "option"
-      ]
-    ],
     "staged": true
   },
   "refinement": {

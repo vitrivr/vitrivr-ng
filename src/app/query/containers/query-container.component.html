@@ -84,14 +84,17 @@
                 </mat-icon>
             </button>
 
-            <button (click)="onToggleButtonClicked('BOOLEAN')"
-                    *ngIf="(config|async).get('query.options.boolean')"
-                    class="icon-button" matTooltip="Toggle boolean query term">
-                <mat-icon
-                        [attr.class]="containerModel.hasTerm('BOOLEAN') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+            <button (click)="onToggleButtonClicked('BOOLEAN')" *ngIf="(config|async).get('query.options.boolean')" class="icon-button" matTooltip="Toggle boolean query term">
+                <mat-icon [attr.class]="containerModel.hasTerm('BOOLEAN') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
                     code
                 </mat-icon>
             </button>
+
+          <button (click)="onToggleButtonClicked('POSE')" *ngIf="(config|async).get('query.options.pose')" class="icon-button" matTooltip="Toggle pose query term">
+            <mat-icon [attr.class]="containerModel.hasTerm('POSE') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+              accessibility_new
+            </mat-icon>
+          </button>
         </div>
     </div>
     <!-- Divider from header to content -->

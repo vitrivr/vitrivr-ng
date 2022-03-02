@@ -1,0 +1,17 @@
+<mat-dialog-content>
+  <mat-toolbar color="primary">
+
+    <button (click)="addPose()" mat-icon-button>
+      <mat-icon matTooltip="Adds a skeleton to.">add</mat-icon>
+    </button>
+
+    <span class="spacer-flex"></span>
+
+    <button (click)="close()" mat-icon-button>
+      <mat-icon matTooltip="Close window and save.">close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div #canvas>
+  </div>
+</mat-dialog-content>

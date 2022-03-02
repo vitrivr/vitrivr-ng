@@ -10,6 +10,7 @@ import {TagQueryTerm} from './tag-query-term.model';
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
 import {QueryStage} from './query-stage.model';
 import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
+import {PoseQueryTerm} from "./pose-query-term.model";
 
 export class StagedQueryContainer implements QueryContainerInterface {
 
@@ -56,6 +57,9 @@ export class StagedQueryContainer implements QueryContainerInterface {
         break;
       case QueryTerm.TypeEnum.BOOLEAN:
         this._cache.set(type, new BoolQueryTerm());
+        break;
+      case QueryTerm.TypeEnum.POSE:
+        this._cache.set(type, new PoseQueryTerm());
         break;
       default:
         return false;
