@@ -12,6 +12,6 @@
     </button>
   </mat-toolbar>
 
-  <div #canvas>
+  <div #canvas (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMouseMove($event)" (click)="onClick($event)" (dblclick)="onDoubleClick($event)">
   </div>
 </mat-dialog-content>

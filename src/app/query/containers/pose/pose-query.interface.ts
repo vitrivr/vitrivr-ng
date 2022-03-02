@@ -9,30 +9,30 @@ export interface PoseQuery {
  * A {@link Pose} described by 16 key points (COCO format).
  */
 export interface Pose {
-  nose: Point;
-  left_eye: Point;
-  right_eye: Point;
-  left_ear: Point;
-  right_ear: Point;
-  left_shoulder: Point;
-  right_shoulder: Point;
-  left_elbow: Point;
-  right_elbow: Point;
-  left_wrist: Point;
-  right_wrist: Point;
-  left_hip: Point;
-  right_hip: Point;
-  left_knee: Point;
-  right_knee: Point;
-  left_ankle: Point;
-  right_ankle: Point;
+  nose: Joint;
+  left_eye: Joint;
+  right_eye: Joint;
+  left_ear: Joint;
+  right_ear: Joint;
+  left_shoulder: Joint;
+  right_shoulder: Joint;
+  left_elbow: Joint;
+  right_elbow: Joint;
+  left_wrist: Joint;
+  right_wrist: Joint;
+  left_hip: Joint;
+  right_hip: Joint;
+  left_knee: Joint;
+  right_knee: Joint;
+  left_ankle: Joint;
+  right_ankle: Joint;
 }
 
 
 /**
- * A {@link Point} used to describe a {@link Pose}.
+ * A {@link Joint} used to describe a {@link Pose}.
  */
-export interface Point {
+export interface Joint {
   x: number;
   y: number;
   disable: boolean;
