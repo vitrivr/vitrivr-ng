@@ -1,4 +1,4 @@
-## @cineast-openapi/api@v1-SNAPSHOT.202105060941
+## @cineast-openapi/api@v1-SNAPSHOT.202203030917
 
 ### Building
 
@@ -19,7 +19,7 @@ Navigate to the folder of your consuming project and run one of next commands.
 _published:_
 
 ```
-npm install @cineast-openapi/api@v1-SNAPSHOT.202105060941 --save
+npm install @cineast-openapi/api@v1-SNAPSHOT.202203030917 --save
 ```
 
 _without publishing (not recommended):_

@@ -12,10 +12,11 @@
 
 
 export interface MediaObjectMetadataDescriptor { 
-    objectId?: string;
+    objectid?: string;
     domain?: string;
     key?: string;
     value?: string;
     exists?: boolean;
+    objectId?: string;
 }
 

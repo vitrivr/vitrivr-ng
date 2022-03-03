@@ -11,12 +11,13 @@
  */
 
 
-export interface MediaObjectDescriptor {
-    objectId?: string;
+export interface MediaObjectDescriptor { 
+    objectid?: string;
     name?: string;
     path?: string;
     mediatype?: MediaObjectDescriptor.MediatypeEnum;
     exists?: boolean;
+    objectId?: string;
     contentURL?: string;
 }
 export namespace MediaObjectDescriptor {

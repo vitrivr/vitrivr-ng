@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Set } from './set';
 
 
 export interface QueryConfig { 
@@ -20,11 +21,11 @@ export interface QueryConfig {
     resultsPerModule?: number;
     maxResults?: number;
     relevantSegmentIds?: Set<string>;
-    normIfEmpty?: QueryConfig;
     distanceWeightsIfEmpty?: QueryConfig;
+    normIfEmpty?: QueryConfig;
     correspondenceFunction?: object;
-    correspondenceFunctionIfEmpty?: QueryConfig;
     distanceIfEmpty?: QueryConfig;
+    correspondenceFunctionIfEmpty?: QueryConfig;
     rawResultsPerModule?: number;
 }
 export namespace QueryConfig {

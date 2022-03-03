@@ -18,6 +18,8 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { FeaturesAllCategoriesQueryResult } from '../model/models';
+import { FeaturesByCategoryQueryResult } from '../model/models';
+import { FeaturesByEntityQueryResult } from '../model/models';
 import { FeaturesTextCategoryQueryResult } from '../model/models';
 import { IdList } from '../model/models';
 import { MediaObjectMetadataQueryResult } from '../model/models';
@@ -35,7 +37,7 @@ import { Configuration }                                     from '../configurat
 })
 export class MetadataService {
 
-    protected basePath = 'http://localhost:4567';
+    protected basePath = 'http://localhost';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
     public encoder: HttpParameterCodec;
@@ -88,6 +90,120 @@ export class MetadataService {
             throw Error("key may not be null if value is not object or array");
         }
         return httpParams;
+    }
+
+    /**
+     * Find features for the given category for all (or specific) IDs
+     * Find features for the given category for all (or specific) IDs
+     * @param category 
+     * @param idList 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public findFeaturesByCategory(category: string, idList?: IdList, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<FeaturesByCategoryQueryResult>;
+    public findFeaturesByCategory(category: string, idList?: IdList, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<FeaturesByCategoryQueryResult>>;
+    public findFeaturesByCategory(category: string, idList?: IdList, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<FeaturesByCategoryQueryResult>>;
+    public findFeaturesByCategory(category: string, idList?: IdList, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (category === null || category === undefined) {
+            throw new Error('Required parameter category was null or undefined when calling findFeaturesByCategory.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.post<FeaturesByCategoryQueryResult>(`${this.configuration.basePath}/api/v1/find/feature/all/by/category/${encodeURIComponent(String(category))}`,
+            idList,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Find features for the given entity name for all (or specific) IDs
+     * Find features for the given entity name for all (or specific) IDs
+     * @param entity 
+     * @param idList 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public findFeaturesByEntity(entity: string, idList?: IdList, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<FeaturesByEntityQueryResult>;
+    public findFeaturesByEntity(entity: string, idList?: IdList, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<FeaturesByEntityQueryResult>>;
+    public findFeaturesByEntity(entity: string, idList?: IdList, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<FeaturesByEntityQueryResult>>;
+    public findFeaturesByEntity(entity: string, idList?: IdList, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (entity === null || entity === undefined) {
+            throw new Error('Required parameter entity was null or undefined when calling findFeaturesByEntity.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.post<FeaturesByEntityQueryResult>(`${this.configuration.basePath}/api/v1/find/feature/all/by/entity/${encodeURIComponent(String(entity))}`,
+            idList,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
     }
 
     /**
@@ -229,7 +345,7 @@ export class MetadataService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<MediaObjectMetadataQueryResult>(`${this.configuration.basePath}/api/v1/find/metadata/in/${encodeURIComponent(String(domain))}/by/id/${encodeURIComponent(String(domain))}`,
+        return this.httpClient.get<MediaObjectMetadataQueryResult>(`${this.configuration.basePath}/api/v1/find/metadata/in/${encodeURIComponent(String(domain))}/by/id/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -556,12 +672,12 @@ export class MetadataService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public findTagsById(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<TagIDsForElementQueryResult>;
-    public findTagsById(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<TagIDsForElementQueryResult>>;
-    public findTagsById(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<TagIDsForElementQueryResult>>;
-    public findTagsById(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public findTagInformationById(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<TagIDsForElementQueryResult>;
+    public findTagInformationById(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<TagIDsForElementQueryResult>>;
+    public findTagInformationById(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<TagIDsForElementQueryResult>>;
+    public findTagInformationById(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling findTagsById.');
+            throw new Error('Required parameter id was null or undefined when calling findTagInformationById.');
         }
 
         let headers = this.defaultHeaders;
