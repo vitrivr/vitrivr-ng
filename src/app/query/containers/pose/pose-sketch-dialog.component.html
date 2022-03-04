@@ -1,8 +1,16 @@
 <mat-dialog-content>
   <mat-toolbar color="primary">
 
-    <button (click)="newPose()" mat-icon-button>
+    <button (click)="addNewSkeleton()" mat-icon-button>
       <mat-icon matTooltip="Adds a skeleton to.">add</mat-icon>
+    </button>
+
+    <button (click)="removeSelectedSkeleton()" [disabled]="this.selectedSkeleton == null" mat-icon-button>
+      <mat-icon matTooltip="Removes currently selected skeleton.">remove</mat-icon>
+    </button>
+
+    <button (click)="copySelectedSkeleton()" [disabled]="this.selectedSkeleton == null" mat-icon-button>
+      <mat-icon matTooltip="Copies the currently selected skeleton.">content_copy</mat-icon>
     </button>
 
     <span class="spacer-flex"></span>
