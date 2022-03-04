@@ -32,7 +32,7 @@
       "tag": true,
       "semantic": true,
       "boolean": false,
-      "pose": true
+      "skeleton": true
     },
     "text": {
       "categories": [
