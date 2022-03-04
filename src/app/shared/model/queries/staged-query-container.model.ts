@@ -7,10 +7,10 @@ import {BoolQueryTerm} from './bool-query-term.model';
 import {MotionQueryTerm} from './motion-query-term.model';
 import {TextQueryTerm} from './text-query-term.model';
 import {TagQueryTerm} from './tag-query-term.model';
+import {SkeletonPoseQueryTerm} from "./skeleton-pose-query-term.model";
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
 import {QueryStage} from './query-stage.model';
 import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
-import {PoseQueryTerm} from "./pose-query-term.model";
 
 export class StagedQueryContainer implements QueryContainerInterface {
 
@@ -58,8 +58,8 @@ export class StagedQueryContainer implements QueryContainerInterface {
       case QueryTerm.TypeEnum.BOOLEAN:
         this._cache.set(type, new BoolQueryTerm());
         break;
-      case QueryTerm.TypeEnum.POSE:
-        this._cache.set(type, new PoseQueryTerm());
+      case QueryTerm.TypeEnum.SKELETON:
+        this._cache.set(type, new SkeletonPoseQueryTerm());
         break;
       default:
         return false;

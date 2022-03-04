@@ -9,10 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Set } from './set';
 
 
-export interface QueryConfig { 
+export interface QueryConfig {
     queryId?: string;
     hints?: Set<QueryConfig.HintsEnum>;
     distance?: QueryConfig.DistanceEnum;

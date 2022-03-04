@@ -1,14 +1,14 @@
 /**
- * A pose query composed of one to many {@link Pose}s.
+ * A pose query composed of one to many {@link Skeleton}s.
  */
 export interface PoseQuery {
-  poses: Array<Pose> /* List of. */
+  poses: Array<Skeleton> /* List of. */
 }
 
 /**
- * A {@link Pose} described by 16 key points (COCO format).
+ * A {@link Skeleton} described by 16 key points (COCO format).
  */
-export interface Pose {
+export interface Skeleton {
   nose: Joint;
   left_eye: Joint;
   right_eye: Joint;
@@ -30,7 +30,7 @@ export interface Pose {
 
 
 /**
- * A {@link Joint} used to describe a {@link Pose}.
+ * A {@link Joint} used to describe a {@link Skeleton}.
  */
 export interface Joint {
   x: number;

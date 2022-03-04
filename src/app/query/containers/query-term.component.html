@@ -19,7 +19,7 @@
         <app-qt-tag *ngIf="queryTerm.type==='TAG'" [tagTerm]="queryTerm"></app-qt-tag>
         <app-qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></app-qt-semantic>
         <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
-        <app-qt-pose *ngIf="queryTerm.type==='POSE'" [poseTerm]="queryTerm"></app-qt-pose>
+        <app-qt-pose *ngIf="queryTerm.type==='SKELETON'" [poseTerm]="queryTerm"></app-qt-pose>
     </div>
 
     <div *ngIf="stagedQEnabled()">
