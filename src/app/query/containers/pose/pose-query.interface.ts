@@ -2,7 +2,11 @@
  * A pose query composed of one to many {@link Skeleton}s.
  */
 export interface PoseQuery {
-  poses: Array<Skeleton> /* List of. */
+  /** List of {@link Skeleton}s that make up this {@link PoseQuery}. */
+  poses: Array<Skeleton>;
+
+  /** Image representation of this {@link PoseQuery}. */
+  image?: string
 }
 
 /**

@@ -34,7 +34,6 @@ export class DrawableSkeleton extends Two.Group implements Skeleton {
   /** */
   public joints: Array<DrawableJoint>;
 
-
   /** Constructor for {@link DrawableSkeleton}. */
   constructor(skeleton: Skeleton = DrawableSkeleton.DEFAULT, scalingFactor = 1.0) {
     const joints = [

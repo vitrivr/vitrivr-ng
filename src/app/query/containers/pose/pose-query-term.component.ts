@@ -39,7 +39,7 @@ export class PoseQueryTermComponent implements OnInit {
    * it should be edited; opens the SketchDialogComponent
    */
   public onViewerClicked() {
-    this.openSketchDialog(this.poseQuery);
+    this.openSketchDialog();
   }
 
   /**
@@ -50,18 +50,16 @@ export class PoseQueryTermComponent implements OnInit {
    */
   private openSketchDialog(data?: PoseQuery) {
     /* Initialize the correct dialog-component. */
-    const dialogRef = this._dialog.open(PoseSketchDialogComponent, {data: data, width: '750px', height: '690px'});
-    dialogRef.afterClosed().pipe(first()).subscribe(result => {
-      if (result) {
-        this.applyPoseData(result)
-      }
-    });
+    const dialogRef = this._dialog.open(PoseSketchDialogComponent, {data: this.poseQuery != null ? this.poseQuery.poses : [], width: '750px', height: '690px'});
+    dialogRef.afterClosed().pipe(first()).subscribe(result => this.applyPoseData(result));
   }
 
   /**
    * Redraws the preview image.
    */
   private applyPoseData(query: PoseQuery) {
+    this.poseQuery = query
+    this.previewimg.nativeElement.src = query.image
     const skeletons = []
     for (const pose of query.poses) {
       const skeleton = {
@@ -106,6 +104,6 @@ export class PoseQueryTermComponent implements OnInit {
       }
       skeletons.push(skeleton)
     }
-    this.poseTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify({ skeletons: skeletons}))
+    this.poseTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(skeletons))
   }
 }
