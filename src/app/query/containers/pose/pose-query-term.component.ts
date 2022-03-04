@@ -1,11 +1,11 @@
-import {Component, Input, OnInit, ViewChild} from "@angular/core";
-import {SkeletonPoseQueryTerm} from "../../../shared/model/queries/skeleton-pose-query-term.model";
-import {first} from "rxjs/operators";
-import {PoseQuery} from "./pose-query.interface";
-import {MatDialog} from "@angular/material/dialog";
-import {ResolverService} from "../../../core/basics/resolver.service";
-import {HttpClient} from "@angular/common/http";
-import {PoseSketchDialogComponent} from "./pose-sketch-dialog.component";
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {SkeletonPoseQueryTerm} from '../../../shared/model/queries/skeleton-pose-query-term.model';
+import {first} from 'rxjs/operators';
+import {PoseQuery} from './pose-query.interface';
+import {MatDialog} from '@angular/material/dialog';
+import {ResolverService} from '../../../core/basics/resolver.service';
+import {HttpClient} from '@angular/common/http';
+import {PoseSketchDialogComponent} from './pose-sketch-dialog.component';
 
 @Component({
   selector: 'app-qt-pose',
