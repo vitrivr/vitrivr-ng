@@ -3,8 +3,6 @@
 [![GitHub release](https://img.shields.io/github/release/vitrivr/vitrivr-ng?include_prereleases=&sort=semver&color=2ea44f)](https://github.com/vitrivr/vitrivr-ng/releases/)
 [![License](https://img.shields.io/badge/License-MIT-blueviolet)](#license)
 
-[![Build Status](https://travis-ci.org/vitrivr/vitrivr-ng.svg?branch=master)](https://travis-ci.org/vitrivr/vitrivr-ng)
-
 This directory contains the source code distribution of Vitrivr NG (stands for either 'Angular' or 'Next Generation'). It was created using [Angular](https://angular.io/)
 
 Vitrivr NG is a web-based user interface developed to be used with the latest version if [Cineast](https://github.com/vitrivr/cineast). It allows the user to browse in and retrieve from mixed multimedia collections.

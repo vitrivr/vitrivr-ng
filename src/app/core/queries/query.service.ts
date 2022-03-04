@@ -33,6 +33,7 @@ import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, M
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
+import {ReadableTemporalQueryConfig} from '../../shared/model/messages/queries/readable-temporal-query-config.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -129,8 +130,8 @@ export class QueryService {
     this._config.configAsObservable.pipe(first()).subscribe(config => {
       const query = new TemporalQuery(
         containers.map(container => new StagedSimilarityQuery(container.stages, null)),
-        new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')),
-        null, -1,
+        new ReadableTemporalQueryConfig(null, config.get<Hint[]>('query.config.hints'),
+        null, -1),
         config.metadataAccessSpec);
       this._socket.next(query)
     });
@@ -199,7 +200,11 @@ export class QueryService {
       console.warn('There is already a query running');
     }
     const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
-      new ReadableQueryConfig(null, this._config.config.get<Hint[]>('query.config.hints')), timeDistances, maxLength, this._config.config.metadataAccessSpec);
+      new ReadableTemporalQueryConfig(null,
+        this._config.config.get<Hint[]>('query.config.hints'),
+        timeDistances,
+        maxLength),
+      this._config.config.metadataAccessSpec);
     this._socket.next(query)
 
     /** Log Interaction */

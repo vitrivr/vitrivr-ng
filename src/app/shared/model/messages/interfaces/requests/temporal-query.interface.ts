@@ -3,7 +3,5 @@ import {MetadataAccessSpecification} from '../../queries/metadata-access-specifi
 
 export interface TemporalQueryMessage {
   queries: StagedSimilarityQuery[];
-  timeDistances: number[];
-  maxLength: number;
   metadataAccessSpec: MetadataAccessSpecification[];
 }
