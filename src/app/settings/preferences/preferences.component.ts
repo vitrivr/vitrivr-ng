@@ -184,7 +184,7 @@ export class PreferencesComponent implements AfterContentInit {
   }
 
   ngAfterContentInit(): void {
-    this._submissionService.statusObservable.subscribe(status => {
+    this._submissionService.statusObservable.subscribe({next: (status) => {
         if (status) {
           this._dresStatus = `${status.sessionId}`
           return;
@@ -192,9 +192,10 @@ export class PreferencesComponent implements AfterContentInit {
         this._dresStatus = 'not logged in'
         return
       },
-      error => {
+      error: (e) => {
+        console.error(e)
         this._dresStatus = 'not logged in'
-      })
+      }})
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }

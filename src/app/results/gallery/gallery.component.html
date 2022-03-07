@@ -22,7 +22,6 @@
                 </div>
                 <div *ngIf="inFocus(mediaobject)" class="tags" fxLayout="row">
                     <button (click)="onHighlightButtonClicked(mediaobject.representativeSegment,tag)"
-                            (contextmenu)="onHighlightButtonRightClicked($event,mediaobject.representativeSegment,tag)"
                             *ngFor="let tag of _selectionService._available"
                             mat-icon-button
                             matTooltip="Toggle '{{tag.name}}' tag">
@@ -35,7 +34,7 @@
             </div>
 
             <div class="score">
-                <p>{{mediaobject._score | ScorePercentagePipe}}&#37;</p>
+                <p>{{mediaobject._score | ScorePercentagePipe}};</p>
                 <p>
                     <mat-icon>filter_none</mat-icon>&nbsp;{{mediaobject.numberOfSegments}}</p>
             </div>

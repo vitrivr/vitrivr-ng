@@ -13,8 +13,7 @@ export class BackgroundScorePipe implements PipeTransform {
   constructor(private _selectionService: SelectionService) {
   }
 
-  public transform(score: number, segment: MediaSegmentScoreContainer, temporalObject?: TemporalObjectSegments): string {
-    const tags: Tag[] = this._selectionService.getTags(segment.segmentId);
+  public transform(score: number, segment: MediaSegmentScoreContainer, tags: Tag[], temporalObject?: TemporalObjectSegments): string {
     return AbstractResultsViewComponent.staticBackgroundForScore(score, segment, tags, temporalObject)
   }
 }
