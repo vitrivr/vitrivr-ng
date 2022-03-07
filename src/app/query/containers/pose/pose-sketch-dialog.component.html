@@ -15,11 +15,19 @@
 
     <span class="spacer-flex"></span>
 
+    <button [matMenuTriggerFor]="aspectMenu" mat-icon-button>
+      <mat-icon matTooltip="Copies the currently selected skeleton.">aspect_ratio</mat-icon>
+    </button>
+    <mat-menu #aspectMenu="matMenu">
+      <button mat-menu-item (click)="setAspect169()">16:9</button>
+      <button mat-menu-item (click)="setAspect43()">4:3</button>
+    </mat-menu>
+
     <button (click)="close()" mat-icon-button>
       <mat-icon matTooltip="Close window and save.">close</mat-icon>
     </button>
   </mat-toolbar>
 
-  <div #canvas (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMouseMove($event)" (click)="onClick($event)" (dblclick)="onDoubleClick($event)">
+  <div class="canvas" #canvas (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMouseMove($event)" (click)="onClick($event)" (dblclick)="onDoubleClick($event)">
   </div>
 </mat-dialog-content>

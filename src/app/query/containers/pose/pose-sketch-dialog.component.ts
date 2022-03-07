@@ -59,8 +59,9 @@ export class PoseSketchDialogComponent implements AfterViewInit {
   public ngAfterViewInit(): void {
     this.two = new Two({
       type: Two.Types.canvas,
-      width: 600,
-      height: 600,
+      width: 800,
+      height: 450,
+      overdraw: false,
       autostart: true
     }).appendTo(this.canvas.nativeElement);
 
@@ -232,6 +233,24 @@ export class PoseSketchDialogComponent implements AfterViewInit {
       poses: this.poses,
       image: this.two.renderer.ctx.canvas.toDataURL('image/png')
     });
+  }
+
+  /**
+   * Changes aspect ratio of canvas to 16:9
+   */
+  public setAspect169() {
+    this.two.width = 800;
+    this.two.height = 450;
+    this._dialogRef.updateSize('800px', '600px')
+  }
+
+  /**
+   * Changes aspect ratio of canvas to 4:3
+   */
+  public setAspect43() {
+    this.two.width = 800;
+    this.two.height = 600;
+    this._dialogRef.updateSize('800px', '750px')
   }
 
   /**
