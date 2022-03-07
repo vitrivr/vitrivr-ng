@@ -1,6 +1,6 @@
 {
   "name": "vitrivr-ng",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
