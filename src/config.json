@@ -4,10 +4,10 @@
   },
   "resources": {
     "host_thumbnails": "http://localhost:4567/thumbnails/:s",
-    "host_objects": "http://localhost:4567/object/o"
+    "host_objects": "http://localhost:4567/objects/:o"
   },
   "competition": {
-    "host": "vbs2.itec.aau.at:9443",
+    "host": "",
     "tls": true,
     "log": true,
     "lsc": false,
