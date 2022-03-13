@@ -4,7 +4,6 @@ import {ImageQueryTerm} from './image-query-term.model';
 import {AudioQueryTerm} from './audio-query-term.model';
 import {M3DQueryTerm} from './m3d-query-term.model';
 import {BoolQueryTerm} from './bool-query-term.model';
-import {MotionQueryTerm} from './motion-query-term.model';
 import {TextQueryTerm} from './text-query-term.model';
 import {TagQueryTerm} from './tag-query-term.model';
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
@@ -44,9 +43,6 @@ export class StagedQueryContainer implements QueryContainerInterface {
         break;
       case QueryTerm.TypeEnum.MODEL3D:
         this._cache.set(type, new M3DQueryTerm());
-        break;
-      case QueryTerm.TypeEnum.MOTION:
-        this._cache.set(type, new MotionQueryTerm());
         break;
       case QueryTerm.TypeEnum.TEXT:
         this._cache.set(type, new TextQueryTerm());

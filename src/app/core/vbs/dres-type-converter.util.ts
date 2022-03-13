@@ -51,8 +51,6 @@ export class DresTypeConverter {
       case InteractionEventType.NEW_QUERY_CONTAINER:
         console.warn(`interaction logging for ${component.type} is unsupported`)
         break;
-      case InteractionEventType.QUERY_MOTION:
-        return <QueryEvent>{category: 'SKETCH', type: 'motion', timestamp: timestamp};
       case InteractionEventType.QUERY_SEMANTIC:
         return <QueryEvent>{category: 'SKETCH', type: 'semanticSegmentation', timestamp: timestamp};
       case InteractionEventType.MLT:
@@ -168,7 +166,6 @@ export class DresTypeConverter {
       case 'boolean':
         return 'TEXT';
       case 'semantic':
-      case 'motion':
       case 'edge':
       case 'globalcolor':
       case 'localcolor':
@@ -203,8 +200,6 @@ export class DresTypeConverter {
         return 'metadata';
       case 'semantic':
         return 'semanticSegmentation';
-      case 'motion':
-        return 'motion';
       case 'edge':
         return 'edge';
       case 'globalcolor':

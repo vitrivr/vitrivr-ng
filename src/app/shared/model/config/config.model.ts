@@ -82,7 +82,6 @@ export class Config {
         image: true,
         audio: false,
         model3d: true,
-        motion: false,
         text: false,
         tag: true,
         map: false,

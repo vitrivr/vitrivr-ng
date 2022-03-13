@@ -23,7 +23,6 @@
       "image": true,
       "audio": false,
       "model3d": false,
-      "motion": false,
       "text": true,
       "tag": true,
       "semantic": true,
