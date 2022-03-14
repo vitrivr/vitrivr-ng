@@ -15,7 +15,7 @@ import Dexie from 'dexie';
 import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
-import {LogService, QueryEventLog, QueryResultLog, SessionId, StatusService, SubmissionService, SuccessfulSubmissionsStatus, SuccessStatus, UserService} from '../../../../openapi/dres';
+import {LogService, QueryEventLog, QueryResultLog, SessionId, SubmissionService, SuccessfulSubmissionsStatus, UserService} from '../../../../openapi/dres';
 import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
 
 /**
@@ -87,10 +87,14 @@ export class VbsSubmissionService {
         this._interactionLogTable = _db.db.table('log_interaction');
         this._submissionLogTable = _db.db.table('log_submission');
         this.reset(config)
-        this._dresUser.getApiV1UserSession().subscribe(sessionId => this._status.next(sessionId))
+        this._dresUser.getApiV1UserSession().subscribe(sessionId => {
+          this._status.next(sessionId)
+        })
         this._status.subscribe({
           next: (status) => {
-            this._sessionId = status.sessionId;
+            if (status) {
+              this._sessionId = status.sessionId;
+            }
           },
           error: (e) => {
             console.error('failed to connect to DRES', e)
