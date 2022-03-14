@@ -9,7 +9,7 @@ import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
 import {TemporalMode} from './temporal-mode-container.model';
-import { from } from 'rxjs';
+import {from, BehaviorSubject} from 'rxjs';
 
 @Component({
   selector: 'app-preferences',
@@ -28,7 +28,7 @@ export class PreferencesComponent implements AfterContentInit {
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
 
-  _dresStatus = ''
+  _dresStatus = new BehaviorSubject<string>('')
   _dresStatusBadgeValue: string;
 
   maxLength = 600;
@@ -38,7 +38,7 @@ export class PreferencesComponent implements AfterContentInit {
   hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails);
   hostObjects = ((c: Config) => c._config.resources.host_objects);
   mode = ((c: Config) => c._config.query.temporal_mode);
-  defaultContainerDist =  ((c: Config) => c._config.query.default_temporal_distance);
+  defaultContainerDist = ((c: Config) => c._config.query.default_temporal_distance);
 
   /**
    * Constructor for PreferencesComponent
@@ -184,18 +184,23 @@ export class PreferencesComponent implements AfterContentInit {
   }
 
   ngAfterContentInit(): void {
-    this._submissionService.statusObservable.subscribe({next: (status) => {
+    this._submissionService.statusObservable.subscribe({
+      next: (status) => {
+        console.log(status)
         if (status) {
-          this._dresStatus = `${status.sessionId}`
+          console.log('setting status to sessionId')
+          this._dresStatus.next(status.sessionId)
           return;
         }
-        this._dresStatus = 'not logged in'
+        console.log('setting status to not logged in')
+        this._dresStatus.next('not logged in')
         return
       },
       error: (e) => {
         console.error(e)
-        this._dresStatus = 'not logged in'
-      }})
+        this._dresStatus.next('not logged in')
+      }
+    })
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }
