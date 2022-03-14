@@ -10,6 +10,8 @@ import {EventBusService} from '../../core/basics/event-bus.service';
 import {FilterService} from '../../core/queries/filter.service';
 import {Observable} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
+import {Tag} from '../../core/selection/tag.model';
 
 @Component({
   selector: 'app-gallery',
@@ -104,7 +106,7 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
    *
    */
   get filters(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
-    return this._filterService.objectFilters;
+    return this._filterService._objectFilters;
   }
 
   /**
@@ -131,5 +133,9 @@ export class GalleryComponent extends AbstractResultsViewComponent<MediaObjectSc
     if (results) {
       this._dataSource = results.mediaobjectsAsObservable;
     }
+  }
+
+  public onHighlightButtonClicked(segment: MediaSegmentScoreContainer, tag: Tag) {
+      this._selectionService.toggle(tag, segment.segmentId);
   }
 }

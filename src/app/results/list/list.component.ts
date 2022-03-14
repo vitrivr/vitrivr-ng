@@ -12,9 +12,7 @@ import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {MatDialog} from '@angular/material/dialog';
-import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {AppConfig} from '../../app.config';
-import {ScoredPathSegment} from '../temporal/scored-path-segment.model';
 
 @Component({
   selector: 'app-list',
@@ -40,20 +38,6 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
   ) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar, _configService, _resolver, _dialog);
     this._count = this.scrollIncrement() * 5;
-  }
-
-  /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   */
-  get objectFilter(): Observable<((v: MediaObjectScoreContainer) => boolean)[]> {
-    return this._filterService.objectFilters;
-  }
-
-  /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   */
-  get segmentFilter(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
-    return this._filterService.segmentFilter;
   }
 
   /**

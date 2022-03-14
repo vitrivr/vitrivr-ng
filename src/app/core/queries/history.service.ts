@@ -2,9 +2,8 @@ import {Inject, Injectable} from '@angular/core';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import Dexie from 'dexie';
-import {fromPromise} from 'rxjs-compat/observable/fromPromise';
-import {first, flatMap, map} from 'rxjs/operators';
-import {EMPTY, Observable} from 'rxjs';
+import {first, map, mergeMap} from 'rxjs/operators';
+import {EMPTY, from, Observable} from 'rxjs';
 import {DatabaseService} from '../basics/database.service';
 import * as JSZip from 'jszip';
 import {AppConfig} from '../../app.config';
@@ -57,14 +56,14 @@ export class HistoryService {
    * Returns a copy of the HistoryContainer[] array.
    */
   get list(): Observable<HistoryContainer[]> {
-    return fromPromise(this._historyTable.orderBy('id').reverse().toArray());
+    return from(this._historyTable.orderBy('id').reverse().toArray());
   }
 
   /**
    * Returns the number of items in the history.
    */
   get count(): Observable<number> {
-    return fromPromise(this._historyTable.count());
+    return from(this._historyTable.count());
   }
 
   /**
@@ -74,7 +73,7 @@ export class HistoryService {
    */
   public append(container: ResultsContainer) {
     if (this._keep > 0) {
-      fromPromise(this._historyTable.add(new HistoryContainer(container))).subscribe();
+      from(this._historyTable.add(new HistoryContainer(container))).subscribe();
       this.ommitOldest();
     }
   }
@@ -85,21 +84,21 @@ export class HistoryService {
    * @param key ID of the HistoryContainer to delete.
    */
   public delete(key: number) {
-    fromPromise(this._historyTable.delete(key)).subscribe();
+    from(this._historyTable.delete(key)).subscribe();
   }
 
   /**
    * Clears the history.
    */
   public clear() {
-    fromPromise(this._historyTable.clear()).subscribe();
+    from(this._historyTable.clear()).subscribe();
   }
 
   /**
    * Downloads the entire history.
    */
   public download() {
-    fromPromise(this._historyTable.orderBy('id').toArray())
+    from(this._historyTable.orderBy('id').toArray())
       .pipe(
         first(),
         map(h => {
@@ -125,16 +124,16 @@ export class HistoryService {
    *
    */
   private ommitOldest() {
-    fromPromise(this._historyTable.count()).pipe(
-      flatMap(c => {
+    from(this._historyTable.count()).pipe(
+      mergeMap(c => {
         if (c > this._keep) {
-          return fromPromise(this._historyTable.limit(c - this._keep).keys());
+          return from(this._historyTable.limit(c - this._keep).keys());
         } else {
           return EMPTY;
         }
       }),
-      flatMap((a, i) => {
-        return fromPromise(this._historyTable.bulkDelete(a));
+      mergeMap((a, i) => {
+        return from(this._historyTable.bulkDelete(a));
       })
     ).subscribe();
   }

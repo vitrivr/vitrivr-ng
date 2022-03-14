@@ -18,7 +18,7 @@ import {AppConfig} from '../app.config';
  * More specialized AbstractResultsView, tailored for views which display segments
  */
 @Directive()
-// tslint:disable-next-line:directive-class-suffix
+// eslint-disable-next-line @angular-eslint/directive-class-suffix
 export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractResultsViewComponent<T> {
 
   protected constructor(_cdr: ChangeDetectorRef,
@@ -32,14 +32,6 @@ export abstract class AbstractSegmentResultsViewComponent<T> extends AbstractRes
                         public _resolver: ResolverService,
                         protected _dialog: MatDialog) {
     super(_cdr, _queryService, _filterService, _selectionService, _eventBusService, _router, _snackBar);
-  }
-
-
-  /**
-   * Getter for the filters that should be applied to SegmentScoreContainer.
-   */
-  get filters(): Observable<((v: MediaSegmentScoreContainer) => boolean)[]> {
-    return this._filterService.segmentFilter;
   }
 
 

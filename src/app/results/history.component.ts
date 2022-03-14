@@ -18,24 +18,24 @@ import {QueryService} from '../core/queries/query.service';
         <mat-icon>cloud_download</mat-icon>
       </button>
     </div>
-    <mat-nav-list *ngIf="(count|async) > 0">
-      <a *ngFor="let result of (history|async)" mat-list-item (click)="load(result)">
+    <mat-nav-list *ngIf="(_count|async) > 0">
+      <a *ngFor="let result of (_history|async)" mat-list-item (click)="load(result)">
         <mat-icon mat-list-icon>change_history</mat-icon>
         <span mat-line><strong>ID: {{result.id}}, {{format(result.timestamp)}}</strong></span>
         <span mat-line>Objects: {{result.objects}}, Segments: {{result.segments}}</span>
         <span mat-line>Features: {{result.features.join(", ")}}</span>
       </a>
     </mat-nav-list>
-    <p *ngIf="(count|async) == 0">No history available!</p>
+    <p *ngIf="(_count|async) == 0">No history available!</p>
   `
 })
 export class HistoryComponent {
 
   /** Reference to the Observable exposing the list of HistoryContainers. */
-  private _history: Observable<HistoryContainer[]>;
+  public _history: Observable<HistoryContainer[]>;
 
   /** Reference to the Observable exposing the number of HistoryContainers. */
-  private _count: Observable<number>;
+  public _count: Observable<number>;
 
   /**
    * Constructor for HistoryComponent.
@@ -46,20 +46,6 @@ export class HistoryComponent {
   constructor(private _service: HistoryService, private _query: QueryService) {
     this._count = _service.count;
     this._history = _service.list;
-  }
-
-  /**
-   * Getter for _history.
-   */
-  get history(): Observable<HistoryContainer[]> {
-    return this._history;
-  }
-
-  /**
-   * Getter for _count.
-   */
-  get count(): Observable<number> {
-    return this._count;
   }
 
   /**

@@ -1,8 +1,6 @@
 import {NgModule} from '@angular/core';
 import {LookupModule} from './lookup/lookup.module';
-import {EvaluationService} from './evaluation/evaluation.service';
 import {BasicModule} from './basics/basic.module';
-import {EvaluationModule} from '../evaluation/evaluation.module';
 import {VbsSubmissionService} from './vbs/vbs-submission.service';
 import {VbsModule} from './vbs/vbs.module';
 import {SelectionModule} from './selection/selection.module';
@@ -18,10 +16,10 @@ import {AppConfig} from '../app.config';
     return new Configuration({
       basePath: `${AppConfig.settings.cineastEndpointRest}`
     })
-  }), LookupModule, BasicModule, EvaluationModule, VbsModule, SelectionModule, QueryModule],
-  exports: [ApiModule, LookupModule, BasicModule, EvaluationModule, VbsModule, SelectionModule, QueryModule],
+  }), LookupModule, BasicModule, VbsModule, SelectionModule, QueryModule],
+  exports: [ApiModule, LookupModule, BasicModule, VbsModule, SelectionModule, QueryModule],
   declarations: [],
-  providers: [WebSocketFactoryService, EvaluationService, VbsSubmissionService, SelectionService, PreviousRouteService]
+  providers: [WebSocketFactoryService, VbsSubmissionService, SelectionService, PreviousRouteService]
 })
 export class CoreModule {
 }

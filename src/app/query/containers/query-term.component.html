@@ -1,32 +1,32 @@
 <!-- where everything lives. This layout would maybe be prettier if the buttons were on the left -->
 <div>
-    <!-- div for the up / down buttons -->
-    <div *ngIf="!firstStage && stagedQEnabled()">
-        <button style="width:48px;" (click)="onPushUpClicked()" mat-icon-button color="primary"
-                matTooltip="Use as an earlier filter">
-            <mat-icon>search</mat-icon>
-            <mat-icon>keyboard_arrow_up</mat-icon>
-        </button>
-    </div>
+  <!-- div for the up / down buttons -->
+  <div *ngIf="!firstStage">
+    <button style="width:48px;" (click)="onPushUpClicked()" mat-icon-button color="primary"
+            matTooltip="Use as an earlier filter">
+      <mat-icon>search</mat-icon>
+      <mat-icon>keyboard_arrow_up</mat-icon>
+    </button>
+  </div>
 
-    <!-- div for the actual query term to formulate the query -->
-    <div>
-        <app-qt-image *ngIf="queryTerm.type==='IMAGE'" [imageTerm]="queryTerm"></app-qt-image>
-        <app-qt-audio *ngIf="queryTerm.type==='AUDIO'" [audioTerm]="queryTerm"></app-qt-audio>
-        <app-qt-m3d *ngIf="queryTerm.type==='MODEL3D'" [m3dTerm]="queryTerm"></app-qt-m3d>
-        <app-qt-motion *ngIf="queryTerm.type==='MOTION'" [motionTerm]="queryTerm"></app-qt-motion>
-        <app-qt-text *ngIf="queryTerm.type==='TEXT'" [textTerm]="queryTerm"></app-qt-text>
-        <app-qt-tag *ngIf="queryTerm.type==='TAG'" [tagTerm]="queryTerm"></app-qt-tag>
-        <app-qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></app-qt-semantic>
-        <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
-        <app-qt-pose *ngIf="queryTerm.type==='SKELETON'" [poseTerm]="queryTerm"></app-qt-pose>
-    </div>
+  <!-- div for the actual query term to formulate the query -->
+  <div>
+    <app-qt-image *ngIf="queryTerm.type==='IMAGE'" [imageTerm]="queryTerm"></app-qt-image>
+    <app-qt-audio *ngIf="queryTerm.type==='AUDIO'" [audioTerm]="queryTerm"></app-qt-audio>
+    <app-qt-m3d *ngIf="queryTerm.type==='MODEL3D'" [m3dTerm]="queryTerm"></app-qt-m3d>
+    <app-qt-text *ngIf="queryTerm.type==='TEXT'" [textTerm]="queryTerm"></app-qt-text>
+    <app-qt-tag *ngIf="queryTerm.type==='TAG'" [tagTerm]="queryTerm"></app-qt-tag>
+    <app-qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></app-qt-semantic>
+    <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
+    <app-map-query-term *ngIf="queryTerm.type === 'LOCATION'" [locationTerm]="queryTerm"></app-map-query-term>
+    <app-qt-pose *ngIf="queryTerm.type==='SKELETON'" [poseTerm]="queryTerm"></app-qt-pose>
+  </div>
 
-    <div *ngIf="stagedQEnabled()">
-        <button (click)="onPushDownClicked()" mat-icon-button color="primary" aria-label="Use as a later filter">
-            <mat-icon>search</mat-icon>
-            <mat-icon>keyboard_arrow_down</mat-icon>
-        </button>
-    </div>
-    <hr *ngIf="!lastInStage" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
+  <div>
+    <button (click)="onPushDownClicked()" mat-icon-button color="primary" aria-label="Use as a later filter">
+      <mat-icon>search</mat-icon>
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
+  </div>
+  <hr *ngIf="!lastInStage" class="fade" style="margin-bottom: 20px; margin-top: 10px;">
 </div>

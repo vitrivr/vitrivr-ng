@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs';
-import {first} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 import {MiscService} from '../../../../openapi/cineast';
 
 /**
@@ -24,9 +24,9 @@ export class DistinctElementLookupService {
     if (this.cache[table + column]) {
       return new BehaviorSubject(this.cache[table + column])
     }
-    return this._miscService.findDistinctElementsByColumn({table: table, column: column}).pipe(first()).map(res => {
+    return this._miscService.findDistinctElementsByColumn({table: table, column: column}).pipe(first(), map(res => {
       this.cache[table + column] = res.distinctElements;
       return res.distinctElements
-    });
+    }));
   }
 }

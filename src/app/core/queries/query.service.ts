@@ -31,8 +31,9 @@ import {EventBusService} from '../basics/event-bus.service';
 import {AppConfig} from '../../app.config';
 import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult} from '../../../../openapi/cineast';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
-import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
+import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
+import {ReadableTemporalQueryConfig} from '../../shared/model/messages/queries/readable-temporal-query-config.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -127,7 +128,11 @@ export class QueryService {
       console.warn('There is already a query running');
     }
     this._config.configAsObservable.pipe(first()).subscribe(config => {
-      const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)), new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')));
+      const query = new TemporalQuery(
+        containers.map(container => new StagedSimilarityQuery(container.stages, null)),
+        new ReadableTemporalQueryConfig(null, config.get<Hint[]>('query.config.hints'),
+        null, -1),
+        config.metadataAccessSpec);
       this._socket.next(query)
     });
 
@@ -194,11 +199,13 @@ export class QueryService {
     if (this._running > 0) {
       console.warn('There is already a query running');
     }
-    this._config.configAsObservable.pipe(first()).subscribe(config => {
-      const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
-        new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), timeDistances, maxLength);
-      this._socket.next(query)
-    });
+    const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
+      new ReadableTemporalQueryConfig(null,
+        this._config.config.get<Hint[]>('query.config.hints'),
+        timeDistances,
+        maxLength),
+      this._config.config.metadataAccessSpec);
+    this._socket.next(query)
 
     /** Log Interaction */
     const _components: InteractionEventComponent[] = []
@@ -279,26 +286,20 @@ export class QueryService {
     context.set('q:value', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.MLT, context)))
 
-    /* Use categories from last query AND the default categories for MLT. */
-    this._config.configAsObservable.pipe(first()).subscribe(config => {
-      if (!config) {
-        console.log('config undefined, cannot perform mlt');
-        return;
-      }
-      const _cat = config.get<FeatureCategories[]>(`mlt.${mediaType}`);
-      if (!_cat) {
-        console.log('no mlt categories available. printing first config, then segment');
-        console.log(config);
-        console.log(segment);
-        return;
-      }
-      _cat
+    const config = this._config.config
+    const _cat = config.get<FeatureCategories[]>(`mlt.${mediaType}`);
+    if (!_cat) {
+      console.log('no mlt categories available. printing first config, then segment');
+      console.log(config);
+      console.log(segment);
+      return;
+    }
+    _cat
       .filter(c => categories.indexOf(c) === -1)
       .forEach(c => categories.push(c));
-      if (categories.length > 0) {
-        this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints'))));
-      }
-    });
+    if (categories.length > 0) {
+      this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), config.metadataAccessSpec));
+    }
 
     return true;
   }
@@ -325,7 +326,8 @@ export class QueryService {
       console.log('no socket, not looking up neighboring segments');
       return false;
     }
-    this._socket.next(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count));
+
+    this._socket.next(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count, this._config.config.metadataAccessSpec));
     return true;
   }
 
@@ -345,7 +347,7 @@ export class QueryService {
     if (!this._socket) {
       return false;
     }
-    this._socket.next(new SegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId)));
+    this._socket.next(new SegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), this._config.config.metadataAccessSpec));
     return true;
   }
 

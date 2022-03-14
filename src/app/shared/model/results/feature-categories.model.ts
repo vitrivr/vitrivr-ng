@@ -3,7 +3,6 @@ export type FeatureCategories =
   'globalcolor' |
   'localcolor' |
   'edge' |
-  'motion' |
   'quantized' |
   'localfeatures' |
   'localfeatures_fast' |

@@ -5,6 +5,7 @@ import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment
 import {ResolverService} from '../core/basics/resolver.service';
 import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
 import * as openseadragon from 'openseadragon';
+import {ConfigService} from '../core/basics/config.service';
 
 @Component({
 
@@ -26,6 +27,11 @@ export class QuickViewerComponent implements AfterViewInit {
   @ViewChild('imageviewer')
   private imageviewer: any;
 
+  /** SegmentScoreContainer that is currently in focus. */
+  public _segment: MediaSegmentScoreContainer;
+
+  public mediaobject: MediaObjectScoreContainer;
+
   /**
    *
    * @param data The MediaObjectScoreContainer or SegmentScoreContainer that should be displayed.
@@ -40,41 +46,14 @@ export class QuickViewerComponent implements AfterViewInit {
     } else {
       throw new Error('You must either provide a MediaObjectScoreContainer or a SegmentScoreContainer to an instance von QuickViewerComponent!');
     }
-  }
-
-  /** SegmentScoreContainer that is currently in focus. */
-  public _segment: MediaSegmentScoreContainer;
-
-  /**
-   * Getter for SegmentScoreContainer.
-   *
-   * @return {MediaSegmentScoreContainer}
-   */
-  get segment(): MediaSegmentScoreContainer {
-    return this._segment;
-  }
-
-  /**
-   * Getter for SegmentScoreContainer.
-   *
-   * @return {MediaSegmentScoreContainer}
-   */
-  get mediaobject(): MediaObjectScoreContainer {
-    return this._segment.objectScoreContainer;
-  }
-
-  /**
-   * Returns the URL of the IIIF Image API resource's info.json file
-   */
-  get iiifResourceUrl(): string {
-    return this._resolver.iiifUrlToObject(this.mediaobject, true);
+    this.mediaobject = this._segment.objectScoreContainer
   }
 
   /**
    * Initialize the openseadragon viewer to load the IIIF Image API resource if applicable
    */
   ngAfterViewInit(): void {
-    let url = this.iiifResourceUrl
+    let url = ResolverService.iiifUrlToObject(this.mediaobject, true);
     if (!url) {
       return null
     } else {
@@ -86,7 +65,7 @@ export class QuickViewerComponent implements AfterViewInit {
         showNavigator: true,
         visibilityRatio: 1,
         // Initial rotation angle
-        degrees: parseFloat(this.mediaobject.metadata.get('IIIF.rotation')) || 0,
+        degrees: parseFloat(this.mediaobject._metadata.get('IIIF.rotation')) || 0,
         // Show rotation buttons
         showRotationControl: true,
         minZoomLevel: 1,
@@ -101,6 +80,6 @@ export class QuickViewerComponent implements AfterViewInit {
    * Submits the current image to the VBS/LSC endpoint.
    */
   public onSubmitPressed() {
-    this._vbs.submitSegment(this.segment);
+    this._vbs.submitSegment(this._segment);
   }
 }

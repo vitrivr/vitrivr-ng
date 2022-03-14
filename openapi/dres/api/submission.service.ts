@@ -49,6 +49,7 @@ export class SubmissionService {
     }
 
 
+
     private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
         if (typeof value === "object" && value instanceof Date === false) {
             httpParams = this.addToHttpParamsRecursive(httpParams, value);
@@ -96,10 +97,10 @@ export class SubmissionService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getSubmit(collection?: string, item?: string, frame?: number, shot?: number, timecode?: string, session?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<SuccessfulSubmissionsStatus>;
-    public getSubmit(collection?: string, item?: string, frame?: number, shot?: number, timecode?: string, session?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<SuccessfulSubmissionsStatus>>;
-    public getSubmit(collection?: string, item?: string, frame?: number, shot?: number, timecode?: string, session?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<SuccessfulSubmissionsStatus>>;
-    public getSubmit(collection?: string, item?: string, frame?: number, shot?: number, timecode?: string, session?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public getApiV1Submit(collection?: string, item?: string, frame?: number, shot?: number, timecode?: string, session?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<SuccessfulSubmissionsStatus>;
+    public getApiV1Submit(collection?: string, item?: string, frame?: number, shot?: number, timecode?: string, session?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<SuccessfulSubmissionsStatus>>;
+    public getApiV1Submit(collection?: string, item?: string, frame?: number, shot?: number, timecode?: string, session?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<SuccessfulSubmissionsStatus>>;
+    public getApiV1Submit(collection?: string, item?: string, frame?: number, shot?: number, timecode?: string, session?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (collection !== undefined && collection !== null) {
@@ -147,7 +148,7 @@ export class SubmissionService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<SuccessfulSubmissionsStatus>(`${this.configuration.basePath}/submit`,
+        return this.httpClient.get<SuccessfulSubmissionsStatus>(`${this.configuration.basePath}/api/v1/submit`,
             {
                 params: queryParameters,
                 responseType: <any>responseType,

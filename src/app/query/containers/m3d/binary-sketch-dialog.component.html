@@ -1,12 +1,12 @@
 <mat-toolbar color="primary">
   <span (click)="onColorChange('#FFFFFF')" [style.background-color]="'#FFFFFF'" [style.border-color]="'red'"
-        [style.border-style]="color == '#FFFFFF' ? 'solid' : 'none'" [style.height]="'15px'"
+        [style.border-style]="color === '#FFFFFF' ? 'solid' : 'none'" [style.height]="'15px'"
         [style.width]="'15px'"></span>
 
     <span class="spacer-tiny"></span>
 
     <span (click)="onColorChange('#000000')" [style.background-color]="'#000000'" [style.border-color]="'red'"
-          [style.border-style]="color == '#000000' ? 'solid' : 'none'" [style.height]="'15px'"
+          [style.border-style]="color === '#000000' ? 'solid' : 'none'" [style.height]="'15px'"
           [style.width]="'15px'"></span>
 
     <span class="spacer-tiny"></span>

@@ -2256,12 +2256,6 @@ hr.fade {
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
 }
 
-/** Default evaluation card. */
-.evaluation-card {
-    width: 400px;
-    margin: 5% auto;
-}
-
 .color-picker {
     position: relative !important;
     top: 0 !important;

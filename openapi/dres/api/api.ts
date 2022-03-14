@@ -1,5 +1,7 @@
 export * from './clientRunInfo.service';
 import { ClientRunInfoService } from './clientRunInfo.service';
+export * from './download.service';
+import { DownloadService } from './download.service';
 export * from './log.service';
 import { LogService } from './log.service';
 export * from './status.service';
@@ -8,4 +10,4 @@ export * from './submission.service';
 import { SubmissionService } from './submission.service';
 export * from './user.service';
 import { UserService } from './user.service';
-export const APIS = [ClientRunInfoService, LogService, StatusService, SubmissionService, UserService];
+export const APIS = [ClientRunInfoService, DownloadService, LogService, StatusService, SubmissionService, UserService];

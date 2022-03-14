@@ -48,6 +48,7 @@ export class StatusService {
     }
 
 
+
     private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
         if (typeof value === "object" && value instanceof Date === false) {
             httpParams = this.addToHttpParamsRecursive(httpParams, value);
@@ -89,10 +90,10 @@ export class StatusService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApiStatusTime(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<CurrentTime>;
-    public getApiStatusTime(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<CurrentTime>>;
-    public getApiStatusTime(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<CurrentTime>>;
-    public getApiStatusTime(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public getApiV1StatusTime(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<CurrentTime>;
+    public getApiV1StatusTime(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<CurrentTime>>;
+    public getApiV1StatusTime(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<CurrentTime>>;
+    public getApiV1StatusTime(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -114,7 +115,7 @@ export class StatusService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<CurrentTime>(`${this.configuration.basePath}/api/status/time`,
+        return this.httpClient.get<CurrentTime>(`${this.configuration.basePath}/api/v1/status/time`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

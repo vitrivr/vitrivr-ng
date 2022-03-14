@@ -1,11 +1,11 @@
-<div *ngIf="loading |async">
+<div *ngIf="_loading">
     <mat-progress-bar mode="buffer"></mat-progress-bar>
 </div>
 
-<div *ngIf="(mediaobject|async) as obj" style="padding:10px;">
+<div *ngIf="_mediaObject as obj" style="padding:10px;">
     <app-objectviewer #objectviewerComponent [mediaobject]="obj"></app-objectviewer>
 
-    <div *ngIf="(obj.segmentsObservable |async) as segments">
+    <div *ngIf="_mediaObject._segmentsObservable |async as segments">
 
         <mat-tab-group>
             <mat-tab label="Segments ({{segments.length}})">
@@ -14,22 +14,22 @@
                          *ngFor="let segment of (segments | orderBy:orderType)" class="tile"
                          draggable="true" fxFlex="200px">
                         <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
-                            <p [style.margin]="'0'">{{segment.segmentId}} ({{segment.scorePercentage}}&#37;)</p>
+                            <p [style.margin]="'0'">{{segment.segmentId}} ({{segment._score | ScorePercentagePipe}}&#37;)</p>
                             <p *ngIf="segment.endabs > 0" [style.margin]="'0'">{{segment.startabs.toFixed(2)}}
                                 - {{segment.endabs.toFixed(2)}}</p>
                         </div>
 
                         <img class="tile-body" height="200px"
-                             src="{{_resolver.pathToThumbnail(segment.objectScoreContainer,segment, 200, null)}}"
+                             src="{{this.segment._objectScoreContainer| ThumbnailPathPipe: this.segment:200: null}}"
                              width="200px">
 
                         <div class="tile-footer" fxLayout="row-reverse">
-                            <button (click)="onSubmitPressed(segment)" *ngIf="(showVbsSubmitButton|async)"
+                            <button (click)="onSubmitPressed(segment)" *ngIf="_showSubmitButton"
                                     mat-icon-button matTooltip="Submit segment to VBS API.">
                                 <mat-icon>send</mat-icon>
                             </button>
                             <button (click)="onPlayClick(segment)"
-                                    *ngIf="(mediaobject|async).mediatype == 'VIDEO' || (mediaobject|async).mediatype == 'AUDIO'"
+                                    *ngIf="obj.mediatype === 'VIDEO' || obj.mediatype === 'AUDIO'"
                                     mat-icon-button matTooltip="Start playback">
                                 <mat-icon>play_arrow</mat-icon>
                             </button>
@@ -57,14 +57,14 @@
             </mat-tab>
 
 
-            <mat-tab label="Object Metadata ({{(mediaobject|async).metadata.size}})">
-                <div *ngIf="(mediaobject| async).metadata.size == 0" style="padding-top:10px">
-                    No object metadata available for {{(mediaobject|async).objectId}}
+            <mat-tab label="Object Metadata ({{obj._metadata.size}})">
+                <div *ngIf="obj._metadata.size == 0" style="padding-top:10px">
+                    No object metadata available for {{obj.objectId}}
                 </div>
                 <mat-list>
-                    <mat-list-item *ngFor="let metadatum of (mediaobject|async).metadata | keyvalue">
+                    <mat-list-item *ngFor="let metadatum of obj._metadata | keyvalue">
                         <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
-                        <p [innerHTML]="textWithLink(metadatum.value)" mat-line style="white-space: pre-wrap;"></p>
+                        <p [innerHTML]="metadatum.value | TextWithLinkPipe" mat-line style="white-space: pre-wrap;"></p>
                     </mat-list-item>
                 </mat-list>
             </mat-tab>

@@ -1,19 +1,19 @@
 import {Component, OnInit} from '@angular/core';
+import {ConfigService} from '../../core/basics/config.service';
+import {AppConfig} from '../../app.config';
 
 @Component({
-  // tslint:disable-next-line:component-selector
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'app-temporal-distance',
   templateUrl: './temporal-distance.component.html',
   styleUrls: ['./temporal-distance.component.css']
 })
-export class TemporalDistanceComponent implements OnInit {
+export class TemporalDistanceComponent {
 
   time = 10; // seconds
 
-  constructor() {
-  }
-
-  ngOnInit() {
+  constructor(private _configService: AppConfig) {
+    _configService.configAsObservable.subscribe(c => this.time = c._config.query.default_temporal_distance)
   }
 
   public getTemporalDistanceFromUser(): number {

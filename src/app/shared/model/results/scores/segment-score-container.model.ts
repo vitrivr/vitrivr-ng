@@ -37,7 +37,7 @@ export class MediaSegmentScoreContainer extends ScoreContainer implements MediaS
    * @param {MediaSegment} _mediaSegment Reference to the MediaSegment this container has been created for.
    * @param {MediaObjectScoreContainer} _objectScoreContainer Reference to the MediaObjectScoreContainer that contains this SegmentScoreContainer.
    */
-  public constructor(private readonly _mediaSegment: MediaSegmentDescriptor, private readonly _objectScoreContainer: MediaObjectScoreContainer) {
+  public constructor(private readonly _mediaSegment: MediaSegmentDescriptor, readonly _objectScoreContainer: MediaObjectScoreContainer) {
     super();
 
     /* Make a logic check: objectId of MediaSegment must match that of the MediaObjectScoreContainer. */
@@ -91,10 +91,6 @@ export class MediaSegmentScoreContainer extends ScoreContainer implements MediaS
     return map;
   }
 
-  /**
-   *
-   * @return {MediaObjectScoreContainer}
-   */
   get objectScoreContainer(): MediaObjectScoreContainer {
     return this._objectScoreContainer;
   }

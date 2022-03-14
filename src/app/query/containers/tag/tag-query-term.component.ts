@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {TagQueryTerm} from '../../../shared/model/queries/tag-query-term.model';
 import {FormControl} from '@angular/forms';
 import {EMPTY, Observable} from 'rxjs';
@@ -7,6 +7,8 @@ import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Tag, TagService} from '../../../../../openapi/cineast';
 import PriorityEnum = Tag.PriorityEnum;
+import {AppConfig} from '../../../app.config';
+import {MatMenu} from '@angular/material/menu';
 
 @Component({
   selector: 'app-qt-tag',
@@ -20,11 +22,13 @@ export class TagQueryTermComponent implements OnInit {
   private tagTerm: TagQueryTerm;
 
   /** List of tag fields currently displayed. */
-  private readonly _field: FieldGroup;
+  readonly _field: FieldGroup;
   /** List of tag fields currently displayed. */
-  private _tags: Tag[] = [];
+  _tags: Tag[] = [];
 
-  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar) {
+  @ViewChild(MatMenu, {static: true}) menu: MatMenu;
+
+  constructor(_tagService: TagService, private _matsnackbar: MatSnackBar, public config: AppConfig) {
     this._field = new FieldGroup(_tagService);
   }
 
@@ -32,14 +36,6 @@ export class TagQueryTermComponent implements OnInit {
     if (this.tagTerm.data) {
       this._tags = this.tagTerm.tags;
     }
-  }
-
-  get tags() {
-    return this._tags;
-  }
-
-  get field() {
-    return this._field;
   }
 
   /**
@@ -57,7 +53,7 @@ export class TagQueryTermComponent implements OnInit {
     if (!tagAlreadyInList) {
       this.addTag(event.option.value);
     } else {
-      this.field.formControl.setValue('');
+      this._field.formControl.setValue('');
       this._matsnackbar.open(`Tag ${event.option.value.name} (${event.option.value.id}) already added`, null, {
         duration: 2000,
       });
@@ -74,7 +70,7 @@ export class TagQueryTermComponent implements OnInit {
       tag.priority = PriorityEnum.REQUEST
     }
     this._tags.push(tag);
-    this.field.formControl.setValue('');
+    this._field.formControl.setValue('');
     this.tagTerm.tags = this._tags;
     this.tagTerm.data = 'data:application/json;base64,' + btoa(JSON.stringify(this._tags.map(v => {
       return v;
@@ -118,10 +114,6 @@ export class TagQueryTermComponent implements OnInit {
     this.sortTagsByPreference();
   }
 
-  tagHasPriority(tag): boolean {
-    return tag.priority != null;
-  }
-
 
   private sortTagsByPreference(): void {
     const sort = this._tags.sort(function (a, b) {
@@ -151,7 +143,7 @@ export class FieldGroup {
       startWith(''),
       map((tag: string) => {
         if (tag.length >= 3) {
-          return this._tags.findTagsBy('matchingname', tag).pipe(first()).map(res => res.tags);
+          return this._tags.findTagsBy('matchingname', tag).pipe(first(), map(res => res.tags));
         } else {
           return EMPTY;
         }

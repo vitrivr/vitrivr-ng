@@ -9,17 +9,13 @@
   "competition": {
     "host": "",
     "tls": true,
-    "log": true,
+    "log": false,
     "lsc": false,
     "vbs": false
   },
   "mlt": {
-    "VIDEO": [
-      "objectInstances"
-    ],
-    "IMAGE": [
-      "objectInstances"
-    ]
+    "VIDEO": ["visualtextcoembedding"],
+    "IMAGE": ["visualtextcoembedding"]
   },
   "query": {
     "history": 0,
@@ -27,7 +23,6 @@
       "image": true,
       "audio": false,
       "model3d": false,
-      "motion": false,
       "text": true,
       "tag": true,
       "semantic": true,
@@ -36,21 +31,38 @@
     },
     "text": {
       "categories": [
-        [
-          "ocr",
-          "Text on Screen"
-        ],
-        [
-          "asr",
-          "Audio"
-        ],
-        [
-          "visualtextcoembedding",
-          "Text Embedding"
-        ]
+        ["visualtextcoembedding", "Text Co-Embedding"]
       ]
     },
-    "staged": true
+    "boolean": [
+      [
+        "Example Freetext",
+        "TEXT",
+        "table_name.text"
+      ],
+      [
+        "Example Dropdown",
+        "OPTIONS",
+        "table_name.option",
+        "ONE",
+        "TWO",
+        "THREE"
+      ],
+      [
+        "Example Range",
+        "RANGE",
+        "table_name.range",
+        5,
+        20
+      ],
+      [
+        "Example Dynamic Options",
+        "DYNAMICOPTIONS",
+        "table_name.option",
+        "table_name",
+        "option"
+      ]
+    ]
   },
   "refinement": {
     "filters": [

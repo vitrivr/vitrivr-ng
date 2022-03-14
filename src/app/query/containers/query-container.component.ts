@@ -1,7 +1,6 @@
-import {Component, Input, QueryList, ViewChildren} from '@angular/core';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, QueryList, ViewChildren} from '@angular/core';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
 import {Config} from '../../shared/model/config/config.model';
-import {Observable} from 'rxjs';
 import {TemporalDistanceComponent} from '../temporal-distance/temporal-distance.component';
 import {AppConfig} from '../../app.config';
 import {QueryTerm} from '../../../../openapi/cineast';
@@ -10,10 +9,14 @@ import {TemporalMode} from '../../settings/preferences/temporal-mode-container.m
 @Component({
   selector: 'app-query-container',
   templateUrl: 'query-container.component.html',
-  styleUrls: ['./query-container.component.css']
+  styleUrls: ['./query-container.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class QueryContainerComponent {
+/**
+ * A QueryContainerComponent contains a single QueryContainerInterface, which is transformed to a StagedSimilarityQuery when making a search request to Cineast.
+ */
+export class QueryContainerComponent implements AfterContentInit {
   /** The StagedQueryContainer this QueryContainerComponent is associated to. */
   @Input() containerModel: QueryContainerInterface;
 
@@ -23,42 +26,29 @@ export class QueryContainerComponent {
   /** A reference to the temporal mode (To transfer information from it to the other containers) */
   @Input() mode: TemporalMode;
 
+  @Input() listReOrder: EventEmitter<any>;
+
   /** Temporal Distance components to retrieve the temporal distance input provided by the user */
   @ViewChildren(TemporalDistanceComponent) temporalDistances: QueryList<TemporalDistanceComponent>;
 
-  /** A reference to the observable Config exposed by ConfigService. */
-  private readonly _config: Observable<Config>;
+  _config: Config
 
-  /**
-   * Constructor; injects ConfigService
-   *
-   * @param {AppConfig} _configService
-   */
-  constructor(_configService: AppConfig) {
-    this._config = _configService.configAsObservable;
-  }
+  /** Used to re-run rendering when components get added or deleted*/
+  trigger = false
 
-  /**
-   * Getter for config.
-   *
-   * @return {Config}
-   */
-  get config(): Observable<Config> {
-    return this._config;
-  }
+  queryOptionsImage = ((c: Config) => c._config.query.options.image)
+  queryOptionsAudio = ((c: Config) => c._config.query.options.audio)
+  queryOptions3D = ((c: Config) => c._config.query.options.model3d)
+  queryOptionsText = ((c: Config) => c._config.query.options.text)
+  queryOptionsTag = ((c: Config) => c._config.query.options.tag)
+  queryOptionsSemantic = ((c: Config) => c._config.query.options.semantic)
+  queryOptionsBoolean = ((c: Config) => c._config.query.options.boolean)
+  queryOptionsMap = ((c: Config) => c._config.query.options.map)
+  isNotFirst: boolean;
+  isNotLast: boolean;
 
-  /**
-   * Returns true if this container is no the first one
-   */
-  get isNotFirst(): boolean {
-    return this.index > 0;
-  }
-
-  /**
-   * Returns true if this container is not the last one
-   */
-  get isNotLast(): boolean {
-    return this.index > -1 && this.index < this.inList.length - 1;
+  constructor(_configService: AppConfig, private ref: ChangeDetectorRef) {
+    _configService.configAsObservable.subscribe(c => this._config = c)
   }
 
   private get index(): number {
@@ -74,6 +64,12 @@ export class QueryContainerComponent {
     if (index > -1) {
       this.inList.splice(index, 1)
     }
+    this.listReOrder.emit()
+    this.triggerRedraw()
+  }
+
+  private triggerRedraw() {
+    this.trigger = !this.trigger
   }
 
   public onToggleButtonClicked(type: QueryTerm.TypeEnum) {
@@ -82,27 +78,34 @@ export class QueryContainerComponent {
     } else {
       this.containerModel.addTerm(type);
     }
+    this.triggerRedraw()
   }
 
   /**
    * Handler to move this query container one up (in the list of query containers)
    */
-  public moveQueryContainerUp() {
+  public onMoveQueryContainerUpButtonClicked() {
     if (this.isNotFirst) {
       const index = this.index;
       const container = this.inList[index - 1];
       this.inList[index - 1] = this.containerModel;
       this.inList[index] = container;
+      this.listReOrder.emit()
+      this.updateFirstLast()
     }
+    this.ref.detectChanges();
   }
 
-  public moveQueryContainerDown() {
+  public onMoveQueryContainerDownButtonClicked() {
     if (this.isNotLast) {
       const index = this.index;
       const container = this.inList[index + 1];
       this.inList[index + 1] = this.containerModel;
       this.inList[index] = container;
+      this.listReOrder.emit()
+      this.updateFirstLast()
     }
+    this.ref.detectChanges();
   }
 
   /** Change the temporal mode to the one selected */
@@ -110,8 +113,17 @@ export class QueryContainerComponent {
     this.mode = mode;
   }
 
-  /** Tests whether or not to display distance to previous container */
-  get isTimeDistance(): boolean {
-    return this.mode === 'TEMPORAL_DISTANCE' && this.isNotFirst;
+  ngAfterContentInit(): void {
+    this.listReOrder.subscribe(e => {
+      this.updateFirstLast()
+      this.ref.markForCheck()
+    })
+    this.updateFirstLast()
   }
+
+  private updateFirstLast() {
+    this.isNotFirst = this.index > 0;
+    this.isNotLast = this.index > -1 && this.index < this.inList.length - 1;
+  }
+
 }

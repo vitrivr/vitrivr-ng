@@ -24,15 +24,6 @@ export class SegmentFeaturesComponent {
   constructor(private _eventBusService: EventBusService, private _metaService: MetadataService, private _tagService: TagService) {
   }
 
-  public sortAlphabetically(tagsArray: Tag[]): Tag[] {
-    tagsArray.sort(function (a, b) {
-      const textA = a.name.toLowerCase();
-      const textB = b.name.toLowerCase();
-      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-    });
-    return tagsArray;
-  }
-
   public onLoadFeaturesButtonClicked(segment: MediaSegmentDescriptor) {
     this._tags = [];
     this._captions = [];
