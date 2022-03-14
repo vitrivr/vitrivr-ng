@@ -19,7 +19,7 @@ export class DrawableJoint extends Two.Circle implements Joint {
    */
   constructor(x: number, y: number) {
     super();
-    this.radius = 5
+    this.radius = 6
     this.position = new Two.Anchor(x + this.radius / 2, y + this.radius / 2, 0, 0, 0, 0, Two.Commands.line)
     this.fill = '#00AEFF'
     this.stroke = '#00AEFF'

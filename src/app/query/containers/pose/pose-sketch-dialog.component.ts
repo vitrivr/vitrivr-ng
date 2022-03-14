@@ -2,9 +2,7 @@ import {AfterViewInit, Component, ElementRef, Inject, ViewChild} from '@angular/
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Skeleton, PoseQuery} from './pose-query.interface';
 import Two from 'two.js';
-import {Group} from 'two.js/src/group';
 import {Rectangle} from 'two.js/src/shapes/rectangle';
-import {Anchor} from 'two.js/src/anchor';
 import {DrawableSkeleton} from './model/drawableSkeleton';
 import {DrawableJoint} from './model/drawableJoint';
 import {Vector} from 'two.js/src/vector';
@@ -151,7 +149,7 @@ export class PoseSketchDialogComponent implements AfterViewInit {
    */
   public onMouseMove(event: MouseEvent) {
     /* Update mouse position. */
-    const radiusScared = 16;
+    const radiusSquared = 36;
     const delta = new Two.Vector(event.movementX, event.movementY)
     const mouse = new Two.Vector(event.offsetX, event.offsetY)
 
@@ -181,7 +179,7 @@ export class PoseSketchDialogComponent implements AfterViewInit {
       this.highlightedJoint = null
       for (const joint of drawableSkeleton.joints) {
         const d = joint.position.distanceToSquared(mouse)
-        if (d <= radiusScared) {
+        if (d <= radiusSquared) {
           this.highlightedJoint = joint;
           joint.hover = true;
           break

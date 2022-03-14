@@ -47,6 +47,7 @@ export class DrawableSkeleton extends Two.Group implements Skeleton {
     const elements = []
     for (const joint of joints) {
       const j = new DrawableJoint(joint.x * scalingFactor, joint.y * scalingFactor)
+      j.disable = joint.disable;
       drawableJoints.push(j)
       elements.push(j);
     }
