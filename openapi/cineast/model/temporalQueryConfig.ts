@@ -9,12 +9,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { QueryConfig } from './queryConfig';
 
 
-export interface QueryConfig { 
+export interface TemporalQueryConfig { 
     queryId?: string;
-    hints?: Set<QueryConfig.HintsEnum>;
-    distance?: QueryConfig.DistanceEnum;
+    hints?: Set<TemporalQueryConfig.HintsEnum>;
+    timeDistances?: Array<number>;
+    maxLength?: number;
+    computeTemporalObjects?: boolean;
+    distance?: TemporalQueryConfig.DistanceEnum;
     distanceWeights?: Array<number>;
     norm?: number;
     resultsPerModule?: number;
@@ -27,7 +31,7 @@ export interface QueryConfig {
     correspondenceFunctionIfEmpty?: QueryConfig;
     rawResultsPerModule?: number;
 }
-export namespace QueryConfig {
+export namespace TemporalQueryConfig {
     export type HintsEnum = 'exact' | 'inexact' | 'lsh' | 'ecp' | 'mi' | 'pq' | 'sh' | 'va' | 'vaf' | 'vav' | 'sequential' | 'empirical';
     export const HintsEnum = {
         Exact: 'exact' as HintsEnum,

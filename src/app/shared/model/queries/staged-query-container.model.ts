@@ -36,31 +36,31 @@ export class StagedQueryContainer implements QueryContainerInterface {
       return false;
     }
     switch (type) {
-      case QueryTerm.TypeEnum.IMAGE:
+      case QueryTerm.TypeEnum.Image:
         this._cache.set(type, new ImageQueryTerm());
         break;
-      case QueryTerm.TypeEnum.AUDIO:
+      case QueryTerm.TypeEnum.Audio:
         this._cache.set(type, new AudioQueryTerm());
         break;
-      case QueryTerm.TypeEnum.MODEL3D:
+      case QueryTerm.TypeEnum.Model3D:
         this._cache.set(type, new M3DQueryTerm());
         break;
-      case QueryTerm.TypeEnum.TEXT:
+      case QueryTerm.TypeEnum.Text:
         this._cache.set(type, new TextQueryTerm());
         break;
-      case QueryTerm.TypeEnum.TAG:
+      case QueryTerm.TypeEnum.Tag:
         this._cache.set(type, new TagQueryTerm());
         break;
-      case QueryTerm.TypeEnum.SEMANTIC:
+      case QueryTerm.TypeEnum.Semantic:
         this._cache.set(type, new SemanticQueryTerm());
         break;
-      case QueryTerm.TypeEnum.BOOLEAN:
+      case QueryTerm.TypeEnum.Boolean:
         this._cache.set(type, new BoolQueryTerm());
         break;
-      case QueryTerm.TypeEnum.LOCATION:
+      case QueryTerm.TypeEnum.Location:
         this._cache.set(type, new LocationQueryTerm());
         break;
-      case QueryTerm.TypeEnum.SKELETON:
+      case QueryTerm.TypeEnum.Skeleton:
         this._cache.set(type, new SkeletonPoseQueryTerm());
         break;
       default:

@@ -22,23 +22,23 @@ export interface SimilarityQueryResult {
 export namespace SimilarityQueryResult {
     export type MessageTypeEnum = 'PING' | 'Q_SIM' | 'Q_MLT' | 'Q_NESEG' | 'Q_SEG' | 'M_LOOKUP' | 'Q_TEMPORAL' | 'SESSION_START' | 'QR_START' | 'QR_END' | 'QR_ERROR' | 'QR_OBJECT' | 'QR_METADATA_O' | 'QR_METADATA_S' | 'QR_SEGMENT' | 'QR_SIMILARITY' | 'QR_TEMPORAL';
     export const MessageTypeEnum = {
-        PING: 'PING' as MessageTypeEnum,
-        QSIM: 'Q_SIM' as MessageTypeEnum,
-        QMLT: 'Q_MLT' as MessageTypeEnum,
-        QNESEG: 'Q_NESEG' as MessageTypeEnum,
-        QSEG: 'Q_SEG' as MessageTypeEnum,
-        MLOOKUP: 'M_LOOKUP' as MessageTypeEnum,
-        QTEMPORAL: 'Q_TEMPORAL' as MessageTypeEnum,
-        SESSIONSTART: 'SESSION_START' as MessageTypeEnum,
-        QRSTART: 'QR_START' as MessageTypeEnum,
-        QREND: 'QR_END' as MessageTypeEnum,
-        QRERROR: 'QR_ERROR' as MessageTypeEnum,
-        QROBJECT: 'QR_OBJECT' as MessageTypeEnum,
-        QRMETADATAO: 'QR_METADATA_O' as MessageTypeEnum,
-        QRMETADATAS: 'QR_METADATA_S' as MessageTypeEnum,
-        QRSEGMENT: 'QR_SEGMENT' as MessageTypeEnum,
-        QRSIMILARITY: 'QR_SIMILARITY' as MessageTypeEnum,
-        QRTEMPORAL: 'QR_TEMPORAL' as MessageTypeEnum
+        Ping: 'PING' as MessageTypeEnum,
+        QSim: 'Q_SIM' as MessageTypeEnum,
+        QMlt: 'Q_MLT' as MessageTypeEnum,
+        QNeseg: 'Q_NESEG' as MessageTypeEnum,
+        QSeg: 'Q_SEG' as MessageTypeEnum,
+        MLookup: 'M_LOOKUP' as MessageTypeEnum,
+        QTemporal: 'Q_TEMPORAL' as MessageTypeEnum,
+        SessionStart: 'SESSION_START' as MessageTypeEnum,
+        QrStart: 'QR_START' as MessageTypeEnum,
+        QrEnd: 'QR_END' as MessageTypeEnum,
+        QrError: 'QR_ERROR' as MessageTypeEnum,
+        QrObject: 'QR_OBJECT' as MessageTypeEnum,
+        QrMetadataO: 'QR_METADATA_O' as MessageTypeEnum,
+        QrMetadataS: 'QR_METADATA_S' as MessageTypeEnum,
+        QrSegment: 'QR_SEGMENT' as MessageTypeEnum,
+        QrSimilarity: 'QR_SIMILARITY' as MessageTypeEnum,
+        QrTemporal: 'QR_TEMPORAL' as MessageTypeEnum
     };
 }
 

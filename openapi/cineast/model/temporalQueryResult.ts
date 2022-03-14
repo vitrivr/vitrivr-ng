@@ -9,15 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MediaObjectDescriptor } from './mediaObjectDescriptor';
+import { TemporalObject } from './temporalObject';
 
 
-export interface MediaObjectQueryResult { 
-    content?: Array<MediaObjectDescriptor>;
+export interface TemporalQueryResult { 
+    content?: Array<TemporalObject>;
     queryId?: string;
-    messageType?: MediaObjectQueryResult.MessageTypeEnum;
+    messageType?: TemporalQueryResult.MessageTypeEnum;
 }
-export namespace MediaObjectQueryResult {
+export namespace TemporalQueryResult {
     export type MessageTypeEnum = 'PING' | 'Q_SIM' | 'Q_MLT' | 'Q_NESEG' | 'Q_SEG' | 'M_LOOKUP' | 'Q_TEMPORAL' | 'SESSION_START' | 'QR_START' | 'QR_END' | 'QR_ERROR' | 'QR_OBJECT' | 'QR_METADATA_O' | 'QR_METADATA_S' | 'QR_SEGMENT' | 'QR_SIMILARITY' | 'QR_TEMPORAL';
     export const MessageTypeEnum = {
         Ping: 'PING' as MessageTypeEnum,

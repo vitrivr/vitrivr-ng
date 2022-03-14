@@ -5,6 +5,6 @@ export class ImageQueryTerm extends AbstractQueryTerm {
   sliderSetting: number;
 
   constructor() {
-    super(QueryTerm.TypeEnum.IMAGE, [])
+    super(QueryTerm.TypeEnum.Image, [])
   }
 }

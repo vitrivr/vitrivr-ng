@@ -9,16 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { QueryConfig } from './queryConfig';
+import { QueryStage } from './queryStage';
 
 
-export interface MediaSegmentDescriptor { 
-    segmentId?: string;
-    objectId?: string;
-    start?: number;
-    end?: number;
-    startabs?: number;
-    endabs?: number;
-    count?: number;
-    sequenceNumber?: number;
+export interface StagedSimilarityQuery { 
+    stages: Array<QueryStage>;
+    config?: QueryConfig;
 }
 

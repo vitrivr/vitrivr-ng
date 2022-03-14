@@ -86,7 +86,8 @@ export class Config {
         tag: true,
         map: false,
         semantic: false,
-        boolean: true
+        boolean: true,
+        skeleton: true
       },
       metadata: {
         object: [

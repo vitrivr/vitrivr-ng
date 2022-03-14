@@ -9,16 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { QueryTerm } from './queryTerm';
 
 
-export interface MediaSegmentDescriptor { 
-    segmentId?: string;
-    objectId?: string;
-    start?: number;
-    end?: number;
-    startabs?: number;
-    endabs?: number;
-    count?: number;
-    sequenceNumber?: number;
+export interface QueryStage { 
+    terms: Array<QueryTerm>;
 }
 

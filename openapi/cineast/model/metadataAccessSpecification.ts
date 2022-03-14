@@ -11,14 +11,17 @@
  */
 
 
-export interface MediaSegmentDescriptor { 
-    segmentId?: string;
-    objectId?: string;
-    start?: number;
-    end?: number;
-    startabs?: number;
-    endabs?: number;
-    count?: number;
-    sequenceNumber?: number;
+export interface MetadataAccessSpecification { 
+    type?: MetadataAccessSpecification.TypeEnum;
+    domain?: string;
+    key?: string;
 }
+export namespace MetadataAccessSpecification {
+    export type TypeEnum = 'OBJECT' | 'SEGMENT';
+    export const TypeEnum = {
+        Object: 'OBJECT' as TypeEnum,
+        Segment: 'SEGMENT' as TypeEnum
+    };
+}
+
 

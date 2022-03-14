@@ -9,15 +9,21 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MediaObjectDescriptor } from './mediaObjectDescriptor';
+import { StagedSimilarityQuery } from './stagedSimilarityQuery';
+import { TemporalQueryConfig } from './temporalQueryConfig';
+import { MetadataAccessSpecification } from './metadataAccessSpecification';
 
 
-export interface MediaObjectQueryResult { 
-    content?: Array<MediaObjectDescriptor>;
-    queryId?: string;
-    messageType?: MediaObjectQueryResult.MessageTypeEnum;
+export interface TemporalQuery { 
+    queries: Array<StagedSimilarityQuery>;
+    config?: TemporalQueryConfig;
+    metadataAccessSpec?: Array<MetadataAccessSpecification>;
+    temporalQueryConfig?: TemporalQueryConfig;
+    maxLength?: number;
+    messageType?: TemporalQuery.MessageTypeEnum;
+    timeDistances?: Array<number>;
 }
-export namespace MediaObjectQueryResult {
+export namespace TemporalQuery {
     export type MessageTypeEnum = 'PING' | 'Q_SIM' | 'Q_MLT' | 'Q_NESEG' | 'Q_SEG' | 'M_LOOKUP' | 'Q_TEMPORAL' | 'SESSION_START' | 'QR_START' | 'QR_END' | 'QR_ERROR' | 'QR_OBJECT' | 'QR_METADATA_O' | 'QR_METADATA_S' | 'QR_SEGMENT' | 'QR_SIMILARITY' | 'QR_TEMPORAL';
     export const MessageTypeEnum = {
         Ping: 'PING' as MessageTypeEnum,

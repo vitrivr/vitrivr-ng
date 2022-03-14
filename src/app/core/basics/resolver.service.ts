@@ -46,15 +46,15 @@ export class ResolverService {
 
   public static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
     switch (mediatype) {
-      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
+      case MediaObjectDescriptor.MediatypeEnum.Audio:
         return 'a_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
+      case MediaObjectDescriptor.MediatypeEnum.Image:
         return 'i_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
+      case MediaObjectDescriptor.MediatypeEnum.ImageSequence:
         return 'is_';
-      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
+      case MediaObjectDescriptor.MediatypeEnum.Model3D:
         return 'm_';
-      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
+      case MediaObjectDescriptor.MediatypeEnum.Video:
         return 'v_';
       default:
         return '';

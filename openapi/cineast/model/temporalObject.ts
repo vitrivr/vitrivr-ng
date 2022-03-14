@@ -11,14 +11,9 @@
  */
 
 
-export interface MediaSegmentDescriptor { 
-    segmentId?: string;
+export interface TemporalObject { 
+    segments?: Array<string>;
     objectId?: string;
-    start?: number;
-    end?: number;
-    startabs?: number;
-    endabs?: number;
-    count?: number;
-    sequenceNumber?: number;
+    score?: number;
 }
 

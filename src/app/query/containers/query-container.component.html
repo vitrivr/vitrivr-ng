@@ -92,7 +92,7 @@
                 </mat-icon>
             </button>
 
-          <button (click)="onToggleButtonClicked('SKELETON')" *ngIf="(config|async).get('query.options.skeleton')" class="icon-button" matTooltip="Toggle skeleton pose query term">
+          <button (click)="onToggleButtonClicked('SKELETON')" *ngIf="_config|GetConfigVariablePipe:queryOptionsSkeleton" class="icon-button" matTooltip="Toggle skeleton pose query term">
             <mat-icon [attr.class]="containerModel.hasTerm('SKELETON') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
               accessibility_new
             </mat-icon>

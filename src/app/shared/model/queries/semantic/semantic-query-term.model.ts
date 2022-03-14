@@ -11,7 +11,7 @@ export class SemanticQueryTerm extends AbstractQueryTerm {
   private _map: SemanticCategory[] = [];
 
   constructor() {
-    super(QueryTerm.TypeEnum.SEMANTIC, ['semantic']);
+    super(QueryTerm.TypeEnum.Semantic, ['semantic']);
   }
 
   /**

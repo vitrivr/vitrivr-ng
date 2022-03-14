@@ -5,6 +5,6 @@ export class M3DQueryTerm extends AbstractQueryTerm {
   sliderSetting: number;
 
   constructor() {
-    super(QueryTerm.TypeEnum.MODEL3D, ['sphericalharmonicsdefault'])
+    super(QueryTerm.TypeEnum.Model3D, ['sphericalharmonicsdefault'])
   }
 }
