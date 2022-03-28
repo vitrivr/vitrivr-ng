@@ -24,7 +24,7 @@ jobs:
         run: npm i
       # install angular
       - name: Install angular
-        run: npm install --global @angular/cli@11
+        run: npm install --global @angular/cli@13
       # run build command
       - name: Build
         run: ng build --prod
