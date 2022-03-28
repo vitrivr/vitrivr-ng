@@ -39,7 +39,6 @@ export class QueryContainerComponent implements AfterContentInit {
   queryOptionsImage = ((c: Config) => c._config.query.options.image)
   queryOptionsAudio = ((c: Config) => c._config.query.options.audio)
   queryOptions3D = ((c: Config) => c._config.query.options.model3d)
-  queryOptionsMotion = ((c: Config) => c._config.query.options.motion)
   queryOptionsText = ((c: Config) => c._config.query.options.text)
   queryOptionsTag = ((c: Config) => c._config.query.options.tag)
   queryOptionsSemantic = ((c: Config) => c._config.query.options.semantic)

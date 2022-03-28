@@ -6,7 +6,6 @@ import {ImageQueryTermModule} from './images/image-query-term.module';
 import {AudioQueryTermModule} from './audio/audio-query-term.module';
 import {M3DQueryTermModule} from './m3d/m3d-query-term.module';
 import {MaterialModule} from '../../material.module';
-import {MotionQueryTermModule} from './motion/motion-query-term.module';
 import {TextQueryTermModule} from './text/text-query-term.module';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TagQueryTermModule} from './tag/tag-query-term.module';
@@ -25,7 +24,6 @@ import {PipesModule} from '../../shared/pipes/pipes.module';
     ImageQueryTermModule,
     AudioQueryTermModule,
     M3DQueryTermModule,
-    MotionQueryTermModule,
     TextQueryTermModule,
     TagQueryTermModule,
     SemanticQueryTermModule,

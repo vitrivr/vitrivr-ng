@@ -51,14 +51,6 @@
                 </mat-icon>
             </button>
 
-            <button (click)="onToggleButtonClicked('MOTION')" *ngIf="_config|GetConfigVariablePipe:queryOptionsMotion"
-                    class="icon-button" matTooltip="Toggle motion query term">
-                <mat-icon
-                        [attr.class]="(containerModel|ModelHasTermPipe: 'MOTION':trigger) ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
-                    directions_run
-                </mat-icon>
-            </button>
-
             <button (click)="onToggleButtonClicked('TEXT')" *ngIf="_config|GetConfigVariablePipe:queryOptionsText"
                     class="icon-button" matTooltip="Toggle text query term">
                 <mat-icon
