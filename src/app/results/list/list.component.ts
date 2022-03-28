@@ -12,7 +12,6 @@ import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {MatDialog} from '@angular/material/dialog';
-import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {AppConfig} from '../../app.config';
 
 @Component({

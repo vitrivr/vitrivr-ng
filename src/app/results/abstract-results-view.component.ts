@@ -170,44 +170,6 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
   }
 
-
-  /**
-   * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
-   *
-   * @param {MediaSegmentScoreContainer} segment The segment that was tagged.
-   * @param {Tag} tag The tag that should be toggled.
-   */
-  public onHighlightButtonClicked(segment: MediaSegmentScoreContainer, tag: Tag) {
-    this._selectionService.toggle(tag, segment.segmentId);
-
-    /* Emit a HIGHLIGHT event on the bus. */
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)))
-  }
-
-  /**
-   * Invoked when a user right clicks one of the 'Tag' buttons. Toggles all tags for the selected objects.
-   *
-   * @param {Event} event
-   * @param {MediaSegmentScoreContainer} segment The object that was tagged.
-   * @param {Tag} tag The tag that should be toggled.
-   */
-  public onHighlightButtonRightClicked(event: Event, segment: MediaSegmentScoreContainer, tag: Tag) {
-    const segments = segment.objectScoreContainer.segments.map(v => v.segmentId);
-    if (segments.length > 0) {
-      console.warn(`the following line of code will toggle multiple segments but the usage of an identifier is unclear.`);
-      this._selectionService.toggle(tag, ...segments);
-
-      /* Emit a HIGHLIGHT event on the bus. */
-      const context: Map<ContextKey, any> = new Map();
-      context.set('i:mediasegment', segments.join(','));
-      this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)));
-    }
-    event.preventDefault();
-  }
-
-
   /**
    * Whenever a tile is dragged the associated segment and the media object that tile represents is converted to JSON and added to the dataTransfer object of the drag event.
    *

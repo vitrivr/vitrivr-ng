@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {KeyboardService} from '../../core/basics/keyboard.service';
@@ -13,6 +13,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {QuickViewerComponent} from '../../objectdetails/quick-viewer.component';
 import {AppConfig} from '../../app.config';
 import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegments';
+import {Tag} from '../../core/selection/tag.model';
+import {SelectionService} from '../../core/selection/selection.service';
 
 /**
  * Dedicated component for the preview of a segment.
@@ -25,7 +27,7 @@ import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegm
   styleUrls: ['./result-segment-preview-tile.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ResultSegmentPreviewTileComponent {
+export class ResultSegmentPreviewTileComponent implements OnInit {
 
   @Input() mltEnabled = true;
 
@@ -56,13 +58,20 @@ export class ResultSegmentPreviewTileComponent {
    */
   _focus = false;
 
+  _tags: Tag[] = []
+
   constructor(readonly _keyboardService: KeyboardService,
               private _queryService: QueryService,
               private _eventBusService: EventBusService,
               public _vbs: VbsSubmissionService,
               private _dialog: MatDialog,
               public _resolver: ResolverService,
-              private _configService: AppConfig) {
+              private _configService: AppConfig,
+              private _selectionService: SelectionService) {
+  }
+
+  ngOnInit(): void {
+    this._tags = this._selectionService.getTags(this.segment.segmentId)
   }
 
   /**
@@ -94,6 +103,23 @@ export class ResultSegmentPreviewTileComponent {
   public onNeighborsButtonRightClicked(event: Event) {
     this._queryService.lookupNeighboringSegments(this.segment.segmentId, this._configService.config.get<number>('query.config.neighboringSegmentLookupAllCount'));
     event.preventDefault();
+  }
+
+  /**
+   * Invoked when a user clicks one of the 'Tag' buttons. Toggles the tag for the selected segment.
+   *
+   * @param {MediaSegmentScoreContainer} segment The segment that was tagged.
+   * @param {Tag} tag The tag that should be toggled.
+   */
+  public onHighlightButtonClicked(segment: MediaSegmentScoreContainer, tag: Tag) {
+    this._selectionService.toggle(tag, segment.segmentId);
+
+    this._tags = this._selectionService.getTags(segment.segmentId)
+
+    /* Emit a HIGHLIGHT event on the bus. */
+    const context: Map<ContextKey, any> = new Map();
+    context.set('i:mediasegment', segment.segmentId);
+    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)))
   }
 
   /**

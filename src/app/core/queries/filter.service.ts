@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MediaObjectScoreContainer} from '../../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {ColorLabel, ColorLabels} from '../../shared/model/misc/colorlabel.model';
 import {SelectionService} from '../selection/selection.service';
 import {Tag} from '../selection/tag.model';
@@ -21,8 +21,11 @@ export class FilterService {
   public _useOrForMetadataCategoriesFilter = false;
   _id: string;
 
-  /** An internal BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
+  /** A BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
   _segmentFilters: BehaviorSubject<((v: MediaSegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
+
+  /** A BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
+  _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
   /**
    * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects
@@ -57,9 +60,6 @@ export class FilterService {
 
   /** Threshold for score filtering. */
   private _threshold = 0.0;
-
-  /** An internal BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
-  _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
   constructor(private _selectionService: SelectionService) {
     Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._mediatypes.set(v, false));
@@ -239,7 +239,6 @@ export class FilterService {
       segmentFilters.push((seg) => {
         let andFilter = Boolean(true);
         let orFilter = Boolean(false);
-        let tagFilter = Boolean(false);
         // check whether the segment or the corresponding object has appropriate metadata
         this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
           if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer._metadata.get(mdKey))) {
@@ -255,15 +254,7 @@ export class FilterService {
           }
           andFilter = false;
         });
-        if (this._filterTags.size === 0) {
-          tagFilter = true;
-        }
-        this._filterTags.forEach(tag => {
-          if (this._selectionService.hasTag(seg.segmentId, tag)) {
-            tagFilter = true;
-          }
-        });
-        return this._useOrForMetadataCategoriesFilter ? orFilter && tagFilter : andFilter && tagFilter;
+        return this._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
       });
     }
 

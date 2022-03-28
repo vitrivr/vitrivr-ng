@@ -1,5 +1,5 @@
 <div (dragstart)="container.onTileDrag($event, segment, segment._objectScoreContainer)" (mouseenter)="focus = true"
-     (mouseleave)="focus = false" [style.background]="score | BackgroundScorePipe:segment:temporalObject" class="segment"
+     (mouseleave)="focus = false" [style.background]="score | BackgroundScorePipe:segment:_tags:temporalObject" class="segment"
      draggable="true"
      id="{{segment.segmentId}}">
     <img (click)="onTileClicked($event)"
@@ -8,8 +8,7 @@
 
 
     <div *ngIf="_focus" class="header" fxLayout="row" fxLayoutAlign="space-evenly">
-        <button (click)="container.onHighlightButtonClicked(segment,tag)"
-                (contextmenu)="container.onHighlightButtonRightClicked($event, segment,tag)"
+        <button (click)="onHighlightButtonClicked(segment,tag)"
                 *ngFor="let tag of container._selectionService._available" mat-icon-button
                 matTooltip="Toggle '{{tag.name}}' tag">
             <mat-icon

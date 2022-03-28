@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {VideoUtil} from '../../shared/util/video.util';
 import {HttpClient} from '@angular/common/http';
-import {combineLatest, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Config} from '../../shared/model/config/config.model';
 import {EventBusService} from '../basics/event-bus.service';
@@ -16,7 +16,7 @@ import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
 import {LogService, QueryEventLog, QueryResultLog, SessionId, StatusService, SubmissionService, SuccessfulSubmissionsStatus, SuccessStatus, UserService} from '../../../../openapi/dres';
- import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
+import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -62,7 +62,7 @@ export class VbsSubmissionService {
   private _sessionId = undefined;
 
   /** Observable used to query the DRES status.*/
-  private readonly _status: Observable<SessionId>
+  private _status: BehaviorSubject<SessionId>
 
   /** Observable used to query the DRES user */
   private readonly _user: Observable<UserDetails>
@@ -81,22 +81,26 @@ export class VbsSubmissionService {
 
     /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
     this._configSubscription = _config.configAsObservable.subscribe(config => {
+      this._status = new BehaviorSubject<SessionId>(null)
       if (config?.dresEndpointRest) {
         this._resultsLogTable = _db.db.table('log_results');
         this._interactionLogTable = _db.db.table('log_interaction');
         this._submissionLogTable = _db.db.table('log_submission');
         this.reset(config)
+        this._dresUser.getApiV1UserSession().subscribe(sessionId => this._status.next(sessionId))
+        this._status.subscribe({
+          next: (status) => {
+            this._sessionId = status.sessionId;
+          },
+          error: (e) => {
+            console.error('failed to connect to DRES', e)
+          }
+        })
       } else {
         this.cleanup()
       }
     });
-    this._status = this._dresUser.getApiV1UserSession()
-    this._status.subscribe(status => {
-        this._sessionId = status.sessionId;
-      },
-      error => {
-        console.error('failed to connect to DRES', error)
-      })
+
   }
 
   /**
