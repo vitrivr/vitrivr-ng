@@ -1,171 +1,133 @@
-import {Component, Injectable, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.model';
-import {BoolAttribute, BoolOperator, ValueType} from '../bool-attribute';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BoolAttribute, BoolOperator, InputType} from '../bool-attribute';
+import {BehaviorSubject} from 'rxjs';
 import {BoolTerm} from './bool-term';
 
 @Component({
-  selector: 'app-qt-bool-component',
-  templateUrl: 'bool-term.component.html',
-  styleUrls: ['bool-term.component.css']
+    selector: 'app-qt-bool-component',
+    templateUrl: 'bool-term.component.html',
+    styleUrls: ['bool-term.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-@Injectable()
 export class BoolTermComponent implements OnInit {
 
-  // TODO add logic to store multiple queries with an OR
-  /** This object holds all the query settings. */
-  @Input() public boolTerm: BoolQueryTerm;
+    // TODO add logic to store multiple queries with an OR
+    /** This object holds all the query settings. */
+    @Input() public boolTerm: BoolQueryTerm;
 
-  @Input() public readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
+    @Input() public readonly possibleAttributes: BehaviorSubject<BoolAttribute[]>;
 
-  /** Current selection */
-  public currentAttributeObservable: BehaviorSubject<BoolAttribute> =
-    new BehaviorSubject<BoolAttribute>(new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT));
+    /** Current selection */
+    public _attribute: BehaviorSubject<BoolAttribute> = new BehaviorSubject<BoolAttribute>(null);
 
-  /** Current BoolTerm */
-  @Input() public term: BoolTerm;
+    /** Current BoolTerm */
+    @Input() public term: BoolTerm;
 
-  /** Currently selected operator */
-  currentOperator: BoolOperator;
+    public _value: BehaviorSubject<any> = new BehaviorSubject('');
+    public _operator: BehaviorSubject<BoolOperator> = new BehaviorSubject(BoolOperator.EQ)
+    public _min: BehaviorSubject<number> = new BehaviorSubject(0)
+    public _max: BehaviorSubject<number> = new BehaviorSubject(1)
 
-  private _value: any[] = [];
-
-  get attribute(): BoolAttribute {
-    return this.currentAttributeObservable.getValue();
-  }
-
-  set attribute(value: BoolAttribute) {
-    this.currentAttributeObservable.next(value);
-    this.currentOperator = value.operators[0];
-    this._value = [];
-    this.updateTerm();
-  }
-
-  /**
-   * By default, the operator is set to equals since that is supported by all boolean types
-   */
-  get operatorValue(): BoolOperator {
-    if (this.currentOperator === null) {
-      return BoolOperator.EQ;
+    private updateRangeValue() {
+        this._value.next([this._min.getValue(), this._max.getValue()])
     }
-    return this.currentOperator;
-  }
 
-  /**
-   * Updates both the variable storing the current operator and the boolterm
-   */
-  set operatorValue(value: BoolOperator) {
-    this.currentOperator = value;
-    this.updateTerm();
-  }
-
-  /**
-   * Getter for the data value of textTerm (for ngModel for input field).
-   * @return {string}
-   */
-  get inputValue(): string {
-    return this._value[0];
-  }
-
-  /**
-   * Setter for the data value of textTerm (for ngModel for input field).
-   *
-   * @param {string} value
-   */
-  set inputValue(value: string) {
-    this._value = [value];
-    this.updateTerm();
-  }
-
-
-  private updateRangeValue() {
-    this._value = [this.minValue, this.maxValue]
-  }
-
-  get maxValue(): number {
-    return this.currentAttributeObservable.getValue().maxValue
-  }
-
-  set maxValue(value: number) {
-    this.currentAttributeObservable.getValue().maxValue = value;
-    this.updateRangeValue();
-    this.updateTerm();
-  }
-
-  get minValue(): number {
-    return this.currentAttributeObservable.getValue().minValue
-  }
-
-  set minValue(value: number) {
-    this.currentAttributeObservable.getValue().minValue = value;
-    this.updateRangeValue();
-    this.updateTerm();
-  }
-
-  /**
-   * Removes this term from the term container, causing all views and data to be updated
-   */
-  public onRemoveButtonClicked() {
-    this.boolTerm.removeTerm(this.term);
-  }
-
-  /**
-   * Update with the provided new value. All values are serialized to Strings anyway :)
-   */
-  public updateTerm() {
-    this.term.attribute = this.currentAttributeObservable.getValue().featureName;
-    this.term.operator = BoolAttribute.getOperatorName(this.currentOperator);
-    this.term.values = this._value;
-    this.boolTerm.update();
-  }
-
-  /**
-   * Be aware that you should not use the setters in this method, because they will call an update() which will destroy cached term-information
-   */
-  ngOnInit(): void {
-    /* Check if we need to initialize the attribute */
-    if (!this.term.attribute) {
-      this.attribute = this.possibleAttributes.getValue()[0];
-    } else {
-      const match = this.possibleAttributes.getValue().find(attr => attr.featureName === this.term.attribute);
-      if (match) {
-        this.currentAttributeObservable.next(match);
-      } else {
-        console.error(`no matching attribute found for term ${this.term} in attribute list ${this.possibleAttributes.getValue()}`)
-      }
+    /**
+     * Removes this term from the term container, causing all views and data to be updated
+     */
+    public onRemoveButtonClicked() {
+        this.boolTerm.removeTerm(this.term);
     }
-    if (this.term.operator) {
-      this.currentOperator = BoolOperator[this.term.operator];
-    } else {
-      this.currentOperator = BoolAttribute.getDefaultOperatorsByValueType(this.attribute.valueType)[0];
-    }
-    switch (this.attribute.valueType) {
-      case ValueType.OPTIONS:
-      case ValueType.DYNAMICOPTIONS:
-      case ValueType.DATE:
-      case ValueType.NUMERIC:
-      case ValueType.TEXT:
-        if (this.term.values && this.term.values !== []) {
-          this.inputValue = this.term.values[0];
-        } else {
-          this.inputValue = '';
+
+    /**
+     * Update with the provided new value. All values are serialized to Strings anyway :)
+     */
+    public updateTerm() {
+        if (!this._attribute.getValue()) {
+            return
         }
-        break;
-      case ValueType.RANGE:
-        if (this.term.values && this.term.values !== []) {
-          const min = this.term.values[0];
-          const max = this.term.values[1];
-          this.minValue = min;
-          this.maxValue = max;
+        this.term.attribute = this._attribute.getValue().featureName;
+        this.term.operator = BoolAttribute.getOperatorName(this._operator.getValue());
+        if (Array.isArray(this._value.getValue())) {
+            this.term.values = this._value.getValue();
         } else {
-          this.minValue = this.currentAttributeObservable.getValue().minValue;
-          this.maxValue = this.currentAttributeObservable.getValue().maxValue;
+            this.term.values = [this._value.getValue()]
         }
-        break;
+        this.boolTerm.update();
     }
-    if (this.currentAttributeObservable.getValue().valueType === ValueType.RANGE) {
-      this.updateRangeValue();
+
+    /**
+     * Be aware that you should not use the setters in this method, because they will call an update() which will destroy cached term-information
+     */
+    ngOnInit(): void {
+        this._value.subscribe(() => this.updateTerm())
+        this._operator.subscribe(() => this.updateTerm())
+        this._max.subscribe(() => {
+                this.updateRangeValue();
+                this.updateTerm()
+            }
+        )
+        this._min.subscribe(() => {
+            this.updateRangeValue();
+            this.updateTerm()
+        })
+        this._attribute.subscribe(attr => {
+            if (!attr) {
+                return
+            }
+            this._operator.next(attr.operators[0]);
+            this._value.next('');
+            this.updateTerm();
+        })
+
+        /* Check if we need to initialize the attribute */
+        if (!this.term.attribute) {
+            this._attribute.next(this.possibleAttributes.getValue()[0])
+        } else {
+            const match = this.possibleAttributes.getValue().find(attr => attr.featureName === this.term.attribute);
+            if (match) {
+                this._attribute.next(match);
+            } else {
+                console.error(`no matching attribute found for term ${this.term} in attribute list ${this.possibleAttributes.getValue()}`)
+            }
+        }
+        if (this.term.operator) {
+            this._operator.next(BoolOperator[this.term.operator]);
+        } else {
+            this._operator.next(BoolAttribute.getDefaultOperatorsByValueType(this._attribute.getValue().inputType)[0]);
+        }
+        switch (this._attribute.getValue().inputType) {
+            case InputType.OPTIONS:
+            case InputType.DYNAMICOPTIONS:
+            case InputType.DATE:
+            case InputType.NUMERIC:
+            case InputType.TEXT:
+                if (this.term.values && this.term.values !== []) {
+                    this._value.next(this.term.values[0]);
+                } else {
+                    this._value.next('');
+                }
+                break;
+            case InputType.RANGE:
+                if (this.term.values && this.term.values !== [] && this.term.values[0] != "") {
+                    const min = this.term.values[0];
+                    const max = this.term.values[1];
+                    this._min.next(min);
+                    this._max.next(max);
+                } else {
+                    this._min.next(this._attribute.getValue().minValue);
+                    this._max.next(this._attribute.getValue().maxValue);
+                }
+                break;
+        }
+        if (this._attribute.getValue().inputType === InputType.RANGE) {
+            this.updateRangeValue();
+        }
+        this.updateTerm();
     }
-    this.updateTerm();
-  }
+
+    onChange() {
+        this.updateTerm()
+    }
 }

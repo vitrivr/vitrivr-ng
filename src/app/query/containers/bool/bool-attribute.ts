@@ -1,4 +1,5 @@
 import {Options} from '@angular-slider/ngx-slider';
+import {BooleanQueryValueType} from '../../../shared/model/config/boolean-query-types';
 
 export enum BoolOperator {
   EQ = '=',
@@ -17,44 +18,52 @@ export enum BoolOperator {
   BETWEEN = 'BETWEEN',
 }
 
-export enum ValueType {
-  OPTIONS = 0,
-  DATE = 1,
-  NUMERIC = 2,
-  TEXT = 3,
-  RANGE = 4,
-  DYNAMICOPTIONS = 5,
+export enum InputType {
+  OPTIONS,
+  DATE,
+  NUMERIC,
+  TEXT,
+  RANGE,
+  DYNAMICOPTIONS,
 }
 
 export class BoolAttribute {
 
   public readonly displayName: string;
   public readonly operators: BoolOperator[];
-  public readonly valueType: ValueType;
-  public readonly _options: string[];
+  public readonly inputType: InputType;
+  public readonly options: any[];
   public readonly range: [number, number];
   public readonly sliderOptions: Options;
   public minValue: number;
   public maxValue: number;
   public readonly featureName: string;
+  public readonly valueType?: BooleanQueryValueType;
 
   /**
    * Default Operators are available per ValueType
+   * The Enum[value].valueOf() syntax is the best way to ensure that both the numeric index as well as the string get matched in the switch-case
    */
-  public static getDefaultOperatorsByValueType(type: ValueType): BoolOperator[] {
-    switch (type) {
-      case ValueType.DATE:
+  public static getDefaultOperatorsByValueType(type: InputType): BoolOperator[] {
+    let t = -1;
+    if (typeof type == 'string') {
+      t = Number(InputType[type])
+    } else {
+      t = type.valueOf()
+    }
+    switch (t) {
+      case InputType.DATE:
         return [BoolOperator.EQ, BoolOperator.NEQ, BoolOperator.BETWEEN,
           BoolOperator.LEQ, BoolOperator.GEQ, BoolOperator.GREATER, BoolOperator.LESS];
-      case ValueType.NUMERIC:
+      case InputType.NUMERIC:
         return [BoolOperator.NEQ, BoolOperator.EQ,
           BoolOperator.GEQ, BoolOperator.LEQ, BoolOperator.GREATER, BoolOperator.LESS];
-      case ValueType.OPTIONS:
-      case ValueType.DYNAMICOPTIONS:
+      case InputType.OPTIONS:
+      case InputType.DYNAMICOPTIONS:
         return [BoolOperator.EQ, BoolOperator.NEQ];
-      case ValueType.RANGE:
+      case InputType.RANGE:
         return [BoolOperator.BETWEEN];
-      case ValueType.TEXT:
+      case InputType.TEXT:
         return [BoolOperator.LIKE, BoolOperator.EQ];
       default:
         console.error('type ' + type + ' not known');
@@ -100,29 +109,45 @@ export class BoolAttribute {
     return '';
   }
 
-  public get options(): string[] {
-    return this._options;
+  private static parse(value: string, type?: BooleanQueryValueType): any {
+    if(type){
+      let t = -1;
+      if (typeof type == 'string') {
+        t = Number(BooleanQueryValueType[type])
+      } else {
+        t = type
+      }
+      switch (t.valueOf()) {
+        case BooleanQueryValueType.number.valueOf():
+          return Number(value)
+        case BooleanQueryValueType.string.valueOf():
+          return value
+      }
+    }
+    return value
   }
 
   /**
    * @param displayName how the attribute should be displayed
    * @param featureName how the feature is named in cineast
    * @param operators if no operator is specified, operators are chosen based on the defaults provided per ValueType
-   * @param valueType type of attribute
+   * @param inputType type of attribute, determines selection mechanism - e.g. range, text etc.
    * @param options for the Options ValueType, a list of strings can be provided which will be displayed in a dropdown
    * @param range for the Between ValueType, two numbers can be provided. A slider will enable to user to set the desired range.
+   * @param type the type the input value should have (string / number)
    */
-  constructor(displayName: string, featureName: string, valueType: ValueType, operators?: BoolOperator[], options?: string[], range?: [number, number]) {
+  constructor(displayName: string, featureName: string, inputType: InputType, operators?: BoolOperator[], options?: string[], range?: [number, number], type?: BooleanQueryValueType) {
     this.displayName = displayName;
     this.featureName = featureName;
-    this.valueType = valueType;
+    this.inputType = inputType;
+    this.valueType = type
     if (operators) {
       this.operators = operators;
     } else {
-      this.operators = BoolAttribute.getDefaultOperatorsByValueType(valueType)
+      this.operators = BoolAttribute.getDefaultOperatorsByValueType(inputType)
     }
     if (options) {
-      this._options = options;
+      this.options = options.map(o => BoolAttribute.parse(o, this.valueType));
     }
     if (range) {
       this.range = range;

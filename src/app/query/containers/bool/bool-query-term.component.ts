@@ -1,19 +1,19 @@
 import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
-import {BoolAttribute, ValueType} from './bool-attribute';
+import {BoolAttribute, InputType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs';
 import {BoolTerm} from './individual/bool-term';
 import {DistinctElementLookupService} from '../../../core/lookup/distinct-element-lookup.service';
 import {first, map} from 'rxjs/operators';
 import {AppConfig} from '../../../app.config';
 import {MiscService} from '../../../../../openapi/cineast';
+import {BooleanQueryOption} from '../../../shared/model/config/boolean-query-option.model';
 
 @Component({
   selector: 'app-qt-bool',
   templateUrl: 'bool-query-term.component.html',
   styleUrls: ['bool-query-term.component.css']
 })
-@Injectable()
 export class BoolQueryTermComponent implements OnInit {
 
   // TODO add logic to store multiple queries with a combination.
@@ -23,9 +23,7 @@ export class BoolQueryTermComponent implements OnInit {
   @Input()
   boolTerm: BoolQueryTerm;
 
-  possibleAttributes: BehaviorSubject<BoolAttribute[]> = new BehaviorSubject(
-    [new BoolAttribute('debug-attribute', 'features.debug', ValueType.TEXT)]
-  );
+  possibleAttributes: BehaviorSubject<BoolAttribute[]> = new BehaviorSubject(null);
 
   public ngOnInit() {
     /* only add an empty term if there are none currently present*/
@@ -43,33 +41,16 @@ export class BoolQueryTermComponent implements OnInit {
     _configService.configAsObservable.subscribe(c => {
       const next = [];
       c._config.query.boolean.forEach(v => {
-        const type = <number><unknown>ValueType[v[1]];
-        const displayName = v[0];
-        const feature: string = v[2];
-        switch (type) {
-          case ValueType.DATE.valueOf():
-          case ValueType.NUMERIC.valueOf():
-          case ValueType.TEXT.valueOf():
-            next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]]));
-            break;
-          case ValueType.OPTIONS.valueOf():
-            next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, v.slice(3, v.length), null));
-            break;
-          case ValueType.RANGE.valueOf():
-            next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, null, [v[3], v[4]]));
-            break;
-          case ValueType.DYNAMICOPTIONS.valueOf():
-            const table: string = v[3];
-            const column: string = v[4];
-            _booleanService.findDistinctElementsByColumn()
-            _distinctLookupService.getDistinct(table, column).pipe(first(), map(list => list.sort())).forEach(el => {
-              next.push(new BoolAttribute(displayName, feature, ValueType[<string>v[1]], null, el, null));
-              this.possibleAttributes.next(next);
-            });
-            break;
-          default:
-            console.error(`no type ${type} found, ${ValueType.TEXT.valueOf()}`)
+        const option = v as BooleanQueryOption
+        if(BooleanQueryOption.getInputTypeValue(option.input)== InputType.DYNAMICOPTIONS){
+          _booleanService.findDistinctElementsByColumn()
+          _distinctLookupService.getDistinct(option.table, option.col).pipe(first(), map(list => list.sort())).forEach(el => {
+            next.push(new BoolAttribute(option.display, option.table+'.'+option.col, BooleanQueryOption.getInputTypeValue(option.input), option.operators, el, option.range, option.type))
+            this.possibleAttributes.next(next);
+          });
+          return
         }
+        next.push(new BoolAttribute(option.display, option.table+'.'+option.col, BooleanQueryOption.getInputTypeValue(option.input), option.operators, option.options, option.range, option.type))
       });
       this.possibleAttributes.next(next);
     })
