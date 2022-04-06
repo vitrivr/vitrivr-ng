@@ -1,7 +1,7 @@
 <div [style.display]="'flex'" [style.padding-left]="'10px'" [style.text-align]="'left'" [style.width]="'100%'"
      class="options">
     <!-- Attribute Dropdown -->
-    <mat-select [(ngModel)]="attribute" class="options" required>
+    <mat-select [ngModel]="_attribute | async" (ngModelChange)="_attribute.next($event)" class="options" required>
         <mat-option *ngFor="let attr of possibleAttributes | async"
                     [value]="attr">{{attr.displayName}}</mat-option>
     </mat-select>
@@ -14,10 +14,10 @@
     </div>
 
     <!-- If the current attribute is set, populate operator & value fields -->
-    <ng-container *ngIf="(currentAttributeObservable | async) as currentAttrAsync" class="options">
+    <ng-container *ngIf="(_attribute | async) as currentAttrAsync" class="options">
 
         <!-- Operator dropdown-->
-        <mat-select [(ngModel)]="operatorValue" class="options" required>
+        <mat-select [ngModel]="_operator | async" (ngModelChange)="_operator.next($event)" class="options" required>
             <mat-option *ngFor="let operator of currentAttrAsync.operators" [value]="operator" class="options"
                         style="width:100%">
                 {{operator.toString()}}
@@ -25,33 +25,31 @@
         </mat-select>
 
         <!-- Freetext Field for Numbers & Text -->
-        <mat-form-field *ngIf="currentAttrAsync.valueType.valueOf() === 2 || currentAttrAsync.valueType.valueOf() === 3" class="options">
-            <input [(ngModel)]="inputValue" matInput placeholder="Search text">
+        <mat-form-field *ngIf="currentAttrAsync.inputType.valueOf() === 2 || currentAttrAsync.inputType.valueOf() === 3" class="options">
+            <input [ngModel]="_value | async"
+                   (ngModelChange)="_value.next($event)" matInput placeholder="Search text">
         </mat-form-field>
 
         <!-- Dropdown for Options -->
-        <mat-select *ngIf="currentAttrAsync.valueType.valueOf() === 0 || currentAttrAsync.valueType.valueOf() === 5;" [(ngModel)]="inputValue" class="options" required>
+        <mat-select *ngIf="currentAttrAsync.inputType.valueOf() === 0 || currentAttrAsync.inputType.valueOf() === 5;" [ngModel]="_value | async"
+                    (ngModelChange)="_value.next($event)" class="options" required>
             <mat-option *ngFor="let option of currentAttrAsync.options" [value]="option">
                 {{option}}
             </mat-option>
         </mat-select>
 
         <!-- Date Selector for Date (not yet implemented) -->
-        <mat-form-field *ngIf="currentAttrAsync.valueType.valueOf()==1" class="options textinput">
-            <input [(ngModel)]="inputValue" matInput placeholder="This will be a date selector later">
+        <mat-form-field *ngIf="currentAttrAsync.inputType.valueOf()===1" class="options textinput">
+            <input [ngModel]="_value | async"
+                   (ngModelChange)="_value.next($event)" matInput placeholder="This will be a date selector later">
         </mat-form-field>
 
         <!-- Slider for Range -->
-        <div *ngIf="currentAttrAsync.valueType.valueOf()==4" class="options">
-            <ngx-slider [(highValue)]="maxValue" [(value)]="minValue"
-                        [options]="currentAttrAsync.sliderOptions"></ngx-slider>
+        <div *ngIf="currentAttrAsync.inputType.valueOf()===4" class="options">
+            <ngx-slider [highValue]="_max | async"
+                        (highValueChange)="_max.next($event)" [value]="_min | async"
+                        (valueChange)="_min.next($event)" [options]="currentAttrAsync.sliderOptions"></ngx-slider>
         </div>
-
-        <!-- Traditional Slider
-        <mat-slider class="options" *ngIf="currentAttrAsync.valueType.valueOf()==4"
-                    thumbLabel [displayWith]="formatLabel" tickInterval="auto" min="currentAttrAsync.range[0]" max="currentAttrAsync.range[1]" [(ngModel)]="inputValue">
-        </mat-slider>
-        -->
 
     </ng-container>
 </div>

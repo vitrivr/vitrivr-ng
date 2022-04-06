@@ -6,7 +6,7 @@ import {filter, map} from 'rxjs/operators';
 import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {HistoryComponent} from './results/history.component';
 import {DistinctElementLookupService} from './core/lookup/distinct-element-lookup.service';
-import {ValueType} from './query/containers/bool/bool-attribute';
+import {InputType} from './query/containers/bool/bool-attribute';
 import {SettingsComponent} from './settings/settings.component';
 import {NotificationService} from './core/basics/notification.service';
 import {AppConfig} from './app.config';
@@ -70,8 +70,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   public initLookup(config: Config, distinctLookupService: DistinctElementLookupService) {
     if (config._config.query.options.boolean) {
       config._config.query.boolean.forEach(v => {
-        const type = <number><unknown>ValueType[v[1]];
-        if (type === ValueType.DYNAMICOPTIONS.valueOf()) {
+        const type = <number><unknown>InputType[v[1]];
+        if (type === InputType.DYNAMICOPTIONS.valueOf()) {
           const table: string = v[3];
           const column: string = v[4];
           distinctLookupService.getDistinct(table, column).subscribe()
