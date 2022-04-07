@@ -18,10 +18,10 @@ export interface TemporalQuery {
     queries: Array<StagedSimilarityQuery>;
     config?: TemporalQueryConfig;
     metadataAccessSpec?: Array<MetadataAccessSpecification>;
-    temporalQueryConfig?: TemporalQueryConfig;
-    maxLength?: number;
     messageType?: TemporalQuery.MessageTypeEnum;
+    maxLength?: number;
     timeDistances?: Array<number>;
+    temporalQueryConfig?: TemporalQueryConfig;
 }
 export namespace TemporalQuery {
     export type MessageTypeEnum = 'PING' | 'Q_SIM' | 'Q_MLT' | 'Q_NESEG' | 'Q_SEG' | 'M_LOOKUP' | 'Q_TEMPORAL' | 'SESSION_START' | 'QR_START' | 'QR_END' | 'QR_ERROR' | 'QR_OBJECT' | 'QR_METADATA_O' | 'QR_METADATA_S' | 'QR_SEGMENT' | 'QR_SIMILARITY' | 'QR_TEMPORAL';

@@ -1,5 +1,34 @@
+<div *ngIf="_loading">
+  <mat-progress-bar mode="buffer"></mat-progress-bar>
+</div>
+
+<h2>Information about all elements in the database:</h2>
 <mat-paginator [length]="length"
                [pageSize]="pageSize"
                [pageSizeOptions]="pageSizeOptions"
                (page)="pagination($event)">
 </mat-paginator>
+<table mat-table [dataSource]="data">
+  <ng-container matColumnDef="objectid">
+    <th mat-header-cell *matHeaderCellDef> Object ID</th>
+    <td mat-cell *matCellDef="let element"> {{element.objectid}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="filename">
+    <th mat-header-cell *matHeaderCellDef> Filename</th>
+    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="mediatype">
+    <th mat-header-cell *matHeaderCellDef> Mediatype</th>
+    <td mat-cell *matCellDef="let element"> {{element.mediatype}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="path">
+    <th mat-header-cell *matHeaderCellDef> Path</th>
+    <td mat-cell *matCellDef="let element"> {{element|ObjectPathPipe}}</td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

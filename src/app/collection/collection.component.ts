@@ -1,50 +1,65 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
-import {ObjectviewerComponent} from '../objectdetails/objectviewer.component';
 import {PageEvent} from "@angular/material/paginator";
+import {MediaObjectDescriptor, MiscService, ObjectService} from "../../../openapi/cineast";
 
 
 @Component({
   selector: 'app-collection',
   templateUrl: 'collection.component.html',
-  styleUrls: []
+  styleUrls: ['collection.component.css']
 })
 export class CollectionComponent implements AfterViewInit {
+
+  displayedColumns: string[] = ['objectid', 'filename', 'mediatype','path']
 
   _loading = true
 
   /** will be dynamically updated based on the number of objects in the collection */
-  length = 2; //TODO fix to 1 for PR
+  length = 0
   /** magic number, options are available */
-  pageSize = 10;
-  pageSizeOptions: number[] = [5, 10, 25, 100];
+  pageSize = 10
+  pageSizeOptions: number[] = [5, 10, 25, 100]
 
-  private _index = 0;
+  data: MediaObjectDescriptor[] = []
+
+  private _index = 0
 
   constructor(
       private _query: QueryService,
+      private _object: ObjectService,
+      private _misc: MiscService
   ) {
-
   }
 
   ngAfterViewInit() {
-    //TODO adjust length
+    this._loading = true
+    this._misc.countRows("cineast_multimediaobject").subscribe(res => {
+      console.log(`row count: ${res}`)
+      this.length = res
+    })
     this.fetchInformation()
-  }
-
-  /**
-   * We only care about the index, if it changes we need to load new content.
-   */
-  pagination(event: PageEvent) {
-    if (event.pageIndex != this._index) {
-      this._index = event.pageIndex;
-      this.fetchInformation();
-    }
   }
 
   private fetchInformation() {
     this._loading = true
-    // TODO load information
-    this._loading = false
+    const skip = this._index * this.pageSize
+    const limit = this.pageSize
+    this._object.findObjectsPagination(skip, limit).subscribe(result => {
+      console.log(result)
+      this.data = result.content
+      this._loading = false
+    })
+  }
+
+  /**
+   * Event emitted when the paginator changes the page size or page index. Requires re-loading objects.
+   *
+   * There could be a smarter implementation here, e.g. pre-loading.
+   */
+  pagination(event: PageEvent) {
+    this.pageSize = event.pageSize
+    this._index = event.pageIndex
+    this.fetchInformation();
   }
 }
