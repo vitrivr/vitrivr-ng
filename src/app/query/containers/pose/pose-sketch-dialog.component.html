@@ -1,0 +1,33 @@
+<mat-dialog-content>
+  <mat-toolbar color="primary">
+
+    <button (click)="addNewSkeleton()" mat-icon-button>
+      <mat-icon matTooltip="Adds a skeleton to.">add</mat-icon>
+    </button>
+
+    <button (click)="removeSelectedSkeleton()" [disabled]="this.selectedSkeleton == null" mat-icon-button>
+      <mat-icon matTooltip="Removes currently selected skeleton.">remove</mat-icon>
+    </button>
+
+    <button (click)="copySelectedSkeleton()" [disabled]="this.selectedSkeleton == null" mat-icon-button>
+      <mat-icon matTooltip="Copies the currently selected skeleton.">content_copy</mat-icon>
+    </button>
+
+    <span class="spacer-flex"></span>
+
+    <button [matMenuTriggerFor]="aspectMenu" mat-icon-button>
+      <mat-icon matTooltip="Copies the currently selected skeleton.">aspect_ratio</mat-icon>
+    </button>
+    <mat-menu #aspectMenu="matMenu">
+      <button mat-menu-item (click)="setAspect169()">16:9</button>
+      <button mat-menu-item (click)="setAspect43()">4:3</button>
+    </mat-menu>
+
+    <button (click)="close()" mat-icon-button>
+      <mat-icon matTooltip="Close window and save.">close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="canvas" #canvas (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMouseMove($event)" (click)="onClick($event)" (dblclick)="onDoubleClick($event)">
+  </div>
+</mat-dialog-content>

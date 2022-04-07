@@ -19,6 +19,7 @@
     <app-qt-semantic *ngIf="queryTerm.type==='SEMANTIC'" [semanticTerm]="queryTerm"></app-qt-semantic>
     <app-qt-bool *ngIf="queryTerm.type==='BOOLEAN'" [boolTerm]="queryTerm"></app-qt-bool>
     <app-map-query-term *ngIf="queryTerm.type === 'LOCATION'" [locationTerm]="queryTerm"></app-map-query-term>
+    <app-qt-pose *ngIf="queryTerm.type==='SKELETON'" [poseTerm]="queryTerm"></app-qt-pose>
   </div>
 
   <div>

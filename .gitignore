@@ -19,6 +19,7 @@ src/app/core/openapi/**
 
 # IDEs and editors
 /.idea
+.angular
 .project
 .classpath
 .c9/

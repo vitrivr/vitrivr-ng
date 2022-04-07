@@ -296,6 +296,7 @@ export class ResultsContainer {
    * @param {FusionFunction} weightFunction
    */
   public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
+
     this._rerank = 0;
     if (!features) {
       console.debug(`no features given for rerank(), using features inherent to the results container: ${this.features}`);
@@ -308,13 +309,13 @@ export class ResultsContainer {
 
     console.time(`Rerank (${this.queryId})`);
 
-
     this._results_objects.forEach((mediaObject) => {
       mediaObject.update(features, weightFunction);
       mediaObject.segments.forEach((segment) => {
         segment.update(features, weightFunction);
       });
     });
+
 
 
     /* Other methods calling rerank() depend on this next() call */
@@ -452,7 +453,6 @@ export class ResultsContainer {
         segment.addSimilarity(feature, similarity, sim.containerId);
       }
     }
-
 
     /* Re-rank the results (calling this method also causes an invocation of next(). */
     this._rerank += 1;

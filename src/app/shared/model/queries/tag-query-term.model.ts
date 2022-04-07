@@ -6,6 +6,6 @@ export class TagQueryTerm extends AbstractQueryTerm {
   tags: Tag[];
 
   constructor() {
-    super(QueryTerm.TypeEnum.TAG, ['tags']);
+    super(QueryTerm.TypeEnum.Tag, ['tags']);
   }
 }

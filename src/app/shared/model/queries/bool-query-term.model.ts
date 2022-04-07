@@ -11,7 +11,7 @@ export class BoolQueryTerm extends AbstractQueryTerm {
   public readonly terms: BoolTerm[] = [];
 
   constructor() {
-    super(QueryTerm.TypeEnum.BOOLEAN, ['boolean']);
+    super(QueryTerm.TypeEnum.Boolean, ['boolean']);
   }
 
   /**

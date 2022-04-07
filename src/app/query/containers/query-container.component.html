@@ -19,7 +19,6 @@
             <app-temporal-distance></app-temporal-distance>
             <mat-divider></mat-divider>
         </span>
-
     </div>
 
     <!-- all available query modes -->
@@ -92,6 +91,12 @@
                     code
                 </mat-icon>
             </button>
+
+          <button (click)="onToggleButtonClicked('SKELETON')" *ngIf="_config|GetConfigVariablePipe:queryOptionsSkeleton" class="icon-button" matTooltip="Toggle skeleton pose query term">
+            <mat-icon [attr.class]="containerModel.hasTerm('SKELETON') ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">
+              accessibility_new
+            </mat-icon>
+          </button>
         </div>
     </div>
     <!-- Divider from header to content -->

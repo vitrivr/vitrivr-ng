@@ -153,9 +153,6 @@ export class QueryService {
             case 'AUDIO':
               _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
               return;
-            case 'MOTION':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context));
-              return;
             case 'MODEL3D':
               _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
               return;
@@ -223,9 +220,6 @@ export class QueryService {
               return;
             case 'AUDIO':
               _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
-              return;
-            case 'MOTION':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MOTION, context));
               return;
             case 'MODEL3D':
               _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
@@ -409,6 +403,7 @@ export class QueryService {
       case 'QR_OBJECT':
         const obj = <MediaObjectQueryResult>message;
         if (this._results && this._results.processObjectMessage(obj)) {
+          console.log(this.results)
           this._subject.next('UPDATED');
         }
         break;

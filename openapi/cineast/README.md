@@ -1,4 +1,4 @@
-## @cineast-openapi/api@v1-SNAPSHOT.202111151700
+## @cineast-openapi/api@v1-SNAPSHOT.202203142119
 
 ### Building
 
@@ -19,7 +19,7 @@ Navigate to the folder of your consuming project and run one of next commands.
 _published:_
 
 ```
-npm install @cineast-openapi/api@v1-SNAPSHOT.202111151700 --save
+npm install @cineast-openapi/api@v1-SNAPSHOT.202203142119 --save
 ```
 
 _without publishing (not recommended):_
@@ -75,7 +75,7 @@ export class AppModule {}
 // configuring providers
 import { ApiModule, Configuration, ConfigurationParameters } from '@cineast-openapi/api';
 
-export function apiConfigFactory (): Configuration => {
+export function apiConfigFactory (): Configuration {
   const params: ConfigurationParameters = {
     // set configuration parameters here.
   }
@@ -120,7 +120,7 @@ export class AppModule {}
 import { DefaultApi } from '@cineast-openapi/api';
 
 export class AppComponent {
-	 constructor(private apiGateway: DefaultApi) { }
+    constructor(private apiGateway: DefaultApi) { }
 }
 ```
 
@@ -152,7 +152,7 @@ export class AppModule {
 
 
 ### Set service base path
-If different than the generated base path, during app bootstrap, you can provide the base path to your service. 
+If different than the generated base path, during app bootstrap, you can provide the base path to your service.
 
 ```
 import { BASE_PATH } from '@cineast-openapi/api';
@@ -200,4 +200,4 @@ import { environment } from '../environments/environment';
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
-```  
+```

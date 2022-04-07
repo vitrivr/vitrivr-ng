@@ -20,9 +20,9 @@ export interface SessionState {
 export namespace SessionState {
     export type TypeEnum = 'UNAUTHENTICATED' | 'USER' | 'ADMIN';
     export const TypeEnum = {
-        UNAUTHENTICATED: 'UNAUTHENTICATED' as TypeEnum,
-        USER: 'USER' as TypeEnum,
-        ADMIN: 'ADMIN' as TypeEnum
+        Unauthenticated: 'UNAUTHENTICATED' as TypeEnum,
+        User: 'USER' as TypeEnum,
+        Admin: 'ADMIN' as TypeEnum
     };
 }
 
