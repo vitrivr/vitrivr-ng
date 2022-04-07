@@ -35,33 +35,44 @@
       ]
     },
     "boolean": [
-      [
-        "Example Freetext",
-        "TEXT",
-        "table_name.text"
-      ],
-      [
-        "Example Dropdown",
-        "OPTIONS",
-        "table_name.option",
-        "ONE",
-        "TWO",
-        "THREE"
-      ],
-      [
-        "Example Range",
-        "RANGE",
-        "table_name.range",
-        5,
-        20
-      ],
-      [
-        "Example Dynamic Options",
-        "DYNAMICOPTIONS",
-        "table_name.option",
-        "table_name",
-        "option"
-      ]
+      {
+        "display": "Example Range",
+        "input": "RANGE",
+        "table": "table",
+        "col": "col",
+        "range": [0, 23]
+      },
+      {
+        "display": "Example Provided Options",
+        "input": "OPTIONS",
+        "table": "table",
+        "col": "col",
+        "options": [
+          "MONDAY",
+          "TUESDAY",
+          "WEDNESDAY",
+          "THURSDAY",
+          "FRIDAY",
+          "SATURDAY",
+          "SUNDAY"
+        ]
+      },
+      {
+        "display": "Example Dynamic Integer Options",
+        "input": "DYNAMICOPTIONS",
+        "table": "tablename",
+        "col": "intcolname",
+        "type": "number"
+      },
+      {
+        "display": "Segment Id",
+        "input": "TEXT",
+        "table": "cineast_segment",
+        "col": "segmentid",
+        "operators": [
+          "="
+        ]
+      }
     ]
   },
   "refinement": {

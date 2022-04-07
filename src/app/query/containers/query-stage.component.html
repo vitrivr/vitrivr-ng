@@ -1,5 +1,5 @@
-<h3>Stage {{qsList | QueryStageIndexPipe: queryStage}}:</h3>
-<mat-divider>style="padding-bottom:10px"></mat-divider>
+<h3 *ngIf="qsList.length>1">Stage {{qsList | QueryStageIndexPipe: queryStage}}:</h3>
+<mat-divider *ngIf="qsList.length>1">style="padding-bottom:10px"></mat-divider>
 <app-query-component *ngFor="let qt of queryStage.terms" [queryTerm]="qt" [firstStage]="qsList.indexOf(queryStage)==0"
                      [lastStage]="qsList | QueryStageLast: queryStage"
                      [lastInStage]="queryStage.terms.indexOf(qt)==queryStage.terms.length-1"
