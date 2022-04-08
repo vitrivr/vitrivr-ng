@@ -139,7 +139,7 @@ export class MiscService {
             }
         }
 
-        return this.httpClient.get<number>(`${this.configuration.basePath}/api/v1/count/table${encodeURIComponent(String(table))}`,
+        return this.httpClient.get<number>(`${this.configuration.basePath}/api/v1/count/table/${encodeURIComponent(String(table))}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

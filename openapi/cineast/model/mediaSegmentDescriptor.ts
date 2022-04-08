@@ -18,7 +18,7 @@ export interface MediaSegmentDescriptor {
     end?: number;
     startabs?: number;
     endabs?: number;
-    sequenceNumber?: number;
     count?: number;
+    sequenceNumber?: number;
 }
 

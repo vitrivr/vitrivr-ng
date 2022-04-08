@@ -17,7 +17,6 @@ export interface MediaObjectDescriptor {
     path?: string;
     mediatype?: MediaObjectDescriptor.MediatypeEnum;
     exists?: boolean;
-    objectId?: string;
     contentURL?: string;
 }
 export namespace MediaObjectDescriptor {
