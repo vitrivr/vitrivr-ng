@@ -334,6 +334,7 @@ export class ResultsContainer {
     if (obj.queryId !== this.queryId) {
       return false;
     }
+    console.time(`Processing Object Message (${this.queryId})`);
     for (const object of obj.content) {
       /* Add mediatype of object to list of available mediatypes (if new). */
       if (!this._mediatypes.has(object.mediatype)) {
@@ -343,6 +344,9 @@ export class ResultsContainer {
       /* Get unique MediaObjectScore container and apply MediaObject. */
       this.uniqueMediaObjectScoreContainer(object.objectid, object);
     }
+
+    console.timeEnd(`Processing Object Message (${this.queryId})`);
+
 
     /* Re-rank on the UI side - this also invokes next(). */
     this._rerank += 1;
