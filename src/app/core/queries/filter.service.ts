@@ -158,7 +158,7 @@ export class FilterService {
     const segmentFilters: ((v: MediaSegmentScoreContainer) => boolean)[] = [];
 
     if (this._id) {
-      objectFilters.push((o) => o.objectId === this._id)
+      objectFilters.push((o) => o.objectid === this._id)
       segmentFilters.push((s) => s.objectId === this._id || s.segmentId === this._id)
     }
 

@@ -574,7 +574,7 @@ export class ResultsContainer {
     });
     const temporalList = [];
     Array.from(this._objectid_to_temporal_object_map.values()).forEach(obj => {
-      temporalList.push({objectId: obj.object.objectId, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
+      temporalList.push({objectId: obj.object.objectid, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
     })
     return {
       queryId: this.queryId,
@@ -583,7 +583,7 @@ export class ResultsContainer {
       objectMetadata: this.flatten(this._results_objects.map(obj => {
         const metadata: MediaObjectMetadataDescriptor[] = [];
         obj._metadata.forEach((v, k) => {
-          metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
+          metadata.push({objectId: obj.objectid, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
       })),

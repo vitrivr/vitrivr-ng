@@ -32,7 +32,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   /** Map containing the metadata that belongs to the object. Can be empty! */
   _metadata: Map<string, string> = new Map();
 
-  public constructor(public objectId: string) {
+  public constructor(public objectid: string) {
     super();
   }
 
@@ -133,7 +133,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    */
   public serialize(): MediaObjectDescriptor {
     return <MediaObjectDescriptor>{
-      objectId: this.objectId,
+      objectId: this.objectid,
       mediatype: this.mediatype,
       name: this.name,
       path: this.path,
