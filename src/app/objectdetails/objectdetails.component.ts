@@ -109,7 +109,7 @@ export class ObjectdetailsComponent implements OnInit {
           let message: string = null;
           if (result.content.length === 0) {
             message = `Cineast returned no results for object ${objectId} . Returning to gallery...`;
-          } else if (result.content[0].objectId === '') {
+          } else if (result.content[0].objectid === '') {
             message = `Cineast returned no object descriptor for object ${objectId} . Returning to gallery...`;
           }
           if (message) {
@@ -118,7 +118,7 @@ export class ObjectdetailsComponent implements OnInit {
           }
           const object = result.content[0]
           this._container.mediatype = object.mediatype;
-          this._container.objectId = object.objectId;
+          this._container.objectId = object.objectid;
           this._container.name = object.name;
           this._container.path = object.path;
           this._container.contentURL = object.contentURL;

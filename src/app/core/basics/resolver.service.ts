@@ -130,7 +130,7 @@ export class ResolverService {
       return iiifUrl
     }
     const rep = {};
-    rep[Token.OBJECT_ID] = object.objectId;
+    rep[Token.OBJECT_ID] = object.objectid;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
     rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
@@ -155,7 +155,7 @@ export class ResolverService {
       return iiifUrl
     }
     const rep = {};
-    rep[Token.OBJECT_ID] = object.objectId;
+    rep[Token.OBJECT_ID] = object.objectid;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
     rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();

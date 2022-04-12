@@ -341,7 +341,7 @@ export class ResultsContainer {
       }
 
       /* Get unique MediaObjectScore container and apply MediaObject. */
-      this.uniqueMediaObjectScoreContainer(object.objectId, object);
+      this.uniqueMediaObjectScoreContainer(object.objectid, object);
     }
 
     /* Re-rank on the UI side - this also invokes next(). */
@@ -627,7 +627,7 @@ export class ResultsContainer {
     }
 
     /* Optional: Update MediaObjectScoreContainer. */
-    if (object && object.objectId === object.objectId) {
+    if (object && object.objectid === object.objectid) {
       mosc.mediatype = object.mediatype;
       mosc.name = object.name;
       mosc.path = object.path;
