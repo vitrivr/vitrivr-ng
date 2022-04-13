@@ -1,19 +1,32 @@
-import {AfterViewInit, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component} from '@angular/core';
 import {QueryService} from '../core/queries/query.service';
 import {PageEvent} from "@angular/material/paginator";
-import {MediaObjectDescriptor, MiscService, ObjectService} from "../../../openapi/cineast";
+import {MediaObjectDescriptor, MediaObjectMetadataDescriptor, MetadataService, MiscService, ObjectService} from "../../../openapi/cineast";
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 
+/**
+ * Expandable rows taken from Angular Material Examples: https://material.angular.io/components/table/examples
+ */
 @Component({
   selector: 'app-collection',
   templateUrl: 'collection.component.html',
-  styleUrls: ['collection.component.css']
+  styleUrls: ['collection.component.css'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ])
+  ],
 })
 export class CollectionComponent implements AfterViewInit {
 
-  displayedColumns: string[] = ['objectid', 'filename', 'mediatype','path']
+  columnsToDisplay: string[] = ['objectid', 'name', 'mediatype', 'path']
+  detailColumnsToDisplay: string[] = ['objectid', 'domain', 'key', 'value']
 
   _loading = true
+  _loadingMetadata = false
 
   /** will be dynamically updated based on the number of objects in the collection */
   length = 0
@@ -22,13 +35,17 @@ export class CollectionComponent implements AfterViewInit {
   pageSizeOptions: number[] = [5, 10, 25, 100]
 
   data: MediaObjectDescriptor[] = []
+  detailData: MediaObjectMetadataDescriptor[] = []
 
   private _index = 0
+  expandedElement: MediaObjectMetadataDescriptor | null
 
   constructor(
       private _query: QueryService,
       private _object: ObjectService,
-      private _misc: MiscService
+      private _misc: MiscService,
+      private _metadata: MetadataService,
+      private _cdr: ChangeDetectorRef
   ) {
   }
 
@@ -46,9 +63,19 @@ export class CollectionComponent implements AfterViewInit {
     const skip = this._index * this.pageSize
     const limit = this.pageSize
     this._object.findObjectsPagination(skip, limit).subscribe(result => {
-      console.log(result)
       this.data = result.content
       this._loading = false
+    })
+  }
+
+  private fetchMetadata() {
+    this._loadingMetadata = true
+    console.log(this.expandedElement.objectid)
+    this._metadata.findMetaById(this.expandedElement.objectid).subscribe(result => {
+      console.log(result)
+      this.detailData = result.content
+      this._loadingMetadata = false
+      this._cdr.detectChanges()
     })
   }
 
@@ -60,6 +87,12 @@ export class CollectionComponent implements AfterViewInit {
   pagination(event: PageEvent) {
     this.pageSize = event.pageSize
     this._index = event.pageIndex
-    this.fetchInformation();
+    this.fetchInformation()
+  }
+
+  toggleRow(element: MediaObjectMetadataDescriptor) {
+    this.expandedElement = this.expandedElement === element ? null : element
+    this.detailData = []
+    this.fetchMetadata()
   }
 }

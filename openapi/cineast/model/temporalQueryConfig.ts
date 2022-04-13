@@ -24,11 +24,11 @@ export interface TemporalQueryConfig {
     resultsPerModule?: number;
     maxResults?: number;
     relevantSegmentIds?: Set<string>;
-    distanceIfEmpty?: QueryConfig;
-    distanceWeightsIfEmpty?: QueryConfig;
-    normIfEmpty?: QueryConfig;
-    correspondenceFunction?: object;
     correspondenceFunctionIfEmpty?: QueryConfig;
+    correspondenceFunction?: object;
+    normIfEmpty?: QueryConfig;
+    distanceWeightsIfEmpty?: QueryConfig;
+    distanceIfEmpty?: QueryConfig;
     rawResultsPerModule?: number;
 }
 export namespace TemporalQueryConfig {
