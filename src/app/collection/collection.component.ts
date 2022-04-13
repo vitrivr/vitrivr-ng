@@ -101,7 +101,7 @@ export class CollectionComponent implements AfterViewInit {
     }
   }
 
-  resolveLocation(element: MediaObjectDescriptor) {
-    return this._resolver.pathToObject(element)
+  trackById(idx: number, item: MediaObjectDescriptor): string{
+    return item.objectid;
   }
 }
