@@ -5,6 +5,9 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatTableModule} from "@angular/material/table";
 import {CommonModule} from "@angular/common";
 import {PipesModule} from "../shared/pipes/pipes.module";
+import {RouterModule} from "@angular/router";
+import {MatButtonModule} from "@angular/material/button";
+import {MatIconModule} from "@angular/material/icon";
 
 @NgModule({
   imports: [
@@ -12,7 +15,10 @@ import {PipesModule} from "../shared/pipes/pipes.module";
     MatProgressBarModule,
     MatTableModule,
     CommonModule,
-    PipesModule
+    PipesModule,
+    RouterModule,
+    MatButtonModule,
+    MatIconModule
   ],
   declarations: [CollectionComponent],
   exports: [CollectionComponent],
