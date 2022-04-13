@@ -51,7 +51,7 @@ export class ListComponent extends AbstractSegmentResultsViewComponent<MediaObje
    * @param {MediaObjectScoreContainer} item
    */
   public trackByFunction(index, item: MediaObjectScoreContainer) {
-    return item.objectId + '_' + item.numberOfSegments;
+    return item.objectid + '_' + item.numberOfSegments;
   }
 
   public segmentTracking(index, item: MediaSegmentScoreContainer) {

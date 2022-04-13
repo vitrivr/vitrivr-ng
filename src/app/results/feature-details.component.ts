@@ -37,7 +37,7 @@ export class FeatureDetailsComponent {
       this._lines.push(`Score for path: ${temporalObject.score.toFixed(2)}`)
       this._lines.push(`Path: ${temporalObject.segments[0].sequenceNumber} - ${temporalObject.segments[temporalObject.segments.length - 1].sequenceNumber} (${temporalObject.segments[0].segmentId} - ${temporalObject.segments[temporalObject.segments.length - 1].segmentId})`)
     }
-    this._lines.push(`Score for obj (${segment.objectScoreContainer.objectId}) : ${(segment.objectScoreContainer.scorePercentage)}%`);
+    this._lines.push(`Score for obj (${segment.objectScoreContainer.objectid}) : ${(segment.objectScoreContainer.scorePercentage)}%`);
     segment.scores.forEach((map, containerID) => {
       map.forEach((score, category) => {
         this._lines.push('(c:' + containerID + ').' + category.name + ': ' + Math.round(score * 1000) / 1000);

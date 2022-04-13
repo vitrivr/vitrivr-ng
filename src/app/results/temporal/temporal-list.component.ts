@@ -81,6 +81,6 @@ export class TemporalListComponent extends AbstractSegmentResultsViewComponent<T
    * @param {TemporalObjectSegments} item
    */
   public trackByFunction(index, item: TemporalObjectSegments) {
-    return item.object.objectId + '_' + item.segments.length;
+    return item.object.objectid + '_' + item.segments.length;
   }
 }

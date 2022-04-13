@@ -130,7 +130,7 @@ export class ResolverService {
       return iiifUrl
     }
     const rep = {};
-    rep[Token.OBJECT_ID] = object.objectId;
+    rep[Token.OBJECT_ID] = object.objectid;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
     rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
@@ -155,7 +155,7 @@ export class ResolverService {
       return iiifUrl
     }
     const rep = {};
-    rep[Token.OBJECT_ID] = object.objectId;
+    rep[Token.OBJECT_ID] = object.objectid;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
     rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
@@ -167,7 +167,7 @@ export class ResolverService {
 
   public pathToSegment(segment: MediaSegmentScoreContainer) {
     const rep = {};
-    rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
+    rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectid;
     rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;
     rep[Token.OBJECT_PATH] = segment.objectScoreContainer.path;
     rep[Token.OBJECT_TYPE_LOWER] = segment.objectScoreContainer.mediatype.toLowerCase();

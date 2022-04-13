@@ -41,8 +41,8 @@ export class MediaSegmentScoreContainer extends ScoreContainer implements MediaS
     super();
 
     /* Make a logic check: objectId of MediaSegment must match that of the MediaObjectScoreContainer. */
-    if (_mediaSegment.objectId !== _objectScoreContainer.objectId) {
-      throw new Error('You cannot associate a MediaObjectScoreContainer with ID \'' + _objectScoreContainer.objectId + '\' with a segment with objectId \'' + _mediaSegment.objectId + '\'.');
+    if (_mediaSegment.objectId !== _objectScoreContainer.objectid) {
+      throw new Error('You cannot associate a MediaObjectScoreContainer with ID \'' + _objectScoreContainer.objectid + '\' with a segment with objectId \'' + _mediaSegment.objectId + '\'.');
     }
 
     /* Assign values from MediaSegment. */
