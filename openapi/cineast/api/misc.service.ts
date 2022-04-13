@@ -23,6 +23,8 @@ import { ColumnSpecification } from '../model/columnSpecification';
 // @ts-ignore
 import { DistinctElementsResult } from '../model/distinctElementsResult';
 // @ts-ignore
+import { IntegerMessage } from '../model/integerMessage';
+// @ts-ignore
 import { SelectResult } from '../model/selectResult';
 // @ts-ignore
 import { SelectSpecification } from '../model/selectSpecification';
@@ -100,9 +102,9 @@ export class MiscService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public countRows(table: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<number>;
-    public countRows(table: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<number>>;
-    public countRows(table: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<number>>;
+    public countRows(table: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<IntegerMessage>;
+    public countRows(table: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<IntegerMessage>>;
+    public countRows(table: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<IntegerMessage>>;
     public countRows(table: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (table === null || table === undefined) {
             throw new Error('Required parameter table was null or undefined when calling countRows.');
@@ -139,7 +141,7 @@ export class MiscService {
             }
         }
 
-        return this.httpClient.get<number>(`${this.configuration.basePath}/api/v1/count/table/${encodeURIComponent(String(table))}`,
+        return this.httpClient.get<IntegerMessage>(`${this.configuration.basePath}/api/v1/count/table/${encodeURIComponent(String(table))}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

@@ -9,6 +9,7 @@ export * from './featuresByCategoryQueryResult';
 export * from './featuresByEntityQueryResult';
 export * from './featuresTextCategoryQueryResult';
 export * from './idList';
+export * from './integerMessage';
 export * from './mediaObjectDescriptor';
 export * from './mediaObjectMetadataDescriptor';
 export * from './mediaObjectMetadataQueryResult';

@@ -35,8 +35,8 @@ export class CollectionComponent implements AfterViewInit {
   ngAfterViewInit() {
     this._loading = true
     this._misc.countRows("cineast_multimediaobject").subscribe(res => {
-      console.log(`row count: ${res}`)
-      this.length = res
+      console.log(`row count: ${res.value}`)
+      this.length = res.value
     })
     this.fetchInformation()
   }
