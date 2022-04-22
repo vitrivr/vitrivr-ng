@@ -6,13 +6,12 @@ import {Rectangle} from 'two.js/src/shapes/rectangle';
 import {DrawableSkeleton} from './model/drawableSkeleton';
 import {DrawableJoint} from './model/drawableJoint';
 import {Vector} from 'two.js/src/vector';
-
-
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-pose-sketchpad',
   templateUrl: 'pose-sketch-dialog.component.html',
-  styleUrls: ['pose-sketch-dialog.component.scss']
+  styleUrls: ['pose-sketch-dialog.component.css']
 })
 export class PoseSketchDialogComponent implements AfterViewInit {
 
@@ -35,6 +34,9 @@ export class PoseSketchDialogComponent implements AfterViewInit {
   /** The {@link Rectangle} used to indicate the bounding box of a highlighted {@link DrawableSkeleton}. */
   private highlightRect: Rectangle
 
+  /** Named presets for  */
+  presets: Array<[string, SafeUrl, Skeleton]> = []
+
   /** The currently selected {@link DrawableSkeleton}. */
   selectedSkeleton: DrawableSkeleton = null
 
@@ -47,7 +49,7 @@ export class PoseSketchDialogComponent implements AfterViewInit {
   /**
    * Constructor for SketchDialogComponent.
    */
-  constructor(private _dialogRef: MatDialogRef<PoseSketchDialogComponent>, @Inject(MAT_DIALOG_DATA) private _input: Skeleton[]) {
+  constructor(private domSanitizer: DomSanitizer, private _dialogRef: MatDialogRef<PoseSketchDialogComponent>, @Inject(MAT_DIALOG_DATA) private _input: Skeleton[]) {
     this._dialogRef.disableClose = true;
   }
 
@@ -63,6 +65,9 @@ export class PoseSketchDialogComponent implements AfterViewInit {
       autostart: true
     }).appendTo(this.canvas.nativeElement);
 
+    /** Populate menu with presets. */
+    this.populatePresets()
+
     /** Create hightlight rectangle. */
     this.highlightRect = this.two.makeRectangle(0, 0, 0, 0)
     this.highlightRect.visible = false
@@ -76,15 +81,16 @@ export class PoseSketchDialogComponent implements AfterViewInit {
 
     /** Add skeletons to input. */
     for (const pose of this._input) {
-      this.addSkeleton(pose);
+      this.addSkeleton(new DrawableSkeleton(pose));
     }
   }
 
   /**
    * Adds a new {@link Skeleton} to the scene.
    */
-  public addNewSkeleton() {
-    this.addSkeleton(new DrawableSkeleton(DrawableSkeleton.DEFAULT, Math.min(this.two.width, this.two.height)));
+  public addNewSkeleton(skeleton: Skeleton = null) {
+    if (skeleton == null) skeleton = DrawableSkeleton.DEFAULT
+    this.addSkeleton(new DrawableSkeleton(skeleton, Math.min(this.two.width, this.two.height)));
   }
 
   /**
@@ -278,11 +284,10 @@ export class PoseSketchDialogComponent implements AfterViewInit {
   /**
    * Adds a new {@link Skeleton} to the canvas.
    *
-   * @param skeleton The {@link Skeleton} to add.
+   * @param drawableSkeleton The {@link Skeleton} to add.
    */
-  private addSkeleton(skeleton: Skeleton) {
+  private addSkeleton(drawableSkeleton: DrawableSkeleton) {
     /** Add group to canvas. */
-    const drawableSkeleton = new DrawableSkeleton(skeleton)
     this.poses.push(drawableSkeleton)
 
     /** Add skeleton to scene*/
@@ -300,6 +305,24 @@ export class PoseSketchDialogComponent implements AfterViewInit {
       this.poses.splice(index, 1)
       this.two.remove(drawableSkeleton)
     }
+  }
 
+  /**
+   *
+   * @private
+   */
+  private populatePresets() {
+    let two = new Two({type: Two.Types.svg, width: 50, height: 50, overdraw: false, autostart: false})
+    let i = 1;
+    for (let p of DrawableSkeleton.PRESETS) {
+      const drawableSkeleton = new DrawableSkeleton(p, 50, false)
+      drawableSkeleton.position.add(0, 0)
+      two.add(drawableSkeleton);
+      two.render()
+      const xml = new XMLSerializer().serializeToString(two.renderer.domElement);
+      const image = `data:image/svg+xml;base64,${btoa(xml)}`
+      this.presets.push([`Preset ${i++}`, this.domSanitizer.bypassSecurityTrustUrl(image),  p])
+      two.remove(drawableSkeleton)
+    }
   }
 }

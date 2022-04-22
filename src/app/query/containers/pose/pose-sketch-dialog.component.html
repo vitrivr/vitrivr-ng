@@ -5,6 +5,19 @@
       <mat-icon matTooltip="Adds a skeleton to.">add</mat-icon>
     </button>
 
+    <button mat-icon-button [matMenuTriggerFor]="presetMenu"><mat-icon>menu</mat-icon></button>
+    <mat-menu #presetMenu="matMenu">
+        <ng-template matMenuContent>
+          <div [style.width.px]="210">
+            <mat-grid-list cols="4" rowHeight="1:1" >
+              <mat-grid-tile *ngFor="let p of presets" (click)="addNewSkeleton(p[2])">
+                <button mat-button><img [src]="p[1]" alt="{{p[0]}}"/></button>
+              </mat-grid-tile>
+            </mat-grid-list>
+          </div>
+        </ng-template>
+    </mat-menu>
+
     <button (click)="removeSelectedSkeleton()" [disabled]="this.selectedSkeleton == null" mat-icon-button>
       <mat-icon matTooltip="Removes currently selected skeleton.">remove</mat-icon>
     </button>
@@ -30,4 +43,4 @@
 
   <div class="canvas" #canvas (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onMouseMove($event)" (click)="onClick($event)" (dblclick)="onDoubleClick($event)">
   </div>
-</mat-dialog-content>
+ </mat-dialog-content>
