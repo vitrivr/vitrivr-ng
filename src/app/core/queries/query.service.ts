@@ -403,7 +403,6 @@ export class QueryService {
       case 'QR_OBJECT':
         const obj = <MediaObjectQueryResult>message;
         if (this._results && this._results.processObjectMessage(obj)) {
-          console.log(this.results)
           this._subject.next('UPDATED');
         }
         break;
