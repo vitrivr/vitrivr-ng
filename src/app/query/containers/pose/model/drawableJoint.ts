@@ -13,16 +13,20 @@ export class DrawableJoint extends Two.Circle implements Joint {
   private _hover = false;
 
   /**
+   * Constructor for {@link DrawableJoint}.
    *
-   * @param x
-   * @param y
+   * @param x coordinate of {@link DrawableJoint}.
+   * @param y coordinate of {@link DrawableJoint}.
+   * @param visualize Flag indicating, whether joint should be visualized.
    */
-  constructor(x: number, y: number) {
+  constructor(x: number, y: number, visualize: boolean = true) {
     super();
-    this.radius = 6
     this.position = new Two.Anchor(x + this.radius / 2, y + this.radius / 2, 0, 0, 0, 0, Two.Commands.line)
-    this.fill = '#00AEFF'
-    this.stroke = '#00AEFF'
+    if (visualize) {
+      this.radius = 6
+      this.fill = '#00AEFF'
+      this.stroke = '#00AEFF'
+    }
   }
 
   /**

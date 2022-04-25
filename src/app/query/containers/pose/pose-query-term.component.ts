@@ -50,7 +50,7 @@ export class PoseQueryTermComponent implements OnInit {
    */
   private openSketchDialog(data?: PoseQuery) {
     /* Initialize the correct dialog-component. */
-    const dialogRef = this._dialog.open(PoseSketchDialogComponent, {data: this.poseQuery != null ? this.poseQuery.poses : [], width: '800px', height: '600px'});
+    const dialogRef = this._dialog.open(PoseSketchDialogComponent, {data: this.poseQuery != null ? this.poseQuery.poses : [], width: '900px', height: '600px'});
     dialogRef.afterClosed().pipe(first()).subscribe(result => this.applyPoseData(result));
   }
 
