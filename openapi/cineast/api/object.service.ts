@@ -147,7 +147,7 @@ export class ObjectService {
      * Find object by specified attribute value. I.e by id, name or path
      * Find object by specified attribute value. I.e by id, name or path
      * @param attribute The attribute type of the value. One of: id, name, path
-     * @param value 
+     * @param value The actual value that you want to filter for
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -259,6 +259,68 @@ export class ObjectService {
 
         return this.httpClient.post<MediaObjectQueryResult>(`${this.configuration.basePath}/api/v1/find/object/by/id`,
             idList,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Get a fixed amount of objects from the sorted list
+     * Equivalent to calling SELECT * FROM multimediaobject ORDER BY objectid ASC LIMIT limit SKIP skip. Mostly used for pagination when wanting to retrieve all objects
+     * @param skip How many objects should be skipped
+     * @param limit How many object at most should be fetched
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public findObjectsPagination(skip: number, limit: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<MediaObjectQueryResult>;
+    public findObjectsPagination(skip: number, limit: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<MediaObjectQueryResult>>;
+    public findObjectsPagination(skip: number, limit: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<MediaObjectQueryResult>>;
+    public findObjectsPagination(skip: number, limit: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (skip === null || skip === undefined) {
+            throw new Error('Required parameter skip was null or undefined when calling findObjectsPagination.');
+        }
+        if (limit === null || limit === undefined) {
+            throw new Error('Required parameter limit was null or undefined when calling findObjectsPagination.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        return this.httpClient.get<MediaObjectQueryResult>(`${this.configuration.basePath}/api/v1/find/object/all/${encodeURIComponent(String(skip))}/${encodeURIComponent(String(limit))}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

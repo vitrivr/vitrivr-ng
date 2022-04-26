@@ -18,6 +18,7 @@ import {MatBadgeModule} from '@angular/material/badge';
 import {AppConfig} from './app.config';
 import {SegmentdetailsModule} from './segmentdetails/segmentdetails.module';
 import {PipesModule} from './shared/pipes/pipes.module';
+import {CollectionModule} from "./collection/collection.module";
 
 /**
  * Method used to laod the application config
@@ -38,6 +39,7 @@ export function initializeConfig(appConfig: AppConfig) {
     AppRoutingModule,
     ResultsModule,
     ObjectdetailsModule,
+    CollectionModule,
     SegmentdetailsModule,
     SettingsModule,
     QuerySidebarModule,

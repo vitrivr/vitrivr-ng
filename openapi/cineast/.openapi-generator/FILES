@@ -26,6 +26,7 @@ model/featuresByCategoryQueryResult.ts
 model/featuresByEntityQueryResult.ts
 model/featuresTextCategoryQueryResult.ts
 model/idList.ts
+model/integerMessage.ts
 model/mediaObjectDescriptor.ts
 model/mediaObjectMetadataDescriptor.ts
 model/mediaObjectMetadataQueryResult.ts

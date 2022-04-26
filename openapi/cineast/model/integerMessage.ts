@@ -9,11 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { QueryTerm } from './queryTerm';
 
 
-export interface QueryComponent { 
-    terms?: Array<QueryTerm>;
-    containerId?: number;
+export interface IntegerMessage { 
+    value?: number;
 }
 

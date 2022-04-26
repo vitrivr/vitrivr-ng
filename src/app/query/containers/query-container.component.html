@@ -93,7 +93,7 @@
             </button>
 
           <button (click)="onToggleButtonClicked('SKELETON')"
-                  *ngIf="_config|GetConfigVariablePipe:queryOptionsSemantic"
+                  *ngIf="_config|GetConfigVariablePipe:queryOptionsSkeleton"
                   class="icon-button" matTooltip="Toggle pose query term">
             <mat-icon
               [attr.class]="(containerModel|ModelHasTermPipe: 'SKELETON':trigger) ? 'material-icons md-primary-250' : 'material-icons md-primary-100'">

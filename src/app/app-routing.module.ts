@@ -6,6 +6,7 @@ import {MiniGalleryComponent} from './results/gallery/mini-gallery.component';
 import {ListComponent} from './results/list/list.component';
 import {TemporalListComponent} from './results/temporal/temporal-list.component';
 import {SegmentdetailsComponent} from './segmentdetails/segmentdetails.component';
+import {CollectionComponent} from "./collection/collection.component";
 
 /**
  * Defines the application's routes.
@@ -19,6 +20,7 @@ const appRoutes: Routes = [
     path: 'mediasegment/:segmentId',
     component: SegmentdetailsComponent
   },
+  {path: 'collection', component: CollectionComponent},
   {path: 'gallery', component: GalleryComponent},
   {path: 'list', component: ListComponent},
   {path: 'temporal-list', component: TemporalListComponent},

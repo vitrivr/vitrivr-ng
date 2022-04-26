@@ -24,10 +24,10 @@
       "audio": false,
       "model3d": false,
       "text": true,
-      "tag": true,
+      "tag": false,
       "semantic": true,
-      "boolean": false,
-      "skeleton": true
+      "boolean": true,
+      "skeleton": false
     },
     "text": {
       "categories": [
@@ -36,39 +36,19 @@
     },
     "boolean": [
       {
-        "display": "Example Range",
-        "input": "RANGE",
-        "table": "table",
-        "col": "col",
-        "range": [0, 23]
-      },
-      {
-        "display": "Example Provided Options",
-        "input": "OPTIONS",
-        "table": "table",
-        "col": "col",
-        "options": [
-          "MONDAY",
-          "TUESDAY",
-          "WEDNESDAY",
-          "THURSDAY",
-          "FRIDAY",
-          "SATURDAY",
-          "SUNDAY"
-        ]
-      },
-      {
-        "display": "Example Dynamic Integer Options",
-        "input": "DYNAMICOPTIONS",
-        "table": "tablename",
-        "col": "intcolname",
-        "type": "number"
-      },
-      {
         "display": "Segment Id",
         "input": "TEXT",
         "table": "cineast_segment",
         "col": "segmentid",
+        "operators": [
+          "="
+        ]
+      },
+      {
+        "display": "Object Id",
+        "input": "TEXT",
+        "table": "cineast_segment",
+        "col": "objectid",
         "operators": [
           "="
         ]
