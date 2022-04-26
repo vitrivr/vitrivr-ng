@@ -44,6 +44,7 @@ export class QueryContainerComponent implements AfterContentInit {
   queryOptionsSemantic = ((c: Config) => c._config.query.options.semantic)
   queryOptionsBoolean = ((c: Config) => c._config.query.options.boolean)
   queryOptionsMap = ((c: Config) => c._config.query.options.map)
+  queryOptionsSkeleton = ((c: Config) => c._config.query.options.skeleton)
   isNotFirst: boolean;
   isNotLast: boolean;
 

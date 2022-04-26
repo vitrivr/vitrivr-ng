@@ -296,6 +296,7 @@ export class ResultsContainer {
    * @param {FusionFunction} weightFunction
    */
   public rerank(features?: WeightedFeatureCategory[], weightFunction?: FusionFunction) {
+
     this._rerank = 0;
     if (!features) {
       console.debug(`no features given for rerank(), using features inherent to the results container: ${this.features}`);
@@ -308,13 +309,13 @@ export class ResultsContainer {
 
     console.time(`Rerank (${this.queryId})`);
 
-
     this._results_objects.forEach((mediaObject) => {
       mediaObject.update(features, weightFunction);
       mediaObject.segments.forEach((segment) => {
         segment.update(features, weightFunction);
       });
     });
+
 
 
     /* Other methods calling rerank() depend on this next() call */
@@ -333,6 +334,7 @@ export class ResultsContainer {
     if (obj.queryId !== this.queryId) {
       return false;
     }
+    console.time(`Processing Object Message (${this.queryId})`);
     for (const object of obj.content) {
       /* Add mediatype of object to list of available mediatypes (if new). */
       if (!this._mediatypes.has(object.mediatype)) {
@@ -340,8 +342,11 @@ export class ResultsContainer {
       }
 
       /* Get unique MediaObjectScore container and apply MediaObject. */
-      this.uniqueMediaObjectScoreContainer(object.objectId, object);
+      this.uniqueMediaObjectScoreContainer(object.objectid, object);
     }
+
+    console.timeEnd(`Processing Object Message (${this.queryId})`);
+
 
     /* Re-rank on the UI side - this also invokes next(). */
     this._rerank += 1;
@@ -452,7 +457,6 @@ export class ResultsContainer {
         segment.addSimilarity(feature, similarity, sim.containerId);
       }
     }
-
 
     /* Re-rank the results (calling this method also causes an invocation of next(). */
     this._rerank += 1;
@@ -570,7 +574,7 @@ export class ResultsContainer {
     });
     const temporalList = [];
     Array.from(this._objectid_to_temporal_object_map.values()).forEach(obj => {
-      temporalList.push({objectId: obj.object.objectId, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
+      temporalList.push({objectId: obj.object.objectid, segments: obj.segments.map(seg => seg.serialize()), score: obj.score})
     })
     return {
       queryId: this.queryId,
@@ -579,7 +583,7 @@ export class ResultsContainer {
       objectMetadata: this.flatten(this._results_objects.map(obj => {
         const metadata: MediaObjectMetadataDescriptor[] = [];
         obj._metadata.forEach((v, k) => {
-          metadata.push({objectId: obj.objectId, domain: k.split('.')[0], key: k.split('.')[1], value: v})
+          metadata.push({objectId: obj.objectid, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;
       })),
@@ -627,7 +631,7 @@ export class ResultsContainer {
     }
 
     /* Optional: Update MediaObjectScoreContainer. */
-    if (object && object.objectId === object.objectId) {
+    if (object && object.objectid === object.objectid) {
       mosc.mediatype = object.mediatype;
       mosc.name = object.name;
       mosc.path = object.path;

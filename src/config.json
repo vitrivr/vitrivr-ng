@@ -3,11 +3,11 @@
     "host": "default"
   },
   "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:o/:s:x",
-    "host_objects": "http://localhost:4567/objects/:n"
+    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
+    "host_objects": "http://localhost:4567/objects/:o"
   },
   "competition": {
-    "host": "dmi-dres.dmi.unibas.ch:443",
+    "host": "",
     "tls": true,
     "log": false,
     "lsc": false,
@@ -26,8 +26,8 @@
       "text": true,
       "tag": true,
       "semantic": true,
-      "boolean": true,
-      "map": true
+      "boolean": false,
+      "skeleton": true
     },
     "text": {
       "categories": [

@@ -12,7 +12,7 @@ export class LocationQueryTerm extends AbstractQueryTerm {
   public location: Location = {latitude: 51.50906, longitude: -0.15095}; // TODO DEBUG London
 
   constructor() {
-    super(QueryTerm.TypeEnum.LOCATION, ['spatialdistance']); // Cineast Category
+    super(QueryTerm.TypeEnum.Location, ['spatialdistance']); // Cineast Category
   }
 
   public write() {

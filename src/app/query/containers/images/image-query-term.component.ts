@@ -55,19 +55,19 @@ export class ImageQueryTermComponent implements OnInit {
         this.imageTerm.setCategories(['globalcolor', 'localcolor']);
         break;
       case 1:
-        this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized']);
+        this.imageTerm.setCategories(['globalcolor', 'localcolor']);
         break;
       case 2:
-        this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized', 'edge']);
+        this.imageTerm.setCategories(['globalcolor', 'localcolor', 'edge']);
         break;
       case 3:
-        this.imageTerm.setCategories(['quantized', 'localcolor', 'localfeatures', 'edge']);
+        this.imageTerm.setCategories(['localcolor', 'localfeatures', 'edge']);
         break;
       case 4:
         this.imageTerm.setCategories(['localcolor', 'localfeatures', 'edge']);
         break;
       default:
-        this.imageTerm.setCategories(['globalcolor', 'localcolor', 'quantized']);
+        this.imageTerm.setCategories(['globalcolor', 'localcolor']);
         break;
     }
   }

@@ -67,7 +67,7 @@ export class TagQueryTermComponent implements OnInit {
    */
   public addTag(tag: Tag) {
     if (!tag.priority) {
-      tag.priority = PriorityEnum.REQUEST
+      tag.priority = PriorityEnum.Request
     }
     this._tags.push(tag);
     this._field.formControl.setValue('');

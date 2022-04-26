@@ -46,15 +46,15 @@ export class ResolverService {
 
   public static prefixForMediatype(mediatype: MediaObjectDescriptor.MediatypeEnum) {
     switch (mediatype) {
-      case MediaObjectDescriptor.MediatypeEnum.AUDIO:
+      case MediaObjectDescriptor.MediatypeEnum.Audio:
         return 'a_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGE:
+      case MediaObjectDescriptor.MediatypeEnum.Image:
         return 'i_';
-      case MediaObjectDescriptor.MediatypeEnum.IMAGESEQUENCE:
+      case MediaObjectDescriptor.MediatypeEnum.ImageSequence:
         return 'is_';
-      case MediaObjectDescriptor.MediatypeEnum.MODEL3D:
+      case MediaObjectDescriptor.MediatypeEnum.Model3D:
         return 'm_';
-      case MediaObjectDescriptor.MediatypeEnum.VIDEO:
+      case MediaObjectDescriptor.MediatypeEnum.Video:
         return 'v_';
       default:
         return '';
@@ -130,7 +130,7 @@ export class ResolverService {
       return iiifUrl
     }
     const rep = {};
-    rep[Token.OBJECT_ID] = object.objectId;
+    rep[Token.OBJECT_ID] = object.objectid;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
     rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
@@ -155,7 +155,7 @@ export class ResolverService {
       return iiifUrl
     }
     const rep = {};
-    rep[Token.OBJECT_ID] = object.objectId;
+    rep[Token.OBJECT_ID] = object.objectid;
     rep[Token.OBJECT_NAME] = object.name;
     rep[Token.OBJECT_PATH] = object.path;
     rep[Token.OBJECT_TYPE_LOWER] = object.mediatype.toLowerCase();
@@ -167,7 +167,7 @@ export class ResolverService {
 
   public pathToSegment(segment: MediaSegmentScoreContainer) {
     const rep = {};
-    rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectId;
+    rep[Token.OBJECT_ID] = segment.objectScoreContainer.objectid;
     rep[Token.OBJECT_NAME] = segment.objectScoreContainer.name;
     rep[Token.OBJECT_PATH] = segment.objectScoreContainer.path;
     rep[Token.OBJECT_TYPE_LOWER] = segment.objectScoreContainer.mediatype.toLowerCase();

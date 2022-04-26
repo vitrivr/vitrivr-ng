@@ -25,13 +25,13 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 Note: this section is only relevant if you've made changes to the Cineast API and need to udpate the OpenAPI bindings. 
 
 In order to update / generate the OpenApi stubs and data model, run the following command while [Cineast](https://github.com/vitrivr/cineast) is running and
-having the OpenApi serving enabled (config option `"enableLiveDoc": "true"` )
+having the OpenApi serving enabled (config option `"enableRestLiveDoc": "true"` )
 
-`npm run gen-api`
+`npm run gen-local-api`
 
 This is an alias for the full-fledged command:
 
-`openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=11.0.7`
+`openapi-generator-cli generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0`
 
 The assumption for this snippet is, that the Cineast is running on localhost using port 4567. Adjust according to your needs.
 

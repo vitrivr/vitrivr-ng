@@ -12,10 +12,11 @@
 
 
 export interface MediaSegmentMetadataDescriptor { 
-    segmentId?: string;
+    segmentid?: string;
     domain?: string;
     key?: string;
     value?: string;
     exists?: boolean;
+    segmentId?: string;
 }
 

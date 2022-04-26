@@ -59,7 +59,7 @@
 
             <mat-tab label="Object Metadata ({{obj._metadata.size}})">
                 <div *ngIf="obj._metadata.size == 0" style="padding-top:10px">
-                    No object metadata available for {{obj.objectId}}
+                    No object metadata available for {{obj.objectid}}
                 </div>
                 <mat-list>
                     <mat-list-item *ngFor="let metadatum of obj._metadata | keyvalue">

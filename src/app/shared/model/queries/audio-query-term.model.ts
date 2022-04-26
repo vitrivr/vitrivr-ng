@@ -5,6 +5,6 @@ export class AudioQueryTerm extends AbstractQueryTerm {
   sliderSetting: number;
 
   constructor() {
-    super(QueryTerm.TypeEnum.AUDIO, ['audiofingerprint'])
+    super(QueryTerm.TypeEnum.Audio, ['audiofingerprint'])
   }
 }

@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+
 export interface QueryConfig { 
     queryId?: string;
     hints?: Set<QueryConfig.HintsEnum>;
@@ -19,11 +20,11 @@ export interface QueryConfig {
     resultsPerModule?: number;
     maxResults?: number;
     relevantSegmentIds?: Set<string>;
-    distanceIfEmpty?: QueryConfig;
     correspondenceFunctionIfEmpty?: QueryConfig;
-    correspondenceFunction?: object;
-    normIfEmpty?: QueryConfig;
+    distanceIfEmpty?: QueryConfig;
     distanceWeightsIfEmpty?: QueryConfig;
+    normIfEmpty?: QueryConfig;
+    correspondenceFunction?: object;
     rawResultsPerModule?: number;
 }
 export namespace QueryConfig {

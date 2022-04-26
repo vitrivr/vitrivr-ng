@@ -6,6 +6,7 @@ import {M3DQueryTerm} from './m3d-query-term.model';
 import {BoolQueryTerm} from './bool-query-term.model';
 import {TextQueryTerm} from './text-query-term.model';
 import {TagQueryTerm} from './tag-query-term.model';
+import {SkeletonPoseQueryTerm} from "./skeleton-pose-query-term.model";
 import {SemanticQueryTerm} from './semantic/semantic-query-term.model';
 import {QueryStage} from './query-stage.model';
 import {QueryTerm} from '../../../../../openapi/cineast/model/queryTerm';
@@ -35,29 +36,32 @@ export class StagedQueryContainer implements QueryContainerInterface {
       return false;
     }
     switch (type) {
-      case QueryTerm.TypeEnum.IMAGE:
+      case QueryTerm.TypeEnum.Image:
         this._cache.set(type, new ImageQueryTerm());
         break;
-      case QueryTerm.TypeEnum.AUDIO:
+      case QueryTerm.TypeEnum.Audio:
         this._cache.set(type, new AudioQueryTerm());
         break;
-      case QueryTerm.TypeEnum.MODEL3D:
+      case QueryTerm.TypeEnum.Model3D:
         this._cache.set(type, new M3DQueryTerm());
         break;
-      case QueryTerm.TypeEnum.TEXT:
+      case QueryTerm.TypeEnum.Text:
         this._cache.set(type, new TextQueryTerm());
         break;
-      case QueryTerm.TypeEnum.TAG:
+      case QueryTerm.TypeEnum.Tag:
         this._cache.set(type, new TagQueryTerm());
         break;
-      case QueryTerm.TypeEnum.SEMANTIC:
+      case QueryTerm.TypeEnum.Semantic:
         this._cache.set(type, new SemanticQueryTerm());
         break;
-      case QueryTerm.TypeEnum.BOOLEAN:
+      case QueryTerm.TypeEnum.Boolean:
         this._cache.set(type, new BoolQueryTerm());
         break;
-      case QueryTerm.TypeEnum.LOCATION:
+      case QueryTerm.TypeEnum.Location:
         this._cache.set(type, new LocationQueryTerm());
+        break;
+      case QueryTerm.TypeEnum.Skeleton:
+        this._cache.set(type, new SkeletonPoseQueryTerm());
         break;
       default:
         return false;

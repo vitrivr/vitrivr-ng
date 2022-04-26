@@ -11,6 +11,7 @@ import {TagQueryTermModule} from './tag/tag-query-term.module';
 import {SemanticQueryTermModule} from './semantic/semantic-query-term.module';
 import {BoolQueryTermModule} from './bool/bool-query-term.module';
 import {QueryTermComponent} from './query-term.component';
+import {PoseQueryTermModule} from "./pose/pose-query-term.module";
 import {MapQueryTermModule} from './map-query-term/map-query-term.module';
 
 @NgModule({
@@ -26,6 +27,7 @@ import {MapQueryTermModule} from './map-query-term/map-query-term.module';
     TagQueryTermModule,
     SemanticQueryTermModule,
     BoolQueryTermModule,
+    PoseQueryTermModule,
     MapQueryTermModule
   ],
   declarations: [QueryTermComponent],

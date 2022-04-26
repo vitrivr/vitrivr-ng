@@ -119,7 +119,7 @@ export class SegmentdetailsComponent implements AfterViewInit {
             if (objResult.content.length === 0) {
               message = `Cineast returned no results for object ${segment.objectId} . Returning to gallery...`;
             }
-            if (objResult.content[0].objectId === '') {
+            if (objResult.content[0].objectid === '') {
               message = `Cineast returned no object descriptor for object ${segment.objectId} . Returning to gallery...`;
             }
             if (message) {
@@ -129,7 +129,7 @@ export class SegmentdetailsComponent implements AfterViewInit {
             this._mediaObject = objResult.content[0]
 
             /** fetch object metadata */
-            this._metadataLookup.findSegMetaById(this._mediaObject.objectId).subscribe(res => {
+            this._metadataLookup.findSegMetaById(this._mediaObject.objectid).subscribe(res => {
               if (res.content) {
                 const md = new Map();
                 res.content.forEach(metadata => {

@@ -1,6 +1,6 @@
 {
   "name": "vitrivr-ng",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -9,10 +9,10 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "gen-api": "openapi-generator generate -g typescript-angular -i https://raw.githubusercontent.com/vitrivr/cineast/master/docs/openapi.json -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
-    "gen-local-api": "openapi-generator generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
-    "gen-dev-api": "openapi-generator generate -g typescript-angular -i https://raw.githubusercontent.com/vitrivr/cineast/dev/docs/openapi.json -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
-    "gen-dres-client": "openapi-generator generate -g typescript-angular -i https://raw.githubusercontent.com/dres-dev/DRES/master/doc/oas-client.json -o openapi/dres --skip-validate-spec --additional-properties npmName=@dres-client-openapi/api,ngVersion=13.0.0,enumPropertyNaming=original",
+    "gen-api": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/vitrivr/cineast/master/docs/openapi.json -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
+    "gen-local-api": "openapi-generator-cli generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
+    "gen-dev-api": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/vitrivr/cineast/dev/docs/openapi.json -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
+    "gen-dres-client": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/dres-dev/DRES/master/doc/oas-client.json -o openapi/dres --skip-validate-spec --additional-properties npmName=@dres-client-openapi/api,ngVersion=13.0.0,enumPropertyNaming=original",
     "e2e": "ng e2e",
     "postinstall": "ngcc"
   },
@@ -46,6 +46,7 @@
     "ngx-infinite-scroll": "10.0.1",
     "node": "^17.4.0",
     "npm": "^8.1.2",
+    "openapi-generator": "^0.1.39",
     "openseadragon": "^2.4.2",
     "rxjs": "7.4.0",
     "systemjs": "6.11.0",
@@ -56,6 +57,7 @@
     "three-trackballcontrols": "0.9.0",
     "ts-md5": "^1.2.9",
     "tslib": "^2.3.1",
+    "two.js": "^0.8.3",
     "typescript": "4.4.4",
     "zone.js": "~0.11.4"
   },
