@@ -189,7 +189,7 @@ export class PreferencesComponent implements AfterContentInit {
         console.log(status)
         if (status) {
           console.log('setting status to sessionId')
-          this._dresStatus.next(status.sessionId)
+          this._dresStatus.next(status)
           return;
         }
         console.log('setting status to not logged in')

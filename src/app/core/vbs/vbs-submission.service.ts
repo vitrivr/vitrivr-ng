@@ -15,7 +15,7 @@ import Dexie from 'dexie';
 import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
-import {LogService, QueryEventLog, QueryResultLog, SessionId, SubmissionService, SuccessfulSubmissionsStatus, UserService} from '../../../../openapi/dres';
+import {LogService, QueryEventLog, QueryResultLog, SubmissionService, SuccessfulSubmissionsStatus, UserService} from '../../../../openapi/dres';
 import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
 
 /**
@@ -27,8 +27,14 @@ export class VbsSubmissionService {
   /** The subject used to submit segments to the VBS service. */
   private _submitSubject = new Subject<[MediaSegmentScoreContainer, number]>();
 
+  /** The subject used to submit textual information to the DRES server */
+  private _submitTextSubject = new Subject<string>();
+
   /** Reference to the subscription that is used to issue submits to the VBS server. */
   private _submitSubscription: Subscription;
+
+  /** Reference to the subscription that is used to issue textual submits to the DRES server. */
+  private _submitTextSubscription: Subscription;
 
   /** Reference to the subscription that is used to submit updates to the results list. */
   private _resultsSubscription: Subscription;
@@ -59,10 +65,10 @@ export class VbsSubmissionService {
   private _lsc = false;
 
   /** SessionID retrieved from DRES endpoint, automatically connected via second tab. Does not support private mode */
-  private _sessionId = undefined;
+  private _sessionId:string = undefined;
 
   /** Observable used to query the DRES status.*/
-  private _status: BehaviorSubject<SessionId>
+  private _status: BehaviorSubject<string>
 
   /** Observable used to query the DRES user */
   private readonly _user: Observable<UserDetails>
@@ -81,19 +87,19 @@ export class VbsSubmissionService {
 
     /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
     this._configSubscription = _config.configAsObservable.subscribe(config => {
-      this._status = new BehaviorSubject<SessionId>(null)
+      this._status = new BehaviorSubject<string>(null)
       if (config?.dresEndpointRest) {
         this._resultsLogTable = _db.db.table('log_results');
         this._interactionLogTable = _db.db.table('log_interaction');
         this._submissionLogTable = _db.db.table('log_submission');
         this.reset(config)
-        this._dresUser.getApiV1UserSession().subscribe(sessionId => {
-          this._status.next(sessionId)
+        this._dresUser.getApiV1User().subscribe(user => {
+          this._status.next(user.sessionId)
         })
         this._status.subscribe({
           next: (status) => {
             if (status) {
-              this._sessionId = status.sessionId;
+              this._sessionId = status;
             }
           },
           error: (e) => {
@@ -135,6 +141,14 @@ export class VbsSubmissionService {
   public submitSegment(segment: MediaSegmentScoreContainer) {
     if (this.isOn) {
       this.submit(segment, (segment.startabs + segment.endabs) / 2);
+    }
+  }
+
+  public submitText(text: string){
+    if(this.isOn){
+      // TODO how to log textual submissions?
+      console.log(`Submitting text ${text}`);
+      this._submitTextSubject.next(text);
     }
   }
 
@@ -271,7 +285,37 @@ export class VbsSubmissionService {
       map(([segment, time]): [string, number?] => this.convertToAppropriateRepresentation(segment, time)),
       mergeMap(([segment, frame]) => {
         /* Submit, do some logging and catch HTTP errors. */
-        return this._dresSubmit.getApiV1Submit(null, segment, frame).pipe(
+        return this._dresSubmit.getApiV1Submit(null, segment, null, frame).pipe(
+          tap((status: SuccessfulSubmissionsStatus) => {
+            switch (status.submission) {
+              case 'CORRECT':
+                this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-success'});
+                break;
+              case 'WRONG':
+                this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-warning'});
+                break;
+              default:
+                this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION});
+                break;
+            }
+          }),
+          catchError(err => {
+            if (err.error) {
+              this._snackBar.open(`Submissions error: ${err.error.description}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
+            } else {
+              this._snackBar.open(`Submissions error: ${err.message}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
+            }
+            return of(null)
+          })
+        )
+      })
+    ).subscribe()
+
+    /* Setup submission TEXTUAL subscription, which is triggered manually. */
+    this._submitTextSubscription = this._submitTextSubject.pipe(
+      mergeMap((text) => {
+        /* Submit, do some logging and catch HTTP errors. */
+        return this._dresSubmit.getApiV1Submit(null, null, text).pipe(
           tap((status: SuccessfulSubmissionsStatus) => {
             switch (status.submission) {
               case 'CORRECT':
@@ -301,7 +345,7 @@ export class VbsSubmissionService {
   /**
    *
    */
-  get statusObservable(): Observable<SessionId> {
+  get statusObservable(): Observable<string> {
     return this._status
   }
 
@@ -334,6 +378,10 @@ export class VbsSubmissionService {
     if (this._submitSubscription != null) {
       this._submitSubscription.unsubscribe();
       this._submitSubscription = null;
+    }
+    if (this._submitTextSubscription != null) {
+      this._submitTextSubscription.unsubscribe();
+      this._submitTextSubscription = null;
     }
     if (this._interactionlogSubscription != null) {
       this._interactionlogSubscription.unsubscribe();

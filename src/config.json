@@ -1,17 +1,17 @@
 {
   "api": {
-    "host": "default"
+    "host": "10.34.58.178"
   },
   "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
-    "host_objects": "http://localhost:4567/objects/:o"
+    "host_thumbnails": "http://10.34.58.178:4567/thumbnails/:s",
+    "host_objects": "http://10.34.58.178:4567/objects/:o"
   },
   "competition": {
     "host": "",
     "tls": true,
     "log": false,
     "lsc": false,
-    "vbs": false
+    "vbs": true
   },
   "mlt": {
     "VIDEO": ["visualtextcoembedding"],
