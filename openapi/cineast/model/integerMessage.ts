@@ -12,6 +12,6 @@
 
 
 export interface IntegerMessage { 
-    value?: number;
+    value: number;
 }
 

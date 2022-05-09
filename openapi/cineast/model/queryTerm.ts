@@ -12,9 +12,9 @@
 
 
 export interface QueryTerm { 
-    type?: QueryTerm.TypeEnum;
-    data?: string;
-    categories?: Array<string>;
+    categories: Array<string>;
+    type: QueryTerm.TypeEnum;
+    data: string;
 }
 export namespace QueryTerm {
     export type TypeEnum = 'IMAGE' | 'AUDIO' | 'MODEL3D' | 'LOCATION' | 'PARAMETERISED_LOCATION' | 'TIME' | 'TEXT' | 'TAG' | 'SEMANTIC' | 'SKELETON' | 'ID' | 'BOOLEAN';

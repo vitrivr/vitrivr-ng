@@ -12,8 +12,8 @@
 
 
 export interface SelectSpecification { 
-    table?: string;
-    columns?: Array<string>;
-    limit?: number;
+    table: string;
+    columns: Array<string>;
+    limit: number;
 }
 

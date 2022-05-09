@@ -13,7 +13,7 @@
 
 export interface TagIDsForElementQueryResult { 
     queryId?: string;
-    tagIDs?: Array<string>;
+    tags?: Array<string>;
     elementID?: string;
 }
 

@@ -1,5 +1,5 @@
 import {MessageType} from '../message-type.model';
-import {QueryConfig} from '../interfaces/requests/query-config.interface';
+import { QueryConfig } from '../../../../../../openapi/cineast';
 import {SegmentQueryMessage} from '../interfaces/requests/segment.query.interface';
 import {MetadataAccessSpecification} from './metadata-access-specification.model';
 

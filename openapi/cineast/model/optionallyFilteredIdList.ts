@@ -13,32 +13,7 @@ import { AbstractMetadataFilterDescriptor } from './abstractMetadataFilterDescri
 
 
 export interface OptionallyFilteredIdList { 
-    filters?: Array<AbstractMetadataFilterDescriptor>;
-    ids?: Array<string>;
-    messageType?: OptionallyFilteredIdList.MessageTypeEnum;
-    idList?: Array<string>;
+    filters: Array<AbstractMetadataFilterDescriptor>;
+    ids: Array<string>;
 }
-export namespace OptionallyFilteredIdList {
-    export type MessageTypeEnum = 'PING' | 'Q_SIM' | 'Q_MLT' | 'Q_NESEG' | 'Q_SEG' | 'M_LOOKUP' | 'Q_TEMPORAL' | 'SESSION_START' | 'QR_START' | 'QR_END' | 'QR_ERROR' | 'QR_OBJECT' | 'QR_METADATA_O' | 'QR_METADATA_S' | 'QR_SEGMENT' | 'QR_SIMILARITY' | 'QR_TEMPORAL';
-    export const MessageTypeEnum = {
-        Ping: 'PING' as MessageTypeEnum,
-        QSim: 'Q_SIM' as MessageTypeEnum,
-        QMlt: 'Q_MLT' as MessageTypeEnum,
-        QNeseg: 'Q_NESEG' as MessageTypeEnum,
-        QSeg: 'Q_SEG' as MessageTypeEnum,
-        MLookup: 'M_LOOKUP' as MessageTypeEnum,
-        QTemporal: 'Q_TEMPORAL' as MessageTypeEnum,
-        SessionStart: 'SESSION_START' as MessageTypeEnum,
-        QrStart: 'QR_START' as MessageTypeEnum,
-        QrEnd: 'QR_END' as MessageTypeEnum,
-        QrError: 'QR_ERROR' as MessageTypeEnum,
-        QrObject: 'QR_OBJECT' as MessageTypeEnum,
-        QrMetadataO: 'QR_METADATA_O' as MessageTypeEnum,
-        QrMetadataS: 'QR_METADATA_S' as MessageTypeEnum,
-        QrSegment: 'QR_SEGMENT' as MessageTypeEnum,
-        QrSimilarity: 'QR_SIMILARITY' as MessageTypeEnum,
-        QrTemporal: 'QR_TEMPORAL' as MessageTypeEnum
-    };
-}
-
 

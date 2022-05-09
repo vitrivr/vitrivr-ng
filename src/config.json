@@ -3,40 +3,128 @@
     "host": "default"
   },
   "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
-    "host_objects": "http://localhost:4567/objects/:o"
+    "host_thumbnails": "http://10.34.58.176/lsc21/lsc21-thumbnails/:o/:s.jpg",
+    "host_objects": "http://10.34.58.176/lsc21/lsc21-image/:n/:S.jpg"
   },
   "competition": {
     "host": "",
-    "tls": true,
     "log": false,
-    "lsc": false,
-    "vbs": false
+    "lsc": true,
+    "vbs": false,
+    "tls": true
   },
   "mlt": {
-    "VIDEO": ["visualtextcoembedding"],
-    "IMAGE": ["visualtextcoembedding"]
+    "IMAGE": [
+      "clipimage"
+    ],
+    "IMAGE_SEQUENCE": [
+      "clipimage"
+    ]
   },
   "query": {
+    "temporal_mode": "TEMPORAL_DISTANCE",
+    "temporal_max_length": 86400,
+    "default_temporal_distance": 1800,
     "history": 0,
     "options": {
       "image": true,
       "audio": false,
       "model3d": false,
       "text": true,
-      "tag": false,
+      "tag": true,
       "semantic": true,
       "boolean": true,
+      "map": true,
       "skeleton": false
     },
     "text": {
       "categories": [
-        ["visualtextcoembedding", "Text Co-Embedding"]
+        [
+          "ocr",
+          "Text on Screen"
+        ],
+        [
+          "visualtextcoembedding",
+          "Text Co-Embedding"
+        ],
+        [
+          "clip",
+          "CLIP"
+        ]
       ]
     },
     "boolean": [
       {
-        "display": "Segment Id",
+        "display": "Hour",
+        "input": "RANGE",
+        "table": "features_table_lsc20meta",
+        "col": "p_hour",
+        "range": [0, 23]
+      },
+      {
+        "display": "Weekday",
+        "input": "OPTIONS",
+        "table": "features_table_lsc20meta",
+        "col": "p_day_of_week",
+        "options": [
+          "MONDAY",
+          "TUESDAY",
+          "WEDNESDAY",
+          "THURSDAY",
+          "FRIDAY",
+          "SATURDAY",
+          "SUNDAY"
+        ]
+      },
+      {
+        "display": "Day of Month",
+        "input": "DYNAMICOPTIONS",
+        "table": "features_table_lsc20meta",
+        "col": "p_day",
+        "type": "number"
+      },
+      {
+        "display": "Location",
+        "input": "DYNAMICOPTIONS",
+        "table": "features_table_lsc20meta",
+        "col": "semantic_name"
+      },
+      {
+        "display": "Year",
+        "input": "DYNAMICOPTIONS",
+        "table": "features_table_lsc20meta",
+        "col": "p_year",
+        "type": "number"
+      },
+      {
+        "display": "Month",
+        "input": "DYNAMICOPTIONS",
+        "table": "features_table_lsc20meta",
+        "col": "p_month"
+      },
+      {
+        "display": "Transport",
+        "input": "DYNAMICOPTIONS",
+        "table": "features_table_lsc20meta",
+        "col": "activity_type"
+      },
+      {
+        "display": "Timezone",
+        "input": "DYNAMICOPTIONS",
+        "table": "features_table_lsc20meta",
+        "col": "timezone"
+      },
+      {
+        "display": "Segment Id [Meta]",
+        "input": "TEXT",
+        "table": "features_table_lsc20meta",
+        "col": "id",
+        "operators": [
+          "="
+        ]
+      },
+      {
+        "display": "Segment Id [Segments]",
         "input": "TEXT",
         "table": "cineast_segment",
         "col": "segmentid",
@@ -45,7 +133,7 @@
         ]
       },
       {
-        "display": "Object Id",
+        "display": "Object Id [Segments]",
         "input": "TEXT",
         "table": "cineast_segment",
         "col": "objectid",
@@ -58,13 +146,30 @@
   "refinement": {
     "filters": [
       [
-        "dominantcolor.color",
+        "LSCMETA.semantic_name",
         "CHECKBOX"
       ],
       [
-        "technical.duration",
+        "LSCMETA.timezone",
+        "CHECKBOX"
+      ],
+      [
+        "LSCMETA.p_day_of_week",
+        "CHECKBOX"
+      ],
+      [
+        "LSCMETA.p_hour",
         "SLIDER"
+      ],
+      [
+        "LSCMETA.p_month",
+        "CHECKBOX"
+      ],
+      [
+        "LSCMETA.p_year",
+        "CHECKBOX"
       ]
     ]
   }
 }
+

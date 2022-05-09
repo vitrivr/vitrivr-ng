@@ -82,12 +82,12 @@ export class Config {
         image: true,
         audio: false,
         model3d: true,
-        text: false,
-        tag: true,
+        text: true,
+        tag: false,
         map: false,
-        semantic: false,
+        semantic: true,
         boolean: true,
-        skeleton: true
+        skeleton: false
       },
       metadata: {
         object: [
@@ -99,12 +99,11 @@ export class Config {
       },
       config: {
         queryId: null,
-        hints: ['exact'],
         neighboringSegmentLookupCount: 5,
         neighboringSegmentLookupAllCount: 200000
       },
       text: {
-        categories: []
+        categories: ["visualtextcoembedding", "Text Co-Embedding"]
       },
       boolean: [],
       temporal_mode: 'TEMPORAL_DISTANCE',
