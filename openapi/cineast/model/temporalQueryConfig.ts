@@ -18,17 +18,17 @@ export interface TemporalQueryConfig {
     timeDistances?: Array<number>;
     maxLength?: number;
     computeTemporalObjects?: boolean;
+    relevantSegmentIds?: Set<string>;
     distance?: TemporalQueryConfig.DistanceEnum;
     distanceWeights?: Array<number>;
     norm?: number;
     resultsPerModule?: number;
     maxResults?: number;
-    relevantSegmentIds?: Set<string>;
     correspondenceFunctionIfEmpty?: QueryConfig;
-    correspondenceFunction?: object;
-    normIfEmpty?: QueryConfig;
-    distanceWeightsIfEmpty?: QueryConfig;
     distanceIfEmpty?: QueryConfig;
+    correspondenceFunction?: object;
+    distanceWeightsIfEmpty?: QueryConfig;
+    normIfEmpty?: QueryConfig;
     rawResultsPerModule?: number;
 }
 export namespace TemporalQueryConfig {

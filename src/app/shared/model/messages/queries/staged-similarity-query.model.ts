@@ -1,4 +1,4 @@
-import {QueryConfig} from '../interfaces/requests/query-config.interface';
+import { QueryConfig } from '../../../../../../openapi/cineast';
 import {QueryStage} from '../../queries/query-stage.model';
 
 export class StagedSimilarityQuery {

@@ -14,7 +14,7 @@ import { QueryStage } from './queryStage';
 
 
 export interface StagedSimilarityQuery { 
-    stages: Array<QueryStage>;
+    stages?: Array<QueryStage>;
     config?: QueryConfig;
 }
 

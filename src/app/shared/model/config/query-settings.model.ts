@@ -1,4 +1,4 @@
-import {QueryConfig} from '../messages/interfaces/requests/query-config.interface';
+import { QueryConfig } from "../../../../../openapi/cineast";
 
 export interface QuerySettings {
   /** The active query options. */
