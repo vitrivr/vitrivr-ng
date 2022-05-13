@@ -12,10 +12,9 @@ import {SelectionService} from '../selection/selection.service';
 import {QueryService} from '../queries/query.service';
 import {DatabaseService} from '../basics/database.service';
 import Dexie from 'dexie';
-import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
-import {LogService, QueryEventLog, QueryResultLog, SessionId, SubmissionService, SuccessfulSubmissionsStatus, UserService} from '../../../../openapi/dres';
+import {LogService, QueryEventLog, QueryResultLog, SubmissionService, SuccessfulSubmissionsStatus, UserDetails, UserService} from '../../../../openapi/dres';
 import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
 
 /**
@@ -27,8 +26,14 @@ export class VbsSubmissionService {
   /** The subject used to submit segments to the VBS service. */
   private _submitSubject = new Subject<[MediaSegmentScoreContainer, number]>();
 
+  /** The subject used to submit textual information to the DRES server */
+  private _submitTextSubject = new Subject<string>();
+
   /** Reference to the subscription that is used to issue submits to the VBS server. */
   private _submitSubscription: Subscription;
+
+  /** Reference to the subscription that is used to issue textual submits to the DRES server. */
+  private _submitTextSubscription: Subscription;
 
   /** Reference to the subscription that is used to submit updates to the results list. */
   private _resultsSubscription: Subscription;
@@ -59,13 +64,10 @@ export class VbsSubmissionService {
   private _lsc = false;
 
   /** SessionID retrieved from DRES endpoint, automatically connected via second tab. Does not support private mode */
-  private _sessionId = undefined;
+  private _sessionId:string = undefined;
 
   /** Observable used to query the DRES status.*/
-  private _status: BehaviorSubject<SessionId> = new BehaviorSubject(null)
-
-  /** Observable used to query the DRES user */
-  private readonly _user: Observable<UserDetails>
+  private _status: BehaviorSubject<UserDetails> = new BehaviorSubject(null)
 
   constructor(private _config: AppConfig,
               private _eventbus: EventBusService,
@@ -86,17 +88,17 @@ export class VbsSubmissionService {
         this._interactionLogTable = _db.db.table('log_interaction');
         this._submissionLogTable = _db.db.table('log_submission');
         this.reset(config)
-        this._dresUser.getApiV1UserSession().subscribe(
+        this._dresUser.getApiV1User().subscribe(
             {
-              next: (sessionId) => {
-                this._status.next(sessionId)
+              next: (user) => {
+                this._status.next(user)
               },
               error: (error) => this._status.error(error)
             })
         this._status.subscribe({
-          next: (status) => {
-            if (status) {
-              this._sessionId = status.sessionId;
+          next: (user) => {
+            if (user) {
+              this._sessionId = user.sessionId;
             }
           },
           error: (e) => {
@@ -138,6 +140,14 @@ export class VbsSubmissionService {
   public submitSegment(segment: MediaSegmentScoreContainer) {
     if (this.isOn) {
       this.submit(segment, (segment.startabs + segment.endabs) / 2);
+    }
+  }
+
+  public submitText(text: string){
+    if(this.isOn){
+      // TODO how to log textual submissions?
+      console.log(`Submitting text ${text}`);
+      this._submitTextSubject.next(text);
     }
   }
 
@@ -274,7 +284,7 @@ export class VbsSubmissionService {
         map(([segment, time]): [string, number?] => this.convertToAppropriateRepresentation(segment, time)),
         mergeMap(([segment, frame]) => {
           /* Submit, do some logging and catch HTTP errors. */
-          return this._dresSubmit.getApiV1Submit(null, segment, frame).pipe(
+          return this._dresSubmit.getApiV1Submit(null, segment, null, frame).pipe(
               tap((status: SuccessfulSubmissionsStatus) => {
                 switch (status.submission) {
                   case 'CORRECT':
@@ -298,14 +308,14 @@ export class VbsSubmissionService {
               })
           )
         })
-    ).subscribe();
+    ).subscribe()
   }
 
   /**
    *
    */
-  get statusObservable(): Observable<SessionId> {
-    return this._status.asObservable()
+  get statusObservable(): Observable<UserDetails> {
+    return this._status
   }
 
   /**
@@ -337,6 +347,10 @@ export class VbsSubmissionService {
     if (this._submitSubscription != null) {
       this._submitSubscription.unsubscribe();
       this._submitSubscription = null;
+    }
+    if (this._submitTextSubscription != null) {
+      this._submitTextSubscription.unsubscribe();
+      this._submitTextSubscription = null;
     }
     if (this._interactionlogSubscription != null) {
       this._interactionlogSubscription.unsubscribe();

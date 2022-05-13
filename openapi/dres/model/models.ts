@@ -8,8 +8,6 @@ export * from './queryEvent';
 export * from './queryEventLog';
 export * from './queryResult';
 export * from './queryResultLog';
-export * from './sessionId';
 export * from './successStatus';
 export * from './successfulSubmissionsStatus';
 export * from './userDetails';
-export * from './userRequest';
