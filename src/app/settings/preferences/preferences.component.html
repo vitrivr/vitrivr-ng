@@ -13,7 +13,7 @@
         <h2 mat-subheader>DRES</h2>
         <mat-list-item>Endpoint: {{(_config|GetConfigVariablePipe:dresAddress)}}</mat-list-item>
         <mat-list-item><span [matBadge]="_dresStatusBadgeValue"
-                             matBadgeOverlap="false">Status: {{_dresStatus|async}}</span></mat-list-item>
+                             matBadgeOverlap="false">Status: {{_dresStatus}}</span></mat-list-item>
     </div>
 
     <h2 mat-subheader>Temporal mode</h2>

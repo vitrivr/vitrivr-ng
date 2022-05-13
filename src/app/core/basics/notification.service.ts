@@ -32,8 +32,4 @@ export class NotificationService {
   public getDresStatusBadgeObservable() {
     return this._dresStatusBadge.asObservable()
   }
-
-  public setDresStatusBadge(status: string) {
-    this._dresStatusBadge.next(status)
-  }
 }

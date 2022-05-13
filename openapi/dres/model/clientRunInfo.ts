@@ -18,13 +18,10 @@ export interface ClientRunInfo {
     status: ClientRunInfo.StatusEnum;
 }
 export namespace ClientRunInfo {
-    export type StatusEnum = 'CREATED' | 'ACTIVE' | 'PREPARING_TASK' | 'RUNNING_TASK' | 'TASK_ENDED' | 'TERMINATED';
+    export type StatusEnum = 'CREATED' | 'ACTIVE' | 'TERMINATED';
     export const StatusEnum = {
         CREATED: 'CREATED' as StatusEnum,
         ACTIVE: 'ACTIVE' as StatusEnum,
-        PREPARING_TASK: 'PREPARING_TASK' as StatusEnum,
-        RUNNING_TASK: 'RUNNING_TASK' as StatusEnum,
-        TASK_ENDED: 'TASK_ENDED' as StatusEnum,
         TERMINATED: 'TERMINATED' as StatusEnum
     };
 }
