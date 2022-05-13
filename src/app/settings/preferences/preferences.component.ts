@@ -188,16 +188,13 @@ export class PreferencesComponent implements AfterContentInit {
       next: (status) => {
         console.log(status)
         if (status) {
-          console.log('setting status to sessionId')
           this._dresStatus.next(status.sessionId)
           return;
         }
-        console.log('setting status to not logged in')
         this._dresStatus.next('not logged in')
         return
       },
       error: (e) => {
-        console.error(e)
         this._dresStatus.next('not logged in')
       }
     })
