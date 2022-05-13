@@ -12,10 +12,9 @@ import {SelectionService} from '../selection/selection.service';
 import {QueryService} from '../queries/query.service';
 import {DatabaseService} from '../basics/database.service';
 import Dexie from 'dexie';
-import {UserDetails} from './dres/model/userdetails.model';
 import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
-import {LogService, QueryEventLog, QueryResultLog, SubmissionService, SuccessfulSubmissionsStatus, UserService} from '../../../../openapi/dres';
+import {LogService, QueryEventLog, QueryResultLog, SubmissionService, SuccessfulSubmissionsStatus, UserDetails, UserService} from '../../../../openapi/dres';
 import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
 
 /**
@@ -68,10 +67,7 @@ export class VbsSubmissionService {
   private _sessionId:string = undefined;
 
   /** Observable used to query the DRES status.*/
-  private _status: BehaviorSubject<string>
-
-  /** Observable used to query the DRES user */
-  private readonly _user: Observable<UserDetails>
+  private _status: BehaviorSubject<UserDetails> = new BehaviorSubject(null)
 
   constructor(private _config: AppConfig,
               private _eventbus: EventBusService,
@@ -87,19 +83,18 @@ export class VbsSubmissionService {
 
     /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
     this._configSubscription = _config.configAsObservable.subscribe(config => {
-      this._status = new BehaviorSubject<string>(null)
       if (config?.dresEndpointRest) {
         this._resultsLogTable = _db.db.table('log_results');
         this._interactionLogTable = _db.db.table('log_interaction');
         this._submissionLogTable = _db.db.table('log_submission');
         this.reset(config)
         this._dresUser.getApiV1User().subscribe(user => {
-          this._status.next(user.sessionId)
+          this._status.next(user)
         })
         this._status.subscribe({
-          next: (status) => {
-            if (status) {
-              this._sessionId = status;
+          next: (user) => {
+            if (user) {
+              this._sessionId = user.sessionId;
             }
           },
           error: (e) => {
@@ -345,7 +340,7 @@ export class VbsSubmissionService {
   /**
    *
    */
-  get statusObservable(): Observable<string> {
+  get statusObservable(): Observable<UserDetails> {
     return this._status
   }
 

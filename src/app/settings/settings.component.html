@@ -1,12 +1,4 @@
 <mat-tab-group [(selectedIndex)]="_selectedIndex">
-    <mat-tab label="Textual Submission" matTooltip="Textual submission">
-        <ng-template mat-tab-label>
-            <mat-icon>title</mat-icon>
-            <mat-icon style="right: -0.5rem;">send</mat-icon>
-        </ng-template>
-        <app-textual-submission></app-textual-submission>
-    </mat-tab>
-
     <mat-tab label="Refinement" matTooltip="Query refinement">
         <ng-template mat-tab-label>
             <mat-icon>storage</mat-icon>
@@ -27,6 +19,5 @@
         </ng-template>
         <app-selection-management></app-selection-management>
     </mat-tab>
-
 
 </mat-tab-group>
