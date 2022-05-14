@@ -19,6 +19,7 @@ export class Config {
   public static SNACKBAR_DURATION = 2500;
 
   _config = {
+    title: 'vitrivr',
     api: {
       host: window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
       port: 4567, /* Port for the API. */
@@ -131,7 +132,7 @@ export class Config {
       object = JSON.parse(object);
     }
     if (object['api'] || object['resources'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
-      return new Config(object['api'], object['resources'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
+      return new Config(object['title'], object['api'], object['resources'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
     } else {
       return null;
     }
@@ -141,6 +142,7 @@ export class Config {
    * Default constructor for configuration object. The different configuration type can be passed to this constructor and the will be merged with
    * the default configuration.
    *
+   * @param title Optional title for the application as, e.g. loaded from a file.
    * @param api Optional Cineast API configuration as, e.g. loaded from a file.
    * @param resources Optional resources configuration as, e.g. loaded from a file.
    * @param query Optional query configuration, e.g. loaded from a file.
@@ -149,8 +151,11 @@ export class Config {
    * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
    * @param refinement Optional refinement configuration
    */
-  constructor(api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
+  constructor(title?: string, api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
     const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
+    if(title){
+      this._config.title = title;
+    }
     if (api) {
       this._config.api = DEEPMERGE(this._config.api, api, {arrayMerge: overwriteMerge});
     }
