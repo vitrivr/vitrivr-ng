@@ -30,6 +30,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   _loadBool = false
 
+  textualSubmissionOpen = false;
+
   /** Variable to safe currently selected view */
   public _active_view: View;
 
@@ -96,5 +98,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   /** Change the active view to the given one */
   public setActiveView(view: View) {
     this._active_view = view;
+  }
+
+  isCompetitionActive(){
+    return this._config.dresEndpointRest && ( this._config.get('competition.vbs') || this._config.get('competition.lsc') )
   }
 }

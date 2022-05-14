@@ -46,6 +46,20 @@
         <mat-icon>storage</mat-icon>
     </button>
 
+    <ng-container *ngIf="isCompetitionActive()">
+        <span class="spacer-flex"></span>
+
+        <div *ngIf="textualSubmissionOpen">
+            <app-textual-submission smallFont="true"></app-textual-submission>
+        </div>
+        <button mat-icon-button
+                (click)="textualSubmissionOpen = !textualSubmissionOpen"
+                [matTooltip]="(textualSubmissionOpen ? 'Close' : 'Open')+' textual submission input'">
+                <mat-icon>title</mat-icon>
+                <mat-icon style="transform: translate(-12px, 12px);">{{ textualSubmissionOpen ? 'close' : 'near_me'}}</mat-icon>
+        </button>
+    </ng-container>
+
     <span class="spacer-flex"></span>
 
     <app-api-status>

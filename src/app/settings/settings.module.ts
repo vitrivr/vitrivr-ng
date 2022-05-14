@@ -17,7 +17,7 @@ import { TextualSubmissionComponent } from './textual-submission/textual-submiss
 @NgModule({
   imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, NgxSliderModule, PipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule, ],
   declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent, TextualSubmissionComponent],
-  exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent]
+  exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, TextualSubmissionComponent]
 })
 export class SettingsModule {
 
