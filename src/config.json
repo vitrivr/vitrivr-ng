@@ -1,21 +1,18 @@
 {
-  "api": {
-    "host": "default"
-  },
-  "resources": {
-    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
-    "host_objects": "http://localhost:4567/objects/:o"
-  },
   "competition": {
-    "host": "",
-    "tls": true,
-    "log": false,
+    "host": "localhost:8080",
+    "tls": false,
+    "log": true,
     "lsc": false,
-    "vbs": false
+    "vbs": true
   },
   "mlt": {
-    "VIDEO": ["visualtextcoembedding"],
-    "IMAGE": ["visualtextcoembedding"]
+    "VIDEO": [
+      "visualtextcoembedding"
+    ],
+    "IMAGE": [
+      "visualtextcoembedding"
+    ]
   },
   "query": {
     "history": 0,
@@ -31,7 +28,10 @@
     },
     "text": {
       "categories": [
-        ["visualtextcoembedding", "Text Co-Embedding"]
+        [
+          "visualtextcoembedding",
+          "Text Co-Embedding"
+        ]
       ]
     },
     "boolean": [

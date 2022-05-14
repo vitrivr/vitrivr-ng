@@ -8,16 +8,14 @@ import {MetadataType} from '../messages/queries/metadata-type.model';
 export class Config {
   /** Context of the Cineast API. */
   public static readonly CONTEXT = 'api';
-
   /** Version of the Cineast API. */
   public static readonly VERSION = 'v1';
-
   /** The key under which the main configuration will be saved. */
   public static readonly DB_KEY = 'main';
-
   /** Default display duration for Snackbar messages. */
   public static SNACKBAR_DURATION = 2500;
-
+  /** A handy port checking regex based on https://stackoverflow.com/a/12968117 */
+  private static readonly PORT_REGEX = /:([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])\//;
   _config = {
     title: 'vitrivr',
     api: {
@@ -28,16 +26,19 @@ export class Config {
       ping_interval: 5000 /* Default ping interval in milliseconds. */
     },
     resources: {
-      host_thumbnails: window.location.protocol + '//' + window.location.hostname + '/vitrivr/thumbnails',
       /** Path / URL to location where media object thumbnails will be stored. */
-      host_objects: window.location.protocol + '//' + window.location.hostname + '/vitrivr/objects',
+      host_thumbnails: window.location.protocol + '//' + window.location.hostname + ':80/vitrivr/thumbnails',
       /** Path / URL to location where media object's will be stored. */
-      suffix_default: '.jpg',
+      host_objects: window.location.protocol + '//' + window.location.hostname + ':80/vitrivr/objects',
       /** Default suffix for thumbnails. */
+      suffix_default: '.jpg',
+      /** Per-mediatype suffix definition for thumbnails. */
       suffix: {
         'IMAGE': 'png',
         'VIDEO': 'png'
-      } /** Per-mediatype suffix definition for thumbnails. */
+      },
+      /** Options for the resources port: $host -> use the host's port, $api -> use the api port, number: specify the port */
+      port: '$host' // string to enable overrides
     },
     competition: {
       /* Toggles VBS mode; determines type of information that is submitted. */
@@ -159,11 +160,24 @@ export class Config {
     if (refinement) {
       this._config.refinement = DEEPMERGE(this._config.refinement, refinement, {arrayMerge: overwriteMerge});
     }
-    if (this._config.api.host === 'default') {
+    if (this._config.api.host === '$host') {
       this._config.api.host = window.location.hostname
     }
-    this._config.resources.host_objects = this._config.resources.host_objects.replace('/default/', '/' + window.location.hostname + '/');
-    this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace('/default/', '/' + window.location.hostname + '/');
+    this._config.resources.host_objects = this._config.resources.host_objects.replace('/$host/', '/' + window.location.hostname + '/');
+    this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace('/$host/', '/' + window.location.hostname + '/');
+    if (this._config.resources.port) {
+      const providedPort = this._config.resources.port;
+      let port = window.location.port;
+      if (providedPort === '$api') {
+        port = '' + this._config.api.port;
+      } else if (providedPort.match(Config.PORT_REGEX)?.length > 0) {
+        port = '' + providedPort;
+      } else if (providedPort === '$host') {
+        // default
+      } // no else, as this was the default.
+      this._config.resources.host_objects = this._config.resources.host_objects.replace(Config.PORT_REGEX, ':' + port + '/');
+      this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace(Config.PORT_REGEX, ':' + port + '/');
+    }
   }
 
   /**
