@@ -15,7 +15,6 @@ export interface SessionState {
     id?: string;
     validUntil?: number;
     type?: SessionState.TypeEnum;
-    sessionId?: string;
 }
 export namespace SessionState {
     export type TypeEnum = 'UNAUTHENTICATED' | 'USER' | 'ADMIN';

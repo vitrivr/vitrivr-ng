@@ -1,5 +1,5 @@
+import { QueryConfig } from '../../../../../../../openapi/cineast';
 import {Message} from '../message.interface';
-import {QueryConfig} from './query-config.interface';
 
 /**
  * General interface for a query message. The different types of query messages should inherit from this interface.

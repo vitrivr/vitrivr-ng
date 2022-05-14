@@ -12,6 +12,6 @@
 
 
 export interface IdList { 
-    ids?: Array<string>;
+    ids: Array<string>;
 }
 

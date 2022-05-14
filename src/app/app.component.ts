@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {QueryService} from './core/queries/query.service';
 import {Config} from './shared/model/config/config.model';
 import {Observable} from 'rxjs';
@@ -7,7 +7,6 @@ import {MatBottomSheet} from '@angular/material/bottom-sheet';
 import {HistoryComponent} from './results/history.component';
 import {DistinctElementLookupService} from './core/lookup/distinct-element-lookup.service';
 import {InputType} from './query/containers/bool/bool-attribute';
-import {SettingsComponent} from './settings/settings.component';
 import {NotificationService} from './core/basics/notification.service';
 import {AppConfig} from './app.config';
 
@@ -53,10 +52,10 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
     })
     this._loading = _queryService.observable.pipe(
-      filter(msg => ['STARTED', 'ENDED', 'ERROR'].indexOf(msg) > -1),
-      map(() => {
-        return _queryService.running;
-      })
+        filter(msg => ['STARTED', 'ENDED', 'ERROR'].indexOf(msg) > -1),
+        map(() => {
+          return _queryService.running;
+        })
     );
     _configService.configAsObservable.subscribe(c => this._config = c)
     this._active_view = View.GALLERY;

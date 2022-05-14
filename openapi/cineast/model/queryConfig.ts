@@ -14,17 +14,17 @@
 export interface QueryConfig { 
     queryId?: string;
     hints?: Set<QueryConfig.HintsEnum>;
+    relevantSegmentIds?: Set<string>;
     distance?: QueryConfig.DistanceEnum;
     distanceWeights?: Array<number>;
     norm?: number;
     resultsPerModule?: number;
     maxResults?: number;
-    relevantSegmentIds?: Set<string>;
     correspondenceFunctionIfEmpty?: QueryConfig;
-    correspondenceFunction?: object;
-    normIfEmpty?: QueryConfig;
-    distanceWeightsIfEmpty?: QueryConfig;
     distanceIfEmpty?: QueryConfig;
+    correspondenceFunction?: object;
+    distanceWeightsIfEmpty?: QueryConfig;
+    normIfEmpty?: QueryConfig;
     rawResultsPerModule?: number;
 }
 export namespace QueryConfig {

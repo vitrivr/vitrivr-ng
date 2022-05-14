@@ -9,7 +9,7 @@ import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
 import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
 import {TemporalMode} from './temporal-mode-container.model';
-import {from, BehaviorSubject} from 'rxjs';
+import {from} from 'rxjs';
 
 @Component({
   selector: 'app-preferences',
@@ -28,7 +28,7 @@ export class PreferencesComponent implements AfterContentInit {
   /** Table for persisting interaction logs. */
   private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
 
-  _dresStatus = new BehaviorSubject<string>('')
+  _dresStatus = ''
   _dresStatusBadgeValue: string;
 
   maxLength = 600;
@@ -44,10 +44,10 @@ export class PreferencesComponent implements AfterContentInit {
    * Constructor for PreferencesComponent
    */
   constructor(
-    private _configService: AppConfig,
-    private _db: DatabaseService,
-    private _submissionService: VbsSubmissionService,
-    private _notificationService: NotificationService
+      private _configService: AppConfig,
+      private _db: DatabaseService,
+      private _submissionService: VbsSubmissionService,
+      private _notificationService: NotificationService
   ) {
     this._configService.configAsObservable.subscribe(c => {
       this._config = c
@@ -83,7 +83,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._interactionLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-      .pipe(
+    .pipe(
         first(),
         map(h => {
           const zip = new JSZip();
@@ -93,17 +93,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-      )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+    )
+    .subscribe(zip => {
+      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-        )
-      });
+      )
+    });
   }
 
   /**
@@ -114,7 +114,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._resultsLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-      .pipe(
+    .pipe(
         first(),
         map(() => {
           const zip = new JSZip();
@@ -124,17 +124,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-      )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+    )
+    .subscribe(zip => {
+      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-        )
-      });
+      )
+    });
   }
 
   public onDownloadSubmissionLog() {
@@ -142,7 +142,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._submissionLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-      .pipe(
+    .pipe(
         first(),
         map(() => {
           const zip = new JSZip();
@@ -152,17 +152,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-      )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+    )
+    .subscribe(zip => {
+      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-        )
-      });
+      )
+    });
   }
 
   /**
@@ -186,19 +186,13 @@ export class PreferencesComponent implements AfterContentInit {
   ngAfterContentInit(): void {
     this._submissionService.statusObservable.subscribe({
       next: (status) => {
-        console.log(status)
         if (status) {
-          console.log('setting status to sessionId')
-          this._dresStatus.next(status)
+          this._dresStatus = status
           return;
         }
-        console.log('setting status to not logged in')
-        this._dresStatus.next('not logged in')
-        return
       },
       error: (e) => {
-        console.error(e)
-        this._dresStatus.next('not logged in')
+        this._dresStatus = 'connection error'
       }
     })
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)

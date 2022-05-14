@@ -1,6 +1,6 @@
 import {MoreLikeThisQueryMessage} from '../interfaces/requests/more-like-this-query.interface';
 import {MessageType} from '../message-type.model';
-import {QueryConfig} from '../interfaces/requests/query-config.interface';
+import { QueryConfig } from '../../../../../../openapi/cineast';
 import {MetadataAccessSpecification} from './metadata-access-specification.model';
 
 export class MoreLikeThisQuery implements MoreLikeThisQueryMessage {

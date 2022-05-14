@@ -8,8 +8,6 @@ import {MoreLikeThisQuery} from '../../shared/model/messages/queries/more-like-t
 import {QueryError} from '../../shared/model/messages/interfaces/responses/query-error.interface';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {NeighboringSegmentQuery} from '../../shared/model/messages/queries/neighboring-segment-query.model';
-import {ReadableQueryConfig} from '../../shared/model/messages/queries/readable-query-config.model';
-import {Hint} from '../../shared/model/messages/interfaces/requests/query-config.interface';
 import {FeatureCategories} from '../../shared/model/results/feature-categories.model';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
 import {filter, first} from 'rxjs/operators';
@@ -29,7 +27,7 @@ import {TagQueryTerm} from '../../shared/model/queries/tag-query-term.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
 import {EventBusService} from '../basics/event-bus.service';
 import {AppConfig} from '../../app.config';
-import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult} from '../../../../openapi/cineast';
+import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, QueryConfig} from '../../../../openapi/cineast';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
@@ -130,7 +128,7 @@ export class QueryService {
     this._config.configAsObservable.pipe(first()).subscribe(config => {
       const query = new TemporalQuery(
         containers.map(container => new StagedSimilarityQuery(container.stages, null)),
-        new ReadableTemporalQueryConfig(null, config.get<Hint[]>('query.config.hints'),
+        new ReadableTemporalQueryConfig(null, [],
         null, -1),
         config.metadataAccessSpec);
       this._socket.next(query)
@@ -198,7 +196,7 @@ export class QueryService {
     }
     const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
       new ReadableTemporalQueryConfig(null,
-        this._config.config.get<Hint[]>('query.config.hints'),
+        [],
         timeDistances,
         maxLength),
       this._config.config.metadataAccessSpec);
@@ -292,7 +290,7 @@ export class QueryService {
       .filter(c => categories.indexOf(c) === -1)
       .forEach(c => categories.push(c));
     if (categories.length > 0) {
-      this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, new ReadableQueryConfig(null, config.get<Hint[]>('query.config.hints')), config.metadataAccessSpec));
+      this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, <QueryConfig>{}, config.metadataAccessSpec));
     }
 
     return true;
@@ -321,7 +319,7 @@ export class QueryService {
       return false;
     }
 
-    this._socket.next(new NeighboringSegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), count, this._config.config.metadataAccessSpec));
+    this._socket.next(new NeighboringSegmentQuery(segmentId, <QueryConfig>{queryId: this.results.queryId}, count, this._config.config.metadataAccessSpec));
     return true;
   }
 
@@ -341,7 +339,7 @@ export class QueryService {
     if (!this._socket) {
       return false;
     }
-    this._socket.next(new SegmentQuery(segmentId, new ReadableQueryConfig(this.results.queryId), this._config.config.metadataAccessSpec));
+    this._socket.next(new SegmentQuery(segmentId, <QueryConfig>{queryId: this.results.queryId}, this._config.config.metadataAccessSpec));
     return true;
   }
 

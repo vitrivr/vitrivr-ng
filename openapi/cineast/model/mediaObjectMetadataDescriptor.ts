@@ -17,6 +17,5 @@ export interface MediaObjectMetadataDescriptor {
     key?: string;
     value?: string;
     exists?: boolean;
-    objectId?: string;
 }
 

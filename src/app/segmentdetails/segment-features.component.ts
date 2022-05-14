@@ -39,7 +39,7 @@ export class SegmentFeaturesComponent {
     // get the tags associated with a segmentid
     this._metaService.findTagInformationById(segment.segmentId).subscribe(tagIds =>
       // needed to receive remaining information for a tag object, since cineast only sends its id
-      this._tagService.findTagsById({ids: tagIds.tagIDs}).subscribe(res => {
+      this._tagService.findTagsById({ids: tagIds.tags}).subscribe(res => {
         this._tags = res.tags;
       })
     );
