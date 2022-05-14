@@ -1,7 +1,6 @@
 import {AfterContentInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {NotificationUtil} from '../shared/util/notification.util';
 import {NotificationService} from '../core/basics/notification.service';
-import {AppConfig} from '../app.config';
 
 @Component({
   selector: 'app-settings',

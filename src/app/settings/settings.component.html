@@ -1,25 +1,25 @@
 <mat-tab-group [(selectedIndex)]="_selectedIndex">
 
-    <mat-tab label="Refinement" matTooltip="Query refinement">
-        <ng-template mat-tab-label>
-            <mat-icon>storage</mat-icon>
-        </ng-template>
-        <app-refinement></app-refinement>
-    </mat-tab>
+  <mat-tab label="Refinement" matTooltip="Query refinement">
+    <ng-template mat-tab-label>
+      <mat-icon>storage</mat-icon>
+    </ng-template>
+    <app-refinement></app-refinement>
+  </mat-tab>
 
-    <mat-tab label="Preferences" matTooltip="Preferences refinement">
-        <ng-template mat-tab-label>
-            <mat-icon [matBadge]="_badgeValue">settings</mat-icon>
-        </ng-template>
-        <app-preferences></app-preferences>
-    </mat-tab>
+  <mat-tab label="Preferences" matTooltip="Preferences refinement">
+    <ng-template mat-tab-label>
+      <mat-icon [matBadge]="_badgeValue">settings</mat-icon>
+    </ng-template>
+    <app-preferences></app-preferences>
+  </mat-tab>
 
-    <mat-tab label="Tags" matTooltip="Manage selections">
-        <ng-template mat-tab-label>
-            <mat-icon>album</mat-icon>
-        </ng-template>
-        <app-selection-management></app-selection-management>
-    </mat-tab>
+  <mat-tab label="Tags" matTooltip="Manage selections">
+    <ng-template mat-tab-label>
+      <mat-icon>album</mat-icon>
+    </ng-template>
+    <app-selection-management></app-selection-management>
+  </mat-tab>
 
 
 </mat-tab-group>

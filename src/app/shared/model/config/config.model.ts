@@ -104,7 +104,7 @@ export class Config {
         neighboringSegmentLookupAllCount: 200000
       },
       text: {
-        categories: ["visualtextcoembedding", "Text Co-Embedding"]
+        categories: ['visualtextcoembedding', 'Text Co-Embedding']
       },
       boolean: [],
       temporal_mode: 'TEMPORAL_DISTANCE',
@@ -121,23 +121,6 @@ export class Config {
   };
 
   /**
-   * Deserializes a Config object from a given JavaScript object or string.
-   *
-   * @param {{} | string} object The object that should be parsed.
-   * @return {Config} The resulting config object.
-   */
-  public static deserialize(object: {} | string): Config {
-    if (typeof object === 'string') {
-      object = JSON.parse(object);
-    }
-    if (object['api'] || object['resources'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
-      return new Config(object['title'], object['api'], object['resources'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
-    } else {
-      return null;
-    }
-  }
-
-  /**
    * Default constructor for configuration object. The different configuration type can be passed to this constructor and the will be merged with
    * the default configuration.
    *
@@ -152,7 +135,7 @@ export class Config {
    */
   constructor(title?: string, api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
     const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
-    if(title){
+    if (title) {
       this._config.title = title;
     }
     if (api) {
@@ -226,6 +209,23 @@ export class Config {
     this._config.query.metadata.object.forEach(el => spec.push(new MetadataAccessSpecification(MetadataType.OBJECT, el[0], el[1])))
     this._config.query.metadata.segment.forEach(el => spec.push(new MetadataAccessSpecification(MetadataType.SEGMENT, el[0], el[1])))
     return spec;
+  }
+
+  /**
+   * Deserializes a Config object from a given JavaScript object or string.
+   *
+   * @param {{} | string} object The object that should be parsed.
+   * @return {Config} The resulting config object.
+   */
+  public static deserialize(object: {} | string): Config {
+    if (typeof object === 'string') {
+      object = JSON.parse(object);
+    }
+    if (object['api'] || object['resources'] || object['query'] || object['competition'] || object['tags'] || object['mlt'] || object['refinement']) {
+      return new Config(object['title'], object['api'], object['resources'], object['query'], object['competition'], object['tags'], object['mlt'], object['refinement']);
+    } else {
+      return null;
+    }
   }
 
   /**

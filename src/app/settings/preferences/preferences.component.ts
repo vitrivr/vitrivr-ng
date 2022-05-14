@@ -18,36 +18,30 @@ import {from} from 'rxjs';
 })
 export class PreferencesComponent implements AfterContentInit {
   _config: Config;
-
-  /** Table for persisting result logs. */
-  private _resultsLogTable: Dexie.Table<any, number>;
-
-  /** Table for persisting submission log */
-  private _submissionLogTable: Dexie.Table<any, number>;
-
-  /** Table for persisting interaction logs. */
-  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
-
   _dresStatus = ''
   _dresStatusBadgeValue: string;
-
   maxLength = 600;
-
   cineast = ((c: Config) => c.cineastEndpointWs);
   dresAddress = ((c: Config) => c._config.competition.host);
   hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails);
   hostObjects = ((c: Config) => c._config.resources.host_objects);
   mode = ((c: Config) => c._config.query.temporal_mode);
   defaultContainerDist = ((c: Config) => c._config.query.default_temporal_distance);
+  /** Table for persisting result logs. */
+  private _resultsLogTable: Dexie.Table<any, number>;
+  /** Table for persisting submission log */
+  private _submissionLogTable: Dexie.Table<any, number>;
+  /** Table for persisting interaction logs. */
+  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
 
   /**
    * Constructor for PreferencesComponent
    */
   constructor(
-      private _configService: AppConfig,
-      private _db: DatabaseService,
-      private _submissionService: VbsSubmissionService,
-      private _notificationService: NotificationService
+    private _configService: AppConfig,
+    private _db: DatabaseService,
+    private _submissionService: VbsSubmissionService,
+    private _notificationService: NotificationService
   ) {
     this._configService.configAsObservable.subscribe(c => {
       this._config = c
@@ -83,7 +77,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._interactionLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-    .pipe(
+      .pipe(
         first(),
         map(h => {
           const zip = new JSZip();
@@ -93,17 +87,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-    )
-    .subscribe(zip => {
-      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-      )
-    });
+        )
+      });
   }
 
   /**
@@ -114,7 +108,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._resultsLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-    .pipe(
+      .pipe(
         first(),
         map(() => {
           const zip = new JSZip();
@@ -124,17 +118,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-    )
-    .subscribe(zip => {
-      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-      )
-    });
+        )
+      });
   }
 
   public onDownloadSubmissionLog() {
@@ -142,7 +136,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._submissionLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-    .pipe(
+      .pipe(
         first(),
         map(() => {
           const zip = new JSZip();
@@ -152,17 +146,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-    )
-    .subscribe(zip => {
-      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-      )
-    });
+        )
+      });
   }
 
   /**
@@ -187,7 +181,7 @@ export class PreferencesComponent implements AfterContentInit {
     this._submissionService.statusObservable.subscribe({
       next: (status) => {
         if (status) {
-          this._dresStatus = status
+          this._dresStatus = status.sessionId
           return;
         }
       },
