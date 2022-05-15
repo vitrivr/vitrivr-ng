@@ -1,10 +1,10 @@
 {
   "competition": {
-    "host": "localhost:8080",
+    "host": "",
     "tls": false,
     "log": true,
     "lsc": false,
-    "vbs": true
+    "vbs": false
   },
   "mlt": {
     "VIDEO": [

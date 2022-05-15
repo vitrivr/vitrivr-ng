@@ -41,7 +41,7 @@
 
             <div class="spacer-flex"></div>
 
-            <mat-icon (click)="onSubmitPressed()" *ngIf="(_vbs | CompetitionEnabledPipe |async)"
+            <mat-icon (click)="onSubmitPressed()" *ngIf="(_vbs | competitionEnabledPipe |async)"
                       class="player-button" matTooltip="Submit current position to VBS API.">send
             </mat-icon>
             <vg-mute></vg-mute>

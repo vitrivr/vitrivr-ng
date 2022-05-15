@@ -47,7 +47,7 @@
     <mat-icon>storage</mat-icon>
   </button>
 
-  <ng-container *ngIf="isCompetitionActive()">
+  <ng-container *ngIf="(this._config | competitionEnabledPipe |async)">
     <span class="spacer-flex"></span>
 
     <div *ngIf="textualSubmissionOpen">
