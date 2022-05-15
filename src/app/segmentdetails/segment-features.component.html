@@ -49,5 +49,17 @@
                 {{ocr}}
             </div>
         </mat-tab>
+        <mat-tab *ngIf="_meta.length>0" label="Metadata">
+
+            <table mat-table [dataSource]="_meta">
+                <ng-container matColumnDef="{{meta}}" *ngFor="let meta of metaCols">
+                    <th mat-header-cell *matHeaderCellDef> {{meta}}</th>
+                    <td mat-cell *matCellDef="let detailElement"> {{detailElement[meta]}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="metaCols"></tr>
+                <tr mat-row *matRowDef="let detailRow; columns: metaCols;"></tr>
+            </table>
+        </mat-tab>
     </mat-tab-group>
 </div>
