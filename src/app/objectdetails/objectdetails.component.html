@@ -5,6 +5,11 @@
 <div *ngIf="_mediaObject as obj" style="padding:10px;">
     <app-objectviewer #objectviewerComponent [mediaobject]="obj"></app-objectviewer>
 
+    <mat-button-toggle-group name="orderType" aria-label="Order By" [value]="orderTypeStr" (change)="onOrderTypeChange($event.value)" >
+        <mat-button-toggle value="score">Score</mat-button-toggle>
+        <mat-button-toggle value="time">Time</mat-button-toggle>
+    </mat-button-toggle-group>
+
     <div *ngIf="_mediaObject._segmentsObservable |async as segments">
 
         <mat-tab-group>
