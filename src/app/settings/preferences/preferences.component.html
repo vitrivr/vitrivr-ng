@@ -12,8 +12,19 @@
     <div *ngIf="_config | DresEnabledPipe">
         <h2 mat-subheader>DRES</h2>
         <mat-list-item>Endpoint: {{(_config|GetConfigVariablePipe:dresAddress)}}</mat-list-item>
+        <mat-list-item *ngIf="_status"><span>Username: {{_status.username}}</span></mat-list-item>
+        <mat-list-item *ngIf="_status"><span>Role: {{_status.role}}</span></mat-list-item>
         <mat-list-item><span [matBadge]="_dresStatusBadgeValue"
-                             matBadgeOverlap="false">Status: {{_dresStatus}}</span></mat-list-item>
+                             matBadgeOverlap="false">SessionID: {{_status===null?'':_status.sessionId}}</span></mat-list-item>
+        <mat-list-item *ngIf="_status"><span>ID: {{_status.id}}</span></mat-list-item>
+        <h3 *ngIf="_activeRun" matSubheader>Active Run</h3>
+        <mat-list-item *ngIf="_activeRun"><span>Name: {{_activeRun.name}}</span></mat-list-item>
+        <mat-list-item *ngIf="_activeRun"><span>Description: {{_activeRun.description}}</span></mat-list-item>
+        <h3 *ngIf="_activeTask" matSubheader>Active Task</h3>
+        <mat-list-item *ngIf="_activeTask"><span>Name: {{_activeTask.name}}</span></mat-list-item>
+        <mat-list-item *ngIf="_activeTask"><span>Type: {{_activeTask.taskGroup}}</span></mat-list-item>
+        <mat-list-item *ngIf="_activeTask.running"><span>Remaining Time: {{_activeTask.remainingTime}}</span></mat-list-item>
+
     </div>
 
     <h2 mat-subheader>Temporal mode</h2>
