@@ -14,56 +14,7 @@ For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/
 There is a `config.json` which enables configuration of the UI to a certain extend.
 While we provide a sensible [default config](src/config.json), the
 some default values are better explored in the [code](src/app/shared/model/config/config.model.ts).
-
-It's worth noting that there are customised variables for the API and resource hosts:
-
-### API / Cineast:
-
-The backend location can be specified as such:
-
-```json
-{
-  "api": {
-    "host": "$host", /* The host name of the API. Special value '$host', uses the serving host as API hostname (e.g. vitrivr-ng is served on example.com, example.com is used) */
-    "port": 4567, /* The port of the API. */
-    "http_secure": false, /* Whether or not TLS should be used for HTTP connection. */
-    "ws_secure": false, /* Whether or not TLS should be used for WebSocket connection. */
-    "ping_interval": 5000 /* Default ping interval in milliseconds. */
-  }
-}
-```
-All values are optional.
-
-### Resources
-
-The resources can be specified as such:
-
-```json
-{
-  "resources": {
-    "host_thumbnails": "http://somehost.com/thumbnails",
-    /** Path / URL to location where media object thumbnails will be stored. */
-    "host_objects": "http://somehost.com/objects",
-    /** Path / URL to location where media object's will be stored. */
-    "suffix_default": ".jpg",
-    /** Default suffix for thumbnails. */
-    "suffix": {
-      /** Per-mediatype suffix definition for thumbnails. */
-      "IMAGE": "png",
-      "VIDEO": "png"
-    },
-    "port": "$host" /** Resources port */
-  }
-}
-```
-
-* `host_thumbnails`: Path / URL to location of the thumbnails. Defaults to the currently serving host.
-* `host_objects`: Path / URL to location of the objects media files. Defaults to the currently serving host.
-* `port`: Port of the resources. Defaults to the currently serving port, which is equivalent to `$host`. To use the port of the API, use `$api`. Otherwise a numeric port can be provided (as string, i.e. in quotes).
-
-See [the wiki](https://github.com/vitrivr/vitrivr-ng/wiki/Configuration#resource-name-tokens) for further information on how to specify the thumbnails and objects resolution and which variables to use.
-
-All values are optional.
+Information about the configuration can be found in [the wiki](https://github.com/vitrivr/vitrivr-ng/wiki/Configuration).
 
 ## Development server
 
