@@ -17,7 +17,7 @@
                 <div fxLayout="row" fxLayoutGap="5px" fxLayoutWrap="wrap">
                     <div (dragstart)="onSegmentDrag($event, segment)"
                          *ngFor="let segment of (segments | orderBy:orderType)" class="tile"
-                         draggable="true" fxFlex="200px">
+                         draggable="true" fxFlex="200px" [style.border-top-color]="segment.score | BackgroundScorePipe:segment:[]" [style.border-bottom-color]="segment.score | BackgroundScorePipe:segment:[]">
                         <div class="tile-header" fxLayout fxLayoutAlign="space-between start">
                             <p [style.margin]="'0'">{{segment.segmentId}} ({{segment._score | ScorePercentagePipe}}&#37;)</p>
                             <p *ngIf="segment.endabs > 0" [style.margin]="'0'">{{segment.startabs.toFixed(2)}}
