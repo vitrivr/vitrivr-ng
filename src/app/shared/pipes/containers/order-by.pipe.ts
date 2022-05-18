@@ -6,21 +6,21 @@ import {OrderBySegmentIdPipe} from './order-by-segment-id.pipe';
 
 export enum OrderType {
   /**
-   * Type to use OrderByScorePipe (actually order the segments by their score
+   * Type to use OrderByScorePipe (actually order the segments by their score)
    */
   SCORE,
   /**
-   * Type to use OrderBySegmenPipe (actually orders the segments by their time values
+   * Type to use OrderBySegmenPipe (actually orders the segments by their time values)
    */
   SEGMENT_TIME,
   /**
-   * Type to use OrderBySegmentIdPipe (actually orders the segments by their id
+   * Type to use OrderBySegmentIdPipe (actually orders the segments by their id)
    */
   SEGMENT_ID
 }
 
 /**
- * A pipe which can take an agrument to which sorting it shoud use
+ * A pipe which can take an argument to which sorting it should use
  */
 @Pipe({name: 'orderBy'})
 export class OrderByPipe implements PipeTransform {

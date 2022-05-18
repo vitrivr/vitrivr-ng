@@ -44,9 +44,9 @@ export class ObjectdetailsComponent implements OnInit {
   _showSubmitButton = false
   _loading = false
 
-  private _lsc = false;
   /** Currently selected objectID */
   private objectIdObservable: Observable<string>;
+  orderTypeStr: string;
 
   constructor(private _route: ActivatedRoute,
               private _snackBar: MatSnackBar,
@@ -61,17 +61,7 @@ export class ObjectdetailsComponent implements OnInit {
               private _segmentService: SegmentService,
               private _config: AppConfig,
               private readonly _vbs: VbsSubmissionService) {
-
-    _config.configAsObservable.subscribe(config => {
-      this._lsc = config.get<boolean>('competition.lsc');
-      if (this._lsc) {
-        this.orderType = OrderType.SEGMENT_ID
-      } else {
-        this.orderType = OrderType.SCORE;
-      }
-    });
     _vbs.isOn.subscribe(res => this._showSubmitButton = res);
-
 
     /** Generate observables required to create the view. */
     this.objectIdObservable = _route.params.pipe(
@@ -86,7 +76,9 @@ export class ObjectdetailsComponent implements OnInit {
      */
     if (!this._query.results) {
       this._container = new MediaObjectScoreContainer(undefined);
-      this.orderType = OrderType.SEGMENT_TIME;
+      this.setOrderType(OrderType.SEGMENT_TIME)
+    }else{
+      this.setOrderType(OrderType.SCORE)
     }
 
     this.objectIdObservable.pipe(
@@ -144,6 +136,8 @@ export class ObjectdetailsComponent implements OnInit {
       })
     ).subscribe()
   }
+
+
 
   /**
    * Event Handler: Whenever a segment is dragged, that segment is converted to JSON and added to the dataTransfer
@@ -218,5 +212,28 @@ export class ObjectdetailsComponent implements OnInit {
   public onSubmitPressed(segment: MediaSegmentScoreContainer) {
     console.debug(`submitting for segment ${segment.segmentId}`);
     this._vbs.submitSegment(segment)
+  }
+
+  onOrderTypeChange(value: string) {
+    switch (value) {
+      case 'score':
+        this.orderType = OrderType.SCORE
+        break;
+      case 'time':
+        this.orderType = OrderType.SEGMENT_TIME
+        break;
+    }
+  }
+
+  private setOrderType(type: OrderType) {
+    this.orderType = type
+    switch(type){
+      case OrderType.SCORE:
+        this.orderTypeStr = 'score'
+        break;
+      case OrderType.SEGMENT_TIME:
+        this.orderTypeStr = 'time'
+        break;
+    }
   }
 }
