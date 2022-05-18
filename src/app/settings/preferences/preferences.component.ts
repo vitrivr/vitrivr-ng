@@ -1,4 +1,4 @@
-import {AfterContentInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {Config} from '../../shared/model/config/config.model';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
@@ -10,6 +10,7 @@ import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
 import {TemporalMode} from './temporal-mode-container.model';
 import {from} from 'rxjs';
+import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, UserDetails} from "../../../../openapi/dres";
 
 @Component({
   selector: 'app-preferences',
@@ -18,30 +19,40 @@ import {from} from 'rxjs';
 })
 export class PreferencesComponent implements AfterContentInit {
   _config: Config;
-  _dresStatus = ''
+
+  /** Table for persisting result logs. */
+  private _resultsLogTable: Dexie.Table<any, number>;
+
+  /** Table for persisting submission log */
+  private _submissionLogTable: Dexie.Table<any, number>;
+
+  /** Table for persisting interaction logs. */
+  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
+
   _dresStatusBadgeValue: string;
+  _status: UserDetails = null
+
   maxLength = 600;
+
   cineast = ((c: Config) => c.cineastEndpointWs);
   dresAddress = ((c: Config) => c._config.competition.host);
   hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails);
   hostObjects = ((c: Config) => c._config.resources.host_objects);
   mode = ((c: Config) => c._config.query.temporal_mode);
   defaultContainerDist = ((c: Config) => c._config.query.default_temporal_distance);
-  /** Table for persisting result logs. */
-  private _resultsLogTable: Dexie.Table<any, number>;
-  /** Table for persisting submission log */
-  private _submissionLogTable: Dexie.Table<any, number>;
-  /** Table for persisting interaction logs. */
-  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
+  _activeRun: ClientRunInfo;
+  _activeTask: ClientTaskInfo;
 
   /**
    * Constructor for PreferencesComponent
    */
   constructor(
-    private _configService: AppConfig,
-    private _db: DatabaseService,
-    private _submissionService: VbsSubmissionService,
-    private _notificationService: NotificationService
+      private _configService: AppConfig,
+      private _db: DatabaseService,
+      private _submissionService: VbsSubmissionService,
+      private _notificationService: NotificationService,
+      private _cdr: ChangeDetectorRef,
+      private _runInfo: ClientRunInfoService
   ) {
     this._configService.configAsObservable.subscribe(c => {
       this._config = c
@@ -181,14 +192,27 @@ export class PreferencesComponent implements AfterContentInit {
     this._submissionService.statusObservable.subscribe({
       next: (status) => {
         if (status) {
-          this._dresStatus = status.sessionId
-          return;
+          this._status = status
+          this._cdr.markForCheck()
         }
-      },
-      error: (e) => {
-        this._dresStatus = 'connection error'
       }
     })
+    setInterval(() => {
+      if (this._status) {
+        this._runInfo.getApiV1ClientRunInfoList(this._status.sessionId).subscribe(list => {
+          var l = list.runs.filter(info => info.status == "ACTIVE")
+          this._activeRun = l.length == 0 ? null : l[0]
+          this._cdr.markForCheck()
+          if (this._activeRun) {
+            this._runInfo.getApiV1ClientRunInfoCurrenttaskWithRunid(this._activeRun.id, this._status.sessionId).subscribe(task => {
+              this._activeTask = task
+              this._cdr.markForCheck()
+            })
+          }
+        })
+      }
+    }, 5 * 1000);
+    this._runInfo.getApiV1ClientRunInfoList(this._status.sessionId)
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }
