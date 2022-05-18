@@ -30,6 +30,7 @@
             "styles": [
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/leaflet-geosearch/dist/geosearch.css",
+              "node_modules/@videogular/ngx-videogular/fonts/videogular.css",
               "src/vitrivr-theme.scss"
             ],
             "scripts": [],
