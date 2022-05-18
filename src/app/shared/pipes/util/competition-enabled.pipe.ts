@@ -22,7 +22,9 @@ export class CompetitionEnabledPipe implements PipeTransform {
     if(type){
       if(type === 'vbs' || type === 'lsc'){
         return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.'+type)));
-      } else{
+      } else if(type.length === 0){
+        return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.host')));
+      }else{
         throw Error(`Invalid competition type: ${type}`);
       }
     }
