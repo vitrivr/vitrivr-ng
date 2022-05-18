@@ -5,6 +5,8 @@ table {
 .tile {
     width: 200px;
     height: 200px;
+    border-top:10px solid;
+    border-bottom:10px solid;
     margin-bottom: 25px;
     box-shadow: 0.15em 0.15em 0.05em 0 rgba(0, 0, 0, 0.4); /* The top layer shadow */
     position: relative;

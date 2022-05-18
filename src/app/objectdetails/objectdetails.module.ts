@@ -12,9 +12,10 @@ import {AdvancedMediaPlayerModule} from '../shared/components/video/advanced-vid
 import {MetadataDetailsComponent} from './metadata-details.component';
 import {ObjectviewerComponent} from './objectviewer.component';
 import {SegmentfeaturesModule} from '../segmentdetails/segmentfeatures.module';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
-  imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, PipesModule, AdvancedMediaPlayerModule, SegmentfeaturesModule],
+  imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, PipesModule, AdvancedMediaPlayerModule, SegmentfeaturesModule, MatButtonToggleModule],
   declarations: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent, ObjectviewerComponent],
   exports: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent, ObjectviewerComponent],
 })
