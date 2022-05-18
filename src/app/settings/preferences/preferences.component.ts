@@ -88,7 +88,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._interactionLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-    .pipe(
+      .pipe(
         first(),
         map(h => {
           const zip = new JSZip();
@@ -98,17 +98,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-    )
-    .subscribe(zip => {
-      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-      )
-    });
+        )
+      });
   }
 
   /**
@@ -119,7 +119,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._resultsLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-    .pipe(
+      .pipe(
         first(),
         map(() => {
           const zip = new JSZip();
@@ -129,17 +129,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-    )
-    .subscribe(zip => {
-      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-      )
-    });
+        )
+      });
   }
 
   public onDownloadSubmissionLog() {
@@ -147,7 +147,7 @@ export class PreferencesComponent implements AfterContentInit {
     from(this._submissionLogTable.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-    .pipe(
+      .pipe(
         first(),
         map(() => {
           const zip = new JSZip();
@@ -157,17 +157,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-    )
-    .subscribe(zip => {
-      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-      )
-    });
+        )
+      });
   }
 
   /**

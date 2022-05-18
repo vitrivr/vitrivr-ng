@@ -5,7 +5,7 @@ import {AppConfig} from '../../../app.config';
 import { Observable } from 'rxjs';
 
 @Pipe({
-  name: 'CompetitionEnabledPipe'
+  name: 'competitionEnabledPipe' // should be camelCase https://angular.io/guide/styleguide
 })
 export class CompetitionEnabledPipe implements PipeTransform {
 
@@ -13,11 +13,21 @@ export class CompetitionEnabledPipe implements PipeTransform {
   }
 
   /**
-   * Returns true uf VBS mode is active and properly configured (i.e. endpoint and team ID is specified).
+   * Returns true if the competition host is set. False otherwise. Doesn't require an input
+   * @param type The type to check. empty to generically check for competition
    *
    * @return {boolean}
    */
-  public transform(submissionService: VbsSubmissionService): Observable<boolean> {
-    return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.host')));
+  public transform(type?: string): Observable<boolean> {
+    if(type){
+      if(type === 'vbs' || type === 'lsc'){
+        return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.'+type)));
+      } else if(type.length === 0){
+        return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.host')));
+      }else{
+        throw Error(`Invalid competition type: ${type}`);
+      }
+    }
+      return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.host')));
   }
 }

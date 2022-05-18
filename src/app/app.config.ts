@@ -4,6 +4,7 @@ import {Config} from './shared/model/config/config.model';
 import {HttpClient} from '@angular/common/http';
 import {UUIDGenerator} from './shared/util/uuid-generator.util';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {Title} from '@angular/platform-browser';
 
 /**
  * A service providing the application's configuration and means to (re) load it.
@@ -23,7 +24,12 @@ export class AppConfig {
     }
   } as ProxyHandler<Config>;
 
-  constructor(private http: HttpClient, protected _snackBar: MatSnackBar) {
+  constructor(private http: HttpClient, protected _snackBar: MatSnackBar, private titleService: Title) {
+    AppConfig.settingsSubject.subscribe(settings => {
+      if (settings) {
+        this.titleService.setTitle(settings.get('title'));
+      }
+    });
   }
 
   /**
@@ -33,15 +39,15 @@ export class AppConfig {
     return AppConfig.settings;
   }
 
-  public publishChanges() {
-    AppConfig.settingsSubject.next(AppConfig.settings)
-  }
-
   /**
    * Returns the current configuration as observable. Can be used to monitor changes.
    */
   get configAsObservable(): Observable<Config> {
     return AppConfig.settingsSubject.asObservable();
+  }
+
+  public publishChanges() {
+    AppConfig.settingsSubject.next(AppConfig.settings)
   }
 
   /**

@@ -9,6 +9,13 @@ Vitrivr NG is a web-based user interface developed to be used with the latest ve
 
 For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/wiki)
 
+## Config
+
+There is a `config.json` which enables configuration of the UI to a certain extend.
+While we provide a sensible [default config](src/config.json), the
+some default values are better explored in the [code](src/app/shared/model/config/config.model.ts).
+Information about the configuration can be found in [the wiki](https://github.com/vitrivr/vitrivr-ng/wiki/Configuration).
+
 ## Development server
 
 From the project folder, run `ng serve` to start a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.

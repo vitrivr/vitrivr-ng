@@ -25,4 +25,5 @@ export class SettingsComponent implements AfterContentInit {
       this._badgeValue = el
     })
   }
+
 }

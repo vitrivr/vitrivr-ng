@@ -23,17 +23,13 @@ export class AppComponent implements OnInit, AfterViewInit {
   settingsbadge = '';
 
   _config: Config;
-
-  /** Observable that return the loading state of the QueryService. */
-  private readonly _loading: Observable<boolean>;
-
   _loadBool = false
-
+  textualSubmissionOpen = false;
   /** Variable to safe currently selected view */
   public _active_view: View;
-
   competitionHost = ((c: Config) => c._config.competition.host);
-
+  /** Observable that return the loading state of the QueryService. */
+  private readonly _loading: Observable<boolean>;
 
   /**
    * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
@@ -50,10 +46,10 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
     })
     this._loading = _queryService.observable.pipe(
-        filter(msg => ['STARTED', 'ENDED', 'ERROR'].indexOf(msg) > -1),
-        map(() => {
-          return _queryService.running;
-        })
+      filter(msg => ['STARTED', 'ENDED', 'ERROR'].indexOf(msg) > -1),
+      map(() => {
+        return _queryService.running;
+      })
     );
     _configService.configAsObservable.subscribe(c => this._config = c)
     this._active_view = View.GALLERY;
@@ -95,5 +91,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   /** Change the active view to the given one */
   public setActiveView(view: View) {
     this._active_view = view;
+  }
+
+  isCompetitionActive() {
+    return this._configService.configAsObservable;
+    return this._config.dresEndpointRest && (this._config.get('competition.vbs') || this._config.get('competition.lsc'))
   }
 }

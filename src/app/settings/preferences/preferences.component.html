@@ -2,13 +2,19 @@
 
 <mat-list dense>
 
-    <h2 mat-subheader>Cineast</h2>
-    <mat-list-item>{{_config | GetConfigVariablePipe:cineast}}</mat-list-item>
+  <h2 mat-subheader>Cineast</h2>
+  <mat-list-item>{{_config | GetConfigVariablePipe:cineast}}</mat-list-item>
 
-    <h2 mat-subheader>Resources</h2>
-    <mat-list-item>Objects: {{_config | GetConfigVariablePipe:hostObjects}}</mat-list-item>
-    <mat-list-item>Thumbnails: {{_config | GetConfigVariablePipe:hostThumbnails}}</mat-list-item>
-
+  <h2 mat-subheader>Resources</h2>
+  <mat-list-item>
+    <div mat-line class="mat-h3">Objects:</div>
+    <div mat-line>{{_config | GetConfigVariablePipe:hostObjects}}</div>
+  </mat-list-item>
+  <mat-list-item>
+    <div mat-line class="mat-h3">Thumbnails:</div>
+    <div mat-line>{{_config | GetConfigVariablePipe:hostThumbnails}}</div>
+  </mat-list-item>
+<mat-divider></mat-divider>
     <div *ngIf="_config | DresEnabledPipe">
         <h2 mat-subheader>DRES</h2>
         <mat-list-item>Endpoint: {{(_config|GetConfigVariablePipe:dresAddress)}}</mat-list-item>
@@ -22,7 +28,7 @@
         </mat-list-item>
         <mat-list-item *ngIf="_status"><span>ID: {{_status.id}}</span></mat-list-item>
         <div *ngIf="_activeRun">
-            <h3> matSubheader>Active Run</h3>
+            <h3 matSubheader>Active Run</h3>
             <mat-list-item><span>Name: {{_activeRun.name}}</span></mat-list-item>
             <mat-list-item><span>Description: {{_activeRun.description}}</span></mat-list-item>
         </div>
@@ -31,12 +37,12 @@
             <h3 matSubheader>Active Task</h3>
             <mat-list-item><span>Name: {{_activeTask.name}}</span></mat-list-item>
             <mat-list-item><span>Type: {{_activeTask.taskGroup}}</span></mat-list-item>
-            <mat-list-item *ngIf="_activeTask.running"><span>Remaining Time: {{_activeTask.remainingTime}}</span>
+            <mat-list-item *ngIf="_activeTask.running"><span>Remaining Time: {{_activeTask.remainingTime | formatTime}}</span>
             </mat-list-item>
         </div>
 
+    <mat-divider></mat-divider>
     </div>
-
     <h2 mat-subheader>Temporal mode</h2>
     <mat-list-item>
         <mat-form-field fxLayoutAlign="center">
@@ -63,49 +69,49 @@
         </button>
     </mat-list-item>
 
-    <h2 mat-subheader>Temporal Query Defaults</h2>
-    <mat-list-item>Default container distance: {{_config|GetConfigVariablePipe:defaultContainerDist}}</mat-list-item>
+  <h2 mat-subheader>Temporal Query Defaults</h2>
+  <mat-list-item>Default container distance: {{_config|GetConfigVariablePipe:defaultContainerDist}}</mat-list-item>
 
-    <h2 mat-subheader>Reset settings</h2>
-    <mat-list-item fxLayout="row" fxLayoutAlign="center">
-        <button (click)="onResetButtonClicked()" color="warn" mat-raised-button
-                matTooltip="Reset and reload settings from server">Reset
-        </button>
-    </mat-list-item>
+  <h2 mat-subheader>Reset settings</h2>
+  <mat-list-item fxLayout="row" fxLayoutAlign="center">
+    <button (click)="onResetButtonClicked()" color="warn" mat-raised-button
+            matTooltip="Reset and reload settings from server">Reset
+    </button>
+  </mat-list-item>
 </mat-list>
 
 <h3>Logs</h3>
 <mat-list dense>
-    <h2 mat-subheader>Interaction log</h2>
-    <mat-list-item fxLayout="row" fxLayoutAlign="center">
-        <button (click)="onDownloadInteractionLog()" mat-raised-button matTooltip="Downdload Interaction Log">
-            <mat-icon>cloud_download</mat-icon>
-        </button>
-        <button (click)="onClearInteractionLog()" color="warn" mat-raised-button matTooltip="Clear Interaction Log">
-            <mat-icon>delete</mat-icon>
-        </button>
+  <h2 mat-subheader>Interaction log</h2>
+  <mat-list-item fxLayout="row" fxLayoutAlign="center">
+    <button (click)="onDownloadInteractionLog()" mat-raised-button matTooltip="Downdload Interaction Log">
+      <mat-icon>cloud_download</mat-icon>
+    </button>
+    <button (click)="onClearInteractionLog()" color="warn" mat-raised-button matTooltip="Clear Interaction Log">
+      <mat-icon>delete</mat-icon>
+    </button>
 
-    </mat-list-item>
+  </mat-list-item>
 
-    <h2 mat-subheader>Results log</h2>
-    <mat-list-item fxLayout="row" fxLayoutAlign="center">
-        <button (click)="onDownloadResultsLog()" mat-raised-button matTooltip="Download Result Log">
-            <mat-icon>cloud_download</mat-icon>
-        </button>
-        <button (click)="onClearResultsLog()" color="warn" mat-raised-button matTooltip="Clear Result Log">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </mat-list-item>
+  <h2 mat-subheader>Results log</h2>
+  <mat-list-item fxLayout="row" fxLayoutAlign="center">
+    <button (click)="onDownloadResultsLog()" mat-raised-button matTooltip="Download Result Log">
+      <mat-icon>cloud_download</mat-icon>
+    </button>
+    <button (click)="onClearResultsLog()" color="warn" mat-raised-button matTooltip="Clear Result Log">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-list-item>
 
-    <h2 mat-subheader>Submission log</h2>
-    <mat-list-item fxLayout="row" fxLayoutAlign="center">
-        <button (click)="onDownloadSubmissionLog()" mat-raised-button matTooltip="Download Submission Log">
-            <mat-icon>cloud_download</mat-icon>
-        </button>
-        <button (click)="onClearSubmissionLog()" color="warn" mat-raised-button matTooltip="Clear Submission Log">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </mat-list-item>
+  <h2 mat-subheader>Submission log</h2>
+  <mat-list-item fxLayout="row" fxLayoutAlign="center">
+    <button (click)="onDownloadSubmissionLog()" mat-raised-button matTooltip="Download Submission Log">
+      <mat-icon>cloud_download</mat-icon>
+    </button>
+    <button (click)="onClearSubmissionLog()" color="warn" mat-raised-button matTooltip="Clear Submission Log">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-list-item>
 </mat-list>
 
 

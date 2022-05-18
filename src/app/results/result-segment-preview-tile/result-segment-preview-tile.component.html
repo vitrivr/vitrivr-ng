@@ -19,7 +19,7 @@
     </div>
 
     <div *ngIf="_focus" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
-        <button (click)="onSubmitButtonClicked()" *ngIf="(_vbs |CompetitionEnabledPipe | async)"
+        <button (click)="onSubmitButtonClicked()" *ngIf="('' |competitionEnabledPipe | async)"
                 mat-icon-button matTooltip="Submit segment to VBS">
             <mat-icon>send</mat-icon>
         </button>

@@ -285,30 +285,54 @@ export class VbsSubmissionService {
         mergeMap(([segment, frame]) => {
           /* Submit, do some logging and catch HTTP errors. */
           return this._dresSubmit.getApiV1Submit(null, segment, null, frame).pipe(
-              tap((status: SuccessfulSubmissionsStatus) => {
-                switch (status.submission) {
-                  case 'CORRECT':
-                    this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-success'});
-                    break;
-                  case 'WRONG':
-                    this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-warning'});
-                    break;
-                  default:
-                    this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION});
-                    break;
-                }
-              }),
-              catchError(err => {
-                if (err.error) {
-                  this._snackBar.open(`Submissions error: ${err.error.description}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
-                } else {
-                  this._snackBar.open(`Submissions error: ${err.message}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
-                }
-                return of(null)
-              })
+            tap((status: SuccessfulSubmissionsStatus) => {
+              this.handleSubmissionResponse(status);
+            }),
+            catchError(err => {
+              return this.handleSubmissionError(err);
+            })
           )
         })
     ).subscribe()
+
+    /* Setup submission subscription, which is triggered manually. */
+    this._submitTextSubscription = this._submitTextSubject.pipe(
+      mergeMap((text) => {
+        /* Submit, do some logging and catch HTTP errors. */
+        return this._dresSubmit.getApiV1Submit(null, null, text).pipe(
+          tap((status: SuccessfulSubmissionsStatus) => {
+            this.handleSubmissionResponse(status);
+          }),
+          catchError(err => {
+            return this.handleSubmissionError(err);
+          })
+        )
+      })
+    ).subscribe()
+  }
+
+
+  private handleSubmissionError(err) {
+    if (err.error) {
+      this._snackBar.open(`Submissions error: ${err.error.description}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
+    } else {
+      this._snackBar.open(`Submissions error: ${err.message}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
+    }
+    return of(null)
+  }
+
+  private handleSubmissionResponse(status: SuccessfulSubmissionsStatus) {
+    switch (status.submission) {
+      case 'CORRECT':
+        this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-success'});
+        break;
+      case 'WRONG':
+        this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-warning'});
+        break;
+      default:
+        this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION});
+        break;
+    }
   }
 
   /**
