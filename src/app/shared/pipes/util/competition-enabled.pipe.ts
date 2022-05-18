@@ -14,10 +14,18 @@ export class CompetitionEnabledPipe implements PipeTransform {
 
   /**
    * Returns true if the competition host is set. False otherwise. Doesn't require an input
+   * @param type The type to check. empty to generically check for competition
    *
    * @return {boolean}
    */
-  public transform(_: any): Observable<boolean> {
-    return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.host')));
+  public transform(type?: string): Observable<boolean> {
+    if(type){
+      if(type === 'vbs' || type === 'lsc'){
+        return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.'+type)));
+      } else{
+        throw Error(`Invalid competition type: ${type}`);
+      }
+    }
+      return this._config.configAsObservable.pipe(map(c => c.get<boolean>('competition.host')));
   }
 }
