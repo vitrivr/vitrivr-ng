@@ -12,18 +12,28 @@
     <div *ngIf="_config | DresEnabledPipe">
         <h2 mat-subheader>DRES</h2>
         <mat-list-item>Endpoint: {{(_config|GetConfigVariablePipe:dresAddress)}}</mat-list-item>
-        <mat-list-item *ngIf="_status"><span>Username: {{_status.username}}</span></mat-list-item>
-        <mat-list-item *ngIf="_status"><span>Role: {{_status.role}}</span></mat-list-item>
+        <div *ngIf="_status">
+            <mat-list-item><span>Username: {{_status.username}}</span></mat-list-item>
+            <mat-list-item><span>Role: {{_status.role}}</span></mat-list-item>
+        </div>
+
         <mat-list-item><span [matBadge]="_dresStatusBadgeValue"
-                             matBadgeOverlap="false">SessionID: {{_status===null?'':_status.sessionId}}</span></mat-list-item>
+                             matBadgeOverlap="false">SessionID: {{_status === null ? '' : _status.sessionId}}</span>
+        </mat-list-item>
         <mat-list-item *ngIf="_status"><span>ID: {{_status.id}}</span></mat-list-item>
-        <h3 *ngIf="_activeRun" matSubheader>Active Run</h3>
-        <mat-list-item *ngIf="_activeRun"><span>Name: {{_activeRun.name}}</span></mat-list-item>
-        <mat-list-item *ngIf="_activeRun"><span>Description: {{_activeRun.description}}</span></mat-list-item>
-        <h3 *ngIf="_activeTask" matSubheader>Active Task</h3>
-        <mat-list-item *ngIf="_activeTask"><span>Name: {{_activeTask.name}}</span></mat-list-item>
-        <mat-list-item *ngIf="_activeTask"><span>Type: {{_activeTask.taskGroup}}</span></mat-list-item>
-        <mat-list-item *ngIf="_activeTask.running"><span>Remaining Time: {{_activeTask.remainingTime}}</span></mat-list-item>
+        <div *ngIf="_activeRun">
+            <h3> matSubheader>Active Run</h3>
+            <mat-list-item><span>Name: {{_activeRun.name}}</span></mat-list-item>
+            <mat-list-item><span>Description: {{_activeRun.description}}</span></mat-list-item>
+        </div>
+
+        <div *ngIf="_activeTask">
+            <h3 matSubheader>Active Task</h3>
+            <mat-list-item><span>Name: {{_activeTask.name}}</span></mat-list-item>
+            <mat-list-item><span>Type: {{_activeTask.taskGroup}}</span></mat-list-item>
+            <mat-list-item *ngIf="_activeTask.running"><span>Remaining Time: {{_activeTask.remainingTime}}</span>
+            </mat-list-item>
+        </div>
 
     </div>
 
@@ -32,7 +42,9 @@
         <mat-form-field fxLayoutAlign="center">
             <mat-select [value]="_config|GetConfigVariablePipe:mode" (selectionChange)="onModeChanged($event.value)">
                 <mat-option [value]="'SEQUENTIAL'" matTooltip="Sequential temporal scoring">sequential</mat-option>
-                <mat-option [value]="'TEMPORAL_DISTANCE'" matTooltip="Time distance temporal scoring">temporal distance</mat-option>
+                <mat-option [value]="'TEMPORAL_DISTANCE'" matTooltip="Time distance temporal scoring">temporal
+                    distance
+                </mat-option>
             </mat-select>
         </mat-form-field>
     </mat-list-item>
@@ -40,7 +52,8 @@
     <h2 mat-subheader>Max sequence length</h2>
     <mat-list-item>
         <mat-form-field fxLayoutAlign="center">
-            <input matInput type="number" value="30" [(ngModel)]="maxLength" style="text-align: right" matTooltip="Set the maximal length of a temporal sequence">
+            <input matInput type="number" value="30" [(ngModel)]="maxLength" style="text-align: right"
+                   matTooltip="Set the maximal length of a temporal sequence">
             <span matSuffix>sec.</span>
         </mat-form-field>
     </mat-list-item>
