@@ -27,11 +27,12 @@ import {QueryStageIndexPipe} from './query/query-stage-index.pipe';
 import {QueryStageLast} from './query/query-stage-last.pipe';
 import {ModelHasTermPipe} from './util/model-has-term.pipe';
 import {FilterTagsPipe} from './containers/filter-tags.pipe';
+import {FormatTimePipe} from './util/format-time.pipe';
 
 @NgModule({
   imports: [],
-  declarations: [FilterTagsPipe, ModelHasTermPipe, QueryStageLast, QueryStageIndexPipe, BackgroundScorePipe, ScorePercentagePipe, SortTagsPipe, TextWithLinkPipe, ColorForRelevancePipe, CompetitionEnabledPipe, SegmentPathPipe, IiifResourceUrlPipe, ObjectPathPipe, ThumbnailPathPipe, ObjectFilterTemporalPipe, GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe],
-  exports: [FilterTagsPipe, ModelHasTermPipe, QueryStageLast, QueryStageIndexPipe, BackgroundScorePipe, ScorePercentagePipe, SortTagsPipe, TextWithLinkPipe, ColorForRelevancePipe, CompetitionEnabledPipe, SegmentPathPipe, IiifResourceUrlPipe, ObjectPathPipe, ThumbnailPathPipe, ObjectFilterTemporalPipe, GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe]
+  declarations: [FilterTagsPipe, ModelHasTermPipe, QueryStageLast, QueryStageIndexPipe, BackgroundScorePipe, ScorePercentagePipe, SortTagsPipe, TextWithLinkPipe, ColorForRelevancePipe, CompetitionEnabledPipe, SegmentPathPipe, IiifResourceUrlPipe, ObjectPathPipe, ThumbnailPathPipe, ObjectFilterTemporalPipe, GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe, FormatTimePipe],
+  exports: [FilterTagsPipe, ModelHasTermPipe, QueryStageLast, QueryStageIndexPipe, BackgroundScorePipe, ScorePercentagePipe, SortTagsPipe, TextWithLinkPipe, ColorForRelevancePipe, CompetitionEnabledPipe, SegmentPathPipe, IiifResourceUrlPipe, ObjectPathPipe, ThumbnailPathPipe, ObjectFilterTemporalPipe, GetConfigVariablePipe, DresEnabledPipe, OrderBySegmentPipe, FlattenPathsPipe, OrderByScorePipe, FilterPipe, LimitPipe, ArrayObjectSortPipe, SetStringSortPipe, LimitObjectsPipe, LimitPathsPipe, OrderBySegmentIdPipe, OrderByPipe, FormatTimePipe]
 })
 export class PipesModule {
 }

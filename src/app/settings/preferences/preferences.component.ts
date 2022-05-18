@@ -200,7 +200,7 @@ export class PreferencesComponent implements AfterContentInit {
     setInterval(() => {
       if (this._status) {
         this._runInfo.getApiV1ClientRunInfoList(this._status.sessionId).subscribe(list => {
-          var l = list.runs.filter(info => info.status == "ACTIVE")
+          const l = list.runs.filter(info => info.status == 'ACTIVE');
           this._activeRun = l.length == 0 ? null : l[0]
           this._cdr.markForCheck()
           if (this._activeRun) {
@@ -212,7 +212,6 @@ export class PreferencesComponent implements AfterContentInit {
         })
       }
     }, 5 * 1000);
-    this._runInfo.getApiV1ClientRunInfoList(this._status.sessionId)
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }
