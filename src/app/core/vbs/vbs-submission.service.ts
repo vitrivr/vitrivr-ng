@@ -38,15 +38,8 @@ export class VbsSubmissionService {
   /** Reference to the subscription that is used to submit updates to the results list. */
   private _resultsSubscription: Subscription;
 
-  /** Reference to the subscription for temporal scoring objects that is used to submit updates to the results list. */
-  private _temporalResultsSubscription: Subscription;
-
-
   /** Reference to the subscription that is used to submit interaction logs on a regular basis to the VBS server. */
   private _interactionlogSubscription: Subscription;
-
-  /** Reference to the subscription to the vitrivr NG configuration. */
-  private _configSubscription: Subscription;
 
   /** Table for persisting result logs. */
   private _resultsLogTable: Dexie.Table<any, number>;
@@ -63,8 +56,11 @@ export class VbsSubmissionService {
   /** Internal flag used to determine if LSC competition is running. */
   private _lsc = false;
 
+  /** Internal flag used to determine whether interactions, submissions and results should be logged. */
+  private _log = false;
+
   /** SessionID retrieved from DRES endpoint, automatically connected via second tab. Does not support private mode */
-  private _sessionId:string = undefined;
+  private _sessionId: string = undefined;
 
   /** Observable used to query the DRES status.*/
   private _status: BehaviorSubject<UserDetails> = new BehaviorSubject(null)
@@ -82,12 +78,18 @@ export class VbsSubmissionService {
               _db: DatabaseService) {
 
     /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
-    this._configSubscription = _config.configAsObservable.subscribe(config => {
-      if (config?.dresEndpointRest) {
+    _config.configAsObservable.subscribe(config => {
+      if (!config) {
+        return
+      }
+      this._log = config._config.competition.log
+      if (this._log) {
         this._resultsLogTable = _db.db.table('log_results');
         this._interactionLogTable = _db.db.table('log_interaction');
         this._submissionLogTable = _db.db.table('log_submission');
         this.reset(config)
+      }
+      if (config?.dresEndpointRest) {
         this._dresUser.getApiV1User().subscribe(
             {
               next: (user) => {
@@ -105,8 +107,6 @@ export class VbsSubmissionService {
             console.error('failed to connect to DRES', e)
           }
         })
-      } else {
-        this.cleanup()
       }
     });
 
@@ -143,8 +143,8 @@ export class VbsSubmissionService {
     }
   }
 
-  public submitText(text: string){
-    if(this.isOn){
+  public submitText(text: string) {
+    if (this.isOn) {
       // TODO how to log textual submissions?
       console.log(`Submitting text ${text}`);
       this._submitTextSubject.next(text);
@@ -158,7 +158,9 @@ export class VbsSubmissionService {
    * @param time The video timestamp to submit.
    */
   public submit(segment: MediaSegmentScoreContainer, time: number) {
-    this._submissionLogTable.add([segment.segmentId, time])
+    if (this._log) {
+      this._submissionLogTable.add([segment.segmentId, time])
+    }
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
     this._selection.add(this._selection._available[0], segment.segmentId);
@@ -169,17 +171,17 @@ export class VbsSubmissionService {
    */
   public reset(config: Config) {
     /* Update local flags. */
-    this._lsc = config.get<boolean>('competition.lsc');
-    this._vbs = config.get<boolean>('competition.vbs');
+    this._lsc = config._config.competition.lsc
+    this._vbs = config._config.competition.vbs;
 
     /* Run cleanup. */
     this.cleanup();
 
     /* Setup interaction log subscription, which runs in a regular interval. */
-    if (config.get('competition.log') === true) {
+    if (this._log) {
       this._interactionlogSubscription = DresTypeConverter.mapEventStream(this._eventbus.observable()).pipe(
-          bufferTime(config.get('competition.loginterval')),
-          map((events: QueryEventLog[], index: number) => {
+          bufferTime(config._config.competition.loginterval),
+          map((events: QueryEventLog[]) => {
             if (events && events.length > 0) {
               const composite = <QueryEventLog>{timestamp: Date.now(), events: []}
               for (const e of events) {
@@ -227,11 +229,18 @@ export class VbsSubmissionService {
       ); /* IMPORTANT: Limits the number of submissions to one per second. */
 
 
-      this._resultsSubscription = combineLatest([resultSubscription, this._eventbus.currentView(), this._eventbus.lastQuery()]).pipe(
-          filter(([results, context, queryInfo]) => context !== TemporalListComponent.COMPONENT_NAME),
-          map(([results, context, queryInfo]) => DresTypeConverter.mapSegmentScoreContainer(context, results, queryInfo)),
+      this._resultsSubscription = combineLatest([resultSubscription, temporalResultsSubscription, this._eventbus.currentView(), this._eventbus.lastQuery()]).pipe(
+          map(([results, temporalResults, context, queryInfo]) => {
+            switch (context) {
+              case TemporalListComponent.COMPONENT_NAME:
+                return DresTypeConverter.mapTemporalScoreContainer(context, temporalResults, queryInfo)
+              default:
+                return DresTypeConverter.mapSegmentScoreContainer(context, results, queryInfo)
+            }
+          }),
           filter(submission => submission != null),
           mergeMap((submission: QueryResultLog) => {
+            console.log(`logging result log`)
             this._resultsLogTable.add(submission)
 
             /* Stop if no sessionId is set */
@@ -251,63 +260,42 @@ export class VbsSubmissionService {
             );
           })
       ).subscribe();
-
-      /* Heavily duplicated code from above */
-      this._temporalResultsSubscription = combineLatest([temporalResultsSubscription, this._eventbus.currentView(), this._eventbus.lastQuery()]).pipe(
-          filter(([results, context, queryInfo]) => context === TemporalListComponent.COMPONENT_NAME),
-          map(([results, context, queryInfo]) => DresTypeConverter.mapTemporalScoreContainer(context, results, queryInfo)),
-          filter(submission => submission != null),
-          mergeMap((submission: QueryResultLog) => {
-            this._resultsLogTable.add(submission)
-
-            /* Stop if no sessionId is set */
-            if (!this._sessionId) {
-              return EMPTY
-            }
-
-            /* Do some logging and catch HTTP errors. */
-            console.log(`Submitting temporal result log to DRES...`);
-            return this._dresLog.postApiV1LogResult(this._sessionId, submission).pipe(
-                tap(o => {
-                  console.log(`Successfully submitted result log to DRES!`);
-                }),
-                catchError((err) => {
-                  return of(`Failed to submit segment to DRES due to a HTTP error (${err.status}).`)
-                })
-            );
-          })
-      ).subscribe();
     }
 
     /* Setup submission subscription, which is triggered manually. */
     this._submitSubscription = this._submitSubject.pipe(
         map(([segment, time]): [string, number?] => this.convertToAppropriateRepresentation(segment, time)),
         mergeMap(([segment, frame]) => {
+          /* Stop if no sessionId is set */
+          if (!this._sessionId) {
+            return EMPTY
+          }
+
           /* Submit, do some logging and catch HTTP errors. */
           return this._dresSubmit.getApiV1Submit(null, segment, null, frame).pipe(
-            tap((status: SuccessfulSubmissionsStatus) => {
-              this.handleSubmissionResponse(status);
-            }),
-            catchError(err => {
-              return this.handleSubmissionError(err);
-            })
+              tap((status: SuccessfulSubmissionsStatus) => {
+                this.handleSubmissionResponse(status);
+              }),
+              catchError(err => {
+                return this.handleSubmissionError(err);
+              })
           )
         })
-    ).subscribe()
+    ).subscribe();
 
     /* Setup submission subscription, which is triggered manually. */
     this._submitTextSubscription = this._submitTextSubject.pipe(
-      mergeMap((text) => {
-        /* Submit, do some logging and catch HTTP errors. */
-        return this._dresSubmit.getApiV1Submit(null, null, text).pipe(
-          tap((status: SuccessfulSubmissionsStatus) => {
-            this.handleSubmissionResponse(status);
-          }),
-          catchError(err => {
-            return this.handleSubmissionError(err);
-          })
-        )
-      })
+        mergeMap((text) => {
+          /* Submit, do some logging and catch HTTP errors. */
+          return this._dresSubmit.getApiV1Submit(null, null, text).pipe(
+              tap((status: SuccessfulSubmissionsStatus) => {
+                this.handleSubmissionResponse(status);
+              }),
+              catchError(err => {
+                return this.handleSubmissionError(err);
+              })
+          )
+        })
     ).subscribe()
   }
 
