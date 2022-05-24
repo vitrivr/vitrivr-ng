@@ -1,131 +1,42 @@
 {
-  "title": "LSC21 - vitrivr",
-  "api": {
-    "host": "10.34.58.176"
-  },
-  "resources": {
-    "host_thumbnails": "http://10.34.58.176/lsc21/lsc21-thumbnails/:o/:s.jpg",
-    "host_objects": "http://10.34.58.176/lsc21/lsc21-image/:n/:S.jpg"
-  },
   "competition": {
     "host": "",
+    "tls": false,
     "log": true,
-    "lsc": true,
-    "vbs": false,
-    "tls": true
+    "lsc": false,
+    "vbs": false
   },
   "mlt": {
-    "IMAGE": [
-      "clipimage"
+    "VIDEO": [
+      "visualtextcoembedding"
     ],
-    "IMAGE_SEQUENCE": [
-      "clipimage"
+    "IMAGE": [
+      "visualtextcoembedding"
     ]
   },
   "query": {
-    "temporal_mode": "TEMPORAL_DISTANCE",
-    "temporal_max_length": 86400,
-    "default_temporal_distance": 1800,
     "history": 0,
     "options": {
       "image": true,
       "audio": false,
       "model3d": false,
       "text": true,
-      "tag": true,
+      "tag": false,
       "semantic": true,
       "boolean": true,
-      "map": true,
       "skeleton": false
     },
     "text": {
       "categories": [
         [
-          "ocr",
-          "Text on Screen"
-        ],
-        [
           "visualtextcoembedding",
           "Text Co-Embedding"
-        ],
-        [
-          "clip",
-          "CLIP"
         ]
       ]
     },
     "boolean": [
       {
-        "display": "Hour",
-        "input": "RANGE",
-        "table": "features_table_lsc20meta",
-        "col": "p_hour",
-        "range": [0, 23]
-      },
-      {
-        "display": "Weekday",
-        "input": "OPTIONS",
-        "table": "features_table_lsc20meta",
-        "col": "p_day_of_week",
-        "options": [
-          "MONDAY",
-          "TUESDAY",
-          "WEDNESDAY",
-          "THURSDAY",
-          "FRIDAY",
-          "SATURDAY",
-          "SUNDAY"
-        ]
-      },
-      {
-        "display": "Day of Month",
-        "input": "DYNAMICOPTIONS",
-        "table": "features_table_lsc20meta",
-        "col": "p_day",
-        "type": "number"
-      },
-      {
-        "display": "Location",
-        "input": "DYNAMICOPTIONS",
-        "table": "features_table_lsc20meta",
-        "col": "semantic_name"
-      },
-      {
-        "display": "Year",
-        "input": "DYNAMICOPTIONS",
-        "table": "features_table_lsc20meta",
-        "col": "p_year",
-        "type": "number"
-      },
-      {
-        "display": "Month",
-        "input": "DYNAMICOPTIONS",
-        "table": "features_table_lsc20meta",
-        "col": "p_month"
-      },
-      {
-        "display": "Transport",
-        "input": "DYNAMICOPTIONS",
-        "table": "features_table_lsc20meta",
-        "col": "activity_type"
-      },
-      {
-        "display": "Timezone",
-        "input": "DYNAMICOPTIONS",
-        "table": "features_table_lsc20meta",
-        "col": "timezone"
-      },
-      {
-        "display": "Segment Id [Meta]",
-        "input": "TEXT",
-        "table": "features_table_lsc20meta",
-        "col": "id",
-        "operators": [
-          "="
-        ]
-      },
-      {
-        "display": "Segment Id [Segments]",
+        "display": "Segment Id",
         "input": "TEXT",
         "table": "cineast_segment",
         "col": "segmentid",
@@ -134,7 +45,7 @@
         ]
       },
       {
-        "display": "Object Id [Segments]",
+        "display": "Object Id",
         "input": "TEXT",
         "table": "cineast_segment",
         "col": "objectid",
@@ -147,30 +58,13 @@
   "refinement": {
     "filters": [
       [
-        "LSCMETA.semantic_name",
+        "dominantcolor.color",
         "CHECKBOX"
       ],
       [
-        "LSCMETA.timezone",
-        "CHECKBOX"
-      ],
-      [
-        "LSCMETA.p_day_of_week",
-        "CHECKBOX"
-      ],
-      [
-        "LSCMETA.p_hour",
+        "technical.duration",
         "SLIDER"
-      ],
-      [
-        "LSCMETA.p_month",
-        "CHECKBOX"
-      ],
-      [
-        "LSCMETA.p_year",
-        "CHECKBOX"
       ]
     ]
   }
 }
-
