@@ -1,6 +1,15 @@
 {
+  "title": "Custom vitrivr",
+  "api": {
+    "host": "vitrivr-domain.com",
+    "port": "1234"
+  },
+  "resources": {
+    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
+    "host_objects": "http://localhost:4567/objects/:o"
+  },
   "competition": {
-    "host": "",
+    "host": "dres.org",
     "tls": false,
     "log": true,
     "lsc": false,
@@ -22,9 +31,18 @@
       "model3d": false,
       "text": true,
       "tag": false,
+      "map": false,
       "semantic": true,
       "boolean": true,
       "skeleton": false
+    },
+    "metadata": {
+      "object": [
+        ["technical", "duration"]
+      ],
+      "segment": [
+        ["*", "*"]
+      ]
     },
     "text": {
       "categories": [
