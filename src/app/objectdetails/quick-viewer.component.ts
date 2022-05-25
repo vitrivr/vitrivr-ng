@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {ResolverService} from '../core/basics/resolver.service';
-import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../core/competition/vbs-submission.service';
 import * as openseadragon from 'openseadragon';
 import {ConfigService} from '../core/basics/config.service';
 

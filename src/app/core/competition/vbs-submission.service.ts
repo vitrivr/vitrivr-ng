@@ -16,6 +16,9 @@ import {AppConfig} from '../../app.config';
 import {MetadataService} from '../../../../openapi/cineast';
 import {LogService, QueryEventLog, QueryResultLog, SubmissionService, SuccessfulSubmissionsStatus, UserDetails, UserService} from '../../../../openapi/dres';
 import {TemporalListComponent} from '../../results/temporal/temporal-list.component';
+import {FilterService} from "../queries/filter.service";
+import {ResultLogItem} from "./logging/result-log-item";
+import {SegmentScoreLogContainer} from "./logging/segment-score-log-container";
 
 /**
  * This service is used to submit segments to VBS web-service for the Video Browser Showdown challenge. Furthermore, if
@@ -41,14 +44,17 @@ export class VbsSubmissionService {
   /** Reference to the subscription that is used to submit interaction logs on a regular basis to the VBS server. */
   private _interactionlogSubscription: Subscription;
 
-  /** Table for persisting result logs. */
-  private _resultsLogTable: Dexie.Table<any, number>;
+  /** Table for persisting our result logs. */
+  private _dresResultsLogTable: Dexie.Table<QueryResultLog, number>;
 
-  /** Table for persisting submission logs */
-  private _submissionLogTable: Dexie.Table<any, number>;
+  /** Table for persisting DRES result logs. */
+  private _resultsLogTable: Dexie.Table<ResultLogItem, number>;
 
-  /** Table for persisting interaction logs. */
-  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
+  /** Table for persisting DRES submission logs */
+  private _dresSubmissionLogTable: Dexie.Table<any, number>;
+
+  /** Table for persisting DRES interaction logs. */
+  private _dresInteractionLogTable: Dexie.Table<QueryEventLog, number>;
 
   /** Internal flag used to determine if VBS competition is running. */
   private _vbs = false;
@@ -75,7 +81,8 @@ export class VbsSubmissionService {
               private _dresSubmit: SubmissionService,
               private _dresLog: LogService,
               private _dresUser: UserService,
-              _db: DatabaseService) {
+              _db: DatabaseService,
+              private _filterService: FilterService) {
 
     /* This subscription registers the event-mapping, recording and submission stream if the VBS mode is active and un-registers it, if it is switched off! */
     _config.configAsObservable.subscribe(config => {
@@ -84,9 +91,10 @@ export class VbsSubmissionService {
       }
       this._log = config._config.competition.log
       if (this._log) {
+        this._dresResultsLogTable = _db.db.table('log_results_dres');
         this._resultsLogTable = _db.db.table('log_results');
-        this._interactionLogTable = _db.db.table('log_interaction');
-        this._submissionLogTable = _db.db.table('log_submission');
+        this._dresInteractionLogTable = _db.db.table('log_interaction_dres');
+        this._dresSubmissionLogTable = _db.db.table('log_submission_dres');
         this.reset(config)
       }
       if (config?.dresEndpointRest) {
@@ -159,7 +167,7 @@ export class VbsSubmissionService {
    */
   public submit(segment: MediaSegmentScoreContainer, time: number) {
     if (this._log) {
-      this._submissionLogTable.add([segment.segmentId, time])
+      this._dresSubmissionLogTable.add([segment.segmentId, time])
     }
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
@@ -194,7 +202,7 @@ export class VbsSubmissionService {
           }),
           filter(submission => submission != null),
           mergeMap((submission: QueryEventLog) => {
-            this._interactionLogTable.add(submission);
+            this._dresInteractionLogTable.add(submission);
 
             /* Stop if no sessionId is set */
             if (!this._sessionId) {
@@ -215,7 +223,7 @@ export class VbsSubmissionService {
       ).subscribe();
 
       /* Setup results subscription, which is triggered upon change to the result set. */
-      const resultSubscription = this._queryService.observable.pipe(
+      const resultSubscription: Observable<MediaSegmentScoreContainer[]> = this._queryService.observable.pipe(
           filter(f => f === 'ENDED'),
           mergeMap(f => this._queryService.results.segmentsAsObservable),
           debounceTime(1000)
@@ -228,20 +236,55 @@ export class VbsSubmissionService {
           debounceTime(1000)
       ); /* IMPORTANT: Limits the number of submissions to one per second. */
 
+      /* Setup results subscription, which is triggered upon change to the result set. */
+      const filterSubscription = this._filterService.filterSubject.pipe(
+          debounceTime(1000)
+      ); /* IMPORTANT: Limits the number of filter updates to one per second. */
 
-      this._resultsSubscription = combineLatest([resultSubscription, temporalResultsSubscription, this._eventbus.currentView(), this._eventbus.lastQuery()]).pipe(
-          map(([results, temporalResults, context, queryInfo]) => {
+      this._resultsSubscription = combineLatest([resultSubscription, temporalResultsSubscription, this._eventbus.currentView(), filterSubscription]).pipe(
+          debounceTime(200),
+          filter(() => {
+            if (this._eventbus.lastQueryInteractionEvent() === null) {
+              console.error('no query logged for interaction logging, not logging anything')
+              return false
+            }
+            if (this._queryService.lastQueryIssued() === null) {
+              console.error('no query logged in query service, not logging anything')
+              return false
+            }
+            return true
+          }),
+          tap(([results, temporalResults, context, filterInfo]) => {
+            console.log(`logging results`);
+            const query = this._queryService.lastQueryIssued()
+            let logResults: SegmentScoreLogContainer[]
             switch (context) {
               case TemporalListComponent.COMPONENT_NAME:
-                return DresTypeConverter.mapTemporalScoreContainer(context, temporalResults, queryInfo)
+                logResults = temporalResults.flatMap(seq => seq.segments.map(c => new SegmentScoreLogContainer(seq.object.objectid, c.segmentId, c.startabs, c.endabs, seq.score)))
+                break;
               default:
-                return DresTypeConverter.mapSegmentScoreContainer(context, results, queryInfo)
+                logResults = results.map(c => new SegmentScoreLogContainer(c.objectId, c.segmentId, c.startabs, c.endabs, c.score))
+            }
+            console.log(logResults)
+            const logItem: ResultLogItem = {
+              filter: filterInfo,
+              query: query,
+              results: logResults
+            };
+            console.log(logItem)
+            this._resultsLogTable.add(logItem);
+          }),
+          map(([results, temporalResults, context, filterInfo]) => {
+            const query = this._eventbus.lastQueryInteractionEvent()
+            switch (context) {
+              case TemporalListComponent.COMPONENT_NAME:
+                return DresTypeConverter.mapTemporalScoreContainer(context, temporalResults, query)
+              default:
+                return DresTypeConverter.mapSegmentScoreContainer(context, results, query)
             }
           }),
           filter(submission => submission != null),
           mergeMap((submission: QueryResultLog) => {
-            console.log(`logging result log`)
-            this._resultsLogTable.add(submission)
 
             /* Stop if no sessionId is set */
             if (!this._sessionId) {

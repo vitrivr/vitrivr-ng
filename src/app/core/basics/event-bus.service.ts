@@ -17,7 +17,7 @@ export class EventBusService {
   private _currentView: Subject<string> = new BehaviorSubject<string>(null);
 
   /** The subject used to track the currently active view. */
-  private _lastQuery: Subject<InteractionEvent> = new BehaviorSubject<InteractionEvent>(null);
+  private _lastQuery = new BehaviorSubject<InteractionEvent>(null);
 
   /**
    * Publishes a nev InteractionEvent to the bus.
@@ -44,12 +44,10 @@ export class EventBusService {
   }
 
   /**
-   * Returns an observable that allows a consumer to be informed about the last query issued.
-   *
-   * @return {Observable<InteractionEvent>}
+   * Returns the latest query
    */
-  public lastQuery(): Observable<InteractionEvent> {
-    return this._lastQuery.asObservable()
+  public lastQueryInteractionEvent(): InteractionEvent {
+    return this._lastQuery.getValue()
   }
 
   /**

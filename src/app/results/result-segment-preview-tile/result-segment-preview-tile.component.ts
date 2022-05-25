@@ -4,7 +4,7 @@ import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-v
 import {KeyboardService} from '../../core/basics/keyboard.service';
 import {QueryService} from '../../core/queries/query.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
-import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../../core/competition/vbs-submission.service';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';

@@ -3,14 +3,15 @@ import {Config} from '../../shared/model/config/config.model';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
 import Dexie from 'dexie';
-import {DresTypeConverter} from '../../core/vbs/dres-type-converter.util';
+import {DresTypeConverter} from '../../core/competition/dres-type-converter.util';
 import * as JSZip from 'jszip';
-import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../../core/competition/vbs-submission.service';
 import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
 import {TemporalMode} from './temporal-mode-container.model';
 import {from} from 'rxjs';
-import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, UserDetails} from "../../../../openapi/dres";
+import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, QueryEventLog, QueryResultLog, UserDetails} from "../../../../openapi/dres";
+import {ResultLogItem} from "../../core/competition/logging/result-log-item";
 
 @Component({
   selector: 'app-preferences',
@@ -20,14 +21,17 @@ import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, UserDetails} from "
 export class PreferencesComponent implements AfterContentInit {
   _config: Config;
 
-  /** Table for persisting result logs. */
-  private _resultsLogTable: Dexie.Table<any, number>;
+  /** Table for persisting our result logs */
+  private _resultsLogTable: Dexie.Table<QueryResultLog, number>;
 
-  /** Table for persisting submission log */
-  private _submissionLogTable: Dexie.Table<any, number>;
+  /** Table for persisting DRES result logs */
+  private _dresResultsLogTable: Dexie.Table<ResultLogItem, number>;
 
-  /** Table for persisting interaction logs. */
-  private _interactionLogTable: Dexie.Table<DresTypeConverter, number>;
+  /** Table for persisting DRES submission logs */
+  private _dresSubmissionLogTable: Dexie.Table<any, number>;
+
+  /** Table for persisting DRES interaction logs. */
+  private _dresInteractionLogTable: Dexie.Table<QueryEventLog, number>;
 
   _dresStatusBadgeValue: string;
   _status: UserDetails = null
@@ -59,8 +63,9 @@ export class PreferencesComponent implements AfterContentInit {
       this.maxLength = c._config.query.temporal_max_length
     })
     this._resultsLogTable = _db.db.table('log_results');
-    this._interactionLogTable = _db.db.table('log_interaction');
-    this._submissionLogTable = _db.db.table('log_submission');
+    this._dresResultsLogTable = _db.db.table('log_results_dres');
+    this._dresInteractionLogTable = _db.db.table('log_interaction_dres');
+    this._dresSubmissionLogTable = _db.db.table('log_submission_dres');
   }
 
   public onModeChanged(mode: TemporalMode) {
@@ -80,110 +85,62 @@ export class PreferencesComponent implements AfterContentInit {
     this._configService.load();
   }
 
-  /**
-   * Downloads the interaction logs as zipped JSON.
-   */
-  public onDownloadInteractionLog() {
-    const data = [];
-    from(this._interactionLogTable.orderBy('id').each((o, c) => {
-      data.push(o)
-    }))
-      .pipe(
-        first(),
-        map(h => {
-          const zip = new JSZip();
-          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
-          for (let i = 0; i < data.length; i++) {
-            zip.file(`vitrivrng-interaction-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
-          }
-          return zip
-        })
-      )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
-          (result) => {
-            window.open(window.URL.createObjectURL(result));
-          },
-          (error) => {
-            console.log(error);
-          }
-        )
-      });
-  }
-
-  /**
-   * Downloads the results logs as zipped JSON.
-   */
   public onDownloadResultsLog() {
+    this.onLogDownload("results", this._resultsLogTable)
+  }
+
+  public onDownloadDRESInteractionLog() {
+    this.onLogDownload("dres-interaction", this._dresInteractionLogTable)
+  }
+
+  public onDownloadDRESResultsLog() {
+    this.onLogDownload("dres-results", this._dresResultsLogTable)
+  }
+
+  public onDownloadDRESSubmissionLog() {
+    this.onLogDownload("dres-submission", this._dresSubmissionLogTable)
+  }
+
+  private onLogDownload(description: string, table: Dexie.Table<any, number>){
     const data = [];
-    from(this._resultsLogTable.orderBy('id').each((o, c) => {
+    from(table.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-      .pipe(
+    .pipe(
         first(),
         map(() => {
           const zip = new JSZip();
           const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
           for (let i = 0; i < data.length; i++) {
-            zip.file(`vitrivrng-results-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
+            zip.file(`vitrivrng-${description}-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
           }
           return zip
         })
-      )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+    )
+    .subscribe(zip => {
+      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-        )
-      });
-  }
-
-  public onDownloadSubmissionLog() {
-    const data = [];
-    from(this._submissionLogTable.orderBy('id').each((o, c) => {
-      data.push(o)
-    }))
-      .pipe(
-        first(),
-        map(() => {
-          const zip = new JSZip();
-          const options = {base64: false, binary: false, date: new Date(), createFolders: false, dir: false};
-          for (let i = 0; i < data.length; i++) {
-            zip.file(`vitrivrng-submission-log_${i}.json`, JSON.stringify(data[i], null, 2), options);
-          }
-          return zip
-        })
       )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
-          (result) => {
-            window.open(window.URL.createObjectURL(result));
-          },
-          (error) => {
-            console.log(error);
-          }
-        )
-      });
+    });
   }
 
-  /**
-   * Clears the interaction logs.
-   */
-  public onClearInteractionLog() {
-    this._interactionLogTable.clear().then(() => console.log('Interaction logs cleared.'))
+  public onClearDRESInteractionLog() {
+    this._dresInteractionLogTable.clear().then(() => console.log('DRES Interaction logs cleared.'))
   }
 
-  public onClearSubmissionLog() {
-    this._submissionLogTable.clear().then(() => console.log('Submission logs cleared.'))
+  public onClearDRESSubmissionLog() {
+    this._dresSubmissionLogTable.clear().then(() => console.log('DRES Submission logs cleared.'))
   }
 
-  /**
-   * Clears the results logs.
-   */
+  public onClearDRESResultsLog() {
+    this._dresResultsLogTable.clear().then(() => console.log('DRES Results logs cleared.'))
+  }
+
   public onClearResultsLog() {
     this._resultsLogTable.clear().then(() => console.log('Results logs cleared.'))
   }

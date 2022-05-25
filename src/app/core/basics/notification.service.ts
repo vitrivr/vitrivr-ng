@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, of} from 'rxjs';
-import {VbsSubmissionService} from '../vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../competition/vbs-submission.service';
 import {NotificationUtil} from '../../shared/util/notification.util';
 import {catchError, tap} from 'rxjs/operators';
 import {AppConfig} from '../../app.config';

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Tag} from './tag.model';
 import {BehaviorSubject} from 'rxjs';
-import {CollabordinatorService} from '../vbs/collabordinator.service';
+import {CollabordinatorService} from '../competition/collabordinator.service';
 import {CollabordinatorMessage} from '../../shared/model/messages/collaboration/collabordinator-message.model';
 import {AppConfig} from '../../app.config';
 

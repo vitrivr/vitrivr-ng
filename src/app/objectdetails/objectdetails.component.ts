@@ -20,7 +20,7 @@ import {ObjectviewerComponent} from './objectviewer.component';
 import {AppConfig} from '../app.config';
 import {MediaSegmentDescriptor, MetadataService, ObjectService, SegmentService, TagService} from '../../../openapi/cineast';
 import {SegmentFeaturesComponent} from '../segmentdetails/segment-features.component';
-import {VbsSubmissionService} from '../core/vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../core/competition/vbs-submission.service';
 
 
 @Component({
