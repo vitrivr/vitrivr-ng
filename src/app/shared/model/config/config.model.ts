@@ -4,6 +4,7 @@ import {QuerySettings} from './query-settings.model';
 import * as DEEPMERGE from 'deepmerge';
 import {MetadataAccessSpecification} from '../messages/queries/metadata-access-specification.model';
 import {MetadataType} from '../messages/queries/metadata-type.model';
+import {InputType} from '../../../query/containers/bool/bool-attribute';
 
 export class Config {
   /** Context of the Cineast API. */
@@ -110,7 +111,7 @@ export class Config {
       boolean: [
         {
           display: "Segment Id",
-          input: "TEXT",
+          input: InputType.TEXT,
           table: "cineast_segment",
           col: "segmentid",
           operators: [
@@ -119,7 +120,7 @@ export class Config {
         },
         {
           display: "Object Id",
-          input: "TEXT",
+          input: InputType.TEXT,
           table: "cineast_segment",
           col: "objectid",
           operators: [
