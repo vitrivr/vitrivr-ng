@@ -3,16 +3,16 @@ import {Config} from '../../shared/model/config/config.model';
 import {first, map} from 'rxjs/operators';
 import {DatabaseService} from '../../core/basics/database.service';
 import Dexie from 'dexie';
-import {DresTypeConverter} from '../../core/competition/dres-type-converter.util';
 import * as JSZip from 'jszip';
 import {VbsSubmissionService} from '../../core/competition/vbs-submission.service';
 import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
 import {TemporalMode} from './temporal-mode-container.model';
 import {from} from 'rxjs';
-import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, QueryEventLog, QueryResultLog, UserDetails} from "../../../../openapi/dres";
-import {ResultLogItem} from "../../core/competition/logging/result-log-item";
+import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, QueryEventLog, QueryResultLog, UserDetails} from '../../../../openapi/dres';
+import {ResultLogItem} from '../../core/competition/logging/result-log-item';
 import {DresService} from '../../core/basics/dres.service';
+import {QueryLogItem} from '../../core/competition/logging/query-log-item';
 
 @Component({
   selector: 'app-preferences',
@@ -24,6 +24,8 @@ export class PreferencesComponent implements AfterContentInit {
 
   /** Table for persisting our result logs */
   private _resultsLogTable: Dexie.Table<QueryResultLog, number>;
+
+  private _queryLogTable: Dexie.Table<QueryLogItem, number>;
 
   /** Table for persisting DRES result logs */
   private _dresResultsLogTable: Dexie.Table<ResultLogItem, number>;
@@ -52,13 +54,13 @@ export class PreferencesComponent implements AfterContentInit {
    * Constructor for PreferencesComponent
    */
   constructor(
-      private _configService: AppConfig,
-      private _db: DatabaseService,
-      private _submissionService: VbsSubmissionService,
-      private _notificationService: NotificationService,
-      private _cdr: ChangeDetectorRef,
-      private _runInfo: ClientRunInfoService,
-      private _dresService: DresService
+    private _configService: AppConfig,
+    private _db: DatabaseService,
+    private _submissionService: VbsSubmissionService,
+    private _notificationService: NotificationService,
+    private _cdr: ChangeDetectorRef,
+    private _runInfo: ClientRunInfoService,
+    private _dresService: DresService
   ) {
   }
 
@@ -80,27 +82,31 @@ export class PreferencesComponent implements AfterContentInit {
   }
 
   public onDownloadResultsLog() {
-    this.onLogDownload("results", this._resultsLogTable)
+    this.onLogDownload('results', this._resultsLogTable)
+  }
+
+  public onDownloadQueryLog() {
+    this.onLogDownload('queries', this._queryLogTable)
   }
 
   public onDownloadDRESInteractionLog() {
-    this.onLogDownload("dres-interaction", this._dresInteractionLogTable)
+    this.onLogDownload('dres-interaction', this._dresInteractionLogTable)
   }
 
   public onDownloadDRESResultsLog() {
-    this.onLogDownload("dres-results", this._dresResultsLogTable)
+    this.onLogDownload('dres-results', this._dresResultsLogTable)
   }
 
   public onDownloadDRESSubmissionLog() {
-    this.onLogDownload("dres-submission", this._dresSubmissionLogTable)
+    this.onLogDownload('dres-submission', this._dresSubmissionLogTable)
   }
 
-  private onLogDownload(description: string, table: Dexie.Table<any, number>){
+  private onLogDownload(description: string, table: Dexie.Table<any, number>) {
     const data = [];
     from(table.orderBy('id').each((o, c) => {
       data.push(o)
     }))
-    .pipe(
+      .pipe(
         first(),
         map(() => {
           const zip = new JSZip();
@@ -110,17 +116,17 @@ export class PreferencesComponent implements AfterContentInit {
           }
           return zip
         })
-    )
-    .subscribe(zip => {
-      zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
+      )
+      .subscribe(zip => {
+        zip.generateAsync({type: 'blob', compression: 'DEFLATE'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-      )
-    });
+        )
+      });
   }
 
   public onClearDRESInteractionLog() {
@@ -139,12 +145,18 @@ export class PreferencesComponent implements AfterContentInit {
     this._resultsLogTable.clear().then(() => console.log('Results logs cleared.'))
   }
 
+  public onClearQueryLog() {
+    this._queryLogTable.clear().then(() => console.log('Query logs cleared.'))
+  }
+
+
   ngAfterContentInit(): void {
     this._configService.configAsObservable.subscribe(c => {
       this._config = c
       this.maxLength = c._config.query.temporal_max_length
     })
     this._resultsLogTable = this._db.db.table('log_results');
+    this._queryLogTable = this._db.db.table('log_queries');
     this._dresResultsLogTable = this._db.db.table('log_results_dres');
     this._dresInteractionLogTable = this._db.db.table('log_interaction_dres');
     this._dresSubmissionLogTable = this._db.db.table('log_submission_dres');
