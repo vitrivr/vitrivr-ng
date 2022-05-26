@@ -391,6 +391,7 @@ export class QueryService {
    */
   private startNewQuery(queryId: string) {
     /* Start the actual query. */
+    console.debug('received QR_START')
     if (!this._results || (this._results && this._results.queryId !== queryId)) {
       this._results = new ResultsContainer(queryId);
       this._interval_map.set(queryId, window.setInterval(() => this._results.checkUpdate(), 2500));

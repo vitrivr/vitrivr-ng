@@ -16,6 +16,7 @@ export class DatabaseService {
       log_interaction_dres: '++id,log',
       log_submission_dres: '++id,log',
       log_results: '++id,entry',
+      log_queries: '++id,entry',
     });
   }
 

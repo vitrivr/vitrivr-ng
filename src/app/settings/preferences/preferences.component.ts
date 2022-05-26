@@ -12,6 +12,7 @@ import {TemporalMode} from './temporal-mode-container.model';
 import {from} from 'rxjs';
 import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, QueryEventLog, QueryResultLog, UserDetails} from "../../../../openapi/dres";
 import {ResultLogItem} from "../../core/competition/logging/result-log-item";
+import {DresService} from '../../core/basics/dres.service';
 
 @Component({
   selector: 'app-preferences',
@@ -56,16 +57,9 @@ export class PreferencesComponent implements AfterContentInit {
       private _submissionService: VbsSubmissionService,
       private _notificationService: NotificationService,
       private _cdr: ChangeDetectorRef,
-      private _runInfo: ClientRunInfoService
+      private _runInfo: ClientRunInfoService,
+      private _dresService: DresService
   ) {
-    this._configService.configAsObservable.subscribe(c => {
-      this._config = c
-      this.maxLength = c._config.query.temporal_max_length
-    })
-    this._resultsLogTable = _db.db.table('log_results');
-    this._dresResultsLogTable = _db.db.table('log_results_dres');
-    this._dresInteractionLogTable = _db.db.table('log_interaction_dres');
-    this._dresSubmissionLogTable = _db.db.table('log_submission_dres');
   }
 
   public onModeChanged(mode: TemporalMode) {
@@ -146,7 +140,16 @@ export class PreferencesComponent implements AfterContentInit {
   }
 
   ngAfterContentInit(): void {
-    this._submissionService.statusObservable.subscribe({
+    this._configService.configAsObservable.subscribe(c => {
+      this._config = c
+      this.maxLength = c._config.query.temporal_max_length
+    })
+    this._resultsLogTable = this._db.db.table('log_results');
+    this._dresResultsLogTable = this._db.db.table('log_results_dres');
+    this._dresInteractionLogTable = this._db.db.table('log_interaction_dres');
+    this._dresSubmissionLogTable = this._db.db.table('log_submission_dres');
+
+    this._dresService.statusObservable().subscribe({
       next: (status) => {
         if (status) {
           this._status = status
@@ -154,21 +157,16 @@ export class PreferencesComponent implements AfterContentInit {
         }
       }
     })
-    setInterval(() => {
-      if (this._status) {
-        this._runInfo.getApiV1ClientRunInfoList(this._status.sessionId).subscribe(list => {
-          const l = list.runs.filter(info => info.status == 'ACTIVE');
-          this._activeRun = l.length == 0 ? null : l[0]
-          this._cdr.markForCheck()
-          if (this._activeRun) {
-            this._runInfo.getApiV1ClientRunInfoCurrenttaskWithRunid(this._activeRun.id, this._status.sessionId).subscribe(task => {
-              this._activeTask = task
-              this._cdr.markForCheck()
-            })
-          }
-        })
-      }
-    }, 5 * 1000);
+
+    this._dresService.activeTaskObservable().subscribe(task => {
+      this._activeTask = task
+      this._cdr.markForCheck()
+    })
+    this._dresService.activeRunObservable().subscribe(run => {
+      this._activeRun = run
+      this._cdr.markForCheck()
+    })
+
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }
