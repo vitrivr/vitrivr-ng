@@ -168,7 +168,6 @@ export class VbsSubmissionService {
     }
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
-    this._selection.add(this._selection._available[0], segment.segmentId);
   }
 
   /**
