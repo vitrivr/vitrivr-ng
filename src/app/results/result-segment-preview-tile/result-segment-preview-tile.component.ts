@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {KeyboardService} from '../../core/basics/keyboard.service';
@@ -27,7 +27,7 @@ import {SelectionService} from '../../core/selection/selection.service';
   styleUrls: ['./result-segment-preview-tile.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ResultSegmentPreviewTileComponent implements OnInit {
+export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
 
   @Input() mltEnabled = true;
 
@@ -72,6 +72,12 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
 
   ngOnInit(): void {
     this._tags = this._selectionService.getTags(this.segment.segmentId)
+    this._selectionService.register(this.segment.segmentId).subscribe(tags => this._tags = tags)
+  }
+
+  ngOnDestroy(): void {
+    console.debug(`destroying component`)
+    this._selectionService.deregister(this.segment.segmentId)
   }
 
   /**
@@ -114,7 +120,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   public onHighlightButtonClicked(segment: MediaSegmentScoreContainer, tag: Tag) {
     this._selectionService.toggle(tag, segment.segmentId);
 
-    this._tags = this._selectionService.getTags(segment.segmentId)
+    //this._tags = this._selectionService.getTags(segment.segmentId)
 
     /* Emit a HIGHLIGHT event on the bus. */
     const context: Map<ContextKey, any> = new Map();
@@ -144,4 +150,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
       this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
   }
+
+
 }

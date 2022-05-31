@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Tag} from './tag.model';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {CollabordinatorService} from '../competition/collabordinator.service';
 import {CollabordinatorMessage} from '../../shared/model/messages/collaboration/collabordinator-message.model';
 import {AppConfig} from '../../app.config';
@@ -17,6 +17,9 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
   /** A map of selected items identified by a string and the associated Tag objects. */
   private readonly _selections: Map<string, Set<Tag>> = new Map();
 
+  /** Caches all subscriptions to updates*/
+  private  _cache: Map<string, BehaviorSubject<Set<Tag>>> = null
+
   /**
    * Constructor; injects the ConfigService.
    *
@@ -29,6 +32,16 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
       this._available.length = 0;
       c.get<Tag[]>('tags').forEach(t => this._available.push(new Tag(t.name, t.hue)));
     });
+
+    _collabordinator._online.subscribe(online => {
+      console.debug(`new collabordinator status: ${online}`)
+      if(online){
+        this._cache = new Map()
+      }
+      if(!online){
+        this._cache = null
+      }
+    })
 
     /* Register listener for Collabordinator. */
     _collabordinator.subscribe(msg => this.synchronize(msg));
@@ -205,5 +218,15 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
         break;
     }
     this.next(this._selections);
+  }
+
+  register(segmentId: string): Observable<Tag[]> {
+    const subj = new BehaviorSubject<Tag[]>(this._selections.get(segmentId));
+    this._cache.set(segmentId, subj)
+    return subj.asObservable()
+  }
+
+  deregister(segmentId: string) {
+    this._cache.delete(segmentId)
   }
 }
