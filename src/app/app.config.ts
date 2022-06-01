@@ -63,13 +63,13 @@ export class AppConfig {
         AppConfig.settingsSubject.next(AppConfig.settings);
         resolve();
       }).catch((response: any) => {
-        this._snackBar.open('Could not parse config.json. Using default config, your UI may not work', 'Dismiss', {
+        this._snackBar.open('No config file present, using default config.', 'Dismiss', {
           duration: 1_000_000,
           verticalPosition: 'top'
         })
         AppConfig.settings = new Proxy<Config>(new Config(), this.handler);
         AppConfig.settingsSubject.next(AppConfig.settings);
-        console.log(`Could not load config file '${jsonFile}'. Fallback to default.`);
+        console.log(`No config present at '${jsonFile}'. Using default.`);
         resolve();
       });
     });
