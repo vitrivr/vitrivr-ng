@@ -1,0 +1,88 @@
+{
+  "title": "Custom vitrivr",
+  "api": {
+    "host": "vitrivr-domain.com",
+    "port": "1234"
+  },
+  "resources": {
+    "host_thumbnails": "http://localhost:4567/thumbnails/:s",
+    "host_objects": "http://localhost:4567/objects/:o"
+  },
+  "competition": {
+    "host": "dres.org",
+    "tls": false,
+    "log": true,
+    "lsc": false,
+    "vbs": false
+  },
+  "mlt": {
+    "VIDEO": [
+      "visualtextcoembedding"
+    ],
+    "IMAGE": [
+      "visualtextcoembedding"
+    ]
+  },
+  "query": {
+    "history": 0,
+    "options": {
+      "image": true,
+      "audio": false,
+      "model3d": false,
+      "text": true,
+      "tag": false,
+      "map": false,
+      "semantic": true,
+      "boolean": true,
+      "skeleton": false
+    },
+    "metadata": {
+      "object": [
+        ["technical", "duration"]
+      ],
+      "segment": [
+        ["*", "*"]
+      ]
+    },
+    "text": {
+      "categories": [
+        [
+          "visualtextcoembedding",
+          "Text Co-Embedding"
+        ]
+      ]
+    },
+    "boolean": [
+      {
+        "display": "Segment Id",
+        "input": "TEXT",
+        "table": "cineast_segment",
+        "col": "segmentid",
+        "operators": [
+          "="
+        ]
+      },
+      {
+        "display": "Object Id",
+        "input": "TEXT",
+        "table": "cineast_segment",
+        "col": "objectid",
+        "operators": [
+          "="
+        ]
+      }
+    ]
+  },
+  "refinement": {
+    "filters": [
+      [
+        "dominantcolor.color",
+        "CHECKBOX"
+      ],
+      [
+        "technical.duration",
+        "SLIDER"
+      ]
+    ]
+  }
+}

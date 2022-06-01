@@ -135,7 +135,13 @@ export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
    * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
    */
   public onSubmitButtonClicked() {
+    this.submit()
+  }
+
+  private submit(){
     this._vbs.submitSegment(this.segment);
+    this._selectionService.add(this._selectionService._available[0], this.segment.segmentId);
+    this._tags = this._selectionService.getTags(this.segment.segmentId)
   }
 
   /**
@@ -144,7 +150,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
   public onTileClicked(event: MouseEvent) {
     if (event.shiftKey) {
       /* Shift-Click will trigger VBS submit. */
-      this._vbs.submitSegment(this.segment);
+      this.submit()
     } else {
       /* Normal click will display item. */
       this._dialog.open(QuickViewerComponent, {data: this.segment});

@@ -11,9 +11,9 @@ For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/
 
 ## Config
 
-There is a `config.json` which enables configuration of the UI to a certain extend.
-While we provide a sensible [default config](src/config.json), the
-some default values are better explored in the [code](src/app/shared/model/config/config.model.ts).
+We follow a zero-config approach, where everything has reasonable defaults.
+There is a `src/config.template.json` file which you can copy to `src/config.json` and modify if you have custom needs.
+The default values are in the [code](src/app/shared/model/config/config.model.ts).
 Information about the configuration can be found in [the wiki](https://github.com/vitrivr/vitrivr-ng/wiki/Configuration).
 
 ## Development server

@@ -91,6 +91,17 @@
       <mat-icon>delete</mat-icon>
     </button>
   </mat-list-item>
+
+    <h2 mat-subheader>Query log</h2>
+
+    <mat-list-item fxLayout="row" fxLayoutAlign="center">
+        <button (click)="onDownloadQueryLog()" mat-raised-button matTooltip="Download vitrivr-ng Query Log">
+            <mat-icon>cloud_download</mat-icon>
+        </button>
+        <button (click)="onClearQueryLog()" color="warn" mat-raised-button matTooltip="Clear vitrivr-ng Query Log">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </mat-list-item>
 </mat-list>
 
 

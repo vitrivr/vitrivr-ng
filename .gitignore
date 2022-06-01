@@ -1,3 +1,4 @@
+src/config.json
 deploy.log
 
 src/app/**/*.js

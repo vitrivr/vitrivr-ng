@@ -9,11 +9,12 @@ import {NotificationService} from './notification.service';
 import {NoConnectDialogComponent} from './no-connect-dialog';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
+import {DresService} from './dres.service';
 
 @NgModule({
   imports: [HttpClientModule, MatDialogModule, MatButtonModule],
   declarations: [NoConnectDialogComponent],
-  providers: [ResolverService, EventBusService, PingService, DatabaseService, KeyboardService, NotificationService]
+  providers: [ResolverService, EventBusService, PingService, DatabaseService, KeyboardService, NotificationService, DresService]
 })
 
 export class BasicModule {
