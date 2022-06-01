@@ -15,9 +15,9 @@
 
         <mat-list-item *ngFor="let current of (_selectionService |async).entries()">
             <button (click)="onSegmentClicked(current[0])" mat-flat-button>{{current[0]}}</button>
-            <button (click)="onTagButtonClicked(current[0],tag[0])" *ngFor="let tag of current[1].entries()"
+            <button (click)="onTagButtonClicked(current[0],tag)" *ngFor="let tag of current[1]"
                     mat-icon-button>
-                <mat-icon [style.color]="tag[0] | ColorForRelevancePipe: 1.0">album</mat-icon>
+                <mat-icon [style.color]="tag | ColorForRelevancePipe: 1.0">album</mat-icon>
             </button>
         </mat-list-item>
 

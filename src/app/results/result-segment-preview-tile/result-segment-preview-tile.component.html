@@ -11,8 +11,7 @@
         <button (click)="onHighlightButtonClicked(segment,tag)"
                 *ngFor="let tag of container._selectionService._available" mat-icon-button
                 matTooltip="Toggle '{{tag.name}}' tag">
-            <mat-icon
-                    [style.color]="container._selectionService.hasTag(segment.segmentId,tag) ? (tag | ColorForRelevancePipe: 1.0) : ''">
+            <mat-icon>
                 album
             </mat-icon>
         </button>

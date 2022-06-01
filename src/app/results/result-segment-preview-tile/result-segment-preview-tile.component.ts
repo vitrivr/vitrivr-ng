@@ -72,7 +72,10 @@ export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._tags = this._selectionService.getTags(this.segment.segmentId)
-    this._selectionService.register(this.segment.segmentId).subscribe(tags => this._tags = tags)
+    this._selectionService.register(this.segment.segmentId).subscribe(tags => {
+      console.log(`received new tags: ${tags}`)
+      this._tags = tags
+    })
   }
 
   ngOnDestroy(): void {

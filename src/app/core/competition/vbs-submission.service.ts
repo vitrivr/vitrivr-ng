@@ -265,13 +265,11 @@ export class VbsSubmissionService {
               default:
                 logResults = results.map(c => new SegmentScoreLogContainer(c.objectId, c.segmentId, c.startabs, c.endabs, c.score))
             }
-            console.log(logResults)
             const logItem: ResultLogItem = {
               filter: filterInfo,
               query: query,
               results: logResults
             };
-            console.log(logItem)
             this._resultsLogTable.add(logItem);
           }),
           map(([results, temporalResults, context, filterInfo]) => {

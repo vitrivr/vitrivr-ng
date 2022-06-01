@@ -10,15 +10,15 @@ import {AppConfig} from '../../app.config';
  * issuing findSimilar requests, processing incoming responses and ranking of the requests.
  */
 @Injectable()
-export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
+export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
   /** List of available Tag objects. */
   readonly _available: Tag[] = [];
 
   /** A map of selected items identified by a string and the associated Tag objects. */
-  private readonly _selections: Map<string, Set<Tag>> = new Map();
+  private readonly _selections: Map<string, Tag[]> = new Map();
 
   /** Caches all subscriptions to updates*/
-  private  _cache: Map<string, BehaviorSubject<Set<Tag>>> = null
+  private _cache: Map<string, BehaviorSubject<Tag[]>> = new Map()
 
   /**
    * Constructor; injects the ConfigService.
@@ -35,10 +35,12 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
 
     _collabordinator._online.subscribe(online => {
       console.debug(`new collabordinator status: ${online}`)
-      if(online){
-        this._cache = new Map()
+      if (online) {
+        if (this._cache == null) {
+          this._cache = new Map()
+        }
       }
-      if(!online){
+      if (!online) {
         this._cache = null
       }
     })
@@ -56,11 +58,14 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
   public add(tag: Tag, ...identifiers: string[]) {
     for (const identifier of identifiers) {
       if (!this._selections.has(identifier)) {
-        this._selections.set(identifier, new Set([tag]));
+        this._selections.set(identifier, []);
       }
-      this._selections.get(identifier).add(tag);
+      this._selections.get(identifier).push(tag);
       this._collabordinator.add(tag, identifier);
       this.next(this._selections);
+      if (this._cache != null) {
+        this._cache.get(identifier).next(this._selections.get(identifier))
+      }
     }
     this._collabordinator.add(tag, ...identifiers)
   }
@@ -77,8 +82,9 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
     for (const identifier of identifiers) {
       if (this._selections.has(identifier)) {
         const entry = this._selections.get(identifier);
-        entry.delete(tag);
-        if (entry.size === 0) {
+        this._selections.set(identifier, entry.filter(t => t != tag));
+        this._cache.get(identifier).next(this._selections.get(identifier))
+        if (entry.length === 0) {
           this._selections.delete(identifier);
         }
         this.next(this._selections);
@@ -90,20 +96,18 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
   /**
    *
    * @param {Tag} tag The tag to toggle.
-   * @param {string} identifiers The identifiers for which to toggle the tags.
+   * @param {string} identifier The identifier for which to toggle the tags.
    */
-  public toggle(tag: Tag, ...identifiers: string[]) {
-    const active = [];
-    const inactive = [];
-    for (const identifier of identifiers) {
-      if (this._selections.has(identifier) && this._selections.get(identifier).has(tag)) {
-        active.push(identifier);
-      } else {
-        inactive.push(identifier);
-      }
+  public toggle(tag: Tag, identifier: string) {
+    if (!this._selections.has(identifier)) {
+      this.add(tag, identifier)
+      return
     }
-    this.remove(tag, ...active);
-    this.add(tag, ...inactive);
+    if (this._selections.get(identifier).findIndex(t => t == tag) == -1) {
+      this.add(tag, identifier)
+    } else {
+      this.remove(tag, identifier)
+    }
   }
 
   /**
@@ -121,11 +125,11 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
    * @param {string} identifier The identifier to check.
    * @param {tag} tag The Tag that should be checked.
    */
-  public hasTag(identifier: string, tag: Tag) {
+  public hasTag(identifier: string, tag: Tag): boolean {
     if (this._selections.has(identifier)) {
-      return this._selections.get(identifier).has(tag);
+      return this._selections.get(identifier).findIndex(t => t == tag) > -1;
     }
-    return false;
+    return false
   }
 
   /**
@@ -143,27 +147,15 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
 
   /**
    * Clears all Tags and identifiers stored in this SelectionService.
-   *
-   * @param tag Optional Tag to remove. If null, all tags will be removed.
    */
-  public clear(tag?: Tag) {
-    if (tag) {
-      this._selections.forEach((v, k) => {
-        if (v.has(tag)) {
-          v.delete(tag);
-        }
-        if (v.size === 0) {
-          this._selections.delete(k);
-        }
-      });
-      this._collabordinator.clear(tag);
-    } else {
-      this._selections.clear();
+  public clear(broadcast = true) {
+    this._selections.clear();
+    if (broadcast) {
       for (const availableTag of this._available) {
         this._collabordinator.clear(availableTag);
       }
     }
-
+    this._cache.forEach(s => s.next([]))
     this.next(this._selections);
   }
 
@@ -191,30 +183,16 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
     switch (msg.action) {
       case 'ADD':
         msg.attribute.forEach(v => {
-          if (!this._selections.has(v)) {
-            this._selections.set(v, new Set());
-          }
-          this._selections.get(v).add(tag)
+          this.add(tag, v)
         });
         break;
       case 'REMOVE':
         msg.attribute.forEach(v => {
-          if (this._selections.has(v)) {
-            this._selections.get(v).delete(tag);
-          } else if (this._selections.get(v).size === 0) {
-            this._selections.delete(v);
-          }
+          this.remove(tag, v)
         });
         break;
       case 'CLEAR':
-        this._selections.forEach((v, k) => {
-          if (v.has(tag)) {
-            v.delete(tag);
-          }
-          if (v.size === 0) {
-            this._selections.delete(k);
-          }
-        });
+        this.clear(false)
         break;
     }
     this.next(this._selections);
@@ -227,6 +205,9 @@ export class SelectionService extends BehaviorSubject<Map<string, Set<Tag>>> {
   }
 
   deregister(segmentId: string) {
+    if (this._cache == null) {
+      return
+    }
     this._cache.delete(segmentId)
   }
 }
