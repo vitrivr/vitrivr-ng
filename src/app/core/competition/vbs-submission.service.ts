@@ -168,7 +168,7 @@ export class VbsSubmissionService {
     }
     console.debug(`Submitting segment ${segment.segmentId} @ ${time}`);
     this._submitSubject.next([segment, time]);
-    this._selection.add(this._selection._available[0], segment.segmentId);
+    this._selection.add(this._selection._available[1], segment.segmentId);
   }
 
   /**
@@ -319,8 +319,8 @@ export class VbsSubmissionService {
 
     /* Setup submission subscription, which is triggered manually. */
     this._submitSubscription = this._submitSubject.pipe(
-      map(([segment, time]): [string, number?] => this.convertToAppropriateRepresentation(segment, time)),
-      mergeMap(([segment, frame]) => {
+      map(([segment, time]): [string, number, string] => this.convertToAppropriateRepresentation(segment, time)),
+      mergeMap(([segment, frame, segmentId]) => {
         /* Stop if no sessionId is set */
         if (!this._sessionId) {
           return EMPTY
@@ -330,10 +330,10 @@ export class VbsSubmissionService {
         /* Submit, do some logging and catch HTTP errors. */
         return this._dresSubmit.getApiV1Submit(null, segment, null, frame).pipe(
           tap((status: SuccessfulSubmissionsStatus) => {
-            this.handleSubmissionResponse(status);
+            this.handleSubmissionResponse(status, segmentId);
           }),
           catchError(err => {
-            return this.handleSubmissionError(err);
+            return this.handleSubmissionError(err, segmentId);
           })
         )
       })
@@ -346,10 +346,10 @@ export class VbsSubmissionService {
         /* Submit, do some logging and catch HTTP errors. */
         return this._dresSubmit.getApiV1Submit(null, null, text).pipe(
           tap((status: SuccessfulSubmissionsStatus) => {
-            this.handleSubmissionResponse(status);
+            this.handleSubmissionResponse(status, null);
           }),
           catchError(err => {
-            return this.handleSubmissionError(err);
+            return this.handleSubmissionError(err, null);
           })
         )
       })
@@ -357,7 +357,8 @@ export class VbsSubmissionService {
   }
 
 
-  private handleSubmissionError(err) {
+  private handleSubmissionError(err, segment) {
+    this._selection.add(this._selection._available[3], segment);
     if (err.error) {
       this._snackBar.open(`Submissions error: ${err.error.description}`, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-error'})
     } else {
@@ -366,12 +367,14 @@ export class VbsSubmissionService {
     return of(null)
   }
 
-  private handleSubmissionResponse(status: SuccessfulSubmissionsStatus) {
+  private handleSubmissionResponse(status: SuccessfulSubmissionsStatus, segment: string) {
     switch (status.submission) {
       case 'CORRECT':
+        this._selection.add(this._selection._available[2], segment);
         this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-success'});
         break;
       case 'WRONG':
+        this._selection.add(this._selection._available[0], segment);
         this._snackBar.open(status.description, null, {duration: Config.SNACKBAR_DURATION, panelClass: 'snackbar-warning'});
         break;
       default:
@@ -386,20 +389,20 @@ export class VbsSubmissionService {
    *
    * @param segment The {MediaSegmentScoreContainer} to convert.
    * @param time The timepoint to convert.
-   * @return Tuple of ID and optional frame number.
+   * @return Tuple of ID, optional frame number and original segment id.
    */
-  private convertToAppropriateRepresentation(segment: MediaSegmentScoreContainer, time?: number): [string, number?] {
+  private convertToAppropriateRepresentation(segment: MediaSegmentScoreContainer, time?: number): [string, number, string] {
     if (this._vbs) {
       let fps = Number.parseFloat(segment.objectScoreContainer._metadata.get('technical.fps'));
       if (Number.isNaN(fps) || !Number.isFinite(fps)) {
         fps = VideoUtil.bestEffortFPS(segment);
       }
-      return [segment.objectId.replace('v_', ''), VbsSubmissionService.timeToFrame(time, fps)]
+      return [segment.objectId.replace('v_', ''), VbsSubmissionService.timeToFrame(time, fps), segment.segmentId]
     }
     if (this._lsc) {
-      return [segment.segmentId.replace('is_', ''), time];
+      return [segment.segmentId.replace('is_', ''), time, segment.segmentId];
     }
-    return [segment.segmentId, time];
+    return [segment.segmentId, time, segment.segmentId];
   }
 
   /**

@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@angular/core';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import Dexie from 'dexie';
-import {first, map, mergeMap} from 'rxjs/operators';
+import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {EMPTY, from, Observable} from 'rxjs';
 import {DatabaseService} from '../basics/database.service';
 import * as JSZip from 'jszip';
@@ -125,15 +125,11 @@ export class HistoryService {
    */
   private ommitOldest() {
     from(this._historyTable.count()).pipe(
-      mergeMap(c => {
+      map(c => {
         if (c > this._keep) {
-          return from(this._historyTable.limit(c - this._keep).keys());
-        } else {
-          return EMPTY;
+          // default order is asc
+          this._historyTable.orderBy("timestamp").limit(c - this.keep).delete()
         }
-      }),
-      mergeMap((a, i) => {
-        return from(this._historyTable.bulkDelete(a));
       })
     ).subscribe();
   }

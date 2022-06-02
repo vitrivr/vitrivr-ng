@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Tag} from './tag.model';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {CollabordinatorService} from '../competition/collabordinator.service';
 import {CollabordinatorMessage} from '../../shared/model/messages/collaboration/collabordinator-message.model';
 import {AppConfig} from '../../app.config';
@@ -18,7 +18,7 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
   private readonly _selections: Map<string, Tag[]> = new Map();
 
   /** Caches all subscriptions to updates*/
-  private _cache: Map<string, BehaviorSubject<Tag[]>> = new Map()
+  private _cache: Map<string, Subject<Tag[]>> = new Map()
 
   /**
    * Constructor; injects the ConfigService.
@@ -61,11 +61,8 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
         this._selections.set(identifier, []);
       }
       this._selections.get(identifier).push(tag);
-      this._collabordinator.add(tag, identifier);
       this.next(this._selections);
-      if (this._cache != null) {
-        this._cache.get(identifier).next(this._selections.get(identifier))
-      }
+      this._cache?.get(identifier)?.next(this._selections.get(identifier))
     }
     this._collabordinator.add(tag, ...identifiers)
   }
@@ -83,7 +80,7 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
       if (this._selections.has(identifier)) {
         const entry = this._selections.get(identifier);
         this._selections.set(identifier, entry.filter(t => t != tag));
-        this._cache.get(identifier).next(this._selections.get(identifier))
+        this._cache?.get(identifier)?.next(this._selections.get(identifier))
         if (entry.length === 0) {
           this._selections.delete(identifier);
         }
@@ -139,9 +136,7 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
    */
   public getTags(identifier: string): Tag[] {
     const tags: Tag[] = [];
-    if (this._selections.has(identifier)) {
-      this._selections.get(identifier).forEach(t => tags.push(t));
-    }
+    this._selections.get(identifier)?.forEach(t => tags.push(t));
     return tags;
   }
 
@@ -155,7 +150,7 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
         this._collabordinator.clear(availableTag);
       }
     }
-    this._cache.forEach(s => s.next([]))
+    this._cache?.forEach(s => s.next([]))
     this.next(this._selections);
   }
 
@@ -183,6 +178,12 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
     switch (msg.action) {
       case 'ADD':
         msg.attribute.forEach(v => {
+          if (this._selections.has(v)) {
+            if (this._selections.get(v).findIndex(t => t == tag) == -1) {
+              this.add(tag, v)
+            }
+            return
+          }
           this.add(tag, v)
         });
         break;
@@ -199,15 +200,12 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
   }
 
   register(segmentId: string): Observable<Tag[]> {
-    const subj = new BehaviorSubject<Tag[]>(this._selections.get(segmentId));
-    this._cache.set(segmentId, subj)
+    const subj = new Subject<Tag[]>();
+    this._cache?.set(segmentId, subj)
     return subj.asObservable()
   }
 
   deregister(segmentId: string) {
-    if (this._cache == null) {
-      return
-    }
-    this._cache.delete(segmentId)
+    this._cache?.delete(segmentId)
   }
 }

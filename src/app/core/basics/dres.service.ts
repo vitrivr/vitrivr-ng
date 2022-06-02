@@ -12,19 +12,19 @@ export class DresService {
 
   constructor(private _configService: AppConfig, private _runInfo: ClientRunInfoService, private _dresUser: UserService,) {
     this._configService.configAsObservable.subscribe(config => {
-        if (config?.dresEndpointRest == null) {
-          return
+          if (config?.dresEndpointRest == null) {
+            return
+          }
+          this._dresUser.getApiV1User().subscribe(
+              {
+                next: (user) => {
+                  this._status.next(user)
+                },
+                error: (error) => {
+                  this._status.error(error)
+                }
+              })
         }
-        this._dresUser.getApiV1User().subscribe(
-          {
-            next: (user) => {
-              this._status.next(user)
-            },
-            error: (error) => {
-              this._status.error(error)
-            }
-          })
-      }
     )
 
     // init dres info
@@ -32,10 +32,10 @@ export class DresService {
 
     // update every 5 seconds
     setInterval(
-      () => {
-        this.updateDresInfo()
-      },
-      5 * 1000
+        () => {
+          this.updateDresInfo()
+        },
+        5 * 1000
     )
 
   }
@@ -44,11 +44,11 @@ export class DresService {
     if (this.getStatus() == null) {
       return
     }
-    this._runInfo.getApiV1ClientRunInfoList(this.getStatus().sessionId).subscribe(list => {
+    this._runInfo.getApiV1ClientRunInfoList(this.getStatus()?.sessionId).subscribe(list => {
       const l = list.runs.filter(info => info.status == 'ACTIVE');
       const activeRun = l.length == 0 ? null : l[0]
       this._activeRun.next(activeRun)
-      if (this._activeRun) {
+      if (activeRun) {
         this._runInfo.getApiV1ClientRunInfoCurrenttaskWithRunid(this._activeRun.getValue().id, this.getStatus().sessionId).subscribe(task => {
           this._activeTask.next(task)
         })

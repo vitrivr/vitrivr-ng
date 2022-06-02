@@ -67,19 +67,20 @@ export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
               private _dialog: MatDialog,
               public _resolver: ResolverService,
               private _configService: AppConfig,
-              private _selectionService: SelectionService) {
+              private _selectionService: SelectionService,
+              private _cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this._tags = this._selectionService.getTags(this.segment.segmentId)
     this._selectionService.register(this.segment.segmentId).subscribe(tags => {
-      console.log(`received new tags: ${tags}`)
-      this._tags = tags
+      // the following line of code is there because the array we get is the same as previously and there is no deep check. Cloning the array forces a re-render.
+      this._tags = [ ...tags]
+      this._cdr.detectChanges()
     })
   }
 
   ngOnDestroy(): void {
-    console.debug(`destroying component`)
     this._selectionService.deregister(this.segment.segmentId)
   }
 
@@ -122,13 +123,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
    */
   public onHighlightButtonClicked(segment: MediaSegmentScoreContainer, tag: Tag) {
     this._selectionService.toggle(tag, segment.segmentId);
-
-    //this._tags = this._selectionService.getTags(segment.segmentId)
-
-    /* Emit a HIGHLIGHT event on the bus. */
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)))
   }
 
   /**
@@ -140,7 +134,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
 
   private submit(){
     this._vbs.submitSegment(this.segment);
-    this._selectionService.add(this._selectionService._available[0], this.segment.segmentId);
     this._tags = this._selectionService.getTags(this.segment.segmentId)
   }
 
