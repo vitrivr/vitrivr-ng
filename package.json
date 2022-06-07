@@ -46,7 +46,7 @@
     "ngx-color-picker": "11.0.0",
     "ngx-infinite-scroll": "10.0.1",
     "node": "^17.4.0",
-    "npm": "^8.1.2",
+    "npm": "^8.11.0",
     "openapi-generator": "^0.1.39",
     "openseadragon": "^2.4.2",
     "rxjs": "7.5.5",
