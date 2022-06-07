@@ -85,14 +85,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Sets the flag, that this preview is in focus
-   * @param inFocus
-   */
-  set focus(inFocus: boolean) {
-    this._focus = inFocus;
-  }
-
-  /**
    * Returns the segment's ID, which then again is used for the ID of the corresponding html element
    */
   public get id(): string {
@@ -125,14 +117,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
     this._selectionService.toggle(tag, segment.segmentId);
   }
 
-  /**
-   * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
-   */
-  public onSubmitButtonClicked() {
-    this.submit()
-  }
-
-  private submit(){
+  public submit(){
     this._vbs.submitSegment(this.segment);
     this._tags = this._selectionService.getTags(this.segment.segmentId)
   }
