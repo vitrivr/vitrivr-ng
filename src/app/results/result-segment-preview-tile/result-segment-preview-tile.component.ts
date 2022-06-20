@@ -1,10 +1,10 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {AbstractSegmentResultsViewComponent} from '../abstract-segment-results-view.component';
 import {KeyboardService} from '../../core/basics/keyboard.service';
 import {QueryService} from '../../core/queries/query.service';
 import {EventBusService} from '../../core/basics/event-bus.service';
-import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../../core/competition/vbs-submission.service';
 import {ResolverService} from '../../core/basics/resolver.service';
 import {ContextKey, InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
 import {InteractionEvent} from '../../shared/model/events/interaction-event.model';
@@ -27,7 +27,7 @@ import {SelectionService} from '../../core/selection/selection.service';
   styleUrls: ['./result-segment-preview-tile.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ResultSegmentPreviewTileComponent implements OnInit {
+export class ResultSegmentPreviewTileComponent implements OnInit, OnDestroy {
 
   @Input() mltEnabled = true;
 
@@ -67,19 +67,21 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
               private _dialog: MatDialog,
               public _resolver: ResolverService,
               private _configService: AppConfig,
-              private _selectionService: SelectionService) {
+              private _selectionService: SelectionService,
+              private _cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this._tags = this._selectionService.getTags(this.segment.segmentId)
+    this._selectionService.register(this.segment.segmentId).subscribe(tags => {
+      // the following line of code is there because the array we get is the same as previously and there is no deep check. Cloning the array forces a re-render.
+      this._tags = [ ...tags]
+      this._cdr.detectChanges()
+    })
   }
 
-  /**
-   * Sets the flag, that this preview is in focus
-   * @param inFocus
-   */
-  set focus(inFocus: boolean) {
-    this._focus = inFocus;
+  ngOnDestroy(): void {
+    this._selectionService.deregister(this.segment.segmentId)
   }
 
   /**
@@ -113,20 +115,11 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
    */
   public onHighlightButtonClicked(segment: MediaSegmentScoreContainer, tag: Tag) {
     this._selectionService.toggle(tag, segment.segmentId);
-
-    this._tags = this._selectionService.getTags(segment.segmentId)
-
-    /* Emit a HIGHLIGHT event on the bus. */
-    const context: Map<ContextKey, any> = new Map();
-    context.set('i:mediasegment', segment.segmentId);
-    this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.HIGHLIGHT, context)))
   }
 
-  /**
-   * Invoked when a user clicks the selection/favourie button. Toggles the selection mode of the SegmentScoreContainer.
-   */
-  public onSubmitButtonClicked() {
+  public submit(){
     this._vbs.submitSegment(this.segment);
+    this._tags = this._selectionService.getTags(this.segment.segmentId)
   }
 
   /**
@@ -135,7 +128,7 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
   public onTileClicked(event: MouseEvent) {
     if (event.shiftKey) {
       /* Shift-Click will trigger VBS submit. */
-      this._vbs.submitSegment(this.segment);
+      this.submit()
     } else {
       /* Normal click will display item. */
       this._dialog.open(QuickViewerComponent, {data: this.segment});
@@ -144,4 +137,6 @@ export class ResultSegmentPreviewTileComponent implements OnInit {
       this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.EXAMINE, context)))
     }
   }
+
+
 }

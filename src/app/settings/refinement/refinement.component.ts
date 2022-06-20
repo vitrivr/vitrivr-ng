@@ -206,7 +206,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
 
   public set idFilterValue(id: string) {
     this._idFilterValue = id
-    this._filterService._id = id;
+    this._filterService._filters.id = id;
     this._filterService.update();
     const context: Map<ContextKey, string> = new Map();
     context.set('f:type', 'id');
@@ -215,7 +215,7 @@ export class RefinementComponent implements OnInit, OnDestroy {
   }
 
   public onMdCatOperatorChange(event: MatSlideToggleChange) {
-    this._filterService._useOrForMetadataCategoriesFilter = event.checked;
+    this._filterService._filters.useOrForMetadataCategoriesFilter = event.checked;
     this._filterService.update();
     const context: Map<ContextKey, string> = new Map();
     context.set('f:type', 'metadata_categoryfilter');

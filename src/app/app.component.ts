@@ -93,8 +93,4 @@ export class AppComponent implements OnInit, AfterViewInit {
     this._active_view = view;
   }
 
-  isCompetitionActive() {
-    return this._configService.configAsObservable;
-    return this._config.dresEndpointRest && (this._config.get('competition.vbs') || this._config.get('competition.lsc'))
-  }
 }

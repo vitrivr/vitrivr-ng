@@ -10,7 +10,7 @@ import {ResultsContainer} from '../../shared/model/results/scores/results-contai
 import {NeighboringSegmentQuery} from '../../shared/model/messages/queries/neighboring-segment-query.model';
 import {FeatureCategories} from '../../shared/model/results/feature-categories.model';
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
-import {filter, first} from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
 import {WebSocketFactoryService} from '../api/web-socket-factory.service';
 import {SegmentMetadataQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-segment-metadata.interface';
 import {ObjectMetadataQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object-metadata.interface';
@@ -30,8 +30,8 @@ import {AppConfig} from '../../app.config';
 import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, QueryConfig} from '../../../../openapi/cineast';
 import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.model';
 import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
-import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 import {ReadableTemporalQueryConfig} from '../../shared/model/messages/queries/readable-temporal-query-config.model';
+import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -63,6 +63,9 @@ export class QueryService {
   /** Flag indicating whether a query is currently being executed. */
   private _running = 0;
 
+  /** last query which was issued */
+  private _lastQuery = null;
+
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
               @Inject(AppConfig) private _config: AppConfig,
@@ -70,7 +73,7 @@ export class QueryService {
     _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
       this._socket = ws;
       this._socket.pipe(
-        filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_TEMPORAL', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
+          filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_TEMPORAL', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
       ).subscribe((msg: Message) => this.onApiMessage(msg));
     });
     this._config.configAsObservable.subscribe(config => {
@@ -110,73 +113,6 @@ export class QueryService {
   }
 
   /**
-   * Starts a new similarity query. Success is indicated by the return value.
-   *
-   * Note: Similarity queries can only be started if no query is currently running.
-   *
-   * @param containers The list of QueryContainers used to create the query.
-   * @returns {boolean} true if query was issued, false otherwise.
-   */
-  public findSimilar(containers: QueryContainerInterface[]): boolean {
-    if (!this._socket) {
-      console.warn('No socket available, not executing similarity query');
-      return false;
-    }
-    if (this._running > 0) {
-      console.warn('There is already a query running');
-    }
-    this._config.configAsObservable.pipe(first()).subscribe(config => {
-      const query = new TemporalQuery(
-        containers.map(container => new StagedSimilarityQuery(container.stages, null)),
-        new ReadableTemporalQueryConfig(null, [],
-        null, -1),
-        config.metadataAccessSpec);
-      this._socket.next(query)
-    });
-
-    /** Log Interaction */
-    const _components: InteractionEventComponent[] = []
-    containers.forEach(container => {
-      _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_CONTAINER))
-      container.stages.forEach(s => {
-        _components.push(new InteractionEventComponent(InteractionEventType.NEW_QUERY_STAGE))
-        s.terms.forEach(t => {
-          const context: Map<ContextKey, any> = new Map();
-          context.set('q:categories', t.categories);
-          context.set('q:value', 'null')
-          switch (t.type) {
-            case 'IMAGE':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_IMAGE, context));
-              return;
-            case 'AUDIO':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_AUDIO, context));
-              return;
-            case 'MODEL3D':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_MODEL3D, context));
-              return;
-            case 'SEMANTIC':
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_SEMANTIC, context));
-              return;
-            case 'TEXT':
-              context.set('q:value', (t as TextQueryTerm).data); // data = plaintext
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_FULLTEXT, context));
-              return;
-            case 'BOOLEAN':
-              context.set('q:value', (t as BoolQueryTerm).terms)
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_BOOLEAN, context));
-              return;
-            case 'TAG':
-              context.set('q:value', (t as TagQueryTerm).tags);
-              _components.push(new InteractionEventComponent(InteractionEventType.QUERY_TAG, context));
-              return;
-          }
-        })
-      })
-    });
-    this._eventBusService.publish(new InteractionEvent(..._components))
-  }
-
-  /**
    * Starts a new temporal query. Success is indicated by the return value.
    *
    * Note: Temporal queries can only be started if no query is currently running.
@@ -195,11 +131,12 @@ export class QueryService {
       console.warn('There is already a query running');
     }
     const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
-      new ReadableTemporalQueryConfig(null,
-        [],
-        timeDistances,
-        maxLength),
-      this._config.config.metadataAccessSpec);
+        new ReadableTemporalQueryConfig(null,
+            [],
+            timeDistances,
+            maxLength),
+        this._config.config.metadataAccessSpec);
+    this._lastQuery = query;
     this._socket.next(query)
 
     /** Log Interaction */
@@ -287,10 +224,12 @@ export class QueryService {
       return;
     }
     _cat
-      .filter(c => categories.indexOf(c) === -1)
-      .forEach(c => categories.push(c));
+    .filter(c => categories.indexOf(c) === -1)
+    .forEach(c => categories.push(c));
     if (categories.length > 0) {
-      this._socket.next(new MoreLikeThisQuery(segment.segmentId, categories, <QueryConfig>{}, config.metadataAccessSpec));
+      const query = new MoreLikeThisQuery(segment.segmentId, categories, <QueryConfig>{}, config.metadataAccessSpec)
+      this._lastQuery = query;
+      this._socket.next(query);
     }
 
     return true;
@@ -452,6 +391,7 @@ export class QueryService {
    */
   private startNewQuery(queryId: string) {
     /* Start the actual query. */
+    console.debug('received QR_START')
     if (!this._results || (this._results && this._results.queryId !== queryId)) {
       this._results = new ResultsContainer(queryId);
       this._interval_map.set(queryId, window.setInterval(() => this._results.checkUpdate(), 2500));
@@ -493,5 +433,9 @@ export class QueryService {
     this._running -= 1;
     this._subject.next('ERROR' as QueryChange);
     console.log('QueryService received error: ' + message.message);
+  }
+
+  public lastQueryIssued() {
+    return this._lastQuery
   }
 }

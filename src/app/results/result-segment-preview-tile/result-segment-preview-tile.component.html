@@ -1,9 +1,8 @@
-<div (dragstart)="container.onTileDrag($event, segment, segment._objectScoreContainer)" (mouseenter)="focus = true"
-     (mouseleave)="focus = false" [style.background]="score | BackgroundScorePipe:segment:_tags:temporalObject" class="segment"
+<div (dragstart)="container.onTileDrag($event, segment, segment._objectScoreContainer)" (mouseenter)="_focus = true"
+     (mouseleave)="_focus = false" [style.background]="score | BackgroundScorePipe:segment:_tags:temporalObject" class="segment"
      draggable="true"
      id="{{segment.segmentId}}">
-    <img (click)="onTileClicked($event)"
-         *ngIf="!(this._keyboardService.ctrlPressed|async) || !_focus" draggable="false"
+    <img (click)="onTileClicked($event)" draggable="false"
          src="{{this.segment._objectScoreContainer| ThumbnailPathPipe: this.segment:80: 120}}"/>
 
 
@@ -11,15 +10,14 @@
         <button (click)="onHighlightButtonClicked(segment,tag)"
                 *ngFor="let tag of container._selectionService._available" mat-icon-button
                 matTooltip="Toggle '{{tag.name}}' tag">
-            <mat-icon
-                    [style.color]="container._selectionService.hasTag(segment.segmentId,tag) ? (tag | ColorForRelevancePipe: 1.0) : ''">
+            <mat-icon>
                 album
             </mat-icon>
         </button>
     </div>
 
     <div *ngIf="_focus" class="footer" fxLayout="row" fxLayoutAlign="space-evenly">
-        <button (click)="onSubmitButtonClicked()" *ngIf="('' |competitionEnabledPipe | async)"
+        <button (click)="submit()" *ngIf="('' |competitionEnabledPipe | async)"
                 mat-icon-button matTooltip="Submit segment to VBS">
             <mat-icon>send</mat-icon>
         </button>

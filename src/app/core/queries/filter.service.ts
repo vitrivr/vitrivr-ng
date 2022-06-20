@@ -6,6 +6,7 @@ import {ColorLabel, ColorLabels} from '../../shared/model/misc/colorlabel.model'
 import {SelectionService} from '../selection/selection.service';
 import {Tag} from '../selection/tag.model';
 import {MediaObjectDescriptor} from '../../../../openapi/cineast';
+import {FilterInformation} from "../competition/logging/filter-information";
 
 
 /**
@@ -15,11 +16,6 @@ import {MediaObjectDescriptor} from '../../../../openapi/cineast';
  */
 @Injectable()
 export class FilterService {
-  /**
-   * When set to true, objects who have metadata matching for any of the categories are displayed.
-   */
-  public _useOrForMetadataCategoriesFilter = false;
-  _id: string;
 
   /** A BehaviorSubject that publishes changes to the filters affecting SegmentScoreContainers. */
   _segmentFilters: BehaviorSubject<((v: MediaSegmentScoreContainer) => boolean)[]> = new BehaviorSubject([]);
@@ -27,87 +23,58 @@ export class FilterService {
   /** A BehaviorSubject that publishes changes to the filters affecting MediaObjectScoreContainers. */
   _objectFilters: BehaviorSubject<((v: MediaObjectScoreContainer) => boolean)[]> = new BehaviorSubject([]);
 
-  /**
-   * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects
-   * that match one of the MediaTypes contained in this array will pass the filter.
-   */
-  private _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
+  _filters: FilterInformation = new FilterInformation();
 
-  /**
-   * A filter by dominant color. Affects only MediaSegmentScoreContainers. If non-empty, only segments
-   * that match at least one of the dominant colors contained in this array will pass the filter.
-   */
-  private _dominant: Map<ColorLabel, boolean> = new Map();
+  filterSubject: BehaviorSubject<FilterInformation> = new BehaviorSubject(this._filters);
 
-  /**
-   * A filter by metadata. For each metadata category (e.g. day), a list of allowed values is kept.
-   * If empty, all results are displayed. If non-empty, only results are displayed where for every key in the filter, the metadata value of the object matches an allowed value in the list.
-   * Behavior across categories is determined by a different boolean.
-   * If the object does not have one of the metadata keys, it is filtered.
-   */
-  private _filterMetadata: Map<string, Set<string>> = new Map();
-
-  /**
-   * A filter for tags. This is the list of allowed tag names. If the set is empty, no filter is applied.
-   */
-  private _filterTags: Set<Tag> = new Set();
-
-  /**
-   * A filter by metadata for numeric values.
-   * For each category, a min and max number is kept (or null)
-   */
-  private _filterRangeMetadata: Map<string, [number | null, number | null]> = new Map();
-
-  /** Threshold for score filtering. */
-  private _threshold = 0.0;
 
   constructor(private _selectionService: SelectionService) {
-    Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._mediatypes.set(v, false));
-    ColorLabels.forEach(v => this._dominant.set(v, false));
+    Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._filters.mediatypes.set(v, false));
+    ColorLabels.forEach(v => this._filters.dominant.set(v, false));
   }
 
   /**
    * Returns an editable map of the mediatypes that should be used for filtering
    */
   get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
-    return this._mediatypes;
+    return this._filters.mediatypes;
   }
 
   /**
    * Returns an editable map of the colorlabels that should be used for filtering
    */
   get dominant(): Map<ColorLabel, boolean> {
-    return this._dominant;
+    return this._filters.dominant;
   }
 
   /**
    * Returns an editable map of the metadata that should be used for filtering
    */
   get filterMetadata(): Map<string, Set<string>> {
-    return this._filterMetadata
+    return this._filters.filterMetadata
   }
 
   /**
    * Returns the editable set of tags used for filtering
    */
   get filterTags(): Set<Tag> {
-    return this._filterTags;
+    return this._filters.filterTags;
   }
 
   /**
    * Returns an editable map of the metadata that should be used for filtering with ranges
    */
   get filterRangeMetadata(): Map<string, [number | null, number | null]> {
-    return this._filterRangeMetadata
+    return this._filters.filterRangeMetadata
   }
 
   get threshold(): number {
-    return this._threshold;
+    return this._filters.threshold;
   }
 
   set threshold(value: number) {
     if (value >= 0.0 && value <= 1.0) {
-      this._threshold = value;
+      this._filters.threshold = value;
     }
   }
 
@@ -115,27 +82,27 @@ export class FilterService {
    * Returns a copy of the list of MediaTypes that should be used for filtering.
    */
   get mediatypeKeys(): MediaObjectDescriptor.MediatypeEnum[] {
-    return Array.from(this._mediatypes.keys());
+    return Array.from(this._filters.mediatypes.keys());
   }
 
   /**
    * Returns a copy of the list of colors that should be used for filtering.
    */
   get dominantKeys(): ColorLabel[] {
-    return Array.from(this._dominant.keys());
+    return Array.from(this._filters.dominant.keys());
   }
 
   /**
    * Clears all filters. Causes an update to be published.
    */
   public clear() {
-    this._mediatypes.forEach((v, k) => this._mediatypes.set(k, false));
-    this._dominant.forEach((v, k) => this._dominant.set(k, false));
-    this._filterMetadata.clear();
-    this._filterRangeMetadata.clear();
-    this._filterTags.clear();
-    this._threshold = 0.0;
-    this._id = null
+    this._filters.mediatypes.forEach((v, k) => this._filters.mediatypes.set(k, false));
+    this._filters.dominant.forEach((v, k) => this._filters.dominant.set(k, false));
+    this._filters.filterMetadata.clear();
+    this._filters.filterRangeMetadata.clear();
+    this._filters.filterTags.clear();
+    this._filters.threshold = 0.0;
+    this._filters.id = null
     this.update()
   }
 
@@ -144,8 +111,8 @@ export class FilterService {
    * Clear metadata filters. Causes an update to be published
    */
   public clearMetadata() {
-    this._filterMetadata.clear();
-    this._filterRangeMetadata.clear();
+    this._filters.filterMetadata.clear();
+    this._filters.filterRangeMetadata.clear();
     this.update();
   }
 
@@ -157,9 +124,9 @@ export class FilterService {
     const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[] = [];
     const segmentFilters: ((v: MediaSegmentScoreContainer) => boolean)[] = [];
 
-    if (this._id) {
-      objectFilters.push((o) => o.objectid === this._id)
-      segmentFilters.push((s) => s.objectId === this._id || s.segmentId === this._id)
+    if (this._filters.id) {
+      objectFilters.push((o) => o.objectid === this._filters.id)
+      segmentFilters.push((s) => s.objectId === this._filters.id || s.segmentId === this._filters.id)
     }
 
     /* Inline function for range metadata filters
@@ -192,7 +159,7 @@ export class FilterService {
       return true
     }
 
-    if (!(this._filterMetadata.size === 0 && this._filterRangeMetadata.size === 0 && this._filterTags.size === 0)) {
+    if (!(this._filters.filterMetadata.size === 0 && this._filters.filterRangeMetadata.size === 0 && this._filters.filterTags.size === 0)) {
       console.debug(`updating filters`);
 
       // of course, the AND filter can only be falsified by non-matching filter criteria while the OR filter can only be set to true if one of the conditions match
@@ -204,7 +171,7 @@ export class FilterService {
         let andFilter = Boolean(true);
         let orFilter = Boolean(false);
         let tagFilter = Boolean(false);
-        this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
+        this._filters.filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
           // check if either one of the underlying segments or the object itself has appropriate metadata
           if (obj.segments.findIndex(seg => mdAllowedValuesSet.has(seg.metadata.get(mdKey))) >= 0 || mdAllowedValuesSet.has(obj._metadata.get(mdKey))) {
             orFilter = true;
@@ -212,7 +179,7 @@ export class FilterService {
           }
           andFilter = false;
         });
-        this._filterRangeMetadata.forEach((range, mdKey) => {
+        this._filters.filterRangeMetadata.forEach((range, mdKey) => {
           // check if one of the segments fulfills both range conditions
           if (obj.segments.findIndex(seg => checkRange(range, seg.metadata.get(mdKey))) >= 0) {
             orFilter = true;
@@ -225,46 +192,46 @@ export class FilterService {
           }
           andFilter = false;
         });
-        if (this._filterTags.size === 0) {
+        if (this._filters.filterTags.size === 0) {
           tagFilter = true;
         }
-        this._filterTags.forEach(tag => {
+        this._filters.filterTags.forEach(tag => {
           if (obj.segments.findIndex(seg => this._selectionService.hasTag(seg.segmentId, tag)) >= 0) {
             tagFilter = true;
           }
         });
-        return this._useOrForMetadataCategoriesFilter ? orFilter && tagFilter : andFilter && tagFilter;
+        return this._filters.useOrForMetadataCategoriesFilter ? orFilter && tagFilter : andFilter && tagFilter;
       });
 
       segmentFilters.push((seg) => {
         let andFilter = Boolean(true);
         let orFilter = Boolean(false);
         // check whether the segment or the corresponding object has appropriate metadata
-        this._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
+        this._filters.filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
           if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
           andFilter = false;
         });
-        this._filterRangeMetadata.forEach((range, mdKey) => {
+        this._filters.filterRangeMetadata.forEach((range, mdKey) => {
           if (checkRange(range, seg.metadata.get(mdKey)) || checkRange(range, seg.objectScoreContainer._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
           andFilter = false;
         });
-        return this._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
+        return this._filters.useOrForMetadataCategoriesFilter ? orFilter : andFilter;
       });
     }
 
-    if (!this.mediatypeKeys.every(v => this._mediatypes.get(v) === false)) {
-      objectFilters.push((obj) => this._mediatypes.get(obj.mediatype) === true);
-      segmentFilters.push((seg) => this._mediatypes.get(seg.objectScoreContainer.mediatype) === true);
+    if (!this.mediatypeKeys.every(v => this._filters.mediatypes.get(v) === false)) {
+      objectFilters.push((obj) => this._filters.mediatypes.get(obj.mediatype) === true);
+      segmentFilters.push((seg) => this._filters.mediatypes.get(seg.objectScoreContainer.mediatype) === true);
     }
 
-    if (!this.dominantKeys.every(v => this._dominant.get(v) === false)) {
-      segmentFilters.push((seg) => seg.metadata.has('dominantcolor.color') && this._dominant.get(<ColorLabel>seg.metadata.get('dominantcolor.color').toUpperCase()) === true);
+    if (!this.dominantKeys.every(v => this._filters.dominant.get(v) === false)) {
+      segmentFilters.push((seg) => seg.metadata.has('dominantcolor.color') && this._filters.dominant.get(<ColorLabel>seg.metadata.get('dominantcolor.color').toUpperCase()) === true);
     }
 
     /* Filter for score threshold. */
@@ -276,5 +243,6 @@ export class FilterService {
     /* Publish changes. */
     this._objectFilters.next(objectFilters);
     this._segmentFilters.next(segmentFilters);
+    this.filterSubject.next(this._filters)
   }
 }

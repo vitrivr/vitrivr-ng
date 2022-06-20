@@ -2,7 +2,7 @@ import {AfterViewChecked, ChangeDetectorRef, Component, Input} from '@angular/co
 import {MediaObjectScoreContainer} from '../../model/results/scores/media-object-score-container.model';
 import {MediaSegmentScoreContainer} from '../../model/results/scores/segment-score-container.model';
 import {ResolverService} from '../../../core/basics/resolver.service';
-import {VbsSubmissionService} from '../../../core/vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../../../core/competition/vbs-submission.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 import {VgApiService} from '@videogular/ngx-videogular/core';

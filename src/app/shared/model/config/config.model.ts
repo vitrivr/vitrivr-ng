@@ -4,6 +4,7 @@ import {QuerySettings} from './query-settings.model';
 import * as DEEPMERGE from 'deepmerge';
 import {MetadataAccessSpecification} from '../messages/queries/metadata-access-specification.model';
 import {MetadataType} from '../messages/queries/metadata-type.model';
+import {InputType} from '../../../query/containers/bool/bool-attribute';
 
 export class Config {
   /** Context of the Cineast API. */
@@ -48,7 +49,7 @@ export class Config {
       lsc: false,
 
       /* Host of the DRES endpoint (fqn + port, no protocol). */
-      host: null,
+      host: "",
 
       /* Flag indicating whether or not TLS should be used to communicate with DRES. */
       tls: false,
@@ -71,10 +72,10 @@ export class Config {
     ],
     mlt: {
       'MODEL3D': ['sphericalharmonicsdefault'],
-      'IMAGE': ['globalcolor', 'localcolor', 'edge', 'localfeatures'],
-      'VIDEO': ['globalcolor', 'localcolor', 'edge', 'localfeatures'],
+      'IMAGE': ['visualtextcoembedding'],
+      'VIDEO': ['visualtextcoembedding'],
       'AUDIO': ['audiofingerprint'],
-      'IMAGE_SEQUENCE': ['globalcolor', 'localcolor', 'edge']
+      'IMAGE_SEQUENCE': ['visualtextcoembedding']
     },
     query: {
       history: -1,
@@ -83,7 +84,7 @@ export class Config {
       options: {
         image: true,
         audio: false,
-        model3d: true,
+        model3d: false,
         text: true,
         tag: false,
         map: false,
@@ -107,7 +108,26 @@ export class Config {
       text: {
         categories: ['visualtextcoembedding', 'Text Co-Embedding']
       },
-      boolean: [],
+      boolean: [
+        {
+          display: "Segment Id",
+          input: InputType.TEXT,
+          table: "cineast_segment",
+          col: "segmentid",
+          operators: [
+            "="
+          ]
+        },
+        {
+          display: "Object Id",
+          input: InputType.TEXT,
+          table: "cineast_segment",
+          col: "objectid",
+          operators: [
+            "="
+          ]
+        }
+      ],
       temporal_mode: 'TEMPORAL_DISTANCE',
       enableTagPrioritisation: false,
       temporal_max_length: 600,

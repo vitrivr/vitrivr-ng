@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {VbsSubmissionService} from '../../../core/vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../../../core/competition/vbs-submission.service';
 import {map} from 'rxjs/operators';
 import {AppConfig} from '../../../app.config';
 import { Observable } from 'rxjs';

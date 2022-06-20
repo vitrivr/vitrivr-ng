@@ -11,11 +11,12 @@ export class DatabaseService {
    */
   constructor() {
     DatabaseService.DB.version(1).stores({
-      config: 'id,config',
       history: '++id,timestamp',
-      log_results: '++id,log',
-      log_interaction: '++id,log',
-      log_submission: '++id,log'
+      log_results_dres: '++id,log',
+      log_interaction_dres: '++id,log',
+      log_submission_dres: '++id,log',
+      log_results: '++id,entry',
+      log_queries: '++id,entry',
     });
   }
 

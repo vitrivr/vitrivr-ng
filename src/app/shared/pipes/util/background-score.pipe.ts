@@ -10,9 +10,6 @@ import {AbstractResultsViewComponent} from '../../../results/abstract-results-vi
 })
 export class BackgroundScorePipe implements PipeTransform {
 
-  constructor(private _selectionService: SelectionService) {
-  }
-
   public transform(score: number, segment: MediaSegmentScoreContainer, tags: Tag[], temporalObject?: TemporalObjectSegments): string {
     return AbstractResultsViewComponent.staticBackgroundForScore(score, segment, tags, temporalObject)
   }

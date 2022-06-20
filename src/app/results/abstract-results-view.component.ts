@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, OnDestroy, OnInit, Directive} from '@angular/core';
+import {ChangeDetectorRef, Directive, OnDestroy, OnInit} from '@angular/core';
 import {ResultsContainer} from '../shared/model/results/scores/results-container.model';
 import {QueryChange, QueryService} from '../core/queries/query.service';
 import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
@@ -46,7 +46,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
 
   public static staticBackgroundForScore(score: number, segment: MediaSegmentScoreContainer, tags: Tag[], temporalObject?: TemporalObjectSegments): string {
     const _score = temporalObject === undefined ? score : temporalObject.score
-    if (tags.length === 0) {
+    if (tags == null || tags.length === 0) {
       const v = Math.round(255.0 - (_score * 255.0));
       return ColorUtil.rgbToHex(v, 255, v);
     } else if (tags.length === 1) {
@@ -95,6 +95,7 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     const tags: Tag[] = this._selectionService.getTags(segment.segmentId);
     return AbstractResultsViewComponent.staticBackgroundForScore(score, segment, tags, temporalObject)
   }
+
   /**
    * Lifecycle Hook (onInit): Subscribes to the QueryService and the SelectionService
    */

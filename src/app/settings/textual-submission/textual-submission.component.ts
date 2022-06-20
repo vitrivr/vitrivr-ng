@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
-import {VbsSubmissionService} from '../../core/vbs/vbs-submission.service';
+import {VbsSubmissionService} from '../../core/competition/vbs-submission.service';
 
 @Component({
   selector: 'app-textual-submission',

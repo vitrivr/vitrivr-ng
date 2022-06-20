@@ -30,7 +30,7 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
   constructor(@Inject(AppConfig) _config: AppConfig) {
     super();
     _config.configAsObservable.pipe(
-      filter(c => c.get<string>('competition.collabordinator') != null)
+      filter(c => c._config.competition.collabordinator != null)
     ).subscribe(c => {
       this._config = c;
       this.connect();
@@ -86,21 +86,24 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
     if (this._webSocket) {
       this._webSocket.complete();
     }
-    this._webSocket = webSocket<CollabordinatorMessage>(this._config.get<string>('competition.collabordinator'));
+    this._webSocket = webSocket<CollabordinatorMessage>(this._config._config.competition.collabordinator);
+    this._online.next(true)
     this._webSocket.subscribe(
-      v => {
-        this.next(v)
-        this._online.next(true)
-      },
-      e => {
-        console.log('Error occurred while communicating with Collabordinator web service');
-        this._online.next(false)
-      },
-      () => {
-        console.log('Connection to Collabordinator web service was closed.');
-        this._online.next(false)
+      {
+        next: (v) => {
+          this.next(v)
+        },
+        error: (error) => {
+          console.error('Error occurred while communicating with Collabordinator web service');
+          console.error(error)
+          this._online.next(false)
+        },
+        complete: () => {
+          console.log('Connection to Collabordinator web service was closed.');
+          this._online.next(false)
+        }
       }
-    );
+    )
     return true;
   }
 }

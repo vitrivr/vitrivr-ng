@@ -13,4 +13,4 @@ import {AppConfig} from '../../app.config';
   declarations: [],
   providers: [VbsSubmissionService, CollabordinatorService]
 })
-export class VbsModule { }
+export class CompetitionModule { }

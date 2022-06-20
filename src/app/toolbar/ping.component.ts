@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {PingService} from '../core/basics/ping.service';
-import {CollabordinatorService} from '../core/vbs/collabordinator.service';
+import {CollabordinatorService} from '../core/competition/collabordinator.service';
 import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
 
 @Component({

@@ -25,8 +25,7 @@
                             *ngFor="let tag of _selectionService._available"
                             mat-icon-button
                             matTooltip="Toggle '{{tag.name}}' tag">
-                        <mat-icon
-                                [style.color]="_selectionService.hasTag(mediaobject.representativeSegment.segmentId,tag) ? (tag | ColorForRelevancePipe:1.0 ): ''">
+                        <mat-icon>
                             album
                         </mat-icon>
                     </button>
