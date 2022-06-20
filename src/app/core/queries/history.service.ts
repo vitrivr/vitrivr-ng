@@ -2,8 +2,8 @@ import {Inject, Injectable} from '@angular/core';
 import {ResultsContainer} from '../../shared/model/results/scores/results-container.model';
 import {HistoryContainer} from '../../shared/model/internal/history-container.model';
 import Dexie from 'dexie';
-import {first, map, mergeMap, tap} from 'rxjs/operators';
-import {EMPTY, from, Observable} from 'rxjs';
+import {first, map} from 'rxjs/operators';
+import {from, Observable} from 'rxjs';
 import {DatabaseService} from '../basics/database.service';
 import * as JSZip from 'jszip';
 import {AppConfig} from '../../app.config';
@@ -99,7 +99,7 @@ export class HistoryService {
    */
   public download() {
     from(this._historyTable.orderBy('id').toArray())
-      .pipe(
+    .pipe(
         first(),
         map(h => {
           const zip = new JSZip();
@@ -107,17 +107,17 @@ export class HistoryService {
           zip.file('vitrivrng-history.json', JSON.stringify(h, null, 2), options);
           return zip
         })
-      )
-      .subscribe(zip => {
-        zip.generateAsync({type: 'blob'}).then(
+    )
+    .subscribe(zip => {
+      zip.generateAsync({type: 'blob'}).then(
           (result) => {
             window.open(window.URL.createObjectURL(result));
           },
           (error) => {
             console.log(error);
           }
-        )
-      });
+      )
+    });
   }
 
   /**
@@ -125,12 +125,12 @@ export class HistoryService {
    */
   private ommitOldest() {
     from(this._historyTable.count()).pipe(
-      map(c => {
-        if (c > this._keep) {
-          // default order is asc
-          this._historyTable.orderBy("timestamp").limit(c - this.keep).delete()
-        }
-      })
+        map(c => {
+          if (c > this._keep) {
+            // default order is asc
+            this._historyTable.orderBy("timestamp").limit(c - this.keep).delete()
+          }
+        })
     ).subscribe();
   }
 }

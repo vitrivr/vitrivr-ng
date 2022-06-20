@@ -9,7 +9,7 @@
     "host_objects": "http://localhost:4567/objects/:o"
   },
   "competition": {
-    "host": "dres.org",
+    "host": "dres-domain.example",
     "tls": false,
     "log": true,
     "lsc": false,

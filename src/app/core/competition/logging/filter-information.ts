@@ -10,21 +10,21 @@ export class FilterInformation {
   /**
    * When set to true, objects who have metadata matching for any of the categories are displayed.
    */
-  _useOrForMetadataCategoriesFilter = false;
+  useOrForMetadataCategoriesFilter = false;
 
-  _id: string;
+  id: string;
 
   /**
    * A filter by MediaType. Affects both MediaObjectScoreContainers and MediaSegmentScoreContainers. If non-empty, only objects
    * that match one of the MediaTypes contained in this array will pass the filter.
    */
-  _mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
+  mediatypes: Map<MediaObjectDescriptor.MediatypeEnum, boolean> = new Map();
 
   /**
    * A filter by dominant color. Affects only MediaSegmentScoreContainers. If non-empty, only segments
    * that match at least one of the dominant colors contained in this array will pass the filter.
    */
-  _dominant: Map<ColorLabel, boolean> = new Map();
+  dominant: Map<ColorLabel, boolean> = new Map();
 
   /**
    * A filter by metadata. For each metadata category (e.g. day), a list of allowed values is kept.
@@ -32,19 +32,19 @@ export class FilterInformation {
    * Behavior across categories is determined by a different boolean.
    * If the object does not have one of the metadata keys, it is filtered.
    */
-  _filterMetadata: Map<string, Set<string>> = new Map();
+  filterMetadata: Map<string, Set<string>> = new Map();
 
   /**
    * A filter for tags. This is the list of allowed tag names. If the set is empty, no filter is applied.
    */
-  _filterTags: Set<Tag> = new Set();
+  filterTags: Set<Tag> = new Set();
 
   /**
    * A filter by metadata for numeric values.
    * For each category, a min and max number is kept (or null)
    */
-  _filterRangeMetadata: Map<string, [number | null, number | null]> = new Map();
+  filterRangeMetadata: Map<string, [number | null, number | null]> = new Map();
 
   /** Threshold for score filtering. */
-  _threshold = 0.0;
+  threshold = 0.0;
 }

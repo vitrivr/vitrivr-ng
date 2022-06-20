@@ -29,52 +29,52 @@ export class FilterService {
 
 
   constructor(private _selectionService: SelectionService) {
-    Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._filters._mediatypes.set(v, false));
-    ColorLabels.forEach(v => this._filters._dominant.set(v, false));
+    Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key]).forEach(v => this._filters.mediatypes.set(v, false));
+    ColorLabels.forEach(v => this._filters.dominant.set(v, false));
   }
 
   /**
    * Returns an editable map of the mediatypes that should be used for filtering
    */
   get mediatypes(): Map<MediaObjectDescriptor.MediatypeEnum, boolean> {
-    return this._filters._mediatypes;
+    return this._filters.mediatypes;
   }
 
   /**
    * Returns an editable map of the colorlabels that should be used for filtering
    */
   get dominant(): Map<ColorLabel, boolean> {
-    return this._filters._dominant;
+    return this._filters.dominant;
   }
 
   /**
    * Returns an editable map of the metadata that should be used for filtering
    */
   get filterMetadata(): Map<string, Set<string>> {
-    return this._filters._filterMetadata
+    return this._filters.filterMetadata
   }
 
   /**
    * Returns the editable set of tags used for filtering
    */
   get filterTags(): Set<Tag> {
-    return this._filters._filterTags;
+    return this._filters.filterTags;
   }
 
   /**
    * Returns an editable map of the metadata that should be used for filtering with ranges
    */
   get filterRangeMetadata(): Map<string, [number | null, number | null]> {
-    return this._filters._filterRangeMetadata
+    return this._filters.filterRangeMetadata
   }
 
   get threshold(): number {
-    return this._filters._threshold;
+    return this._filters.threshold;
   }
 
   set threshold(value: number) {
     if (value >= 0.0 && value <= 1.0) {
-      this._filters._threshold = value;
+      this._filters.threshold = value;
     }
   }
 
@@ -82,27 +82,27 @@ export class FilterService {
    * Returns a copy of the list of MediaTypes that should be used for filtering.
    */
   get mediatypeKeys(): MediaObjectDescriptor.MediatypeEnum[] {
-    return Array.from(this._filters._mediatypes.keys());
+    return Array.from(this._filters.mediatypes.keys());
   }
 
   /**
    * Returns a copy of the list of colors that should be used for filtering.
    */
   get dominantKeys(): ColorLabel[] {
-    return Array.from(this._filters._dominant.keys());
+    return Array.from(this._filters.dominant.keys());
   }
 
   /**
    * Clears all filters. Causes an update to be published.
    */
   public clear() {
-    this._filters._mediatypes.forEach((v, k) => this._filters._mediatypes.set(k, false));
-    this._filters._dominant.forEach((v, k) => this._filters._dominant.set(k, false));
-    this._filters._filterMetadata.clear();
-    this._filters._filterRangeMetadata.clear();
-    this._filters._filterTags.clear();
-    this._filters._threshold = 0.0;
-    this._filters._id = null
+    this._filters.mediatypes.forEach((v, k) => this._filters.mediatypes.set(k, false));
+    this._filters.dominant.forEach((v, k) => this._filters.dominant.set(k, false));
+    this._filters.filterMetadata.clear();
+    this._filters.filterRangeMetadata.clear();
+    this._filters.filterTags.clear();
+    this._filters.threshold = 0.0;
+    this._filters.id = null
     this.update()
   }
 
@@ -111,8 +111,8 @@ export class FilterService {
    * Clear metadata filters. Causes an update to be published
    */
   public clearMetadata() {
-    this._filters._filterMetadata.clear();
-    this._filters._filterRangeMetadata.clear();
+    this._filters.filterMetadata.clear();
+    this._filters.filterRangeMetadata.clear();
     this.update();
   }
 
@@ -124,9 +124,9 @@ export class FilterService {
     const objectFilters: ((v: MediaObjectScoreContainer) => boolean)[] = [];
     const segmentFilters: ((v: MediaSegmentScoreContainer) => boolean)[] = [];
 
-    if (this._filters._id) {
-      objectFilters.push((o) => o.objectid === this._filters._id)
-      segmentFilters.push((s) => s.objectId === this._filters._id || s.segmentId === this._filters._id)
+    if (this._filters.id) {
+      objectFilters.push((o) => o.objectid === this._filters.id)
+      segmentFilters.push((s) => s.objectId === this._filters.id || s.segmentId === this._filters.id)
     }
 
     /* Inline function for range metadata filters
@@ -159,7 +159,7 @@ export class FilterService {
       return true
     }
 
-    if (!(this._filters._filterMetadata.size === 0 && this._filters._filterRangeMetadata.size === 0 && this._filters._filterTags.size === 0)) {
+    if (!(this._filters.filterMetadata.size === 0 && this._filters.filterRangeMetadata.size === 0 && this._filters.filterTags.size === 0)) {
       console.debug(`updating filters`);
 
       // of course, the AND filter can only be falsified by non-matching filter criteria while the OR filter can only be set to true if one of the conditions match
@@ -171,7 +171,7 @@ export class FilterService {
         let andFilter = Boolean(true);
         let orFilter = Boolean(false);
         let tagFilter = Boolean(false);
-        this._filters._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
+        this._filters.filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
           // check if either one of the underlying segments or the object itself has appropriate metadata
           if (obj.segments.findIndex(seg => mdAllowedValuesSet.has(seg.metadata.get(mdKey))) >= 0 || mdAllowedValuesSet.has(obj._metadata.get(mdKey))) {
             orFilter = true;
@@ -179,7 +179,7 @@ export class FilterService {
           }
           andFilter = false;
         });
-        this._filters._filterRangeMetadata.forEach((range, mdKey) => {
+        this._filters.filterRangeMetadata.forEach((range, mdKey) => {
           // check if one of the segments fulfills both range conditions
           if (obj.segments.findIndex(seg => checkRange(range, seg.metadata.get(mdKey))) >= 0) {
             orFilter = true;
@@ -192,46 +192,46 @@ export class FilterService {
           }
           andFilter = false;
         });
-        if (this._filters._filterTags.size === 0) {
+        if (this._filters.filterTags.size === 0) {
           tagFilter = true;
         }
-        this._filters._filterTags.forEach(tag => {
+        this._filters.filterTags.forEach(tag => {
           if (obj.segments.findIndex(seg => this._selectionService.hasTag(seg.segmentId, tag)) >= 0) {
             tagFilter = true;
           }
         });
-        return this._filters._useOrForMetadataCategoriesFilter ? orFilter && tagFilter : andFilter && tagFilter;
+        return this._filters.useOrForMetadataCategoriesFilter ? orFilter && tagFilter : andFilter && tagFilter;
       });
 
       segmentFilters.push((seg) => {
         let andFilter = Boolean(true);
         let orFilter = Boolean(false);
         // check whether the segment or the corresponding object has appropriate metadata
-        this._filters._filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
+        this._filters.filterMetadata.forEach((mdAllowedValuesSet, mdKey) => {
           if (mdAllowedValuesSet.has(seg.metadata.get(mdKey)) || mdAllowedValuesSet.has(seg.objectScoreContainer._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
           andFilter = false;
         });
-        this._filters._filterRangeMetadata.forEach((range, mdKey) => {
+        this._filters.filterRangeMetadata.forEach((range, mdKey) => {
           if (checkRange(range, seg.metadata.get(mdKey)) || checkRange(range, seg.objectScoreContainer._metadata.get(mdKey))) {
             orFilter = true;
             return;
           }
           andFilter = false;
         });
-        return this._filters._useOrForMetadataCategoriesFilter ? orFilter : andFilter;
+        return this._filters.useOrForMetadataCategoriesFilter ? orFilter : andFilter;
       });
     }
 
-    if (!this.mediatypeKeys.every(v => this._filters._mediatypes.get(v) === false)) {
-      objectFilters.push((obj) => this._filters._mediatypes.get(obj.mediatype) === true);
-      segmentFilters.push((seg) => this._filters._mediatypes.get(seg.objectScoreContainer.mediatype) === true);
+    if (!this.mediatypeKeys.every(v => this._filters.mediatypes.get(v) === false)) {
+      objectFilters.push((obj) => this._filters.mediatypes.get(obj.mediatype) === true);
+      segmentFilters.push((seg) => this._filters.mediatypes.get(seg.objectScoreContainer.mediatype) === true);
     }
 
-    if (!this.dominantKeys.every(v => this._filters._dominant.get(v) === false)) {
-      segmentFilters.push((seg) => seg.metadata.has('dominantcolor.color') && this._filters._dominant.get(<ColorLabel>seg.metadata.get('dominantcolor.color').toUpperCase()) === true);
+    if (!this.dominantKeys.every(v => this._filters.dominant.get(v) === false)) {
+      segmentFilters.push((seg) => seg.metadata.has('dominantcolor.color') && this._filters.dominant.get(<ColorLabel>seg.metadata.get('dominantcolor.color').toUpperCase()) === true);
     }
 
     /* Filter for score threshold. */
