@@ -40,9 +40,6 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
           this._cache = new Map()
         }
       }
-      if (!online) {
-        this._cache = null
-      }
     })
 
     /* Register listener for Collabordinator. */

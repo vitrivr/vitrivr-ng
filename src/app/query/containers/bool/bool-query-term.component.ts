@@ -1,4 +1,4 @@
-import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, InputType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs';
@@ -35,7 +35,6 @@ export class BoolQueryTermComponent implements OnInit {
 
   constructor(
     _configService: AppConfig,
-    private _resolver: ComponentFactoryResolver,
     _booleanService: MiscService,
     _distinctLookupService: DistinctElementLookupService) {
     _configService.configAsObservable.subscribe(c => {
