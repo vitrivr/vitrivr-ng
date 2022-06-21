@@ -9,7 +9,7 @@
 
   <span class="spacer-xlarge"></span>
 
-  <a *ngIf="!(_config | GetConfigVariablePipe:competitionHost)" mat-icon-button matTooltip="Gallery view"
+  <a *ngIf="!(config | GetConfigVariablePipe:competitionHost)" mat-icon-button matTooltip="Gallery view"
      routerLink="/gallery"
      routerLinkActive="active" skipLocationChange="true">
     <mat-icon>grid_on</mat-icon>
@@ -18,21 +18,21 @@
   <span class="spacer-medium"></span>
 
   <a mat-icon-button matTooltip="Mini-gallery view" routerLink="/mini-gallery" routerLinkActive="active"
-     skipLocationChange="true" (click)="setActiveView(0)" [color]="_active_view === 0 ? 'accent' : ''">
+     skipLocationChange="true" (click)="setActiveView(0)" [color]="activeView === 0 ? 'accent' : ''">
     <mat-icon>view_comfy</mat-icon>
   </a>
 
   <span class="spacer-medium"></span>
 
   <a mat-icon-button matTooltip="List view" routerLink="/list" routerLinkActive="active" skipLocationChange="true"
-     (click)="setActiveView(1)" [color]="_active_view === 1 ? 'accent' : ''">
+     (click)="setActiveView(1)" [color]="activeView === 1 ? 'accent' : ''">
     <mat-icon>list</mat-icon>
   </a>
 
   <span class="spacer-medium"></span>
 
   <a mat-icon-button matTooltip="Temporal Scoring view" routerLink="/temporal-list" routerLinkActive="active"
-     skipLocationChange="true" (click)="setActiveView(2)" [color]="_active_view === 2 ? 'accent' : ''">
+     skipLocationChange="true" (click)="setActiveView(2)" [color]="activeView === 2 ? 'accent' : ''">
     <mat-icon>filter_list</mat-icon>
   </a>
 
@@ -42,12 +42,12 @@
     <mat-icon>history</mat-icon>
   </button>
 
-  <button (click)="settingssidenav.toggle()" mat-icon-button [matBadge]="settingsbadge"
+  <button (click)="settingssidenav.toggle()" mat-icon-button [matBadge]="settingsBadge"
           matTooltip="Toggle query refinement sidebar">
     <mat-icon>storage</mat-icon>
   </button>
 
-  <ng-container *ngIf="_config|GetConfigVariablePipe:textualInput">
+  <ng-container *ngIf="config|GetConfigVariablePipe:textualInput">
     <span class="spacer-flex"></span>
 
     <div *ngIf="textualSubmissionOpen">
@@ -60,8 +60,11 @@
       <mat-icon style="transform: translate(-12px, 12px);">{{ textualSubmissionOpen ? 'close' : 'near_me'}}</mat-icon>
     </button>
   </ng-container>
-
   <span class="spacer-flex"></span>
+
+  <app-dres-timer></app-dres-timer>
+
+  <span class="spacer-medium"></span>
 
   <app-api-status>
     <mat-icon>av timer</mat-icon>
@@ -69,7 +72,7 @@
 </mat-toolbar>
 
 <div>
-  <mat-progress-bar *ngIf="_loadBool" [attr.color]="'accent'" mode="query"></mat-progress-bar>
+  <mat-progress-bar *ngIf="loading" [attr.color]="'accent'" mode="query"></mat-progress-bar>
 </div>
 
 <mat-sidenav-container fullscreen style="margin-top:75px;">

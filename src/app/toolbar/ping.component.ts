@@ -6,32 +6,28 @@ import {WebSocketFactoryService} from '../core/api/web-socket-factory.service';
 @Component({
   selector: 'app-api-status',
   template: `
-      <span>
-            <button mat-button [matMenuTriggerFor]="appMenu">
-                 <mat-icon>{{_icon}}</mat-icon>&nbsp;{{(_latency < 100000 ? '(' + _latency + 'ms)' : "(&#x221e;)")}}
-            </button>
-            <mat-menu #appMenu="matMenu">
-                <button (click)="reconnectCineast()" mat-menu-item>Reconnect to Cineast</button>
-                <mat-divider *ngIf="_collabordinator._online|async"></mat-divider>
-                <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect to Collabordinator</button>
-            </mat-menu>
-        </span>
+    <button mat-button [matMenuTriggerFor]="appMenu">
+      <ng-container>
+        <mat-icon>{{_icon}}</mat-icon>
+      </ng-container>
+      <ng-container class="mat-body-2">
+        {{(_latency < 100000 ? '(' + _latency + 'ms)' : "(&#x221e;)")}}
+      </ng-container>
+    </button>
+    <mat-menu #appMenu="matMenu">
+      <button (click)="reconnectCineast()" mat-menu-item>Reconnect to Cineast</button>
+      <mat-divider *ngIf="_collabordinator._online|async"></mat-divider>
+      <button mat-menu-item (click)="reconnectCollabordinator()">Reconnect to Collabordinator</button>
+    </mat-menu>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class PingComponent implements OnInit{
+export class PingComponent implements OnInit {
 
   _icon: string
   _latency: number
 
-  /**
-   * Default constructor. Subscribe for PING messages at the CineastWebSocketFactoryService.
-   *
-   * @param _ping
-   * @param _collabordinator CollabordinatorService reference.
-   * @param _factory WebSocketFactoryService reference.
-   */
   constructor(private _ping: PingService, public _collabordinator: CollabordinatorService, private _factory: WebSocketFactoryService, private ref: ChangeDetectorRef) {
   }
 

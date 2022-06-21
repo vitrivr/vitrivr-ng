@@ -1,4 +1,4 @@
-<mat-tab-group [(selectedIndex)]="_selectedIndex">
+<mat-tab-group [(selectedIndex)]="selectedTabIndex">
 
   <mat-tab label="Refinement" matTooltip="Query refinement">
     <ng-template mat-tab-label>
@@ -9,7 +9,7 @@
 
   <mat-tab label="Preferences" matTooltip="Preferences refinement">
     <ng-template mat-tab-label>
-      <mat-icon [matBadge]="_badgeValue">settings</mat-icon>
+      <mat-icon [matBadge]="dresBadgeValue">settings</mat-icon>
     </ng-template>
     <app-preferences></app-preferences>
   </mat-tab>

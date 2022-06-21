@@ -12,9 +12,9 @@ export class SettingsComponent implements AfterContentInit {
   /**
    * Currently selected tab by index. Also functions as a setter.
    */
-  _selectedIndex: number;
+  selectedTabIndex: number;
 
-  _badgeValue: string = NotificationUtil.getNotificationSymbol()
+  dresBadgeValue: string = NotificationUtil.getNotificationSymbol()
 
   constructor(private _notificationService: NotificationService) {
   }
@@ -22,7 +22,7 @@ export class SettingsComponent implements AfterContentInit {
   ngAfterContentInit(): void {
     /* This can be improved using combineLatest() if there are ever multiple badge observables */
     this._notificationService.getDresStatusBadgeObservable().subscribe(el => {
-      this._badgeValue = el
+      this.dresBadgeValue = el
     })
   }
 
