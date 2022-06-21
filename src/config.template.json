@@ -13,7 +13,8 @@
     "tls": false,
     "log": true,
     "lsc": false,
-    "vbs": false
+    "vbs": false,
+    "textualInput": false
   },
   "mlt": {
     "VIDEO": [

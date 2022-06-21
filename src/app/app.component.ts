@@ -28,6 +28,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   /** Variable to safe currently selected view */
   public _active_view: View;
   competitionHost = ((c: Config) => c._config.competition.host);
+  textualInput = ((c: Config) => c._config.competition.textualInput)
+
   /** Observable that return the loading state of the QueryService. */
   private readonly _loading: Observable<boolean>;
 
