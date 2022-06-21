@@ -9,15 +9,15 @@ import {SelectionManagementComponent} from './selection/selection-management.com
 import {PreferencesComponent} from './preferences/preferences.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {PipesModule} from '../shared/pipes/pipes.module';
-import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import { TextualSubmissionComponent } from './textual-submission/textual-submission.component';
+import {DresSidebarComponent} from "./dres/dres-sidebar.component";
 
 @NgModule({
-  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, NgxSliderModule, PipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule, ],
-  declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent, TextualSubmissionComponent],
-  exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, TextualSubmissionComponent]
+  imports: [MaterialModule, BrowserModule, FormsModule, FlexLayoutModule, NgxSliderModule, PipesModule, MatButtonToggleModule, MatBadgeModule, ReactiveFormsModule,],
+  declarations: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, WeightDistributionComponent, DresSidebarComponent],
+  exports: [RefinementComponent, SettingsComponent, SelectionManagementComponent, PreferencesComponent, DresSidebarComponent]
 })
 export class SettingsModule {
 

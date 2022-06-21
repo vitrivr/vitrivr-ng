@@ -36,19 +36,13 @@ export class PreferencesComponent implements AfterContentInit {
   /** Table for persisting DRES interaction logs. */
   private _dresInteractionLogTable: Dexie.Table<QueryEventLog, number>;
 
-  _dresStatusBadgeValue: string;
-  _status: UserDetails = null
-
   maxLength = 600;
 
   cineast = ((c: Config) => c.cineastEndpointWs);
-  dresAddress = ((c: Config) => c._config.competition.host);
   hostThumbnails = ((c: Config) => c._config.resources.host_thumbnails);
   hostObjects = ((c: Config) => c._config.resources.host_objects);
   mode = ((c: Config) => c._config.query.temporal_mode);
   defaultContainerDist = ((c: Config) => c._config.query.default_temporal_distance);
-  _activeRun: ClientRunInfo;
-  _activeTask: ClientTaskInfo;
 
   /**
    * Constructor for PreferencesComponent
@@ -57,10 +51,7 @@ export class PreferencesComponent implements AfterContentInit {
     private _configService: AppConfig,
     private _db: DatabaseService,
     private _submissionService: VbsSubmissionService,
-    private _notificationService: NotificationService,
     private _cdr: ChangeDetectorRef,
-    private _runInfo: ClientRunInfoService,
-    private _dresService: DresService
   ) {
   }
 
@@ -160,25 +151,5 @@ export class PreferencesComponent implements AfterContentInit {
     this._dresResultsLogTable = this._db.db.table('log_results_dres');
     this._dresInteractionLogTable = this._db.db.table('log_interaction_dres');
     this._dresSubmissionLogTable = this._db.db.table('log_submission_dres');
-
-    this._dresService.statusObservable().subscribe({
-      next: (status) => {
-        if (status) {
-          this._status = status
-          this._cdr.markForCheck()
-        }
-      }
-    })
-
-    this._dresService.activeTaskObservable().subscribe(task => {
-      this._activeTask = task
-      this._cdr.markForCheck()
-    })
-    this._dresService.activeRunObservable().subscribe(run => {
-      this._activeRun = run
-      this._cdr.markForCheck()
-    })
-
-    this._notificationService.getDresStatusBadgeObservable().subscribe(el => this._dresStatusBadgeValue = el)
   }
 }
