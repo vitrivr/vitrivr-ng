@@ -8,12 +8,8 @@ import {ClientTaskInfo} from "../../../openapi/dres";
 @Component({
   selector: 'app-dres-timer',
   template: `
-    <div class="mat-body-2" *ngIf="initialized && config|GetConfigVariablePipe:competitionHost">
-      <ng-container *ngIf="countDownFun === null">no active task</ng-container>
-      <ng-container *ngIf="countDownFun">{{activeTask.name}}: {{timeStr}} remaining</ng-container>
-    </div>
-    <div class="mat-body-2" *ngIf="!initialized && config|GetConfigVariablePipe:competitionHost">
-      loading task information
+    <div class="mat-body-2" *ngIf="config|GetConfigVariablePipe:competitionHost">
+      {{statusStr}}
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,11 +19,10 @@ export class DresTimerComponent implements OnInit {
   config: Config
   taskSecondsRemaining = 0
   countDownFun = null
-  initialized = false
   activeTask: ClientTaskInfo = null
 
   competitionHost = ((c: Config) => c._config.competition.host)
-  timeStr: string;
+  statusStr: string = "loading task information..."
 
   constructor(private configService: AppConfig, private cdr: ChangeDetectorRef, private dresService: DresService) {
     this.configService.configAsObservable.subscribe(c => {
@@ -37,6 +32,12 @@ export class DresTimerComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.dresService.statusObservable().subscribe({
+      error: _ => {
+        this.statusStr = "Error while connecting to DRES"
+        this.cdr.markForCheck()
+      }
+    })
     this.dresService.activeTaskObservable().pipe(
         skip(1), // skip initial value
         tap(task => {
@@ -46,13 +47,14 @@ export class DresTimerComponent implements OnInit {
               clearInterval(this.countDownFun)
               this.taskSecondsRemaining = task.remainingTime
               this.countDownFun = setInterval(() => this.tic(), 1000)
+              this.renderSeconds()
               return
             }
           }
           this.countDownFun = null
-        }),
-        tap(() => this.renderSeconds()),
-        tap(() => this.initialized = true),
+          this.statusStr = "no active task"
+          this.cdr.markForCheck()
+        })
     )
     .subscribe()
   }
@@ -63,7 +65,7 @@ export class DresTimerComponent implements OnInit {
   }
 
   private renderSeconds() {
-    this.timeStr = DresTimerComponent.toHHMMSS(this.taskSecondsRemaining)
+    this.statusStr = `${this.activeTask.name}: ${DresTimerComponent.toHHMMSS(this.taskSecondsRemaining)} remaining`
     this.cdr.markForCheck()
   }
 

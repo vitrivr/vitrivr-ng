@@ -17,7 +17,7 @@
 
   <span class="spacer-medium"></span>
 
-  <a mat-icon-button matTooltip="Mini-gallery view" routerLink="/mini-gallery" routerLinkActive="active"
+  <a mat-icon-button matTooltip="Mini gallery view" routerLink="/mini-gallery" routerLinkActive="active"
      skipLocationChange="true" (click)="setActiveView(0)" [color]="activeView === 0 ? 'accent' : ''">
     <mat-icon>view_comfy</mat-icon>
   </a>
@@ -33,14 +33,17 @@
 
   <a mat-icon-button matTooltip="Temporal Scoring view" routerLink="/temporal-list" routerLinkActive="active"
      skipLocationChange="true" (click)="setActiveView(2)" [color]="activeView === 2 ? 'accent' : ''">
-    <mat-icon>filter_list</mat-icon>
+    <mat-icon>access_time</mat-icon>
+    <mat-icon>trending_flat</mat-icon>
   </a>
 
   <span class="spacer-xlarge"></span>
 
-  <button (click)="showHistory()" mat-icon-button matTooltip="Show query history.">
-    <mat-icon>history</mat-icon>
-  </button>
+  <ng-container *ngIf="(config|GetConfigVariablePipe:queryHistory)>0">
+    <button (click)="showHistory()" mat-icon-button matTooltip="Show query history.">
+      <mat-icon>history</mat-icon>
+    </button>
+  </ng-container>
 
   <button (click)="settingssidenav.toggle()" mat-icon-button [matBadge]="settingsBadge"
           matTooltip="Toggle query refinement sidebar">

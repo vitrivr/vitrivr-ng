@@ -7,7 +7,6 @@ import {DistinctElementLookupService} from './core/lookup/distinct-element-looku
 import {InputType} from './query/containers/bool/bool-attribute';
 import {NotificationService} from './core/basics/notification.service';
 import {AppConfig} from './app.config';
-import {DresService} from "./core/basics/dres.service";
 
 /** Enumeration of all possible views */
 enum View { GALLERY, LIST, TEMPORAL}
@@ -27,6 +26,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   activeView: View = View.GALLERY
   competitionHost = ((c: Config) => c._config.competition.host)
   textualInput = ((c: Config) => c._config.competition.textualInput)
+  queryHistory = ((c: Config) => c._config.query.history);
 
 
   /**

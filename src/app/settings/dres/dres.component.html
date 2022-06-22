@@ -2,17 +2,17 @@
 
 <mat-list dense>
   <div *ngIf="config | DresEnabledPipe">
-    <mat-list-item>Endpoint: {{(config|GetConfigVariablePipe:dresAddress)}}</mat-list-item>
+    <mat-list-item><span [matBadge]="dresStatusBadge" matBadgeOverlap="false">Endpoint: {{(config|GetConfigVariablePipe:dresAddress)}}</span></mat-list-item>
     <mat-divider></mat-divider>
     <ng-container *ngIf="dresStatus">
+      <h3 matSubheader>User Information</h3>
       <mat-list-item>Username: {{dresStatus.username}}</mat-list-item>
       <mat-list-item>Role: {{dresStatus.role}}</mat-list-item>
+      <mat-divider></mat-divider>
+      <h3 matSubheader>Session Information</h3>
+      <mat-list-item>SessionID: {{dresStatus === null ? '' : dresStatus.sessionId}}</mat-list-item>
+      <mat-list-item>ID: {{dresStatus.id}}</mat-list-item>
     </ng-container>
-    <mat-divider></mat-divider>
-    <mat-list-item><span [matBadge]="dresStatusBadge"
-                         matBadgeOverlap="false">SessionID: {{dresStatus === null ? '' : dresStatus.sessionId}}</span>
-    </mat-list-item>
-    <mat-list-item *ngIf="dresStatus">ID: {{dresStatus.id}}</mat-list-item>
 
     <ng-container *ngIf="activeRun">
       <mat-divider></mat-divider>

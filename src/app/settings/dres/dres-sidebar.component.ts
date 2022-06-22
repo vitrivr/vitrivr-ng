@@ -21,7 +21,7 @@ export class DresSidebarComponent implements AfterContentInit {
   constructor(
       private _configService: AppConfig,
       private _notificationService: NotificationService,
-      private _cdr: ChangeDetectorRef,
+      private cdr: ChangeDetectorRef,
       private _runInfo: ClientRunInfoService,
       private _dresService: DresService
   ) {
@@ -35,21 +35,24 @@ export class DresSidebarComponent implements AfterContentInit {
       next: (status) => {
         if (status) {
           this.dresStatus = status
-          this._cdr.markForCheck()
+          this.cdr.markForCheck()
         }
       }
     })
 
     this._dresService.activeTaskObservable().subscribe(task => {
       this.activeTask = task
-      this._cdr.markForCheck()
+      this.cdr.markForCheck()
     })
     this._dresService.activeRunObservable().subscribe(run => {
       this.activeRun = run
-      this._cdr.markForCheck()
+      this.cdr.markForCheck()
     })
 
-    this._notificationService.getDresStatusBadgeObservable().subscribe(el => this.dresStatusBadge = el)
+    this._notificationService.getDresStatusBadgeObservable().subscribe(el => {
+      this.dresStatusBadge = el
+      this.cdr.markForCheck()
+    })
   }
 
 }
