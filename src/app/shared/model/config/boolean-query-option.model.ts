@@ -3,7 +3,7 @@ import {BooleanQueryValueType} from './boolean-query-types';
 
 export class BooleanQueryOption {
 
-  public constructor(public readonly display: string, public readonly input: InputType, public readonly table: string, public readonly col: string, public readonly range?:[number, number], public readonly options?: any[], public readonly type?: BooleanQueryValueType, public readonly operators?: BoolOperator[]) {
+  public constructor(public readonly display: string, public readonly input: InputType, public readonly table: string, public readonly col: string, public readonly range?:[number, number], public readonly options?: any[], public readonly shorthand?: any[], public readonly type?: BooleanQueryValueType, public readonly operators?: BoolOperator[]) {
   }
 
   public static getInputTypeValue(type: InputType): InputType {

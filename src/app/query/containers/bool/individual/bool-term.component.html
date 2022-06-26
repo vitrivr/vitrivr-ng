@@ -51,6 +51,12 @@
                         (valueChange)="_min.next($event)" [options]="currentAttrAsync.sliderOptions"></ngx-slider>
         </div>
 
+        <div *ngIf="currentAttrAsync.inputType.valueOf()===6" class="options" (keydown.enter)="$event.preventDefault()" (keydown.control.enter)="$event.preventDefault()">
+            <mat-button-toggle-group name="ingredients" aria-label="Ingredients" multiple [ngModel]="_value | async" (ngModelChange)="_value.next($event)" (keydown.enter)="$event.preventDefault()">
+                <mat-button-toggle *ngFor="let option of currentAttrAsync.options; index as i" [value]="option">{{currentAttrAsync.shorthand[i]}}</mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+
     </ng-container>
 </div>
 <mat-divider></mat-divider>
