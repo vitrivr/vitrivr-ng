@@ -22,7 +22,6 @@ import {AppConfig} from '../../app.config';
 import {MediaObjectDescriptor} from '../../../../openapi/cineast/model/mediaObjectDescriptor';
 
 @Component({
-
   selector: 'app-refinement',
   templateUrl: './refinement.component.html',
   styleUrls: ['./refinement.component.css'],
@@ -47,6 +46,8 @@ export class RefinementComponent implements OnInit, OnDestroy {
 
   /** An observable for all possible metadatavalues */
   _metadata: Observable<Map<string, AbstractRefinementOption>>;
+
+  mdFilterOn = []
 
   private _timer;
 
