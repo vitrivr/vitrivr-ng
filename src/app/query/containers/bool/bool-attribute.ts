@@ -131,6 +131,24 @@ export class BoolAttribute {
     return value
   }
 
+  private static sort(value: any[], type?: BooleanQueryValueType, displayName?: string): any {
+    if(type){
+      let t = -1;
+      if (typeof type == 'string') {
+        t = Number(BooleanQueryValueType[type])
+      } else {
+        t = type
+      }
+      switch (t.valueOf()) {
+        case BooleanQueryValueType.number.valueOf():
+          return value.sort((n1,n2) => n1 - n2)
+        case BooleanQueryValueType.string.valueOf():
+          return value
+      }
+    }
+    return value
+  }
+
   /**
    * @param displayName how the attribute should be displayed
    * @param featureName how the feature is named in cineast
@@ -153,6 +171,7 @@ export class BoolAttribute {
     }
     if (options) {
       this.options = options.map(o => BoolAttribute.parse(o, this.valueType));
+      this.options = BoolAttribute.sort(this.options, this.valueType, displayName)
     }
     if(shorthand){
       this.shorthand = shorthand
