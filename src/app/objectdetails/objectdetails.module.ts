@@ -13,9 +13,10 @@ import {MetadataDetailsComponent} from './metadata-details.component';
 import {ObjectviewerComponent} from './objectviewer.component';
 import {SegmentfeaturesModule} from '../segmentdetails/segmentfeatures.module';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatTableModule} from "@angular/material/table";
 
 @NgModule({
-  imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, PipesModule, AdvancedMediaPlayerModule, SegmentfeaturesModule, MatButtonToggleModule],
+    imports: [MaterialModule, FlexLayoutModule, BrowserModule, AppRoutingModule, M3DLoaderModule, PipesModule, AdvancedMediaPlayerModule, SegmentfeaturesModule, MatButtonToggleModule, MatTableModule],
   declarations: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent, ObjectviewerComponent],
   exports: [ObjectdetailsComponent, QuickViewerComponent, MetadataDetailsComponent, ObjectviewerComponent],
 })

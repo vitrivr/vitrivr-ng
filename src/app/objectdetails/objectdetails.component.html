@@ -62,12 +62,12 @@
             </mat-tab>
 
 
-            <mat-tab label="Object Metadata ({{obj._metadata.size}})">
-                <div *ngIf="obj._metadata.size == 0" style="padding-top:10px">
+            <mat-tab label="Object Metadata ({{obj.metadata.size}})">
+                <div *ngIf="obj.metadata.size == 0" style="padding-top:10px">
                     No object metadata available for {{obj.objectid}}
                 </div>
                 <mat-list>
-                    <mat-list-item *ngFor="let metadatum of obj._metadata | keyvalue">
+                    <mat-list-item *ngFor="let metadatum of obj.metadata | keyvalue">
                         <h4 mat-line><strong>{{metadatum.key}}</strong></h4>
                         <p [innerHTML]="metadatum.value | TextWithLinkPipe" mat-line style="white-space: pre-wrap;"></p>
                     </mat-list-item>

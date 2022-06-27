@@ -30,7 +30,7 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
   _segmentsObservable: BehaviorSubject<MediaSegmentScoreContainer[]> = new BehaviorSubject(this._segments)
 
   /** Map containing the metadata that belongs to the object. Can be empty! */
-  _metadata: Map<string, string> = new Map();
+  metadata: Map<string, string> = new Map();
 
   public constructor(public objectid: string) {
     super();

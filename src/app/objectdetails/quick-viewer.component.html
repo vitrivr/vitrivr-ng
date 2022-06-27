@@ -1,17 +1,35 @@
 <h1 class="title" matDialogTitle>{{mediaobject.objectid}} ({{mediaobject.name}})</h1>
 <p><strong>Segment:</strong> {{_segment.segmentId}}</p>
-<div class="content" mat-dialog-content>
-    <app-advanced-media-player *ngIf="mediaobject.mediatype === 'VIDEO' || mediaobject.mediatype === 'AUDIO'"
-                               [auto]="true" [focus]="_segment" [mediaobject]="mediaobject"
-                               [width]="600"></app-advanced-media-player>
-    <div *ngIf="mediaobject|IiifResourceUrlPipe" id="openseadragon"></div>
-    <img #imageviewer *ngIf="!(mediaobject|IiifResourceUrlPipe) && mediaobject.mediatype === 'IMAGE' || mediaobject.mediatype === 'IMAGE_SEQUENCE'"
-         src="{{mediaobject.mediatype === 'IMAGE' ? (mediaobject |ObjectPathPipe) : _segment|SegmentPathPipe}}"
-         style="max-width:100%; height:auto;"/>
-    <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype === 'MODEL3D'" [height]="400" [interaction]="true"
-                    [width]="400" src="{{mediaobject|ObjectPathPipe}}"></app-m3d-loader>
+<div style="display: table; clear: both;">
+    <div class="content" mat-dialog-content>
+        <!-- Video / Audio -->
+        <app-advanced-media-player *ngIf="mediaobject.mediatype === 'VIDEO' || mediaobject.mediatype === 'AUDIO'"
+                                   [auto]="true" [focus]="_segment" [mediaobject]="mediaobject"
+                                   [width]="600"></app-advanced-media-player>
+        <!-- IIIF -->
+        <div *ngIf="mediaobject|IiifResourceUrlPipe" id="openseadragon"></div>
 
-    <button color="primary" mat-flat-button *ngIf=" ('lsc' | competitionEnabledPipe | async)" (click)="onSubmitPressed()">
-        <mat-icon>send</mat-icon>
-    </button>
+        <!-- Images -->
+        <img #imageviewer
+             *ngIf="!(mediaobject|IiifResourceUrlPipe) && mediaobject.mediatype === 'IMAGE' || mediaobject.mediatype === 'IMAGE_SEQUENCE'"
+             src="{{mediaobject.mediatype === 'IMAGE' ? (mediaobject |ObjectPathPipe) : _segment|SegmentPathPipe}}"
+             style="max-width:100%; height:auto;"/>
+
+        <!-- 3D -->
+        <app-m3d-loader #modelviewer *ngIf="mediaobject.mediatype === 'MODEL3D'" [height]="400" [interaction]="true"
+                        [width]="400" src="{{mediaobject|ObjectPathPipe}}"></app-m3d-loader>
+
+        <button color="primary" mat-flat-button *ngIf=" ('lsc' | competitionEnabledPipe | async)"
+                (click)="onSubmitPressed()">
+            <mat-icon>send</mat-icon>
+        </button>
+    </div>
+    <div style="float:right;">
+        <mat-list>
+            <mat-list-item *ngFor="let metadatum of _segment.metadata | keyvalue">
+                {{metadatum.key}}: {{metadatum.value}}
+            </mat-list-item>
+        </mat-list>
+    </div>
+
 </div>

@@ -32,12 +32,6 @@ export class QuickViewerComponent implements AfterViewInit {
 
   public mediaobject: MediaObjectScoreContainer;
 
-  /**
-   *
-   * @param data The MediaObjectScoreContainer or SegmentScoreContainer that should be displayed.
-   * @param _resolver ResolverService reference that is being injected.
-   * @param _vbs VbsSubmissionService reference that is being injected.
-   */
   public constructor(@Inject(MAT_DIALOG_DATA) data: any, readonly _resolver: ResolverService, readonly _vbs: VbsSubmissionService, private _ngZone: NgZone) {
     if (data instanceof MediaObjectScoreContainer) {
       this._segment = data.representativeSegment;
@@ -65,7 +59,7 @@ export class QuickViewerComponent implements AfterViewInit {
         showNavigator: true,
         visibilityRatio: 1,
         // Initial rotation angle
-        degrees: parseFloat(this.mediaobject._metadata.get('IIIF.rotation')) || 0,
+        degrees: parseFloat(this.mediaobject.metadata.get('IIIF.rotation')) || 0,
         // Show rotation buttons
         showRotationControl: true,
         minZoomLevel: 1,

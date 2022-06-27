@@ -8,6 +8,7 @@
 .content {
     max-height: 600px;
     max-width: 600px;
+    float:left;
 }
 
 #openseadragon {
