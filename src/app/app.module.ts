@@ -19,6 +19,8 @@ import {AppConfig} from './app.config';
 import {SegmentdetailsModule} from './segmentdetails/segmentdetails.module';
 import {PipesModule} from './shared/pipes/pipes.module';
 import {CollectionModule} from "./collection/collection.module";
+import {DresTimerComponent} from "./toolbar/dres-timer.component";
+import {TextualSubmissionComponent} from "./toolbar/textual-submission/textual-submission.component";
 
 /**
  * Method used to laod the application config
@@ -46,7 +48,7 @@ export function initializeConfig(appConfig: AppConfig) {
     MatBadgeModule,
     PipesModule
   ],
-  declarations: [AppComponent, PingComponent],
+  declarations: [AppComponent, PingComponent, DresTimerComponent, TextualSubmissionComponent],
   providers: [AppConfig, {provide: APP_INITIALIZER, useFactory: initializeConfig, deps: [AppConfig], multi: true}],
   bootstrap: [AppComponent]
 })

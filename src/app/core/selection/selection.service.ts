@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {CollabordinatorService} from '../competition/collabordinator.service';
 import {CollabordinatorMessage} from '../../shared/model/messages/collaboration/collabordinator-message.model';
 import {AppConfig} from '../../app.config';
+import {skip, tap} from "rxjs/operators";
 
 /**
  * This service orchestrates similarity requests using the Cineast API (WebSocket). The service is responsible for
@@ -33,17 +34,17 @@ export class SelectionService extends BehaviorSubject<Map<string, Tag[]>> {
       c.get<Tag[]>('tags').forEach(t => this._available.push(new Tag(t.name, t.hue)));
     });
 
-    _collabordinator._online.subscribe(online => {
-      console.debug(`new collabordinator status: ${online}`)
-      if (online) {
-        if (this._cache == null) {
-          this._cache = new Map()
-        }
-      }
-      if (!online) {
-        this._cache = null
-      }
-    })
+    _collabordinator._online.pipe(
+        skip(1), // skip initial status
+        tap(online => {
+          console.debug(`new collabordinator status: ${online}`)
+          if (online) {
+            if (this._cache == null) {
+              this._cache = new Map()
+            }
+          }
+        })
+    ).subscribe()
 
     /* Register listener for Collabordinator. */
     _collabordinator.subscribe(msg => this.synchronize(msg));

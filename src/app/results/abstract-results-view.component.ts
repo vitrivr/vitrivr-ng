@@ -27,8 +27,6 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
   protected _queryServiceSubscription;
   /** Local reference to the subscription to the FilterService. */
   protected _filterServiceSubscription;
-  /** Local reference to the subscription of the SelectionService. */
-  protected _selectionServiceSubscription;
   /** Name of this AbstractResultsViewComponent. */
   protected abstract name;
 
@@ -103,7 +101,6 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
     this._queryServiceSubscription = this._queryService.observable.pipe(
       filter(msg => ['STARTED', 'ENDED', 'ERROR', 'CLEAR'].indexOf(msg) > -1)
     ).subscribe((msg) => this.onQueryStateChange(msg));
-    this._selectionServiceSubscription = this._selectionService.subscribe(s => this._cdr.markForCheck());
     this._filterServiceSubscription = this._filterService._objectFilters.subscribe(s => {
       this._cdr.markForCheck()
     });
@@ -120,7 +117,6 @@ export abstract class AbstractResultsViewComponent<T> implements OnInit, OnDestr
    */
   public ngOnDestroy() {
     this._queryServiceSubscription.unsubscribe();
-    this._selectionServiceSubscription.unsubscribe();
     this._filterServiceSubscription.unsubscribe();
   }
 

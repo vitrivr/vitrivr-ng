@@ -1,15 +1,15 @@
-<mat-tab-group [(selectedIndex)]="_selectedIndex">
+<mat-tab-group>
 
   <mat-tab label="Refinement" matTooltip="Query refinement">
     <ng-template mat-tab-label>
-      <mat-icon>storage</mat-icon>
+      <mat-icon>filter_list</mat-icon>
     </ng-template>
     <app-refinement></app-refinement>
   </mat-tab>
 
   <mat-tab label="Preferences" matTooltip="Preferences refinement">
     <ng-template mat-tab-label>
-      <mat-icon [matBadge]="_badgeValue">settings</mat-icon>
+      <mat-icon>settings</mat-icon>
     </ng-template>
     <app-preferences></app-preferences>
   </mat-tab>
@@ -20,6 +20,14 @@
     </ng-template>
     <app-selection-management></app-selection-management>
   </mat-tab>
+  <ng-container *ngIf="config|DresEnabledPipe">
+    <mat-tab label="DRES" matTooltip="DRES Connection Informations">
+      <ng-template mat-tab-label>
+        <mat-icon [matBadge]="dresBadgeValue">cloud_queue</mat-icon>
+      </ng-template>
+      <app-dres-sidebar></app-dres-sidebar>
+    </mat-tab>
+  </ng-container>
 
 
 </mat-tab-group>

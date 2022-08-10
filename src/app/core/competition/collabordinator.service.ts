@@ -21,6 +21,7 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
 
   /** The current instance of the loaded Config. */
   private _config: Config;
+  private off: boolean = true;
 
   /**
    * Constructor for the CollabordinatorService.
@@ -44,6 +45,9 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
    * @param id List of ids to add.
    */
   public add(tag: Tag, ...id: string[]) {
+    if(this.off){
+      return
+    }
     if (this._webSocket) {
       this._webSocket.next({action: 'ADD', key: `vitrivr~${tag.name.toLowerCase()}`, attribute: id})
     } else {
@@ -58,6 +62,9 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
    * @param id List of ids to remove.
    */
   public remove(tag: Tag, ...id: string[]) {
+    if(this.off){
+      return
+    }
     if (this._webSocket) {
       this._webSocket.next({action: 'REMOVE', key: `vitrivr~${tag.name.toLowerCase()}`, attribute: id})
     } else {
@@ -69,6 +76,9 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
    * Sends a signal to the Collabordinator endpoint that tells it to clear the list.
    */
   public clear(tag: Tag) {
+    if(this.off){
+      return
+    }
     if (this._webSocket) {
       this._webSocket.next({action: 'CLEAR', key: `vitrivr~${tag.name.toLowerCase()}`, attribute: []})
     } else {
@@ -86,6 +96,12 @@ export class CollabordinatorService extends Subject<CollabordinatorMessage> {
     if (this._webSocket) {
       this._webSocket.complete();
     }
+    if(this._config._config.competition.collabordinator===null){
+      console.debug("collabordinator not enabled in config")
+      this.off = true
+      return
+    }
+    this.off = false
     this._webSocket = webSocket<CollabordinatorMessage>(this._config._config.competition.collabordinator);
     this._online.next(true)
     this._webSocket.subscribe(

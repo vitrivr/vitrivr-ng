@@ -130,7 +130,7 @@ export class ObjectdetailsComponent implements OnInit {
             console.log(`no metadata available for ${objectId}`)
             return
           }
-          result.content.forEach(md => this._container._metadata.set(`${md.domain}.${md.key}`, md.value))
+          result.content.forEach(md => this._container.metadata.set(`${md.domain}.${md.key}`, md.value))
         })
         return this._container;
       })

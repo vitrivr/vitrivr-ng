@@ -25,6 +25,7 @@ export enum InputType {
   TEXT,
   RANGE,
   DYNAMICOPTIONS,
+  MULTIOPTIONS
 }
 
 export class BoolAttribute {
@@ -33,6 +34,7 @@ export class BoolAttribute {
   public readonly operators: BoolOperator[];
   public readonly inputType: InputType;
   public readonly options: any[];
+  public readonly shorthand: any[]
   public readonly range: [number, number];
   public readonly sliderOptions: Options;
   public minValue: number;
@@ -58,6 +60,8 @@ export class BoolAttribute {
       case InputType.NUMERIC:
         return [BoolOperator.NEQ, BoolOperator.EQ,
           BoolOperator.GEQ, BoolOperator.LEQ, BoolOperator.GREATER, BoolOperator.LESS];
+      case InputType.MULTIOPTIONS:
+        return [BoolOperator.IN]
       case InputType.OPTIONS:
       case InputType.DYNAMICOPTIONS:
         return [BoolOperator.EQ, BoolOperator.NEQ];
@@ -127,16 +131,35 @@ export class BoolAttribute {
     return value
   }
 
+  private static sort(value: any[], type?: BooleanQueryValueType, displayName?: string): any {
+    if(type){
+      let t = -1;
+      if (typeof type == 'string') {
+        t = Number(BooleanQueryValueType[type])
+      } else {
+        t = type
+      }
+      switch (t.valueOf()) {
+        case BooleanQueryValueType.number.valueOf():
+          return value.sort((n1,n2) => n1 - n2)
+        case BooleanQueryValueType.string.valueOf():
+          return value
+      }
+    }
+    return value
+  }
+
   /**
    * @param displayName how the attribute should be displayed
    * @param featureName how the feature is named in cineast
    * @param operators if no operator is specified, operators are chosen based on the defaults provided per ValueType
    * @param inputType type of attribute, determines selection mechanism - e.g. range, text etc.
    * @param options for the Options ValueType, a list of strings can be provided which will be displayed in a dropdown
+   * @param shorthand for the MULTIOPTIONS ValueType, what the shorthand should be which will be displayed to the user
    * @param range for the Between ValueType, two numbers can be provided. A slider will enable to user to set the desired range.
    * @param type the type the input value should have (string / number)
    */
-  constructor(displayName: string, featureName: string, inputType: InputType, operators?: BoolOperator[], options?: string[], range?: [number, number], type?: BooleanQueryValueType) {
+  constructor(displayName: string, featureName: string, inputType: InputType, operators?: BoolOperator[], options?: string[], shorthand?: string[], range?: [number, number], type?: BooleanQueryValueType) {
     this.displayName = displayName;
     this.featureName = featureName;
     this.inputType = inputType;
@@ -148,6 +171,10 @@ export class BoolAttribute {
     }
     if (options) {
       this.options = options.map(o => BoolAttribute.parse(o, this.valueType));
+      this.options = BoolAttribute.sort(this.options, this.valueType, displayName)
+    }
+    if(shorthand){
+      this.shorthand = shorthand
     }
     if (range) {
       this.range = range;

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, BoolOperator, InputType} from '../bool-attribute';
 import {BehaviorSubject} from 'rxjs';
@@ -28,6 +28,9 @@ export class BoolTermComponent implements OnInit {
     public _operator: BehaviorSubject<BoolOperator> = new BehaviorSubject(BoolOperator.EQ)
     public _min: BehaviorSubject<number> = new BehaviorSubject(0)
     public _max: BehaviorSubject<number> = new BehaviorSubject(1)
+
+    constructor(private cdr: ChangeDetectorRef) {
+    }
 
     private updateRangeValue() {
         this._value.next([this._min.getValue(), this._max.getValue()])
@@ -98,6 +101,11 @@ export class BoolTermComponent implements OnInit {
             this._operator.next(BoolAttribute.getDefaultOperatorsByValueType(this._attribute.getValue().inputType)[0]);
         }
         switch (this._attribute.getValue().inputType) {
+            case InputType.MULTIOPTIONS:
+                if (this.term.values) {
+                    this._value.next(this.term.values)
+                }
+                break;
             case InputType.OPTIONS:
             case InputType.DYNAMICOPTIONS:
             case InputType.DATE:

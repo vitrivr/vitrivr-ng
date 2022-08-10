@@ -20,7 +20,6 @@
               "src/assets",
               "src/favicon.ico",
               "src/config.json",
-              "src/evaluation.json",
               {
                 "glob": "**/*",
                 "input": "node_modules/leaflet/dist/images/",
@@ -75,31 +74,6 @@
             "production": {
               "browserTarget": "vitrivr-ng:build:production"
             }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "vitrivr-ng:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "karmaConfig": "./karma.conf.js",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [],
-            "styles": [
-              "src/vitrivr-theme.css"
-            ],
-            "assets": [
-              "src/assets",
-              "src/favicon.ico",
-              "src/config.json",
-              "src/evaluation.json"
-            ]
           }
         },
         "lint": {

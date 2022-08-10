@@ -61,7 +61,10 @@ export class Config {
       loginterval: 5000,
 
       /* URL to the Collabordinator endpoint. */
-      collabordinator: null
+      collabordinator: null,
+
+      /* if textual submissions should be enabled */
+      textualInput: false
     },
     tags: [
       new Tag('Red', 0),

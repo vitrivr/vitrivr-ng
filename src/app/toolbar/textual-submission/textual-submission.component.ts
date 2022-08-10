@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {VbsSubmissionService} from '../../core/competition/vbs-submission.service';
 
 @Component({
@@ -8,14 +8,15 @@ import {VbsSubmissionService} from '../../core/competition/vbs-submission.servic
 })
 export class TextualSubmissionComponent {
 
-  constructor(private _submissionService: VbsSubmissionService) { }
+  constructor(private _submissionService: VbsSubmissionService) {
+  }
 
   public value: string;
 
   @Input() smallFont = false;
 
 
-  submit(){
+  submit() {
     this._submissionService.submitText(this.value);
   }
 

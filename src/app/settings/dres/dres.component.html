@@ -1,0 +1,38 @@
+<h3>DRES Information</h3>
+
+<mat-list dense>
+  <div *ngIf="config | DresEnabledPipe">
+    <mat-list-item><span [matBadge]="dresStatusBadge" matBadgeOverlap="false">Endpoint: {{(config|GetConfigVariablePipe:dresAddress)}}</span></mat-list-item>
+    <mat-divider></mat-divider>
+    <ng-container *ngIf="dresStatus">
+      <h3 matSubheader>User Information</h3>
+      <mat-list-item>Username: {{dresStatus.username}}</mat-list-item>
+      <mat-list-item>Role: {{dresStatus.role}}</mat-list-item>
+      <mat-divider></mat-divider>
+      <h3 matSubheader>Session Information</h3>
+      <mat-list-item>SessionID: {{dresStatus === null ? '' : dresStatus.sessionId}}</mat-list-item>
+      <mat-list-item>ID: {{dresStatus.id}}</mat-list-item>
+    </ng-container>
+
+    <ng-container *ngIf="activeRun">
+      <mat-divider></mat-divider>
+      <h3 matSubheader>Active Run</h3>
+      <mat-list-item>Name: {{activeRun.name}}</mat-list-item>
+      <mat-list-item>Description: {{activeRun.description}}</mat-list-item>
+    </ng-container>
+
+    <ng-container *ngIf="activeTask">
+      <mat-divider></mat-divider>
+      <h3 matSubheader>Active Task</h3>
+      <mat-list-item><span>Name: {{activeTask.name}}</span></mat-list-item>
+      <mat-list-item><span>Type: {{activeTask.taskGroup}}</span></mat-list-item>
+      <mat-list-item *ngIf="activeTask.running"><span>Remaining Time: {{activeTask.remainingTime | formatTime}}</span>
+      </mat-list-item>
+    </ng-container>
+
+    <mat-divider></mat-divider>
+  </div>
+</mat-list>
+
+
+

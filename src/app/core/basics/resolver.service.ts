@@ -71,7 +71,7 @@ export class ResolverService {
    */
   public static iiifUrlToObject(object: MediaObjectDescriptor, rawPath?: boolean, height?: number, width?: number): string {
     // @ts-ignore
-    const metadata = object._metadata
+    const metadata = object.metadata
     if (!metadata) {
       return null
     }

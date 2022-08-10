@@ -1,4 +1,4 @@
-import {Component, ComponentFactoryResolver, Injectable, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {BoolQueryTerm} from '../../../shared/model/queries/bool-query-term.model';
 import {BoolAttribute, InputType} from './bool-attribute';
 import {BehaviorSubject} from 'rxjs';
@@ -35,7 +35,6 @@ export class BoolQueryTermComponent implements OnInit {
 
   constructor(
     _configService: AppConfig,
-    private _resolver: ComponentFactoryResolver,
     _booleanService: MiscService,
     _distinctLookupService: DistinctElementLookupService) {
     _configService.configAsObservable.subscribe(c => {
@@ -45,12 +44,12 @@ export class BoolQueryTermComponent implements OnInit {
         if(BooleanQueryOption.getInputTypeValue(option.input)== InputType.DYNAMICOPTIONS){
           _booleanService.findDistinctElementsByColumn()
           _distinctLookupService.getDistinct(option.table, option.col).pipe(first(), map(list => list.sort())).forEach(el => {
-            next.push(new BoolAttribute(option.display, option.table+'.'+option.col, BooleanQueryOption.getInputTypeValue(option.input), option.operators, el, option.range, option.type))
+            next.push(new BoolAttribute(option.display, option.table+'.'+option.col, BooleanQueryOption.getInputTypeValue(option.input), option.operators, el, option.shorthand, option.range, option.type))
             this.possibleAttributes.next(next);
           });
           return
         }
-        next.push(new BoolAttribute(option.display, option.table+'.'+option.col, BooleanQueryOption.getInputTypeValue(option.input), option.operators, option.options, option.range, option.type))
+        next.push(new BoolAttribute(option.display, option.table+'.'+option.col, BooleanQueryOption.getInputTypeValue(option.input), option.operators, option.options, option.shorthand, option.range, option.type))
       });
       this.possibleAttributes.next(next);
     })

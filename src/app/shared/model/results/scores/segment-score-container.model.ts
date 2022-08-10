@@ -29,7 +29,7 @@ export class MediaSegmentScoreContainer extends ScoreContainer implements MediaS
   private _scores: Map<number, Map<WeightedFeatureCategory, number>> = new Map();
 
   /** Map containing the metadata that belongs to the segment. Can be empty! */
-  private _metadata: Map<string, string> = new Map();
+  public metadata: Map<string, string> = new Map();
 
   /**
    * Default constructor.
@@ -61,15 +61,6 @@ export class MediaSegmentScoreContainer extends ScoreContainer implements MediaS
    */
   get scores(): Map<number, Map<WeightedFeatureCategory, number>> {
     return this._scores;
-  }
-
-  /**
-   * Returns the map of metadata.
-   *
-   * @return {Map<string, string>}
-   */
-  get metadata() {
-    return this._metadata;
   }
 
   /**
@@ -128,7 +119,7 @@ export class MediaSegmentScoreContainer extends ScoreContainer implements MediaS
    * @param key Key for the metadata entry to lookup.
    */
   public metadataForKey(key: string) {
-    return this._metadata.get(key);
+    return this.metadata.get(key);
   }
 
   /**

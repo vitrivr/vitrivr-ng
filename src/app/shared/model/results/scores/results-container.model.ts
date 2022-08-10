@@ -171,7 +171,7 @@ export class ResultsContainer {
       });
     }
     resultList.forEach(res => {
-      res._metadata.forEach(((mdValue, mdKey) => {
+      res.metadata.forEach(((mdValue, mdKey) => {
         if (!map.has(mdKey)) {
           return
         }
@@ -426,7 +426,7 @@ export class ResultsContainer {
     for (const metadata of met.content) {
       const mosc = this._objectid_to_object_map.get(metadata.objectid);
       if (mosc) {
-        mosc._metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
+        mosc.metadata.set(`${metadata.domain}.${metadata.key}`, metadata.value);
       }
     }
     console.timeEnd(`Processing Object Metadata Message (${this.queryId})`);
@@ -582,7 +582,7 @@ export class ResultsContainer {
       segments: this._results_segments.map(seg => seg.serialize()),
       objectMetadata: this.flatten(this._results_objects.map(obj => {
         const metadata: MediaObjectMetadataDescriptor[] = [];
-        obj._metadata.forEach((v, k) => {
+        obj.metadata.forEach((v, k) => {
           metadata.push({objectid: obj.objectid, domain: k.split('.')[0], key: k.split('.')[1], value: v})
         });
         return metadata;

@@ -21,7 +21,7 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
   constructor(@Inject(AppConfig) private _configService: AppConfig, private _snackbar: MatSnackBar) {
     super(null);
     this._configService.configAsObservable.pipe(
-      filter(c => c.cineastEndpointWs != null),
+        filter(c => c.cineastEndpointWs != null),
     ).subscribe(c => this.connect(c))
   }
 
@@ -74,7 +74,6 @@ export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Me
    * endpoint config has changed.
    */
   private connect(c: Config) {
-
     /* Check if connection has changed. */
     if (this._config && this._config.cineastEndpointWs === c.cineastEndpointWs) {
       return false;
