@@ -140,7 +140,8 @@ export class Config {
       filters: [
         ['dominantcolor.color', 'CHECKBOX'],
         ['technical.duration', 'SLIDER']
-      ]
+      ],
+      showMetadataInViewer: false
     }
   };
 
