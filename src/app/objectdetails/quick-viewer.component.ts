@@ -1,11 +1,12 @@
-import {AfterViewInit, Component, Inject, NgZone, ViewChild} from '@angular/core';
+import {AfterContentInit, AfterViewInit, Component, Inject, NgZone, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MediaObjectScoreContainer} from '../shared/model/results/scores/media-object-score-container.model';
 import {MediaSegmentScoreContainer} from '../shared/model/results/scores/segment-score-container.model';
 import {ResolverService} from '../core/basics/resolver.service';
 import {VbsSubmissionService} from '../core/competition/vbs-submission.service';
 import * as openseadragon from 'openseadragon';
-import {ConfigService} from '../core/basics/config.service';
+import {Config} from '../shared/model/config/config.model';
+import {AppConfig} from '../app.config';
 
 @Component({
 
@@ -13,7 +14,9 @@ import {ConfigService} from '../core/basics/config.service';
   templateUrl: 'quick-viewer.component.html',
   styleUrls: ['quick-viewer.component.css']
 })
-export class QuickViewerComponent implements AfterViewInit {
+export class QuickViewerComponent implements AfterViewInit, AfterContentInit {
+
+  _config: Config;
 
   /** Reference to the audio player. */
   @ViewChild('audioplayer')
@@ -32,7 +35,10 @@ export class QuickViewerComponent implements AfterViewInit {
 
   public mediaobject: MediaObjectScoreContainer;
 
-  public constructor(@Inject(MAT_DIALOG_DATA) data: any, readonly _resolver: ResolverService, readonly _vbs: VbsSubmissionService, private _ngZone: NgZone) {
+  showMd = ((c: Config) => c._config.refinement.showMetadataInViewer);
+
+
+  public constructor(@Inject(MAT_DIALOG_DATA) data: any, readonly _resolver: ResolverService, readonly _vbs: VbsSubmissionService, private _ngZone: NgZone, private _configService: AppConfig,) {
     if (data instanceof MediaObjectScoreContainer) {
       this._segment = data.representativeSegment;
     } else if (data instanceof MediaSegmentScoreContainer) {
@@ -43,10 +49,16 @@ export class QuickViewerComponent implements AfterViewInit {
     this.mediaobject = this._segment.objectScoreContainer
   }
 
+  ngAfterContentInit() {
+    this._configService.configAsObservable.subscribe(c => {
+      this._config = c
+    })
+  }
+
   /**
    * Initialize the openseadragon viewer to load the IIIF Image API resource if applicable
    */
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     let url = ResolverService.iiifUrlToObject(this.mediaobject, true);
     if (!url) {
       return null

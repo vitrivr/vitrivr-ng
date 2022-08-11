@@ -1,6 +1,6 @@
 <h1 class="title" matDialogTitle>{{mediaobject.objectid}} ({{mediaobject.name}})</h1>
 <p><strong>Segment:</strong> {{_segment.segmentId}}</p>
-<div style="display: table; clear: both;">
+<div style="display: table; clear: both;min-width:600px;">
     <div class="content" mat-dialog-content>
         <!-- Video / Audio -->
         <app-advanced-media-player *ngIf="mediaobject.mediatype === 'VIDEO' || mediaobject.mediatype === 'AUDIO'"
@@ -24,12 +24,14 @@
             <mat-icon>send</mat-icon>
         </button>
     </div>
-    <div style="float:right;">
-        <mat-list>
-            <mat-list-item *ngFor="let metadatum of _segment.metadata | keyvalue">
-                {{metadatum.key}}: {{metadatum.value}}
-            </mat-list-item>
-        </mat-list>
-    </div>
+    <ng-container *ngIf="_config | GetConfigVariablePipe:showMd">
+        <div style="float:right;">
+            <mat-list>
+                <mat-list-item *ngFor="let metadatum of _segment.metadata | keyvalue">
+                    {{metadatum.key}}: {{metadatum.value}}
+                </mat-list-item>
+            </mat-list>
+        </div>
+    </ng-container>
 
 </div>
