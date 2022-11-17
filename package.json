@@ -9,7 +9,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "gen-api": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/vitrivr/cineast/master/docs/openapi.json -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
+    "gen-api": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/vitrivr/cineast/main/docs/openapi.json -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
     "gen-local-api": "openapi-generator-cli generate -g typescript-angular -i http://localhost:4567/openapi-specs -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
     "gen-dev-api": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/vitrivr/cineast/dev/docs/openapi.json -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-openapi/api,snapshot=true,ngVersion=13.0.0",
     "gen-dres-client": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/dres-dev/DRES/master/doc/oas-client.json -o openapi/dres --skip-validate-spec --additional-properties npmName=@dres-client-openapi/api,ngVersion=13.0.0,enumPropertyNaming=original",
