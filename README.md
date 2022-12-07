@@ -14,7 +14,20 @@ For setup information, consult our [Wiki](https://github.com/vitrivr/vitrivr-ng/
 We follow a zero-config approach, where everything has reasonable defaults.
 There is a `src/config.template.json` file which you can copy to `src/config.json` and modify if you have custom needs.
 The default values are in the [code](src/app/shared/model/config/config.model.ts).
-Information about the configuration can be found in [the wiki](https://github.com/vitrivr/vitrivr-ng/wiki/Configuration).
+Information about the configuration can be found in [the _slightly outdated_ wiki](https://github.com/vitrivr/vitrivr-ng/wiki/Configuration).
+
+### Secure Connection Config
+
+In a setup where the [backend](https://github.com/vitrivr/cineast) aka API is available via a _secure_ connection, the following adjustments make vitrivr-ng respect those:
+
+```json
+api: {
+  "http_secure": true,
+  "ws_secure":true
+}
+```
+
+It might be necessary to also adjust `host` and `port` values in `api` config.
 
 ## Development server
 
