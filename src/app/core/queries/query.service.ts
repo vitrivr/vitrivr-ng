@@ -32,6 +32,7 @@ import {TemporalQuery} from '../../shared/model/messages/queries/temporal-query.
 import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
 import {ReadableTemporalQueryConfig} from '../../shared/model/messages/queries/readable-temporal-query-config.model';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
+import {QueryStage} from '../../shared/model/queries/query-stage.model';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -130,14 +131,18 @@ export class QueryService {
     if (this._running > 0) {
       console.warn('There is already a query running');
     }
-    const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages, null)),
-        new ReadableTemporalQueryConfig(null,
-            [],
-            timeDistances,
-            maxLength),
-        this._config.config.metadataAccessSpec);
-    this._lastQuery = query;
-    this._socket.next(query)
+      const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages.map(
+              stage => { //filter empty terms
+                  return new QueryStage(stage.terms.filter(term => term.categories.length > 0 && term.data != undefined));
+              }
+          ), null)),
+          new ReadableTemporalQueryConfig(null,
+              [],
+              timeDistances,
+              maxLength),
+          this._config.config.metadataAccessSpec);
+      this._lastQuery = query;
+      this._socket.next(query)
 
     /** Log Interaction */
     const _components: InteractionEventComponent[] = []

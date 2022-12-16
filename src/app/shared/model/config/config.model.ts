@@ -109,7 +109,7 @@ export class Config {
         neighboringSegmentLookupAllCount: 200000
       },
       text: {
-        categories: ['visualtextcoembedding', 'Text Co-Embedding']
+        categories: [['visualtextcoembedding', 'Text Co-Embedding']]
       },
       boolean: [
         {
