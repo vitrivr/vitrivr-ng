@@ -4,6 +4,7 @@ import {ContextKey, InteractionEventComponent} from '../shared/model/events/inte
 import {InteractionEvent} from '../shared/model/events/interaction-event.model';
 import {InteractionEventType} from '../shared/model/events/interaction-event-type.model';
 import {EventBusService} from '../core/basics/event-bus.service';
+import {AppConfig} from '../app.config';
 
 @Component({
   selector: 'app-segment-features',
@@ -21,9 +22,10 @@ export class SegmentFeaturesComponent {
   _captions: string[] = [];
   _asr: string[] = [];
   _ocr: string[] = [];
+  _categoriesFeaturesMap: Map<string, string[]> = new Map<string, string[]>();
   _meta: MediaSegmentMetadataDescriptor[] = [];
 
-  constructor(private _eventBusService: EventBusService, private _metaService: MetadataService, private _tagService: TagService) {
+  constructor(private _eventBusService: EventBusService, private _metaService: MetadataService, private _tagService: TagService, private config: AppConfig) {
   }
 
   public onLoadFeaturesButtonClicked(segment: MediaSegmentDescriptor) {
@@ -31,12 +33,23 @@ export class SegmentFeaturesComponent {
     this._captions = [];
     this._asr = [];
     this._ocr = [];
+    this._categoriesFeaturesMap = new Map<string, string[]>();
     this.segmentId = segment.segmentId;
 
     /* Emit an EXAMINE event on the bus. */
     const context: Map<ContextKey, any> = new Map();
     context.set('i:mediasegment', segment.segmentId);
     this._eventBusService.publish(new InteractionEvent(new InteractionEventComponent(InteractionEventType.LOAD_FEATURES, context)));
+
+    const insights = this.config.config.get("insights");
+    console.log(insights)
+    if(insights){
+      const _insights = insights as string[];
+      _insights.forEach(category => {
+        console.log("Fetching insights for category "+category)
+        this._metaService.findTextByIDAndCat(segment.segmentId, category).subscribe(data => this._categoriesFeaturesMap.set(category, data.featureValues));
+      })
+    }
 
     // get the tags associated with a segmentid
     this._metaService.findTagInformationById(segment.segmentId).subscribe(tagIds =>
@@ -45,10 +58,13 @@ export class SegmentFeaturesComponent {
         this._tags = res.tags;
       })
     );
+
+
+
     // get the captions associated with a segmentId
     this._metaService.findTextByIDAndCat(segment.segmentId, 'scenecaption').subscribe(captions => this._captions = captions.featureValues);
     // get the ASR data associated with a segmentId
-    this._metaService.findTextByIDAndCat(segment.segmentId, 'asr').subscribe(asr => this._asr = asr.featureValues);
+    this._metaService.findTextByIDAndCat(segment.segmentId, 'whisper').subscribe(asr => this._asr = asr.featureValues);
     // get the OCR data associated with a segmentId
     this._metaService.findTextByIDAndCat(segment.segmentId, 'ocr').subscribe(ocr => this._ocr = ocr.featureValues);
 

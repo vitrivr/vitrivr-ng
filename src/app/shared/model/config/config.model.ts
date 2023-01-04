@@ -142,7 +142,10 @@ export class Config {
         ['technical.duration', 'SLIDER']
       ],
       showMetadataInViewer: false
-    }
+    },
+    insights:[
+      "whisper"
+    ]
   };
 
   /**
@@ -157,8 +160,9 @@ export class Config {
    * @param tags Optional tag configurations as, e.g. loaded from a file.
    * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
    * @param refinement Optional refinement configuration
+   * @param insights Optional insights (feature inspection) configuration
    */
-  constructor(title?: string, api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
+  constructor(title?: string, api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any, insights?: any) {
     const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
     if (title) {
       this._config.title = title;
@@ -183,6 +187,9 @@ export class Config {
     }
     if (refinement) {
       this._config.refinement = DEEPMERGE(this._config.refinement, refinement, {arrayMerge: overwriteMerge});
+    }
+    if(insights){
+      this._config.insights = DEEPMERGE(this._config.insights, insights, {arrayMerge: overwriteMerge});
     }
     if (this._config.api.host === '$host') {
       this._config.api.host = window.location.hostname
