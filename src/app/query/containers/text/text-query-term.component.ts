@@ -29,8 +29,8 @@ export class TextQueryTermComponent {
   constructor(_configService: AppConfig) {
     _configService.configAsObservable.subscribe(c => {
       this.categories.length = 0;
-      c.get<[string, string][]>('query.text.categories').forEach(v => {
-        this.categories.push(v)
+      c._config.query.text.categories.forEach(v => {
+        this.categories.push([v[0], v[1]]);
       })
     })
   }
