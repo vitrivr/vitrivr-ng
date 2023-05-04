@@ -71,10 +71,10 @@ export class Config {
     ],
     mlt: {
       'MODEL3D': ['sphericalharmonicsdefault'],
-      'IMAGE': ['visualtextcoembedding'],
-      'VIDEO': ['visualtextcoembedding'],
+      'IMAGE': ['mlt'],
+      'VIDEO': ['mlt'],
       'AUDIO': ['audiofingerprint'],
-      'IMAGE_SEQUENCE': ['visualtextcoembedding']
+      'IMAGE_SEQUENCE': ['mlt']
     },
     query: {
       history: -1,

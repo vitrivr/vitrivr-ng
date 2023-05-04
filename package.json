@@ -40,7 +40,7 @@
     "deepmerge": "4.2.2",
     "dexie": "^3.2.2",
     "flatted": "3.2.4",
-    "jszip": "3.7.1",
+    "jszip": "3.8.0",
     "leaflet": "1.7.1",
     "leaflet-geosearch": "3.6.0",
     "ngx-color-picker": "11.0.0",
