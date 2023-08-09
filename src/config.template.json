@@ -9,7 +9,7 @@
     "host_objects": "http://localhost:4567/objects/:o"
   },
   "competition": {
-    "host": "dres-domain.example",
+    "host": "https://dmi-dres.dmi.unibas.ch/",
     "tls": false,
     "log": true,
     "lsc": false,
