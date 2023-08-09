@@ -55,4 +55,8 @@ export class DresSidebarComponent implements AfterContentInit {
     })
   }
 
+  login(username: string, password: string) {
+    this._dresService.loginByUsernamePassword(username, password)
+    window.location.reload();
+  }
 }

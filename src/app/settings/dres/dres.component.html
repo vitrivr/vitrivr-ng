@@ -14,6 +14,21 @@
       <mat-list-item>ID: {{dresStatus.id}}</mat-list-item>
     </ng-container>
 
+    <ng-container *ngIf="dresStatus === null">
+      <mat-divider></mat-divider>
+      <form class="example-form">
+        <mat-form-field class="example-full-width">
+          <mat-label>Dres Username</mat-label>
+          <input matInput #username placeholder="Username" value="">
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+          <mat-label>Dres Password</mat-label>
+          <input matInput #userpassword  placeholder="Password" value="" type="password">
+        </mat-form-field>
+        <button mat-button color="primary" (click)="login(username.value, userpassword.value)">Login</button>
+      </form>
+    </ng-container>
+
     <ng-container *ngIf="activeRun">
       <mat-divider></mat-divider>
       <h3 matSubheader>Active Run</h3>
@@ -29,6 +44,8 @@
       <mat-list-item *ngIf="activeTask.running"><span>Remaining Time: {{activeTask.remainingTime | formatTime}}</span>
       </mat-list-item>
     </ng-container>
+
+
 
     <mat-divider></mat-divider>
   </div>

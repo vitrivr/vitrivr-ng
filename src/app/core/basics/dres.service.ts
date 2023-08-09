@@ -1,7 +1,14 @@
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../../app.config';
-import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, UserDetails, UserService} from '../../../../openapi/dres';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {
+  ClientRunInfo,
+  ClientRunInfoService,
+  ClientTaskInfo,
+  LoginRequest,
+  UserDetails,
+  UserService
+} from '../../../../openapi/dres';
+import {BehaviorSubject, Observable, publish} from 'rxjs';
 
 @Injectable()
 export class DresService {
@@ -9,6 +16,7 @@ export class DresService {
   private _status: BehaviorSubject<UserDetails> = new BehaviorSubject(null)
   private _activeRun: BehaviorSubject<ClientRunInfo> = new BehaviorSubject(null);
   private _activeTask: BehaviorSubject<ClientTaskInfo> = new BehaviorSubject(null);
+  private _sessionId: string = undefined;
 
   constructor(private _configService: AppConfig, private _runInfo: ClientRunInfoService, private _dresUser: UserService,) {
     this._configService.configAsObservable.subscribe(config => {
@@ -56,6 +64,24 @@ export class DresService {
     })
   }
 
+  public loginByUsernamePassword(username: string, password: string): string{
+    let lr = this._dresUser.postApiV1Login({
+      username: username,
+      password: password
+    } as LoginRequest)
+    lr.subscribe({
+      next: (user) => {
+        if (user) {
+          this._sessionId = user.sessionId;
+        }
+      },
+      error: (e) => {
+        console.error('failed to connect to DRES', e)
+      }
+    })
+    return null
+  }
+
   public statusObservable(): Observable<UserDetails> {
     return this._status.asObservable()
   }
@@ -89,4 +115,5 @@ export class DresService {
       return null
     }
   }
+
 }
