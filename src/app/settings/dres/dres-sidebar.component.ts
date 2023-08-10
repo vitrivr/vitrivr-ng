@@ -28,6 +28,7 @@ export class DresSidebarComponent implements AfterContentInit {
   }
 
   ngAfterContentInit(): void {
+    console.log("ngAfterContentInit")
     this._configService.configAsObservable.subscribe(c => {
       this.config = c
     })
@@ -56,7 +57,12 @@ export class DresSidebarComponent implements AfterContentInit {
   }
 
   login(username: string, password: string) {
-    this._dresService.loginByUsernamePassword(username, password)
-    window.location.reload();
+    this._dresService.loginByUsernamePassword(username, password).subscribe((value) => {
+      console.log("Subsribe of login")
+      this.dresStatus = value;
+      console.log("user:", value);
+      this.cdr.markForCheck();
+      this.ngAfterContentInit();
+    })
   }
 }

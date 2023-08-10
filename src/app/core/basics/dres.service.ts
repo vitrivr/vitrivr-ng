@@ -8,7 +8,8 @@ import {
   UserDetails,
   UserService
 } from '../../../../openapi/dres';
-import {BehaviorSubject, Observable, publish} from 'rxjs';
+import {BehaviorSubject, Observable, of, publish} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Injectable()
 export class DresService {
@@ -23,15 +24,7 @@ export class DresService {
           if (config?.dresEndpointRest == null) {
             return
           }
-          this._dresUser.getApiV1User().subscribe(
-              {
-                next: (user) => {
-                  this._status.next(user)
-                },
-                error: (error) => {
-                  this._status.error(error)
-                }
-              })
+          this.updateDresUserInfo()
         }
     )
 
@@ -46,6 +39,20 @@ export class DresService {
         5 * 1000
     )
 
+  }
+
+  private updateDresUserInfo(){
+    this._dresUser.getApiV1User().subscribe(
+      {
+        next: (user) => {
+          this._status.next(user)
+          console.log("User loaded: ", user);
+        },
+        error: (error) => {
+          this._status.error(error)
+          console.log("Error in user loading", error)
+        }
+      })
   }
 
   private updateDresInfo() {
@@ -64,22 +71,22 @@ export class DresService {
     })
   }
 
-  public loginByUsernamePassword(username: string, password: string): string{
-    let lr = this._dresUser.postApiV1Login({
+  public loginByUsernamePassword(username: string, password: string): Observable<UserDetails>{
+    return this._dresUser.postApiV1Login({
       username: username,
       password: password
-    } as LoginRequest)
-    lr.subscribe({
-      next: (user) => {
-        if (user) {
+    } as LoginRequest).pipe(
+      map(user => {
+        if(user){
           this._sessionId = user.sessionId;
+          this._status.next(user)
+          return user;
+        }else{
+          this._status = null
+          return null
         }
-      },
-      error: (e) => {
-        console.error('failed to connect to DRES', e)
-      }
-    })
-    return null
+      })
+    );
   }
 
   public statusObservable(): Observable<UserDetails> {
