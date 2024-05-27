@@ -16,24 +16,23 @@ export class TextQueryTermComponent {
    * First entry designates the name of the category and the second
    * entry designates the label.
    */
-  //public readonly categories: [string, string][] = [];
+  public readonly categories: [string, string][] = [];
   /** The TextQueryTerm object associated with this TextQueryTermComponent. That object holds all the query settings. */
   @Input()
-  public textTerm: TextQueryTerm;
-
-
+  private textTerm: TextQueryTerm;
 
   /**
    * Constructor for TextQueryTerm
    *
+   * @param _configService
    */
-  constructor() {
-    // _configService.configAsObservable.subscribe(c => {
-    //   this.categories.length = 0;
-    //   c.get<[string, string][]>('query.text.categories').forEach(v => {
-    //     this.categories.push(v)
-    //   })
-    // })
+  constructor(_configService: AppConfig) {
+    _configService.configAsObservable.subscribe(c => {
+      this.categories.length = 0;
+      c._config.query.text.categories.forEach(v => {
+        this.categories.push([v[0], v[1]]);
+      })
+    })
   }
 
   /**

@@ -104,10 +104,10 @@ export class ResolverService {
    */
   constructor(_configService: AppConfig) {
     _configService.configAsObservable.subscribe((config) => {
-      this.host_thumbnails = config.get('resources.host_thumbnails');
-      this.host_objects = config.get('resources.host_objects');
-      const default_suffix: string = config.get('resources.suffix_default');
-      const suffices = config.get('resources.suffix');
+      this.host_thumbnails = config._config.resources.host_thumbnails;
+      this.host_objects = config._config.resources.host_objects;
+      const default_suffix: string = config._config.resources.suffix_default;
+      const suffices = config._config.resources.suffix;
       for (const type of Object.keys(MediaObjectDescriptor.MediatypeEnum).map(key => MediaObjectDescriptor.MediatypeEnum[key])) {
         const suffix: string = suffices[type];
         if (typeof suffix === 'string') {

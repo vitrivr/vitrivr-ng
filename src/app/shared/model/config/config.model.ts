@@ -11,12 +11,10 @@ export class Config {
   public static readonly CONTEXT = 'api';
   /** Version of the Cineast API. */
   public static readonly VERSION = 'v1';
-  /** The key under which the main configuration will be saved. */
-  public static readonly DB_KEY = 'main';
+
   /** Default display duration for Snackbar messages. */
   public static SNACKBAR_DURATION = 2500;
-  /** A handy port checking regex based on https://stackoverflow.com/a/12968117 */
-  private static readonly PORT_REGEX = /:([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])\//;
+
   _config = {
     title: 'vitrivr',
     api: {
@@ -28,18 +26,16 @@ export class Config {
     },
     resources: {
       /** Path / URL to location where media object thumbnails will be stored. */
-      host_thumbnails: window.location.protocol + '//' + window.location.hostname + ':80/vitrivr/thumbnails',
+      host_thumbnails: window.location.protocol + '//' + window.location.hostname + ':4567/thumbnails/:s',
       /** Path / URL to location where media object's will be stored. */
-      host_objects: window.location.protocol + '//' + window.location.hostname + ':80/vitrivr/objects',
+      host_objects: window.location.protocol + '//' + window.location.hostname + ':4567/objects/:o',
       /** Default suffix for thumbnails. */
       suffix_default: '.jpg',
       /** Per-mediatype suffix definition for thumbnails. */
       suffix: {
         'IMAGE': 'png',
         'VIDEO': 'png'
-      },
-      /** Options for the resources port: $host -> use the host's port, $api -> use the api port, number: specify the port */
-      port: '$host' // string to enable overrides
+      }
     },
     competition: {
       /* Toggles VBS mode; determines type of information that is submitted. */
@@ -49,7 +45,7 @@ export class Config {
       lsc: false,
 
       /* Host of the DRES endpoint (fqn + port, no protocol). */
-      host: "",
+      host: '',
 
       /* Flag indicating whether or not TLS should be used to communicate with DRES. */
       tls: false,
@@ -75,10 +71,10 @@ export class Config {
     ],
     mlt: {
       'MODEL3D': ['sphericalharmonicsdefault'],
-      'IMAGE': ['visualtextcoembedding'],
-      'VIDEO': ['visualtextcoembedding'],
+      'IMAGE': ['mlt'],
+      'VIDEO': ['mlt'],
       'AUDIO': ['audiofingerprint'],
-      'IMAGE_SEQUENCE': ['visualtextcoembedding']
+      'IMAGE_SEQUENCE': ['mlt']
     },
     query: {
       history: -1,
@@ -109,25 +105,25 @@ export class Config {
         neighboringSegmentLookupAllCount: 200000
       },
       text: {
-        categories: [['visualtextcoembedding', 'Text Co-Embedding']]
+        categories: [['visualtextcoembedding', 'Description (VTE)'], ['ocr', 'OCR']]
       },
       boolean: [
         {
-          display: "Segment Id",
+          display: 'Segment Id',
           input: InputType.TEXT,
-          table: "cineast_segment",
-          col: "segmentid",
+          table: 'cineast_segment',
+          col: 'segmentid',
           operators: [
-            "="
+            '='
           ]
         },
         {
-          display: "Object Id",
+          display: 'Object Id',
           input: InputType.TEXT,
-          table: "cineast_segment",
-          col: "objectid",
+          table: 'cineast_segment',
+          col: 'objectid',
           operators: [
-            "="
+            '='
           ]
         }
       ],
@@ -196,19 +192,6 @@ export class Config {
     }
     this._config.resources.host_objects = this._config.resources.host_objects.replace('/$host/', '/' + window.location.hostname + '/');
     this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace('/$host/', '/' + window.location.hostname + '/');
-    if (this._config.resources.port) {
-      const providedPort = this._config.resources.port;
-      let port = window.location.port;
-      if (providedPort === '$api') {
-        port = '' + this._config.api.port;
-      } else if (providedPort.match(Config.PORT_REGEX)?.length > 0) {
-        port = '' + providedPort;
-      } else if (providedPort === '$host') {
-        // default
-      } // no else, as this was the default.
-      this._config.resources.host_objects = this._config.resources.host_objects.replace(Config.PORT_REGEX, ':' + port + '/');
-      this._config.resources.host_thumbnails = this._config.resources.host_thumbnails.replace(Config.PORT_REGEX, ':' + port + '/');
-    }
   }
 
   /**
