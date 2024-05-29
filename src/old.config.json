@@ -1,0 +1,52 @@
+{
+  "title": "Schnupper Summer School",
+  "api": {"port": "4567", "host": "10.34.58.164"},
+  "resources": {
+    "host_thumbnails": "http://10.34.58.12/v3c/thumbnails/:o/:s.jpg",
+    "host_objects": "http://10.34.58.12/v3c/videos/:o.mp4"
+  },
+  "competition": {
+    "log": true,
+    "collabordinator": "ws://10.34.58.13:12345/ws",
+    "host":"camp.dmi-dres.dmi.unibas.ch",
+    "vbs":true,
+    "tls":true
+  },
+  "mlt": {
+    "VIDEO": [
+      "mlt"
+    ],
+    "IMAGE": [
+      "mlt"
+    ]
+  },
+  "query": {
+    "temporal_mode": "SEQUENTIAL",
+    "temporal_max_length": 60,
+    "options": {
+      "image": true,
+      "audio": false,
+      "model3d": false,
+      "text": true,
+      "tag": false,
+      "semantic": true,
+      "boolean": true,
+      "skeleton": true
+    },
+    "text": {
+      "categories": [
+        [
+          "ocr",
+          "Text on Screen"
+        ],["whisper","Whisper"],
+        [
+          "visualtextcoembedding",
+          "Text Embedding"
+        ],
+        [
+          "clip", "Text CLIP"
+        ],["mlclip","Multilingual CLIP"]
+      ]
+    }
+  }
+}

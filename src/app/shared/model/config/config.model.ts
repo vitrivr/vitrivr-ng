@@ -22,7 +22,7 @@ export class Config {
       port: 4567, /* Port for the API. */
       http_secure: false, /* Whether or not TLS should be used for HTTP connection. */
       ws_secure: false, /* Whether or not TLS should be used for WebSocket connection. */
-      ping_interval: 5000 /* Default ping interval in milliseconds. */
+      ping_interval: 5000, /* Default ping interval in milliseconds. */
     },
     resources: {
       /** Path / URL to location where media object thumbnails will be stored. */
@@ -227,6 +227,18 @@ export class Config {
     const scheme = this._config.competition.tls ? 'https://' : 'http://';
     if (this._config.competition.host) {
       return `${scheme}${this._config.competition.host}`
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Full URL to HTTP/HTTPs RESTful endpoint for vitrivr-engine.
+   */
+  get engineEndpointRest(){
+    const scheme = this._config.api.http_secure ? 'https://' : 'http://';
+    if (this._config.api.host && this._config.api.port) {
+      return scheme + this._config.api.host + ':' + this._config.api.port;
     } else {
       return null;
     }

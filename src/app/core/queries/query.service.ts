@@ -33,6 +33,8 @@ import {TemporalQueryResult} from '../../shared/model/messages/interfaces/respon
 import {ReadableTemporalQueryConfig} from '../../shared/model/messages/queries/readable-temporal-query-config.model';
 import MediatypeEnum = MediaObjectDescriptor.MediatypeEnum;
 import {QueryStage} from '../../shared/model/queries/query-stage.model';
+import {InternalApiService} from '../api/internal-api.service';
+import {CineastCompat} from '../api/compat.util';
 
 /**
  *  Types of changes that can be emitted from the QueryService.
@@ -67,16 +69,18 @@ export class QueryService {
   /** last query which was issued */
   private _lastQuery = null;
 
+  /**
+   *
+   * @param _history
+   * @param _factory
+   * @param _config
+   * @param _eventBusService
+   */
   constructor(@Inject(HistoryService) private _history,
               @Inject(WebSocketFactoryService) _factory: WebSocketFactoryService,
+              @Inject(InternalApiService) private _engine: InternalApiService,
               @Inject(AppConfig) private _config: AppConfig,
               private _eventBusService: EventBusService) {
-    _factory.asObservable().pipe(filter(ws => ws != null)).subscribe(ws => {
-      this._socket = ws;
-      this._socket.pipe(
-          filter(msg => ['QR_START', 'QR_END', 'QR_ERROR', 'QR_SIMILARITY', 'QR_OBJECT', 'QR_SEGMENT', 'QR_TEMPORAL', 'QR_METADATA_S', 'QR_METADATA_O'].indexOf(msg.messageType) > -1)
-      ).subscribe((msg: Message) => this.onApiMessage(msg));
-    });
     this._config.configAsObservable.subscribe(config => {
       this._scoreFunction = config.get('query.scoreFunction');
       if (this._results) {
@@ -124,25 +128,32 @@ export class QueryService {
    * @returns {boolean} true if query was issued, false otherwise.
    */
   public findTemporal(containers: QueryContainerInterface[], timeDistances: number[], maxLength: number): boolean {
-    if (!this._socket) {
-      console.warn('No socket available, not executing temporal query');
-      return false;
-    }
-    if (this._running > 0) {
-      console.warn('There is already a query running');
-    }
-      const query = new TemporalQuery(containers.map(container => new StagedSimilarityQuery(container.stages.map(
-              stage => { //filter empty terms
-                  return new QueryStage(stage.terms.filter(term => term.categories.length > 0 && term.data != undefined));
-              }
-          ), null)),
-          new ReadableTemporalQueryConfig(null,
-              [],
-              timeDistances,
-              maxLength),
-          this._config.config.metadataAccessSpec);
-      this._lastQuery = query;
-      this._socket.next(query)
+    console.log("Containers: ", containers)
+    const fauxQueryId = `q-${Math.floor(new Date().getTime() / 1000)}`
+    console.time(`Query (${fauxQueryId})`);
+    this.startNewQuery(fauxQueryId)
+    const ind = CineastCompat.convert(containers);
+    console.log("Information Need Description: (ENGINE)", ind);
+    this._engine.query(ind).subscribe(value => {
+      console.log("RESULT: ",value)
+      const temp = CineastCompat.convertResultToTemporal(fauxQueryId,value);
+      const obj = CineastCompat.convertResultToObject(fauxQueryId,value);
+      const seg = CineastCompat.convertResultToSegment(fauxQueryId, value);
+      console.log("OBJ: ", obj);
+      console.log("SGE: ", seg);
+      console.log("TEMP: ", temp);
+      if (this._results && this._results.processObjectMessage(obj)) {
+        this._subject.next('UPDATED');
+      }
+      if (this._results && this._results.processSegmentMessage(seg)) {
+        this._subject.next('UPDATED');
+      }
+      if (this._results && this._results.processTemporalMessage(temp)) {
+        this._subject.next('UPDATED');
+      }
+      console.timeEnd(`Query (${fauxQueryId})`);
+      this.finalizeQuery(fauxQueryId)
+    })
 
     /** Log Interaction */
     const _components: InteractionEventComponent[] = []
@@ -184,6 +195,8 @@ export class QueryService {
       })
     });
     this._eventBusService.publish(new InteractionEvent(..._components))
+
+    return true; // TODO depend on whether query was successfully sent?
   }
 
   /**

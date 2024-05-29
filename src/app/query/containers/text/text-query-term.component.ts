@@ -19,7 +19,7 @@ export class TextQueryTermComponent {
   public readonly categories: [string, string][] = [];
   /** The TextQueryTerm object associated with this TextQueryTermComponent. That object holds all the query settings. */
   @Input()
-  private textTerm: TextQueryTerm;
+  textTerm: TextQueryTerm;
 
   /**
    * Constructor for TextQueryTerm

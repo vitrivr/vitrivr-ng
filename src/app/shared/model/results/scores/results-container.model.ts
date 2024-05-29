@@ -485,6 +485,7 @@ export class ResultsContainer {
           resultTemporalObject.segments.map(segment => this._segmentid_to_segment_map.get(segment)),
           resultTemporalObject.score
         )
+        console.log("MOSC: ", mosc)
         this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
       } else {
         // if there is already a temporal object for a given objectid, update it
@@ -503,7 +504,7 @@ export class ResultsContainer {
         });
       }
     }
-
+    console.log("MAP:", this._objectid_to_temporal_object_map)
     this._next += 1;
 
     console.timeEnd(`Processing Temporal Message (${this.queryId})`);
@@ -626,18 +627,20 @@ export class ResultsContainer {
       mosc = this._objectid_to_object_map.get(objectId);
     } else {
       mosc = new MediaObjectScoreContainer(objectId);
+      if(object){
+        mosc.mediatype = object.mediatype
+      }
       this._objectid_to_object_map.set(objectId, mosc);
       this._results_objects.push(mosc);
     }
 
     /* Optional: Update MediaObjectScoreContainer. */
-    if (object && object.objectid === object.objectid) {
+    if (object && object.objectid === mosc.objectid) {
       mosc.mediatype = object.mediatype;
       mosc.name = object.name;
       mosc.path = object.path;
       mosc.contentURL = object.contentURL;
     }
-
     return mosc;
   }
 

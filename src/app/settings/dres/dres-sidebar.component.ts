@@ -58,7 +58,7 @@ export class DresSidebarComponent implements AfterContentInit {
 
   login(username: string, password: string) {
     this._dresService.loginByUsernamePassword(username, password).subscribe((value) => {
-      console.log("Subsribe of login")
+      console.log("Subscribe of login")
       this.dresStatus = value;
       console.log("user:", value);
       this.cdr.markForCheck();

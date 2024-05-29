@@ -10,13 +10,14 @@ import {QueryModule} from './queries/query.module';
 import {PreviousRouteService} from './basics/previous-route.service';
 import {ApiModule, Configuration} from '../../../openapi/cineast';
 import {AppConfig} from '../app.config';
+import { InternalApiModule } from './api/internal-api.module';
 
 @NgModule({
   imports: [ApiModule.forRoot(() => {
     return new Configuration({
       basePath: `${AppConfig.settings.cineastEndpointRest}`
     })
-  }), LookupModule, BasicModule, CompetitionModule, SelectionModule, QueryModule],
+  }), LookupModule, BasicModule, CompetitionModule, SelectionModule, QueryModule, InternalApiModule],
   exports: [ApiModule, LookupModule, BasicModule, CompetitionModule, SelectionModule, QueryModule],
   declarations: [],
   providers: [WebSocketFactoryService, VbsSubmissionService, SelectionService, PreviousRouteService]

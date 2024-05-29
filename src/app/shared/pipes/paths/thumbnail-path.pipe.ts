@@ -8,9 +8,11 @@ import {AppConfig} from '../../../app.config';
 })
 export class ThumbnailPathPipe implements PipeTransform {
   private _host_thumbnails: string;
+  private _schema: string = "LSC" // TODO config
+  private _exporter: string = "thumbnail" // TODO config
 
   constructor(_configService: AppConfig, public readonly _resolverService: ResolverService) {
-    _configService.configAsObservable.subscribe(c => this._host_thumbnails = c._config.resources.host_thumbnails)
+    _configService.configAsObservable.subscribe(c => this._host_thumbnails = c.engineEndpointRest)
   }
 
   /**
@@ -24,6 +26,6 @@ export class ThumbnailPathPipe implements PipeTransform {
    * @return {string}
    */
   public transform(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor, height?: number, width?: number): String {
-    return this._resolverService.pathToThumbnail(object, segment, height, width)
+    return `${this._host_thumbnails}/api/${this._schema}/fetch/${this._exporter}/${segment.segmentId}`
   }
 }
