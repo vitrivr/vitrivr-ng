@@ -485,7 +485,6 @@ export class ResultsContainer {
           resultTemporalObject.segments.map(segment => this._segmentid_to_segment_map.get(segment)),
           resultTemporalObject.score
         )
-        console.log("MOSC: ", mosc)
         this._objectid_to_temporal_object_map.set(resultTemporalObject.objectId, mosc)
       } else {
         // if there is already a temporal object for a given objectid, update it

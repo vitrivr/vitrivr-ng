@@ -56,7 +56,6 @@ export class MediaObjectScoreContainer extends ScoreContainer implements MediaOb
    * @returns {boolean} true if it can be displayed, false otherwise.
    */
   get show(): boolean {
-    console.log("Show? ", this.mediatype, this._segmentScores)
     return (this.mediatype && this._segmentScores.size > 0);
   }
 
