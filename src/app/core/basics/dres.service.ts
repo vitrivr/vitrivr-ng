@@ -2,18 +2,20 @@ import {Injectable} from '@angular/core';
 import {AppConfig} from '../../app.config';
 import {BehaviorSubject, Observable, of, publish} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ApiClientEvaluationInfo, ApiClientTaskTemplateInfo, ApiUser, EvaluationClientService, LoginRequest, UserService} from '../../../../openapi/dres';
+import {ApiClientEvaluationInfo, ApiClientTaskTemplateInfo, ApiEvaluationState, ApiUser, EvaluationClientService, EvaluationService, LoginRequest, UserService} from '../../../../openapi/dres';
 
 @Injectable()
 export class DresService {
 
   private _status: BehaviorSubject<ApiUser> = new BehaviorSubject(null)
   private _activeRun: BehaviorSubject<ApiClientEvaluationInfo> = new BehaviorSubject(null);
-  private _activeTask: BehaviorSubject<ApiClientTaskTemplateInfo> = new BehaviorSubject(null);
+  private _activeTask: BehaviorSubject<ApiEvaluationState> = new BehaviorSubject(null);
+  private _activeTemplate: BehaviorSubject<ApiClientTaskTemplateInfo> = new BehaviorSubject(null);
   private _sessionId: string = undefined;
 
   constructor(private _configService: AppConfig,
               private _runInfo: EvaluationClientService,
+              private _evalInfo: EvaluationService,
               private _dresUser: UserService,) {
     this._configService.configAsObservable.subscribe(config => {
           if (config?.dresEndpointRest == null) {
@@ -59,7 +61,7 @@ export class DresService {
       const activeEvaluation = l.length == 0 ? null : l[0]
       this._activeRun.next(activeEvaluation)
       if (activeEvaluation) {
-        this._runInfo.getApiV2ClientEvaluationCurrentTaskByEvaluationId(this._activeRun.getValue().id, this.getStatus().sessionId).subscribe(task => {
+        this._evalInfo.getApiV2EvaluationByEvaluationIdState(this._activeRun.getValue().id).subscribe(task => {
           this._activeTask.next(task)
         })
       }
@@ -88,20 +90,28 @@ export class DresService {
     return this._status.asObservable()
   }
 
-  public activeTaskObservable(): Observable<ApiClientTaskTemplateInfo> {
+  public activeTaskObservable(): Observable<ApiEvaluationState> {
     return this._activeTask.asObservable()
+  }
+
+  public activeTemplateObservable(): Observable<ApiClientTaskTemplateInfo>{
+    return this._activeTemplate.asObservable()
   }
 
   public activeRunObservable(): Observable<ApiClientEvaluationInfo> {
     return this._activeRun.asObservable()
   }
 
-  public activeTask(): ApiClientTaskTemplateInfo {
+  public activeTask(): ApiEvaluationState {
     return this._activeTask.getValue()
   }
 
   public activeRun(): ApiClientEvaluationInfo {
     return this._activeRun.getValue()
+  }
+
+  public activeTemplate(): ApiClientTaskTemplateInfo{
+    return this._activeTemplate.getValue();
   }
 
   /**

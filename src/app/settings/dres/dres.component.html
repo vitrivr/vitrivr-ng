@@ -29,23 +29,6 @@
       </form>
     </ng-container>
 
-    <ng-container *ngIf="activeRun">
-      <mat-divider></mat-divider>
-      <h3 matSubheader>Active Run</h3>
-      <mat-list-item>Name: {{activeRun.name}}</mat-list-item>
-      <mat-list-item>Description: {{activeRun.description}}</mat-list-item>
-    </ng-container>
-
-    <ng-container *ngIf="activeTask">
-      <mat-divider></mat-divider>
-      <h3 matSubheader>Active Task</h3>
-      <mat-list-item><span>Name: {{activeTask.name}}</span></mat-list-item>
-      <mat-list-item><span>Type: {{activeTask.taskGroup}}</span></mat-list-item>
-      <mat-list-item *ngIf="activeTask.running"><span>Remaining Time: {{activeTask.remainingTime | formatTime}}</span>
-      </mat-list-item>
-    </ng-container>
-
-
 
     <mat-divider></mat-divider>
   </div>

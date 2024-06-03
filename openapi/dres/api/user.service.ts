@@ -141,8 +141,7 @@ export class UserService {
         }
 
         return this.httpClient.delete<ApiUser>(`${this.configuration.basePath}/api/v2/user/${encodeURIComponent(String(userId))}`,
-            null,
-            {
+                        {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,

@@ -32,7 +32,8 @@ export class FeatureDetailsComponent {
     if (data.length > 1) {
       temporalObject = data[1] as TemporalObjectSegments
     }
-    this._title = segment.sequenceNumber + ' : ' + segment.segmentId + ' (' + (segment.score * 100).toFixed(2) + '%)';
+    this._title = segment.itemName
+    this._lines.push(segment.sequenceNumber + ' : ' + segment.segmentId + ' (' + (segment.score * 100).toFixed(2) + '%)');
     if (temporalObject) {
       this._lines.push(`Score for path: ${temporalObject.score.toFixed(2)}`)
       this._lines.push(`Path: ${temporalObject.segments[0].sequenceNumber} - ${temporalObject.segments[temporalObject.segments.length - 1].sequenceNumber} (${temporalObject.segments[0].segmentId} - ${temporalObject.segments[temporalObject.segments.length - 1].segmentId})`)

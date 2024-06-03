@@ -1,7 +1,7 @@
-import {ClientRunInfo, ClientTaskInfo} from '../../../../../openapi/dres';
+import {ApiClientEvaluationInfo, ApiEvaluationState} from '../../../../../openapi/dres';
 
 export interface QueryLogItem {
   query: any,
-  dresTask: ClientTaskInfo,
-  dresRun: ClientRunInfo,
+  dresTask: ApiEvaluationState,
+  dresRun: ApiClientEvaluationInfo,
 }

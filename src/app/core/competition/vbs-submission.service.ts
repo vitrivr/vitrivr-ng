@@ -219,7 +219,7 @@ export class VbsSubmissionService {
 
             /* Submit Log entry to DRES. */
             console.log(`Submitting interaction log to DRES.`);
-            return this._dresLog.postApiV2LogQueryByEvaluationId(this._dresService.activeRun().id, this._sessionId, submission).pipe(
+            return this._dresLog.postApiV2LogQueryByEvaluationId(this._dresService.activeRun()?.id, this._sessionId, submission).pipe(
                 tap(o => {
                   console.log(`Successfully submitted interaction log to DRES.`);
                 }),
@@ -345,7 +345,7 @@ export class VbsSubmissionService {
             this._dresSubmissionLogTable.add([segment, frame])
           }
           /* Construct the submission for temporal and item submisisons */
-          const submission = {} as ApiClientSubmission
+          const submission = {answerSets: [{answers: [{mediaItemName: segment} as ApiClientAnswer]} as ApiClientAnswerSet]} as ApiClientSubmission
           /* Submit, do some logging and catch HTTP errors. */
           return this._dresSubmit.postApiV2SubmitByEvaluationId(this._dresService.activeRun().id, submission).pipe(
               tap((status: SuccessfulSubmissionsStatus) => {
@@ -441,9 +441,9 @@ export class VbsSubmissionService {
       return [segment.objectId.replace('v_', ''), VbsSubmissionService.timeToFrame(time, fps), segment.segmentId]
     }
     if (this._lsc) {
-      return [segment.segmentId.replace('is_', ''), time, segment.segmentId];
+      return [segment.itemName, time, segment.segmentId];
     }
-    return [segment.segmentId, time, segment.segmentId];
+    return [segment.itemName, time, segment.segmentId];
   }
 
   /**

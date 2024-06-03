@@ -14,6 +14,7 @@
 export interface MediaSegmentDescriptor { 
     segmentId?: string;
     objectId?: string;
+    itemName?: string;
     start?: number;
     end?: number;
     startabs?: number;

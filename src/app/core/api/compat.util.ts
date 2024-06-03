@@ -66,19 +66,25 @@ export class CineastCompat {
 
   static convertResultToObject(queryId: string, result: QueryResult){
     const content = result.retrievables.map(it => {
-      return {objectid: it.id, name: it.id, path: it.properties["path"], mediatype: 'IMAGE'} as MediaObjectDescriptor // TODO Far more logic
+      const path = it.properties["path"]
+      return {objectid: it.id, name: this.convertPathToItemName(path), path: path, mediatype: 'IMAGE'} as MediaObjectDescriptor // TODO Far more logic
     })
     return {queryId: queryId, content: content} as MediaObjectQueryResult
   }
 
   static convertResultToSegment(queryId: string, result: QueryResult){
     const content = result.retrievables.map(it => {
-      return {objectId: it.id, segmentId: it.id} as MediaSegmentDescriptor // TODO more logic
+      return {objectId: it.id, segmentId: it.id, itemName: this.convertPathToItemName(it.properties["path"])} as MediaSegmentDescriptor // TODO more logic
     })
     return {queryId: queryId, content: content} as MediaSegmentQueryResult
   }
 
   static convertResultToObjectMeta(queryId: string, result: QueryResult){
     return {} as ObjectMetadataQueryResult
+  }
+
+  static convertPathToItemName(path: string){
+    const pathSep = path.includes('\\') ? '\\' : '/'
+    return path.substring(path.lastIndexOf(pathSep)+1, path.lastIndexOf('.'))
   }
 }

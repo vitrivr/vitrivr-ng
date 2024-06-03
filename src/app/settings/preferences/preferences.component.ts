@@ -9,7 +9,7 @@ import {NotificationService} from '../../core/basics/notification.service';
 import {AppConfig} from '../../app.config';
 import {TemporalMode} from './temporal-mode-container.model';
 import {from} from 'rxjs';
-import {ClientRunInfo, ClientRunInfoService, ClientTaskInfo, QueryEventLog, QueryResultLog, UserDetails} from '../../../../openapi/dres';
+import {QueryEventLog, QueryResultLog, ApiUser} from '../../../../openapi/dres';
 import {ResultLogItem} from '../../core/competition/logging/result-log-item';
 import {DresService} from '../../core/basics/dres.service';
 import {QueryLogItem} from '../../core/competition/logging/query-log-item';
