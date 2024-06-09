@@ -1,4 +1,6 @@
 import {InformationNeedDescription, InputData, OperatorDescription, QueryContext} from '../../../../openapi/vitrivr-engine';
+import {QueryTerm} from '../../../../openapi/cineast';
+import {BoolTerm} from '../../query/containers/bool/individual/bool-term';
 
 export class EngineQueryUtil{
   static generateClipQuery(query: string){
@@ -59,6 +61,35 @@ export class EngineQueryUtil{
     return { type: 'TEXT', data: text} as InputData
   }
 
+  static generateBooleanInput(term: BoolTerm){
+    return {type: 'TEXT', data: term.values[0], comparison: this.mapOperatorToComparison(term.operator)} as InputData
+  }
+
+  static buildRelationLookupContext(){
+    return {incoming: "partOf"} as any
+  }
+
+  static buildRelationResolverContext(){
+    return {predicate: "partOf"} as any
+  }
+
+  static buildRelationOperator(input: string){
+    return {type: 'TRANSFORMER', transformerName: "RelationExpander", input: input} as OperatorDescription
+  }
+
+  static buildRelationResolverOperator(input: string){
+    return {type: 'TRANSFORMER', transformerName: "RelationResolver", input: input} as OperatorDescription
+  }
+
+  static mapOperatorToComparison(op: string){
+    switch(op){
+      case "EQ": return "=="
+      case "LIKE": return "~="
+      case "GEQ": return ">="
+      case "LEQ": return "<="
+    }
+  }
+
   static generateNumericalInput(number: number, comparison: string = '=='){
     return { type: 'NUMERIC', value: number, comparison:comparison } as InputData
   }
@@ -69,6 +100,10 @@ export class EngineQueryUtil{
    * @param input The input-key, referencing this operator's input (default: empty, TBD)
    */
   static generateRetrieverOperator(fieldName: string, input: string = '') {
+    return {type: 'RETRIEVER', field: fieldName, input: input} as OperatorDescription
+  }
+
+  static generateBooleanRetrieverOperator(fieldName: string, input: string = ''){
     return {type: 'RETRIEVER', field: fieldName, input: input} as OperatorDescription
   }
 

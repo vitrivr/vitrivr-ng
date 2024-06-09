@@ -6,15 +6,17 @@ import {TemporalQueryResult} from '../../shared/model/messages/interfaces/respon
 import {SimilarityQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-similarty.interface';
 import {MediaObjectDescriptor, MediaObjectQueryResult, MediaSegmentDescriptor, MediaSegmentQueryResult, StringDoublePair} from '../../../../openapi/cineast';
 import {ObjectMetadataQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-object-metadata.interface';
+import {BoolTerm} from '../../query/containers/bool/individual/bool-term';
+import {BoolQueryTerm} from '../../shared/model/queries/bool-query-term.model';
 
 export class CineastCompat {
   static convert(containers: QueryContainerInterface[]) {
     /* containers are (temporal) stages */
     let query = EngineQueryUtil.generateInformationNeed();
     let outputOpName = '';
-    containers.forEach((container, index) => {
-      container.stages.forEach(value => {
-        value.terms.forEach(term => {
+    containers.forEach((container, qIndex) => {
+      container.stages.forEach((value, sIndex) => {
+        value.terms.forEach((term, tIndex) => {
           switch (term.type) {
             case 'IMAGE':
             case 'AUDIO':
@@ -26,13 +28,21 @@ export class CineastCompat {
             case 'SEMANTIC':
             case 'SKELETON':
             case 'ID':
-            case 'BOOLEAN':
               console.error('NOT SUPPORTED: Query Term: ', term)
+              break;
+            case 'BOOLEAN':
+              const bcategory = "boolean"
+              const binName = `in_${bcategory}_${qIndex}_${sIndex}_${tIndex}`
+              const bopName = `op_${bcategory}_${qIndex}_${sIndex}_${tIndex}`
+              query.inputs[binName] = EngineQueryUtil.generateBooleanInput((term as BoolQueryTerm).terms[0])
+              const attribute = (term as BoolQueryTerm).terms[0].attribute
+              query.operations[bopName] = EngineQueryUtil.generateBooleanRetrieverOperator(attribute, binName)
+              outputOpName = bopName
               break;
             case 'TEXT':
               const category = term.categories[0]
-              const inName = `in_${category}_${index}`
-              const opName = `op_${category}_${index}`
+              const inName = `in_${category}_${qIndex}_${sIndex}_${tIndex}`
+              const opName = `op_${category}_${qIndex}_${sIndex}_${tIndex}`
               query.inputs[inName] = EngineQueryUtil.generateTextualInput(term.data)
               query.operations[opName] = EngineQueryUtil.generateRetrieverOperator(term.categories[0], inName)
               outputOpName = opName;
@@ -42,8 +52,16 @@ export class CineastCompat {
       })
     })
 
+
+    const relationExpanderName = "relExp"
+    query.operations[relationExpanderName] = EngineQueryUtil.buildRelationOperator(outputOpName)
+    query.context.local[relationExpanderName] = EngineQueryUtil.buildRelationLookupContext()
+    const relResName = "relRes"
+    query.operations[relResName] = EngineQueryUtil.buildRelationResolverOperator(relationExpanderName)
+    query.context.local[relResName] = EngineQueryUtil.buildRelationResolverContext()
+
     const pathLookupName = "pathLookup"
-    query.operations[pathLookupName] = EngineQueryUtil.generateFieldLookup(outputOpName)
+    query.operations[pathLookupName] = EngineQueryUtil.generateFieldLookup(relResName)
     query.context.local[pathLookupName] = EngineQueryUtil.generatePathLookupContext()
 
     query.output = pathLookupName;
@@ -67,15 +85,26 @@ export class CineastCompat {
   static convertResultToObject(queryId: string, result: QueryResult){
     const content = result.retrievables.map(it => {
       const path = it.properties["path"]
-      return {objectid: it.id, name: this.convertPathToItemName(path), path: path, mediatype: 'IMAGE'} as MediaObjectDescriptor // TODO Far more logic
-    })
+      if(path){
+        return {objectid: it.id, name: this.convertPathToItemName(path), path: path, mediatype: 'IMAGE'} as MediaObjectDescriptor // TODO Far more logic
+      }else{
+        return null
+      }
+
+    }).filter(it => it != null)
     return {queryId: queryId, content: content} as MediaObjectQueryResult
   }
 
   static convertResultToSegment(queryId: string, result: QueryResult){
     const content = result.retrievables.map(it => {
-      return {objectId: it.id, segmentId: it.id, itemName: this.convertPathToItemName(it.properties["path"])} as MediaSegmentDescriptor // TODO more logic
-    })
+      if(it.properties["path"]){
+        /* crude hack to filter day retrievables */
+        return {objectId: it.id, segmentId: it.id, itemName: this.convertPathToItemName(it.properties["path"])} as MediaSegmentDescriptor // TODO more logic
+      }else{
+        return null
+      }
+
+    }).filter(it => it != null)
     return {queryId: queryId, content: content} as MediaSegmentQueryResult
   }
 
