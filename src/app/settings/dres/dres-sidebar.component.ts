@@ -17,10 +17,10 @@ export class DresSidebarComponent implements AfterContentInit {
   dresAddress = ((c: Config) => c._config.competition.host);
 
   constructor(
-      private _configService: AppConfig,
-      private _notificationService: NotificationService,
-      private cdr: ChangeDetectorRef,
-      private _dresService: DresService
+    private _configService: AppConfig,
+    private _notificationService: NotificationService,
+    private cdr: ChangeDetectorRef,
+    protected _dresService: DresService
   ) {
   }
 
@@ -52,5 +52,9 @@ export class DresSidebarComponent implements AfterContentInit {
       this.cdr.markForCheck();
       this.ngAfterContentInit();
     })
+  }
+
+  setEval(id: string) {
+    this._dresService.setEval(id)
   }
 }

@@ -316,7 +316,7 @@ export class VbsSubmissionService {
 
             /* Do some logging and catch HTTP errors. */
             console.log(`Submitting result log to DRES...`);
-            return this._dresLog.postApiV2LogResultByEvaluationId(this._dresService.activeRun().id,this._sessionId, submission).pipe(
+            return this._dresLog.postApiV2LogResultByEvaluationId(this._dresService.getEvalId(),this._sessionId, submission).pipe(
                 tap(o => {
                   console.log(`Successfully submitted result log to DRES!`);
                 }),
@@ -347,7 +347,7 @@ export class VbsSubmissionService {
           /* Construct the submission for temporal and item submisisons */
           const submission = {answerSets: [{answers: [{mediaItemName: segment} as ApiClientAnswer]} as ApiClientAnswerSet]} as ApiClientSubmission
           /* Submit, do some logging and catch HTTP errors. */
-          return this._dresSubmit.postApiV2SubmitByEvaluationId(this._dresService.activeRun().id, submission).pipe(
+          return this._dresSubmit.postApiV2SubmitByEvaluationId(this._dresService.getEvalId(), submission).pipe(
               tap((status: SuccessfulSubmissionsStatus) => {
                 this.handleSubmissionResponse(status, segmentId);
               }),
@@ -371,7 +371,7 @@ export class VbsSubmissionService {
               return EMPTY
             }
             if (this._log) {
-              this._dresSubmissionLogTable.add(text)
+              //this._dresSubmissionLogTable.add(text)
             }
 
             /* Construct submission. TODO This currently only supports a single textual answer, enough for VBS24 / LSC24 */
@@ -384,7 +384,7 @@ export class VbsSubmissionService {
             }
 
             /* Submit, do some logging and catch HTTP errors. */
-            return this._dresSubmit.postApiV2SubmitByEvaluationId(this._dresService.activeRun().id, submission).pipe(
+            return this._dresSubmit.postApiV2SubmitByEvaluationId(this._dresService.getEvalId(), submission).pipe(
                 tap((status: SuccessfulSubmissionsStatus) => {
                   this.handleSubmissionResponse(status, null);
                 }),

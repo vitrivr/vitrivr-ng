@@ -12,6 +12,14 @@
       <h3 matSubheader>Session Information</h3>
       <mat-list-item>SessionID: {{dresStatus === null ? '' : dresStatus.sessionId}}</mat-list-item>
       <mat-list-item>ID: {{dresStatus.id}}</mat-list-item>
+      <h3 matSubheader>Evaluation</h3>
+      <mat-list-item>
+        <mat-select >
+          <mat-option *ngFor="let eval of (_dresService.listAsObservable() | async)" [value]="eval.id" (onSelectionChange)="setEval(eval.id)">
+            {{eval.name}}
+          </mat-option>
+        </mat-select>
+      </mat-list-item>
     </ng-container>
 
     <ng-container *ngIf="dresStatus === null">

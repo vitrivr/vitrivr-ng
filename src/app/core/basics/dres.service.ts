@@ -8,10 +8,12 @@ import {ApiClientEvaluationInfo, ApiClientTaskTemplateInfo, ApiEvaluationState, 
 export class DresService {
 
   private _status: BehaviorSubject<ApiUser> = new BehaviorSubject(null)
+  private _theList : BehaviorSubject<ApiClientEvaluationInfo[]> = new BehaviorSubject(null);
   private _activeRun: BehaviorSubject<ApiClientEvaluationInfo> = new BehaviorSubject(null);
   private _activeTask: BehaviorSubject<ApiEvaluationState> = new BehaviorSubject(null);
   private _activeTemplate: BehaviorSubject<ApiClientTaskTemplateInfo> = new BehaviorSubject(null);
   private _sessionId: string = undefined;
+  private _evalId: string = undefined;
 
   constructor(private _configService: AppConfig,
               private _runInfo: EvaluationClientService,
@@ -57,6 +59,7 @@ export class DresService {
       return
     }
     this._runInfo.getApiV2ClientEvaluationList(this.getStatus()?.sessionId).subscribe(list => {
+      this._theList.next(list)
       const l = list.filter(info => info.status == 'ACTIVE');
       const activeEvaluation = l.length == 0 ? null : l[0]
       this._activeRun.next(activeEvaluation)
@@ -98,6 +101,10 @@ export class DresService {
     return this._activeTemplate.asObservable()
   }
 
+  public listAsObservable(): Observable<ApiClientEvaluationInfo[]>{
+    return this._theList.asObservable()
+  }
+
   public activeRunObservable(): Observable<ApiClientEvaluationInfo> {
     return this._activeRun.asObservable()
   }
@@ -128,4 +135,11 @@ export class DresService {
     }
   }
 
+  setEval(id: string) {
+    this._evalId = id;
+  }
+
+  getEvalId(){
+    return this._evalId;
+  }
 }
