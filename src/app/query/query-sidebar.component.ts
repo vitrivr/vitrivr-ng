@@ -32,6 +32,8 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
   public mode: TemporalMode = 'TEMPORAL_DISTANCE';
   public maxLength = 600;
 
+  private textCategories: string[][] = [];
+
   /** central eventemitter for changes to the list order*/
   listReOrder = new EventEmitter();
 
@@ -40,6 +42,7 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
     this._config.subscribe(c => {
       this.maxLength = c._config.query.temporal_max_length;
       this.mode = c._config.query.temporal_mode as TemporalMode;
+      this.textCategories = c._config.query.text.categories;
     });
   }
 
@@ -66,7 +69,7 @@ export class QuerySidebarComponent implements OnInit, AfterViewInit {
    * Adds a new StagedQueryContainer to the list of QueryContainers.
    */
   public addQueryTermContainer() {
-    this.containers.push(new StagedQueryContainer());
+    this.containers.push(new StagedQueryContainer(this.textCategories));
     this.listReOrder.emit()
   }
 

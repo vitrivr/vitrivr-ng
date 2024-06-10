@@ -19,7 +19,7 @@ export class TextQueryTermComponent {
   public readonly categories: [string, string][] = [];
   /** The TextQueryTerm object associated with this TextQueryTermComponent. That object holds all the query settings. */
   @Input()
-  private textTerm: TextQueryTerm;
+  textTerm: TextQueryTerm;
 
   /**
    * Constructor for TextQueryTerm
@@ -51,6 +51,11 @@ export class TextQueryTermComponent {
    */
   set inputValue(value: string) {
     this.textTerm.data = value;
+    if (value.trim().length > 0) { //enable
+      this.textTerm.enable();
+    } else {
+      this.textTerm.disable();
+    }
   }
 
   /**

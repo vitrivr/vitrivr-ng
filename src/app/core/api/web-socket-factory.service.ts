@@ -10,6 +10,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 /**
  * This class exposes an observable that generates WebSocketWrapper classes whenever the connection configuration changes. Since only one WebSocketWrapper can be active
  * at a time per WebSocketFactoryService instance. The class keeps track of the WebSocketWrapper's and disconnects previous instances
+ *
+ * @deprecated
  */
 @Injectable()
 export class WebSocketFactoryService extends BehaviorSubject<WebSocketSubject<Message>> {

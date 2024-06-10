@@ -14,6 +14,8 @@ export class MediaSegmentScoreContainer extends ScoreContainer implements MediaS
   public readonly objectId: string;
   /** ID of the segment this SegmentScoreContainer belongsTo (objectId + segmentId = unique). */
   public readonly segmentId: string;
+  /** The NAME of this segment. TODO this is not extraordinarily reasonable, but works for LSC-esque settings.*/
+  public readonly itemName: string;
   /** Sequence number of the MediaSegment within the streams of segments (i.e. i-th segment in the video). */
   public readonly sequenceNumber: number;
   /** Start time of the MediaSegment in frames. */
@@ -48,6 +50,7 @@ export class MediaSegmentScoreContainer extends ScoreContainer implements MediaS
     /* Assign values from MediaSegment. */
     this.segmentId = _mediaSegment.segmentId;
     this.objectId = _mediaSegment.objectId;
+    this.itemName = _mediaSegment.itemName;
     this.sequenceNumber = _mediaSegment.sequenceNumber;
     this.start = _mediaSegment.start;
     this.end = _mediaSegment.end;

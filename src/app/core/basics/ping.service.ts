@@ -14,6 +14,7 @@ import {NoConnectDialogComponent} from './no-connect-dialog';
 
 /**
  * This is one of the only classes which does not fully use the openapi-services. This is due to the fact that it exposes / measures different things than the status endpoint in cineast
+ * @deprecated
  */
 @Injectable()
 export class PingService extends BehaviorSubject<ApiStatus> {

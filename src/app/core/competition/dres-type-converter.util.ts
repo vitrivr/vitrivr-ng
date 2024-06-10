@@ -4,9 +4,9 @@ import {InteractionEvent} from '../../shared/model/events/interaction-event.mode
 import {WeightedFeatureCategory} from '../../shared/model/results/weighted-feature-category.model';
 import {catchError, filter, map} from 'rxjs/operators';
 import {InteractionEventComponent} from '../../shared/model/events/interaction-event-component.model';
-import {QueryEvent, QueryEventLog, QueryResult, QueryResultLog} from '../../../../openapi/dres';
 import {MediaSegmentScoreContainer} from '../../shared/model/results/scores/segment-score-container.model';
 import {TemporalObjectSegments} from '../../shared/model/misc/temporalObjectSegments';
+import {ApiClientAnswer, QueryEvent, QueryEventLog, QueryResultLog, RankedAnswer} from '../../../../openapi/dres';
 
 /**
  * Utility  class for converting {InteractionEvent}s to {QueryEventLog} used by DRES.
@@ -127,7 +127,7 @@ export class DresTypeConverter {
       timestamp: Date.now(),
       sortType: context,
       resultSetAvailability: 'top',
-      results: list.flatMap((obj, i) => obj.segments.map(s => <QueryResult>{item: s.objectId, segment: s.sequenceNumber, score: obj.score, rank: i})),
+      results: list.flatMap((obj, i) => obj.segments.map(s => <RankedAnswer>{answer: <ApiClientAnswer>{item: s.objectId, segment: s.sequenceNumber, score: obj.score}, rank: i})),
       events: event.components.map(e => DresTypeConverter.mapAtomicEvent(e, event.timestamp)).filter(e => e != null)
     }
   }
@@ -145,7 +145,7 @@ export class DresTypeConverter {
       timestamp: Date.now(),
       sortType: context,
       resultSetAvailability: 'top',
-      results: list.map((s, i) => <QueryResult>{item: s.objectId, segment: s.sequenceNumber, score: s.score, rank: i}),
+      results: list.map((s, i) => <RankedAnswer>{answer: <ApiClientAnswer>{item: s.objectId, segment: s.sequenceNumber, score: s.score}, rank: i}),
       events: event.components.map(e => DresTypeConverter.mapAtomicEvent(e, event.timestamp)).filter(e => e != null)
     }
   }

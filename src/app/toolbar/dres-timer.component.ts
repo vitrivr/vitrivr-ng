@@ -3,7 +3,7 @@ import {Config} from "../shared/model/config/config.model";
 import {AppConfig} from "../app.config";
 import {DresService} from "../core/basics/dres.service";
 import {skip, tap} from "rxjs/operators";
-import {ClientTaskInfo} from "../../../openapi/dres";
+import {ApiClientTaskTemplateInfo, ApiEvaluationState} from '../../../openapi/dres';
 
 @Component({
   selector: 'app-dres-timer',
@@ -19,7 +19,8 @@ export class DresTimerComponent implements OnInit {
   config: Config
   taskSecondsRemaining = 0
   countDownFun = null
-  activeTask: ClientTaskInfo = null
+  activeTask: ApiEvaluationState = null
+  activeTemplate: ApiClientTaskTemplateInfo = null
 
   competitionHost = ((c: Config) => c._config.competition.host)
   statusStr: string = "loading task information..."
@@ -42,10 +43,10 @@ export class DresTimerComponent implements OnInit {
         skip(1), // skip initial value
         tap(task => {
           if (task) {
-            if (task.running) {
+            if (task.taskStatus === 'RUNNING') {
               this.activeTask = task
               clearInterval(this.countDownFun)
-              this.taskSecondsRemaining = task.remainingTime
+              this.taskSecondsRemaining = task.timeLeft
               this.countDownFun = setInterval(() => this.tic(), 1000)
               this.renderSeconds()
               return
@@ -57,6 +58,14 @@ export class DresTimerComponent implements OnInit {
         })
     )
     .subscribe()
+    this.dresService.activeTemplateObservable().pipe(
+      skip(1),
+      tap(template => {
+        if(template){
+          this.activeTemplate = template;
+          this.renderSeconds()
+        }
+      }))
   }
 
   private tic() {
@@ -65,7 +74,7 @@ export class DresTimerComponent implements OnInit {
   }
 
   private renderSeconds() {
-    this.statusStr = `${this.activeTask.name}: ${DresTimerComponent.toHHMMSS(this.taskSecondsRemaining)} remaining`
+    this.statusStr = `${this.activeTemplate?.name}: ${DresTimerComponent.toHHMMSS(this.taskSecondsRemaining)} remaining`
     this.cdr.markForCheck()
   }
 

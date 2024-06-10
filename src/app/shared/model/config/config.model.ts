@@ -22,7 +22,7 @@ export class Config {
       port: 4567, /* Port for the API. */
       http_secure: false, /* Whether or not TLS should be used for HTTP connection. */
       ws_secure: false, /* Whether or not TLS should be used for WebSocket connection. */
-      ping_interval: 5000 /* Default ping interval in milliseconds. */
+      ping_interval: 5000, /* Default ping interval in milliseconds. */
     },
     resources: {
       /** Path / URL to location where media object thumbnails will be stored. */
@@ -138,7 +138,10 @@ export class Config {
         ['technical.duration', 'SLIDER']
       ],
       showMetadataInViewer: false
-    }
+    },
+    insights:[
+      "whisper"
+    ]
   };
 
   /**
@@ -153,8 +156,9 @@ export class Config {
    * @param tags Optional tag configurations as, e.g. loaded from a file.
    * @param mlt Optional More-Like-This categories as, e.g. loaded from a file.
    * @param refinement Optional refinement configuration
+   * @param insights Optional insights (feature inspection) configuration
    */
-  constructor(title?: string, api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any) {
+  constructor(title?: string, api?: any, resources?: any, query?: QuerySettings, competition?: any, tags?: Tag[], mlt?: FeatureCategories[], refinement?: any, insights?: any) {
     const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray;
     if (title) {
       this._config.title = title;
@@ -179,6 +183,9 @@ export class Config {
     }
     if (refinement) {
       this._config.refinement = DEEPMERGE(this._config.refinement, refinement, {arrayMerge: overwriteMerge});
+    }
+    if(insights){
+      this._config.insights = DEEPMERGE(this._config.insights, insights, {arrayMerge: overwriteMerge});
     }
     if (this._config.api.host === '$host') {
       this._config.api.host = window.location.hostname
@@ -220,6 +227,18 @@ export class Config {
     const scheme = this._config.competition.tls ? 'https://' : 'http://';
     if (this._config.competition.host) {
       return `${scheme}${this._config.competition.host}`
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Full URL to HTTP/HTTPs RESTful endpoint for vitrivr-engine.
+   */
+  get engineEndpointRest(){
+    const scheme = this._config.api.http_secure ? 'https://' : 'http://';
+    if (this._config.api.host && this._config.api.port) {
+      return scheme + this._config.api.host + ':' + this._config.api.port;
     } else {
       return null;
     }

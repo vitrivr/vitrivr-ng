@@ -35,5 +35,5 @@ export interface QueryContainerInterface {
    */
   hasTerm(type: QueryTerm.TypeEnum): boolean;
 
-  getTerm(type: QueryTerm.TypeEnum): QueryTermInterface;
+  // getTerm(type: QueryTerm.TypeEnum): QueryTermInterface;
 }

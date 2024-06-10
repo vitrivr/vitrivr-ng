@@ -1,0 +1,30 @@
+{
+  "name": "@vitrivr-engine-openapi/api",
+  "version": "0.1.0-SNAPSHOT.202405291057",
+  "description": "OpenAPI client for @vitrivr-engine-openapi/api",
+  "author": "OpenAPI-Generator Contributors",
+  "keywords": [
+    "openapi-client",
+    "openapi-generator"
+  ],
+  "license": "Unlicense",
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json"
+  },
+  "peerDependencies": {
+    "@angular/core": "^13.0.0",
+    "rxjs": "^7.4.0"
+  },
+  "devDependencies": {
+    "@angular/common": "^13.0.0",
+    "@angular/compiler": "^13.0.0",
+    "@angular/compiler-cli": "^13.0.0",
+    "@angular/core": "^13.0.0",
+    "@angular/platform-browser": "^13.0.0",
+    "ng-packagr": "^13.0.3",
+    "reflect-metadata": "^0.1.3",
+    "rxjs": "^7.4.0",
+    "tsickle": "^0.43.0",
+    "typescript": ">=4.4.2 <4.5.0",
+    "zone.js": "^0.11.4"
+  }}

@@ -1,4 +1,4 @@
-## @dres-client-openapi/api@1.0
+## @dres-client-openapi/api@2.0.3
 
 ### Building
 
@@ -19,7 +19,7 @@ Navigate to the folder of your consuming project and run one of next commands.
 _published:_
 
 ```
-npm install @dres-client-openapi/api@1.0 --save
+npm install @dres-client-openapi/api@2.0.3 --save
 ```
 
 _without publishing (not recommended):_

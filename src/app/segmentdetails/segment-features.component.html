@@ -20,6 +20,16 @@
             </div>
         </mat-tab>
 
+        <mat-tab *ngFor="let catFeat of _categoriesFeaturesMap.keys() index as _i;">
+            <h4 mat-line><strong>{{catFeat}}</strong></h4>
+            <div class="normalfont"
+                 *ngFor="let feature of _categoriesFeaturesMap[catFeat] index as i; odd as isOdd; even as isEven"
+                 [class.Odd]="isOdd"
+                 [class.even]="isEven">
+                {{feature}}
+            </div>
+        </mat-tab>
+
         <mat-tab *ngIf="_captions.length>0" label="Captions">
             <h4 mat-line><strong>Captions</strong></h4>
             <div class="normalfont"

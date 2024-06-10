@@ -2,8 +2,8 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
-import { ClientRunInfoService } from './api/clientRunInfo.service';
-import { DownloadService } from './api/download.service';
+import { EvaluationService } from './api/evaluation.service';
+import { EvaluationClientService } from './api/evaluationClient.service';
 import { LogService } from './api/log.service';
 import { StatusService } from './api/status.service';
 import { SubmissionService } from './api/submission.service';
