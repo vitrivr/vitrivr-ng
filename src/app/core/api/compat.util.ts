@@ -56,8 +56,13 @@ export class CineastCompat {
     const relationExpanderName = "relExp"
     query.operations[relationExpanderName] = EngineQueryUtil.buildRelationOperator(outputOpName)
     query.context.local[relationExpanderName] = EngineQueryUtil.buildRelationLookupContext()
+
+    const timeLookupName = "timeLookup"
+    query.operations[timeLookupName] = EngineQueryUtil.generateFieldLookup(relationExpanderName)
+    query.context.local[timeLookupName] = EngineQueryUtil.generateTimeLookupContext()
+
     const relResName = "relRes"
-    query.operations[relResName] = EngineQueryUtil.buildRelationResolverOperator(relationExpanderName)
+    query.operations[relResName] = EngineQueryUtil.buildRelationResolverOperator(timeLookupName)
     query.context.local[relResName] = EngineQueryUtil.buildRelationResolverContext()
 
     const pathLookupName = "pathLookup"
@@ -86,7 +91,7 @@ export class CineastCompat {
     const content = result.retrievables.map(it => {
       const path = it.properties["path"]
       if(path){
-        return {objectid: it.id, name: this.convertPathToItemName(path), path: path, mediatype: 'IMAGE'} as MediaObjectDescriptor // TODO Far more logic
+        return {objectid: it.id, name: this.convertPathToItemName(path), path: path, mediatype: 'VIDEO'} as MediaObjectDescriptor // TODO Far more logic
       }else{
         return null
       }

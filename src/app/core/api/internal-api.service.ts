@@ -7,7 +7,7 @@ export class InternalApiService {
   constructor(private _retrieval: RetrievalService) { }
 
   query(ind: InformationNeedDescription){
-    return this._retrieval.postExecuteQuery("LSC", ind) // TODO make schema configurable
+    return this._retrieval.postExecuteQuery("mvk", ind) // TODO make schema configurable
   }
 
 

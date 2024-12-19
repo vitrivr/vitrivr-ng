@@ -19,7 +19,7 @@ export class Config {
     title: 'vitrivr',
     api: {
       host: window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
-      port: 4567, /* Port for the API. */
+      port: 7070, /* Port for the API. */
       http_secure: false, /* Whether or not TLS should be used for HTTP connection. */
       ws_secure: false, /* Whether or not TLS should be used for WebSocket connection. */
       ping_interval: 5000, /* Default ping interval in milliseconds. */
@@ -105,7 +105,7 @@ export class Config {
         neighboringSegmentLookupAllCount: 200000
       },
       text: {
-        categories: [['visualtextcoembedding', 'Description (VTE)'], ['ocr', 'OCR']]
+        categories: [['clipmap', 'CLIP']]
       },
       boolean: [
         {
@@ -242,6 +242,18 @@ export class Config {
     } else {
       return null;
     }
+  }
+
+  get thumbnailEndpoint(){
+    return "https://files.ifi.uzh.ch/ddis/VBS/img/";
+  }
+
+  get videoEndpoint(){
+    return "https://files.ifi.uzh.ch/ddis/VBS/vid/";
+  }
+
+  get schema() {
+    return "mvk";
   }
 
   get metadataAccessSpec(): MetadataAccessSpecification[] {

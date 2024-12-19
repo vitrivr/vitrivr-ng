@@ -24,6 +24,10 @@ export class EngineQueryUtil{
     return this.generateFieldLookupContext("file", ["path"]) // TODO read 'file' from config
   }
 
+  static generateTimeLookupContext(){
+    return this.generateFieldLookupContext("time", ["start", "end"]);
+  }
+
   static generateInformationNeed( outputOpName: string = ''){
     return {
       context: this.generateContext(),
@@ -66,7 +70,7 @@ export class EngineQueryUtil{
   }
 
   static buildRelationLookupContext(){
-    return {incoming: "partOf"} as any
+    return {outgoing: "partOf"} as any
   }
 
   static buildRelationResolverContext(){
@@ -108,7 +112,7 @@ export class EngineQueryUtil{
   }
 
   static generateClipOp(){
-    return this.generateRetrieverOperator('clip') // TODO load via config
+    return this.generateRetrieverOperator('clipmap') // TODO load via config
   }
 
   static generateTransformerOperator(name: string, input: string = '') {
