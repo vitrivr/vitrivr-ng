@@ -84,7 +84,8 @@ export class CineastCompat {
         });
 
         const tempObjs = result.retrievables.filter(result => result.type == 'SEGMENT').map(value => {
-            return {score: value.score, objectId: partOfMap.get(value.id).id, segments: [value.id]} as TemporalObject
+            const obj = CineastCompat.convertPathToItemName(partOfMap.get(value.id).properties["path"])
+            return {score: value.score, objectId: obj, segments: [value.id]} as TemporalObject
         })
         return {content: tempObjs, queryId: queryId} as TemporalQueryResult
     }
@@ -100,7 +101,7 @@ export class CineastCompat {
         const content = result.retrievables.map(it => {
             const path = it.properties['path']
             if (path) {
-                return {objectid: it.id, name: this.convertPathToItemName(path), path: path, mediatype: 'VIDEO'} as MediaObjectDescriptor // TODO Far more logic
+                return {objectid: this.convertPathToItemName(path), name: this.convertPathToItemName(path), path: path, mediatype: 'VIDEO'} as MediaObjectDescriptor // TODO Far more logic
             } else {
                 return null
             }
@@ -127,7 +128,7 @@ export class CineastCompat {
                 const itemName = this.convertPathToItemName(object.properties['path']);
                 const start = +it.properties['start'] / 1_000_000_000;
                 const end = +it.properties['end'] / 1_000_000_000;
-                return {objectId: object.id, segmentId: it.id, itemName: itemName, start: start, startabs: start, end: end, endabs: end} as MediaSegmentDescriptor // TODO more logic
+                return {objectId: itemName, segmentId: it.id, itemName: itemName, start: start, startabs: start, end: end, endabs: end} as MediaSegmentDescriptor // TODO more logic
             } else {
                 return null
             }

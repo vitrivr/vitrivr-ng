@@ -345,7 +345,7 @@ export class VbsSubmissionService {
             this._dresSubmissionLogTable.add([segment, frame])
           }
           /* Construct the submission for temporal and item submisisons */
-          const submission = {answerSets: [{answers: [{mediaItemName: segment} as ApiClientAnswer]} as ApiClientAnswerSet]} as ApiClientSubmission
+          const submission = {answerSets: [{answers: [{mediaItemName: segment, start: frame * 1000, end: (frame + 1) * 1000} as ApiClientAnswer]} as ApiClientAnswerSet]} as ApiClientSubmission
           /* Submit, do some logging and catch HTTP errors. */
           return this._dresSubmit.postApiV2SubmitByEvaluationId(this._dresService.getEvalId(), submission).pipe(
               tap((status: SuccessfulSubmissionsStatus) => {
@@ -433,16 +433,16 @@ export class VbsSubmissionService {
    * @return Tuple of ID, optional frame number and original segment id.
    */
   private convertToAppropriateRepresentation(segment: MediaSegmentScoreContainer, time?: number): [string, number, string] {
-    if (this._vbs) {
-      let fps = Number.parseFloat(segment.objectScoreContainer.metadata.get('technical.fps'));
-      if (Number.isNaN(fps) || !Number.isFinite(fps)) {
-        fps = VideoUtil.bestEffortFPS(segment);
-      }
-      return [segment.objectId.replace('v_', ''), VbsSubmissionService.timeToFrame(time, fps), segment.segmentId]
-    }
-    if (this._lsc) {
-      return [segment.itemName, time, segment.segmentId];
-    }
+    // if (this._vbs) {
+    //   let fps = Number.parseFloat(segment.objectScoreContainer.metadata.get('technical.fps'));
+    //   if (Number.isNaN(fps) || !Number.isFinite(fps)) {
+    //     fps = VideoUtil.bestEffortFPS(segment);
+    //   }
+    //   return [segment.objectId.replace('v_', ''), VbsSubmissionService.timeToFrame(time, fps), segment.segmentId]
+    // }
+    // if (this._lsc) {
+    //   return [segment.itemName, time, segment.segmentId];
+    // }
     return [segment.itemName, time, segment.segmentId];
   }
 
