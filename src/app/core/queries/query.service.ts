@@ -139,6 +139,7 @@ export class QueryService {
       const temp = CineastCompat.convertResultToTemporal(fauxQueryId,value);
       const obj = CineastCompat.convertResultToObject(fauxQueryId,value);
       const seg = CineastCompat.convertResultToSegment(fauxQueryId, value);
+      const sim = CineastCompat.convertResultToSimilarity(fauxQueryId, value);
       console.log("OBJ: ", obj);
       console.log("SGE: ", seg);
       console.log("TEMP: ", temp);
@@ -146,6 +147,9 @@ export class QueryService {
         this._subject.next('UPDATED');
       }
       if (this._results && this._results.processSegmentMessage(seg)) {
+        this._subject.next('UPDATED');
+      }
+      if (this._results && this._results.processSimilarityMessage(sim)) {
         this._subject.next('UPDATED');
       }
       if (this._results && this._results.processTemporalMessage(temp)) {
