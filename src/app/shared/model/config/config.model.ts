@@ -17,6 +17,7 @@ export class Config {
 
   _config = {
     title: 'vitrivr',
+    schema: 'mvk',
     api: {
       host: window.location.hostname, /* IP address or hostname (no scheme), pointing to the API endpoint; defaults to hostname of window. */
       port: 7070, /* Port for the API. */
@@ -79,7 +80,7 @@ export class Config {
     query: {
       history: -1,
       scoreFunction: 'average', // the scoring function to use in SEGMENT and OBJECT view
-      temporalView: true, // Activate or deactivate temporal scoring (view) at all
+      temporalView: false, // Activate or deactivate temporal scoring (view) at all
       options: {
         image: true,
         audio: false,
@@ -253,7 +254,7 @@ export class Config {
   }
 
   get schema() {
-    return "mvk";
+    return this._config.schema;
   }
 
   get metadataAccessSpec(): MetadataAccessSpecification[] {

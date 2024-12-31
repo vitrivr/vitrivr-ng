@@ -9,10 +9,9 @@ import {AppConfig} from '../../../app.config';
 export class ThumbnailPathPipe implements PipeTransform {
   private _host_thumbnails: string;
   private _schema: string = ""
-//  private _exporter: string = "thumbnail" // TODO config
 
-  constructor(_configService: AppConfig, public readonly _resolverService: ResolverService) {
-    _configService.configAsObservable.subscribe(c => {
+  constructor(private configService: AppConfig, public readonly _resolverService: ResolverService) {
+    configService.configAsObservable.subscribe(c => {
       this._host_thumbnails = c.thumbnailEndpoint;
       this._schema = c.schema;
     })

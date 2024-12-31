@@ -43,6 +43,7 @@ export class PreferencesComponent implements AfterContentInit {
   hostObjects = ((c: Config) => c._config.resources.host_objects);
   mode = ((c: Config) => c._config.query.temporal_mode);
   defaultContainerDist = ((c: Config) => c._config.query.default_temporal_distance);
+  schema = ((c: Config) => c._config.schema);
 
   /**
    * Constructor for PreferencesComponent
@@ -58,6 +59,11 @@ export class PreferencesComponent implements AfterContentInit {
   public onModeChanged(mode: TemporalMode) {
     this._configService.config._config.query.temporal_mode = mode
     this._configService.publishChanges()
+  }
+
+  public onSchemaChanged(schema: string) {
+    this._configService.config._config.schema = schema;
+    this._configService.publishChanges();
   }
 
   public onMaxLengthSaveClicked() {
