@@ -1,6 +1,6 @@
 import {QueryContainerInterface} from '../../shared/model/queries/interfaces/query-container.interface';
 import {EngineQueryUtil} from './engine-query.util';
-import {QueryResult} from '../../../../openapi/vitrivr-engine';
+import {QueryResult, QueryResultRetrievable} from '../../../../openapi/vitrivr-engine';
 import {TemporalObject} from '../../shared/model/misc/temporalObject';
 import {TemporalQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-temporal.interface';
 import {SimilarityQueryResult} from '../../shared/model/messages/interfaces/responses/query-result-similarty.interface';
@@ -101,10 +101,22 @@ export class CineastCompat {
   }
 
   static convertResultToSegment(queryId: string, result: QueryResult){
+
+    const partOfMap = new Map<string, QueryResultRetrievable>();
+
+    result.retrievables.forEach(it => {
+      it.parts.forEach(part => {partOfMap.set(part, it)})
+    });
+
     const content = result.retrievables.map(it => {
-      if(it.properties["path"]){
-        /* crude hack to filter day retrievables */
-        return {objectId: it.id, segmentId: it.id, itemName: this.convertPathToItemName(it.properties["path"])} as MediaSegmentDescriptor // TODO more logic
+      if(it.type == "SEGMENT"){
+        const object = partOfMap.get(
+            it.id
+        );
+        const itemName = this.convertPathToItemName(object.properties["path"]);
+        const start = +it.properties["start"] / 1_000_000_000;
+        const end = +it.properties["end"] / 1_000_000_000;
+        return {objectId: object.id, segmentId: it.id, itemName: itemName, start: start, startabs: start, end: end, endabs: end} as MediaSegmentDescriptor // TODO more logic
       }else{
         return null
       }

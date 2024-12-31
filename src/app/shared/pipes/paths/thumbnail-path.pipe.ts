@@ -29,6 +29,6 @@ export class ThumbnailPathPipe implements PipeTransform {
    * @return {string}
    */
   public transform(object: MediaObjectDescriptor, segment: MediaSegmentDescriptor, height?: number, width?: number): String {
-    return `${this._host_thumbnails}/${this._schema}/${segment.segmentId}.jpg`
+    return `${this._host_thumbnails}/${this._schema}/${segment.segmentId.substring(0,2)}/${segment.segmentId}.jpg`
   }
 }

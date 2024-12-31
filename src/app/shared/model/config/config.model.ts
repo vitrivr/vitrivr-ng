@@ -60,7 +60,7 @@ export class Config {
       collabordinator: null,
 
       /* if textual submissions should be enabled */
-      textualInput: false
+      textualInput: true
     },
     tags: [
       new Tag('Red', 0),
@@ -245,11 +245,11 @@ export class Config {
   }
 
   get thumbnailEndpoint(){
-    return "https://files.ifi.uzh.ch/ddis/VBS/img/";
+    return "http://localhost/img/";
   }
 
   get videoEndpoint(){
-    return "https://files.ifi.uzh.ch/ddis/VBS/vid/";
+    return "http://localhost/vid/";
   }
 
   get schema() {
